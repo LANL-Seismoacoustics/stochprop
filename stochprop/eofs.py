@@ -11,6 +11,7 @@ import sys
 import os
 import numpy as np
 import calendar
+import fnmatch
 
 import matplotlib.pyplot as plt
 
@@ -58,7 +59,73 @@ def profs_check(profs_path, months=range(1, 13), years = range(2007, 2015), plot
                                 plt.title(filename)
                                 plt.show()
 
-def compute_svd(profs_path, output_path, eof_cnt=100, g2s_file_len=901, months=range(1, 13), years = range(2007, 2015)):
+def build_atmo_matrix(path, pattern="*.met"):
+    print("Loading profiles from " + path + " with pattern: " + pattern)
+
+    file_list = []
+    dir_files = os.listdir(path)
+    for file in dir_files:
+        if fnmatch.fnmatch(file, pattern):
+            file_list += [file]
+
+    atmo = np.loadtxt(path + file_list[0])
+    T = atmo[:, 1]
+    u = atmo[:, 2]
+    v = atmo[:, 3]
+    d = atmo[:, 4]
+    p = atmo[:, 5]
+
+    for file in file_list[1:]:
+        atmo = np.loadtxt(path + file)
+
+        T = np.vstack((T, atmo[:, 1]))
+        u = np.vstack((u, atmo[:, 2]))
+        v = np.vstack((v, atmo[:, 3]))
+        d = np.vstack((d, atmo[:, 4]))
+        p = np.vstack((p, atmo[:, 5]))
+
+    A = np.hstack((T, u))
+    A = np.hstack((A, v))
+    A = np.hstack((A, d))
+    A = np.hstack((A, p))
+
+    return A
+
+def build_atmo_matrix2(path, months=range(1, 13), years = range(2007, 2015))
+
+    for month_index in months:
+        month = "%02d" % month_index
+        print('\t' + "Loading profiles for " + calendar.month_name[month_index])
+
+        for year_index in years:
+            year = "%04d" % year_index
+
+            for day_index in range(32):
+                day = "%02d" % (day_index + 1)
+
+                for hour_index in range(4):
+                    hour = "%02d" % (hour_index * 6)
+
+                    datetime_id = year + month + day + hour
+                    filename = profs_path + year + "/" + datetime_id + ".met"
+
+                    if os.path.isfile(filename):
+                        profile = np.loadtxt(filename)
+                        alt_vals = profile[:, 0]
+                        T_vals = np.vstack((T_vals, profile[:, 1]))
+                        u_vals = np.vstack((u_vals, profile[:, 2]))
+                        v_vals = np.vstack((v_vals, profile[:, 3]))
+                        d_vals = np.vstack((d_vals, profile[:, 4]))
+                        p_vals = np.vstack((p_vals, profile[:, 5]))
+
+    stacked_vals = np.hstack((T_vals, u_vals))
+    stacked_vals = np.hstack((stacked_vals, v_vals))
+    stacked_vals = np.hstack((stacked_vals, d_vals))
+    stacked_vals = np.hstack((stacked_vals, p_vals))
+
+
+
+def compute_svd(A_matrix, output_path, eof_cnt=100):
     print("-" * 50 + '\n' + "Computing SVD to build EOFs")
     # Prep the arrays to hold the profile information
     T_vals = np.empty((0, g2s_file_len))
