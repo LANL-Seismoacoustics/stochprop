@@ -12,15 +12,17 @@ import os
 import numpy as np
 import calendar
 import fnmatch
+import warnings
 
 import matplotlib.pyplot as plt
 
 from scipy.integrate import quad
 from scipy.interpolate import interp1d
-from scipy.optimize import bisect
+from scipy.optimize import bisect, minimize
 from scipy.stats import gaussian_kde
 
 from infrapy.association import hjl
+from infrapy.utils import prog_bar
 
 def profile_qc(g2s_file):
     profile = np.loadtxt(g2s_file)
@@ -59,7 +61,7 @@ def profs_check(profs_path, months=range(1, 13), years = range(2007, 2015), plot
                                 plt.title(filename)
                                 plt.show()
 
-def build_atmo_matrix(path, pattern="*.met"):
+def build_atmo_matrix(path, pattern="*.met", skiprows=0):
     print("Loading profiles from " + path + " with pattern: " + pattern)
 
     file_list = []
@@ -68,186 +70,116 @@ def build_atmo_matrix(path, pattern="*.met"):
         if fnmatch.fnmatch(file, pattern):
             file_list += [file]
 
-    atmo = np.loadtxt(path + file_list[0])
-    T = atmo[:, 1]
-    u = atmo[:, 2]
-    v = atmo[:, 3]
-    d = atmo[:, 4]
-    p = atmo[:, 5]
+    if len(file_list) > 0:
+        atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
+        z = atmo[:, 0]
+        T = atmo[:, 1]
+        u = atmo[:, 2]
+        v = atmo[:, 3]
+        d = atmo[:, 4]
+        p = atmo[:, 5]
 
-    for file in file_list[1:]:
-        atmo = np.loadtxt(path + file)
+        for file in file_list[1:]:
+            atmo = np.loadtxt(path + file, skiprows=skiprows)
 
-        T = np.vstack((T, atmo[:, 1]))
-        u = np.vstack((u, atmo[:, 2]))
-        v = np.vstack((v, atmo[:, 3]))
-        d = np.vstack((d, atmo[:, 4]))
-        p = np.vstack((p, atmo[:, 5]))
+            T = np.vstack((T, atmo[:, 1]))
+            u = np.vstack((u, atmo[:, 2]))
+            v = np.vstack((v, atmo[:, 3]))
+            d = np.vstack((d, atmo[:, 4]))
+            p = np.vstack((p, atmo[:, 5]))
 
-    A = np.hstack((T, u))
-    A = np.hstack((A, v))
-    A = np.hstack((A, d))
-    A = np.hstack((A, p))
+        A = np.hstack((T, u))
+        A = np.hstack((A, v))
+        A = np.hstack((A, d))
+        A = np.hstack((A, p))
 
-    return A
+        return A, z
+    else:
+        return None, None
 
-def build_atmo_matrix2(path, months=range(1, 13), years = range(2007, 2015))
+def compute_svd(A, alts, output_path, eof_cnt=100):
+    file_len = int(A.shape[1] / 5)
 
-    for month_index in months:
-        month = "%02d" % month_index
-        print('\t' + "Loading profiles for " + calendar.month_name[month_index])
+    if eof_cnt > A.shape[0]:
+        eof_cnt = A.shape[0]
+        msg = "Warning!  Atmosphere count less than eof_cnt.  Only returning " + str(eof_cnt) + " EOFs."
+        raise ValueError(msg)
 
-        for year_index in years:
-            year = "%04d" % year_index
+    # extract the mean and compute eofs for the diffs using log-scale
+    #   for the density and pressure fields
+    A_mean = np.mean(A, axis=0)
+    T_mean = A_mean[file_len * 0:file_len * 1]
+    u_mean = A_mean[file_len * 1:file_len * 2]
+    v_mean = A_mean[file_len * 2:file_len * 3]
+    d_mean = A_mean[file_len * 3:file_len * 4]
+    p_mean = A_mean[file_len * 4:file_len * 5]
 
-            for day_index in range(32):
-                day = "%02d" % (day_index + 1)
+    A_diffs = A[:, :file_len * 3] - np.array([A_mean] * A.shape[0])[:, :file_len * 3]
+    A_diffs = np.hstack((A_diffs, np.log(A[:, file_len * 3:]) - np.log(np.array([A_mean] * A.shape[0])[:, file_len * 3:])))
 
-                for hour_index in range(4):
-                    hour = "%02d" % (hour_index * 6)
+    _, singular_vals, eofs = np.linalg.svd(A_diffs, full_matrices=False)
 
-                    datetime_id = year + month + day + hour
-                    filename = profs_path + year + "/" + datetime_id + ".met"
-
-                    if os.path.isfile(filename):
-                        profile = np.loadtxt(filename)
-                        alt_vals = profile[:, 0]
-                        T_vals = np.vstack((T_vals, profile[:, 1]))
-                        u_vals = np.vstack((u_vals, profile[:, 2]))
-                        v_vals = np.vstack((v_vals, profile[:, 3]))
-                        d_vals = np.vstack((d_vals, profile[:, 4]))
-                        p_vals = np.vstack((p_vals, profile[:, 5]))
-
-    stacked_vals = np.hstack((T_vals, u_vals))
-    stacked_vals = np.hstack((stacked_vals, v_vals))
-    stacked_vals = np.hstack((stacked_vals, d_vals))
-    stacked_vals = np.hstack((stacked_vals, p_vals))
-
-
-
-def compute_svd(A_matrix, output_path, eof_cnt=100):
-    print("-" * 50 + '\n' + "Computing SVD to build EOFs")
-    # Prep the arrays to hold the profile information
-    T_vals = np.empty((0, g2s_file_len))
-    u_vals = np.empty((0, g2s_file_len))
-    v_vals = np.empty((0, g2s_file_len))
-    d_vals = np.empty((0, g2s_file_len))
-    p_vals = np.empty((0, g2s_file_len))
-
-    # Read in data from G2S profiles
-    for month_index in months:
-        month = "%02d" % month_index
-        print('\t' + "Loading profiles for " + calendar.month_name[month_index])
-        for year_index in years:
-            year = "%04d" % year_index
-            for day_index in range(32):
-                day = "%02d" % (day_index + 1)
-                for hour_index in range(4):
-                    hour = "%02d" % (hour_index * 6)
-
-                    datetime_id = year + month + day + hour
-                    filename = profs_path + year + "/" + datetime_id + ".met"
-
-                    if os.path.isfile(filename):
-                        profile = np.loadtxt(filename)
-                        alt_vals = profile[:, 0]
-                        T_vals = np.vstack((T_vals, profile[:, 1]))
-                        u_vals = np.vstack((u_vals, profile[:, 2]))
-                        v_vals = np.vstack((v_vals, profile[:, 3]))
-                        d_vals = np.vstack((d_vals, profile[:, 4]))
-                        p_vals = np.vstack((p_vals, profile[:, 5]))
-
-    print('\t' + "Building SVD expansion...")
-
-    stacked_vals = np.hstack((T_vals, u_vals))
-    stacked_vals = np.hstack((stacked_vals, v_vals))
-    stacked_vals = np.hstack((stacked_vals, d_vals))
-    stacked_vals = np.hstack((stacked_vals, p_vals))
-
-    stacked_means = np.mean(stacked_vals, axis=0)
-    T_mean = stacked_means[g2s_file_len * 0:g2s_file_len * 1]
-    u_mean = stacked_means[g2s_file_len * 1:g2s_file_len * 2]
-    v_mean = stacked_means[g2s_file_len * 2:g2s_file_len * 3]
-    d_mean = stacked_means[g2s_file_len * 3:g2s_file_len * 4]
-    p_mean = stacked_means[g2s_file_len * 4:g2s_file_len * 5]
-
-    stacked_diffs = stacked_vals[:, :g2s_file_len * 3] - np.array([stacked_means] * stacked_vals.shape[0])[:, :g2s_file_len * 3]
-    stacked_diffs = np.hstack((stacked_diffs, np.log(stacked_vals[:, g2s_file_len * 3:]) - np.log(np.array([stacked_means] * stacked_vals.shape[0])[:, g2s_file_len * 3:])))
-
-    _, singular_vals, eofs = np.linalg.svd(stacked_diffs, full_matrices=False)
-
-    eofs = eofs / np.sqrt(0.2)
-    '''
-    print('\t' + "Normalizing EOFs...")
-    for n in range(len(eofs)):
-        norm = 0.0
-        norm = norm + quad(interp1d(profile[:, 0], eofs[n][g2s_file_len * 0:g2s_file_len * 1]**2), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        norm = norm + quad(interp1d(profile[:, 0], eofs[n][g2s_file_len * 1:g2s_file_len * 2]**2), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        norm = norm + quad(interp1d(profile[:, 0], eofs[n][g2s_file_len * 2:g2s_file_len * 3]**2), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        norm = norm + quad(interp1d(profile[:, 0], eofs[n][g2s_file_len * 3:g2s_file_len * 4]**2), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        norm = norm + quad(interp1d(profile[:, 0], eofs[n][g2s_file_len * 4:g2s_file_len * 5]**2), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        eofs[n] = eofs[n] / np.sqrt(norm)
-    '''
-
-    T_eofs = eofs[:, g2s_file_len * 0:g2s_file_len * 1]
-    u_eofs = eofs[:, g2s_file_len * 1:g2s_file_len * 2]
-    v_eofs = eofs[:, g2s_file_len * 2:g2s_file_len * 3]
-    d_eofs = eofs[:, g2s_file_len * 3:g2s_file_len * 4]
-    p_eofs = eofs[:, g2s_file_len * 4:g2s_file_len * 5]
+    # normalize the eofs by the altitude resolution
+    eofs = eofs / np.sqrt(abs(alts[1] - alts[0]))
+    
+    T_eofs = eofs[:, file_len * 0:file_len * 1]
+    u_eofs = eofs[:, file_len * 1:file_len * 2]
+    v_eofs = eofs[:, file_len * 2:file_len * 3]
+    d_eofs = eofs[:, file_len * 3:file_len * 4]
+    p_eofs = eofs[:, file_len * 4:file_len * 5]
 
     # Write the mean profiles and desired number of EOFs to file
-    print('\t' + "Writing to file...")
     file_out = open(output_path + "-singular_values.dat", 'w')
     for n in range(len(singular_vals)):
         print(n, '\t', singular_vals[n], file=file_out)
     file_out.close()
 
     file_out = open(output_path + "-means.dat", 'w')
-    for n in range(len(alt_vals)):
-        print(alt_vals[n], '\t', T_mean[n], '\t', u_mean[n], '\t', v_mean[n], '\t', d_mean[n], '\t', p_mean[n], file=file_out)
+    for n in range(len(alts)):
+        print(alts[n], '\t', T_mean[n], '\t', u_mean[n], '\t', v_mean[n], '\t', d_mean[n], '\t', p_mean[n], file=file_out)
     file_out.close()
 
     file_out = open(output_path + "-temperature.eofs", 'w')
-    for n in range(len(alt_vals)):
-        print(alt_vals[n], '\t', end=' ', file=file_out)
+    for n in range(len(alts)):
+        print(alts[n], '\t', end=' ', file=file_out)
         for m in range(eof_cnt):
             print('\t', T_eofs[m][n], end=' ', file=file_out)
         print(' ', file=file_out)
     file_out.close()
 
     file_out = open(output_path + "-zonal_winds.eofs", 'w')
-    for n in range(len(alt_vals)):
-        print(alt_vals[n], '\t', end=' ', file=file_out)
+    for n in range(len(alts)):
+        print(alts[n], '\t', end=' ', file=file_out)
         for m in range(eof_cnt):
             print('\t', u_eofs[m][n], end=' ', file=file_out)
         print(' ', file=file_out)
     file_out.close()
 
     file_out = open(output_path + "-merid_winds.eofs", 'w')
-    for n in range(len(alt_vals)):
-        print(alt_vals[n], '\t', end=' ', file=file_out)
+    for n in range(len(alts)):
+        print(alts[n], '\t', end=' ', file=file_out)
         for m in range(eof_cnt):
             print('\t', v_eofs[m][n], end=' ', file=file_out)
         print(' ', file=file_out)
     file_out.close()
 
     file_out = open(output_path + "-density.eofs", 'w')
-    for n in range(len(alt_vals)):
-        print(alt_vals[n], '\t', end=' ', file=file_out)
+    for n in range(len(alts)):
+        print(alts[n], '\t', end=' ', file=file_out)
         for m in range(eof_cnt):
             print('\t', d_eofs[m][n], end=' ', file=file_out)
         print(' ', file=file_out)
     file_out.close()
 
     file_out = open(output_path + "-pressure.eofs", 'w')
-    for n in range(len(alt_vals)):
-        print(alt_vals[n], '\t', end=' ', file=file_out)
+    for n in range(len(alts)):
+        print(alts[n], '\t', end=' ', file=file_out)
         for m in range(eof_cnt):
             print('\t', p_eofs[m][n], end=' ', file=file_out)
         print(' ', file=file_out)
     file_out.close()
 
-def test_coeffs(prof_path, eofs_path, coeff_cnt):
+def fit_profile(prof_path, eofs_path, coeff_cnt, skiprows=0, pool=None):
     # load means and eofs
     means = np.loadtxt(eofs_path + "-means.dat")
     T_eofs = np.loadtxt(eofs_path + "-temperature.eofs")
@@ -256,52 +188,77 @@ def test_coeffs(prof_path, eofs_path, coeff_cnt):
     d_eofs = np.loadtxt(eofs_path + "-density.eofs")
     p_eofs = np.loadtxt(eofs_path + "-pressure.eofs")
 
-    # load profile to fit and compute differences from mean
-    profile = np.loadtxt(prof_path)
+    # load profile and compute interpolations for the differences from the mean
+    profile = np.loadtxt(prof_path, skiprows=skiprows)
+    
+    T_diff_interp = interp1d(profile[:, 0], profile[:, 1] - means[:, 1], kind='cubic')
+    u_diff_interp = interp1d(profile[:, 0], profile[:, 2] - means[:, 2], kind='cubic')
+    v_diff_interp = interp1d(profile[:, 0], profile[:, 3] - means[:, 3], kind='cubic')
+    d_diff_interp = interp1d(profile[:, 0], np.log(profile[:, 4]) - np.log(means[:, 4]), kind='cubic')
+    p_diff_interp = interp1d(profile[:, 0], np.log(profile[:, 5]) - np.log(means[:, 5]), kind='cubic')
+   
+    # integrate to compute the EOF coefficients
+    def calc_coeff(n):
+        T_eof_interp = interp1d(T_eofs[:, 0], T_eofs[:, n + 1], kind='cubic')
+        u_eof_interp = interp1d(u_eofs[:, 0], u_eofs[:, n + 1], kind='cubic')
+        v_eof_interp = interp1d(v_eofs[:, 0], v_eofs[:, n + 1], kind='cubic')
+        d_eof_interp = interp1d(d_eofs[:, 0], d_eofs[:, n + 1], kind='cubic')
+        p_eof_interp = interp1d(p_eofs[:, 0], p_eofs[:, n + 1], kind='cubic')
+        
+        def temp(z):
+            return T_diff_interp(z) * T_eof_interp(z)
+        T_coeff = quad(temp, max(profile[0][0], T_eofs[0][0]), min(profile[-1][0], T_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+            
+        def temp(z):
+            return u_diff_interp(z) * u_eof_interp(z)
+        u_coeff = quad(temp, max(profile[0][0], u_eofs[0][0]), min(profile[-1][0], u_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+            
+        def temp(z):
+            return v_diff_interp(z) * v_eof_interp(z)
+        v_coeff = quad(temp, max(profile[0][0], v_eofs[0][0]), min(profile[-1][0], v_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+            
+        def temp(z):
+            return d_diff_interp(z) * d_eof_interp(z)
+        d_coeff = quad(temp, max(profile[0][0], d_eofs[0][0]), min(profile[-1][0], d_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+            
+        def temp(z):
+            return p_diff_interp(z) * p_eof_interp(z)
+        p_coeff = quad(temp, max(profile[0][0], p_eofs[0][0]), min(profile[-1][0], p_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+            
+        return T_coeff + u_coeff + v_coeff + d_coeff + p_coeff
 
-    T_diff = profile[:, 1] - means[:, 1]
-    u_diff = profile[:, 2] - means[:, 2]
-    v_diff = profile[:, 3] - means[:, 3]
-    d_diff = np.log(profile[:, 4]) - np.log(means[:, 4])
-    p_diff = np.log(profile[:, 5]) - np.log(means[:, 5])
-
-    T_coeffs = np.empty(coeff_cnt)
-    u_coeffs = np.empty(coeff_cnt)
-    v_coeffs = np.empty(coeff_cnt)
-    d_coeffs = np.empty(coeff_cnt)
-    p_coeffs = np.empty(coeff_cnt)
-
-    # integrate to compute EOF coefficients
-    for n in range(coeff_cnt):
-        T_coeffs[n] = quad(interp1d(profile[:, 0], T_diff * T_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        u_coeffs[n] = quad(interp1d(profile[:, 0], u_diff * u_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        v_coeffs[n] = quad(interp1d(profile[:, 0], v_diff * v_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        d_coeffs[n] = quad(interp1d(profile[:, 0], d_diff * d_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-        p_coeffs[n] = quad(interp1d(profile[:, 0], p_diff * p_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=len(profile[:, 0]), epsrel=1.0e-3)[0]
-
-    coeffs = T_coeffs + u_coeffs + v_coeffs + d_coeffs + p_coeffs
+    if pool:
+        coeffs = pool.map(calc_coeff, range(coeff_cnt))
+    else:
+        coeffs = np.empty(coeff_cnt)
+        for n in range(coeff_cnt):
+            coeffs[n] = calc_coeff(n)
 
     # Generate profile
-    prof_fit = np.copy(means)
-    prof_fit[:, 4:] = np.log(prof_fit[:, 4:])
+    fit = np.copy(means)
+
+    # convert density and pressure to log-space for EOFs
+    fit[:, 4] = np.log(fit[:, 4])
+    fit[:, 5] = np.log(fit[:, 5])
 
     for n in range(coeff_cnt):
-        prof_fit[:, 1] = prof_fit[:, 1] + coeffs[n] * T_eofs[:, n + 1]
-        prof_fit[:, 2] = prof_fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
-        prof_fit[:, 3] = prof_fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
-        prof_fit[:, 4] = prof_fit[:, 4] + coeffs[n] * d_eofs[:, n + 1]
-        prof_fit[:, 5] = prof_fit[:, 5] + coeffs[n] * p_eofs[:, n + 1]
+        fit[:, 1] = fit[:, 1] + coeffs[n] * T_eofs[:, n + 1]
+        fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
+        fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
+        fit[:, 4] = fit[:, 4] + coeffs[n] * d_eofs[:, n + 1]
+        fit[:, 5] = fit[:, 5] + coeffs[n] * p_eofs[:, n + 1]
 
     # convert density and pressure back to physical units
-    prof_fit[:, 4] = np.exp(prof_fit[:, 4])
-    prof_fit[:, 5] = np.exp(prof_fit[:, 5])
+    fit[:, 4] = np.exp(fit[:, 4])
+    fit[:, 5] = np.exp(fit[:, 5])
 
-    return prof_fit
+    return profile, fit
 
 
-def compute_coeffs(profs_path, eofs_path, output_path, months=range(1, 13), years = range(2007, 2015)):
+def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
+    print("Computing EOF coefficients for set of profiles...", '\t', end=' ')
+    
     # load means and eofs
-    print("-" * 50 + '\n' + "Loading eofs...")
     means = np.loadtxt(eofs_path + "-means.dat")
     T_eofs = np.loadtxt(eofs_path + "-temperature.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
@@ -309,56 +266,74 @@ def compute_coeffs(profs_path, eofs_path, output_path, months=range(1, 13), year
     d_eofs = np.loadtxt(eofs_path + "-density.eofs")
     p_eofs = np.loadtxt(eofs_path + "-pressure.eofs")
 
-    # load profile to be fit
-    for month_index in months:
-        month = "%02d" % month_index
-        for hour_index in range(4):
-            hour = "%02d" % (hour_index * 6)
+    file_len = int(A.shape[1] / 5)
 
-            coeffs = np.empty((0, T_eofs.shape[1] - 1))
-            coeff_cnt = T_eofs.shape[1] - 1
+    T_eofs_interp = []
+    u_eofs_interp = []
+    v_eofs_interp = []
+    d_eofs_interp = []
+    p_eofs_interp = []
 
-            for year_index in years:
-                year = "%04d" % year_index
-                for day_index in range(32):
-                    day = "%02d" % (day_index + 1)
+    for m in range(eof_cnt):
+        T_eofs_interp += [interp1d(T_eofs[:, 0], T_eofs[:, m + 1], kind='cubic')]
+        u_eofs_interp += [interp1d(u_eofs[:, 0], u_eofs[:, m + 1], kind='cubic')]
+        v_eofs_interp += [interp1d(v_eofs[:, 0], v_eofs[:, m + 1], kind='cubic')]
+        d_eofs_interp += [interp1d(d_eofs[:, 0], d_eofs[:, m + 1], kind='cubic')]
+        p_eofs_interp += [interp1d(p_eofs[:, 0], p_eofs[:, m + 1], kind='cubic')]
+    
+    # cycle through profiles in A to define coefficients
+    coeffs = np.empty((A.shape[0], eof_cnt))
 
-                    datetime_id = year + month + day + hour
-                    filename = profs_path + year + "/" + datetime_id + ".met"
+    prog_bar.prep(40)
+    for n, An in enumerate(A):
+        # apply the shifts from means and interpolate
+        # note that density and pressure are log-scaled first
+        T_diff_interp = interp1d(alts, An[file_len * 0:file_len * 1] - means[:, 1], kind='cubic')
+        u_diff_interp = interp1d(alts, An[file_len * 1:file_len * 2] - means[:, 2], kind='cubic')
+        v_diff_interp = interp1d(alts, An[file_len * 2:file_len * 3] - means[:, 3], kind='cubic')
+        d_diff_interp = interp1d(alts, np.log(An[file_len * 3:file_len * 4]) - np.log(means[:, 4]), kind='cubic')
+        p_diff_interp = interp1d(alts, np.log(An[file_len * 4:file_len * 5]) - np.log(means[:, 5]), kind='cubic')
+        
+        # integrate to compute the EOF coefficients
+        def calc_coeff(m):
+            def temp(z):
+                return T_diff_interp(z) * T_eofs_interp[m](z)
+            T_coeff = quad(temp, max(alts[0], T_eofs[0][0]), min(alts[-1], T_eofs[-1][0]), limit=len(alts), epsrel=1.0e-2)[0]
+        
+            def temp(z):
+                return u_diff_interp(z) * u_eofs_interp[m](z)
+            u_coeff = quad(temp, max(alts[0], u_eofs[0][0]), min(alts[-1], u_eofs[-1][0]), limit=len(alts), epsrel=1.0e-2)[0]
+        
+            def temp(z):
+                return v_diff_interp(z) * v_eofs_interp[m](z)
+            v_coeff = quad(temp, max(alts[0], v_eofs[0][0]), min(alts[-1], v_eofs[-1][0]), limit=len(alts), epsrel=1.0e-2)[0]
+        
+            def temp(z):
+                return d_diff_interp(z) * d_eofs_interp[m](z)
+            d_coeff = quad(temp, max(alts[0], d_eofs[0][0]), min(alts[-1], d_eofs[-1][0]), limit=len(alts), epsrel=1.0e-2)[0]
+        
+            def temp(z):
+                return p_diff_interp(z) * p_eofs_interp[m](z)
+            p_coeff = quad(temp, max(alts[0], p_eofs[0][0]), min(alts[-1], p_eofs[-1][0]), limit=len(alts), epsrel=1.0e-2)[0]
+        
+            return T_coeff + u_coeff + v_coeff + d_coeff + p_coeff
+    
+        if pool:
+            coeffs[n] = pool.map(calc_coeff, range(eof_cnt))
+        else:
+            for m in range(eof_cnt):
+                coeffs[n][m] = calc_coeff(m)
 
-                    if os.path.isfile(filename):
-                        print('\t' + "Computing EOF coefficients for " + filename)
-                        profile = np.loadtxt(filename)
+        prog_bar.increment(int(np.floor((40.0 * (n + 1)) / A.shape[0]) - np.floor((40.0 * n) / A.shape[0])))
+    prog_bar.close()
 
-                        # apply the shifts from means
-                        # note that density and pressure are log-scaled first
-                        T_diff = profile[:, 1] - means[:, 1]
-                        u_diff = profile[:, 2] - means[:, 2]
-                        v_diff = profile[:, 3] - means[:, 3]
-                        d_diff = np.log(profile[:, 4]) - np.log(means[:, 4])
-                        p_diff = np.log(profile[:, 5]) - np.log(means[:, 5])
+    # store coefficient values as numpy array file
+    np.save(output_path + "-coeffs", coeffs)
 
-                        # interpolate and compute the projection onto each of the eofs
-                        # stacking the entire atmosphere specification requires summing the projections onto each field (c_n^{(T(} + c_n^{(u)} + ...)
-                        T_coeffs = np.empty(coeff_cnt)
-                        u_coeffs = np.empty(coeff_cnt)
-                        v_coeffs = np.empty(coeff_cnt)
-                        d_coeffs = np.empty(coeff_cnt)
-                        p_coeffs = np.empty(coeff_cnt)
+    return coeffs
 
-                        for n in range(coeff_cnt):
-                            T_coeffs[n] = quad(interp1d(profile[:, 0], T_diff * T_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=int(len(profile[:, 0]) / 2), epsrel=1.0e-3)[0]
-                            u_coeffs[n] = quad(interp1d(profile[:, 0], u_diff * u_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=int(len(profile[:, 0]) / 2), epsrel=1.0e-3)[0]
-                            v_coeffs[n] = quad(interp1d(profile[:, 0], v_diff * v_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=int(len(profile[:, 0]) / 2), epsrel=1.0e-3)[0]
-                            d_coeffs[n] = quad(interp1d(profile[:, 0], d_diff * d_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=int(len(profile[:, 0]) / 2), epsrel=1.0e-3)[0]
-                            p_coeffs[n] = quad(interp1d(profile[:, 0], p_diff * p_eofs[:, n + 1]), profile[0][0], profile[-1][0], limit=int(len(profile[:, 0]) / 2), epsrel=1.0e-3)[0]
 
-                        coeffs = np.vstack((coeffs, T_coeffs + u_coeffs + v_coeffs + d_coeffs + p_coeffs))
-
-            # store coefficient values as numpy array file
-            np.save(output_path + "/" + hour + "00/" + month + "-coeffs", coeffs)
-
-def cluster_seasonality(coeff_path, eofs_path, output_path, cluser_thresh=0.15, eof_cnt=50, eof_cluster_cnt=15, overlap_file=None):
+def cluster_seasonality(coeffs, eofs_path, output_path, cluser_thresh=0.15, eof_cnt=100, eof_cluster_cnt=15, overlap_file=None):
     print("-" * 50 + '\n' + "Computing coefficient PDF clustering...")
     if overlap_file:
         print('\t' + "Loading overlap values from file...")
@@ -426,7 +401,7 @@ def define_limits(coeff_vals):
     return np.array([(coeff_max + coeff_min) / 2.0 - 1.5 * (coeff_max - coeff_min),
                      (coeff_max + coeff_min) / 2.0 + 1.5 * (coeff_max - coeff_min)])
 
-def build_cdf(pdf, lims, pnts=100):
+def build_cdf(pdf, lims, pnts=250):
     norm = quad(pdf, lims[0], lims[1])[0]
 
     x_vals = np.linspace(lims[0], lims[1], pnts)
@@ -450,7 +425,7 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
 
     return drawn_vals
 
-def sample_atmo(months, hour, eof_path, coeff_path, output_path, eof_cnt=50, prof_cnt=50):
+def sample_atmo(coeffs, eof_path, output_path, eof_cnt=100, prof_cnt=50):
     print("-" * 50 + '\n' + "Generating atmosphere states from coefficient PDFs...")
     # load mean profile and eofs
     print('\t' + "Loading mean profile info and eofs...")
@@ -461,53 +436,83 @@ def sample_atmo(months, hour, eof_path, coeff_path, output_path, eof_cnt=50, pro
     d_eofs = np.loadtxt(eof_path + "-density.eofs")
     p_eofs = np.loadtxt(eof_path + "-pressure.eofs")
 
-    # load and stack coefficient values for all months of interest
-    print('\t' + "Loading coefficient values and using KDE to build pdf's...")
-    coeffs = np.empty((0, T_eofs.shape[1] - 1))
-
-    for month in months:
-        coeffs = np.vstack((coeffs, np.load(coeff_path + "/" + hour + "00/" + month + "-coeffs.npy")))
-
     # use kernel density estimates to define coefficient pdf's
     # and use the mean and span to define the limits for sampling
+    print('\t' + "Mapping coefficidnts onto PDF's using KDE...")
     kernels, lims = [0] * eof_cnt, np.empty((eof_cnt, 2))
-
     for eof_id in range(eof_cnt):
         kernels[eof_id] = gaussian_kde(coeffs[:, eof_id])
         lims[eof_id] = define_limits(coeffs[:, eof_id])
 
-    # compute the cumulative density functions for all pdf's
-    cdfs = [0] * eof_cnt
-
-    print('\t' + "Pre-computing cdf's for random sampling...")
-    for eof_id in range(eof_cnt):
-        print('\t' + "eof_id: " + str(eof_id) + "...")
-        cdfs[eof_id] = build_cdf(kernels[eof_id].pdf, lims[eof_id])
-
-    # Generate a random atmosphere sample
-    print('\t' + "Generating profiles...")
-    means[:, 4:] = np.log(means[:, 4:])
-    profs = np.array([means] * prof_cnt)
+    # Generate prof_cnt random atmosphere samples
+    print('\t' + "Generating sample atmosphere profiles...")
+    sampled_profs = np.array([np.copy(means)] * prof_cnt)
+    for pn in range(prof_cnt):
+        sampled_profs[pn][:, 4] = np.log(sampled_profs[pn][:, 4])
+        sampled_profs[pn][:, 5] = np.log(sampled_profs[pn][:, 5])
 
     for eof_id in range(eof_cnt):
-        coeff_vals = draw_from_pdf(kernels[eof_id].pdf, lims[eof_id], cdf=cdfs[eof_id], size=prof_cnt)
+        print('\t\t' + "Sampling EOF coefficient for eof_id = " + str(eof_id) + "...")
+        sampled_coeffs = draw_from_pdf(kernels[eof_id].pdf, lims[eof_id], size=prof_cnt)
 
         for pn in range(prof_cnt):
-            profs[pn][:, 1] += coeff_vals[pn] * T_eofs[:, eof_id + 1]
-            profs[pn][:, 2] += coeff_vals[pn] * u_eofs[:, eof_id + 1]
-            profs[pn][:, 3] += coeff_vals[pn] * v_eofs[:, eof_id + 1]
-            profs[pn][:, 4] += coeff_vals[pn] * d_eofs[:, eof_id + 1]
-            profs[pn][:, 5] += coeff_vals[pn] * p_eofs[:, eof_id + 1]
+            sampled_profs[pn][:, 1] = sampled_profs[pn][:, 1] + sampled_coeffs[pn] * T_eofs[:, eof_id + 1]
+            sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
+            sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
+            sampled_profs[pn][:, 4] = sampled_profs[pn][:, 4] + sampled_coeffs[pn] * d_eofs[:, eof_id + 1]
+            sampled_profs[pn][:, 5] = sampled_profs[pn][:, 5] + sampled_coeffs[pn] * p_eofs[:, eof_id + 1]
 
-    # convert density and pressure back to physical units
+    # convert density and pressure back to physical units and save
     for pn in range(prof_cnt):
-        profs[pn][:, 4] = np.exp(profs[pn][:, 4])
-        profs[pn][:, 5] = np.exp(profs[pn][:, 5])
+        sampled_profs[pn][:, 4] = np.exp(sampled_profs[pn][:, 4])
+        sampled_profs[pn][:, 5] = np.exp(sampled_profs[pn][:, 5])
+        np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn])
 
-    # Write the profiles to file
-    for pn in range(prof_cnt):
-        np.savetxt(output_path + "-" + "%02d" % pn + ".met", profs[pn])
+    np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0))
 
-    for pn in range(prof_cnt):
-        np.savetxt(output_path + "-mean.met", np.average(profs, axis=0))
+def maximum_likelihood_profile(coeffs, eof_path, output_path, eof_cnt=100):
+    print("-" * 50 + '\n' + "Generating atmosphere states from coefficient PDFs...")
+    # load mean profile and eofs
+    print('\t' + "Loading mean profile info and eofs...")
+    means = np.loadtxt(eof_path + "-means.dat")
+    T_eofs = np.loadtxt(eof_path + "-temperature.eofs")
+    u_eofs = np.loadtxt(eof_path + "-zonal_winds.eofs")
+    v_eofs = np.loadtxt(eof_path + "-merid_winds.eofs")
+    d_eofs = np.loadtxt(eof_path + "-density.eofs")
+    p_eofs = np.loadtxt(eof_path + "-pressure.eofs")
+    
+    plt.show(block=False)
 
+    # use kernel density estimates to define coefficient pdf's
+    # and use the mean and span to define the limits for sampling
+    print('\t' + "Determining maximum likelihood values of coefficidnts...")
+
+    ml_prof = np.copy(means)
+    ml_prof[:, 4] = np.log(ml_prof[:, 4])
+    ml_prof[:, 5] = np.log(ml_prof[:, 5])
+    
+    for eof_id in range(eof_cnt):
+        kernel = gaussian_kde(coeffs[:, eof_id])
+        lims = define_limits(coeffs[:, eof_id])
+    
+        c_vals = np.linspace(lims[0], lims[1], 101)
+        c_ml_est = c_vals[np.argmax(kernel.pdf(c_vals))]
+        
+        def temp(c):
+            return -kernel.pdf(c)
+        
+        c_ml = minimize(temp, c_ml_est).x[0]
+        print("EOF-" + str(eof_id) + '\t' + "ML Value: " + str(np.round(c_ml, 2)) + '\t' + "Range of values: [" + str(np.round(np.min(coeffs[:, eof_id]), 2)) + ", " + str(np.round(np.max(coeffs[:, eof_id]), 2)) + "]", end=' ')
+        print('\t' + "Range of values: [" + str(np.round(np.min(coeffs[:, eof_id]) - c_ml, 2)) + ", " + str(np.round(np.max(coeffs[:, eof_id]) - c_ml, 2)) + "]")
+        
+        ml_prof[:, 1] = ml_prof[:, 1] + c_ml * T_eofs[:, eof_id + 1]
+        ml_prof[:, 2] = ml_prof[:, 2] + c_ml * u_eofs[:, eof_id + 1]
+        ml_prof[:, 3] = ml_prof[:, 3] + c_ml * v_eofs[:, eof_id + 1]
+        ml_prof[:, 4] = ml_prof[:, 4] + c_ml * d_eofs[:, eof_id + 1]
+        ml_prof[:, 5] = ml_prof[:, 5] + c_ml * p_eofs[:, eof_id + 1]
+
+    ml_prof[:, 4] = np.exp(ml_prof[:, 4])
+    ml_prof[:, 5] = np.exp(ml_prof[:, 5])
+
+    print("Writing maximum likelihood atmosphere to file...")
+    np.savetxt(output_path, ml_prof)
