@@ -24,6 +24,9 @@ from scipy.stats import gaussian_kde
 from infrapy.association import hjl
 from infrapy.utils import prog_bar
 
+gamma = 1.4
+gamR = gamma * 287.06
+
 def profile_qc(g2s_file):
     profile = np.loadtxt(g2s_file)
     dTdz = np.gradient(profile[:,1]) / np.gradient(profile[:,0])
@@ -32,36 +35,31 @@ def profile_qc(g2s_file):
     else:
         return True
 
-def profs_check(profs_path, months=range(1, 13), years = range(2007, 2015), plot_bad_profs=False):
-    for month_index in months:
-        month = "%02d" % month_index
-        print("Loading profiles for (month):", calendar.month_name[month_index])
-        for year_index in years:
-            year = "%04d" % year_index
-            for day_index in range(32):
-                day = "%02d" % (day_index + 1)
-                for hour_index in range(4):
-                    hour = "%02d" % (hour_index * 6)
+def profs_check(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
+    print("Running QC on profiles in " + path + " matching pattern " + pattern + "...")
+    file_list = []
+    dir_files = os.listdir(path)
+    for file in dir_files:
+        if fnmatch.fnmatch(file, pattern):
+            file_list += [file]
 
-                    datetime_id = year + month + day + hour
-                    filename = profs_path + year + "/" + datetime_id + ".met"
+    if len(file_list) > 0:
+        for file in file_list:
+            atmo = np.loadtxt(path + file, skiprows=skiprows)
+            dTdz = np.gradient(atmo[:,1]) / np.gradient(atmo[:,0])
+            if max(abs(dTdz)) > 50.0:
+                os.system("mv " + path + file + " " + path + "bad_profs")
+                if plot_bad_profs:
+                    plt.figure(1)
+                    plt.clf()
+                    plt.plot(profile[:, 1], profile[:, 0])
+                    plt.plot(dTdz, profile[:, 0])
+                    plt.title(filename)
+                    plt.pause(0.1)
+    else:
+        print("WARNING!! No profiles matching specified pattern in path.")
 
-                    if os.path.isfile(filename):
-                        profile = np.loadtxt(filename)
-                        dTdz = np.gradient(profile[:,1]) / np.gradient(profile[:,0])
-                        if max(abs(dTdz)) > 50.0:
-                            print(filename)
-                            os.system("mv " + filename + " " + profs_path + "bad_profs")
-
-                            if plot_bad_profs:
-                                plt.figure(1)
-                                plt.clf()
-                                plt.plot(profile[:, 1], profile[:, 0])
-                                plt.plot(dTdz, profile[:, 0])
-                                plt.title(filename)
-                                plt.show()
-
-def build_atmo_matrix(path, pattern="*.met", skiprows=0):
+def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
     print("Loading profiles from " + path + " with pattern: " + pattern)
 
     file_list = []
@@ -72,61 +70,100 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0):
 
     if len(file_list) > 0:
         atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
-        z = atmo[:, 0]
-        T = atmo[:, 1]
-        u = atmo[:, 2]
-        v = atmo[:, 3]
-        d = atmo[:, 4]
-        p = atmo[:, 5]
+        if np.any(ref_alts) == None:
+            z0 = atmo[:, 0]
+        else:
+            z0 = ref_alts
 
+        if np.allclose(z0, atmo[:, 0]):
+            T = atmo[:, 1]
+            u = atmo[:, 2]
+            v = atmo[:, 3]
+            d = atmo[:, 4]
+            p = atmo[:, 5]
+        else:
+            print("WARNING!!  Altitudes in " + path + file_list[0] + " don't match expected values.  Interpolating to resolve...")
+            T = interp1d(atmo[:, 0], atmo[:, 1])(z0)
+            u = interp1d(atmo[:, 0], atmo[:, 2])(z0)
+            v = interp1d(atmo[:, 0], atmo[:, 3])(z0)
+            d = interp1d(atmo[:, 0], atmo[:, 4])(z0)
+            p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
+
+    
         for file in file_list[1:]:
             atmo = np.loadtxt(path + file, skiprows=skiprows)
-
-            T = np.vstack((T, atmo[:, 1]))
-            u = np.vstack((u, atmo[:, 2]))
-            v = np.vstack((v, atmo[:, 3]))
-            d = np.vstack((d, atmo[:, 4]))
-            p = np.vstack((p, atmo[:, 5]))
+                
+            if np.allclose(z0, atmo[:, 0]):
+                T = np.vstack((T, atmo[:, 1]))
+                u = np.vstack((u, atmo[:, 2]))
+                v = np.vstack((v, atmo[:, 3]))
+                d = np.vstack((d, atmo[:, 4]))
+                p = np.vstack((p, atmo[:, 5]))
+            else:
+                print("WARNING!!  Altitudes in " + path + file + " don't match expected values.  Interpolating to resolve...")
+                T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)))
+                u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)))
+                v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)))
+                d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)))
+                p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)))
+        
 
         A = np.hstack((T, u))
         A = np.hstack((A, v))
         A = np.hstack((A, d))
         A = np.hstack((A, p))
 
-        return A, z
+        return A, z0
     else:
         return None, None
 
 def compute_svd(A, alts, output_path, eof_cnt=100):
     file_len = int(A.shape[1] / 5)
+    alts_len = len(alts)
+    if file_len != alts_len:
+        print("Warning!  Altitudes don't match dimension of A matrix.")
+        return 0
 
     if eof_cnt > A.shape[0]:
         eof_cnt = A.shape[0]
         msg = "Warning!  Atmosphere count less than eof_cnt.  Only returning " + str(eof_cnt) + " EOFs."
         raise ValueError(msg)
+      
+    # compute the differences to fit with EOFs
+    T_vals = A[:, file_len * 0:file_len * 1]
+    u_vals = A[:, file_len * 1:file_len * 2]
+    v_vals = A[:, file_len * 2:file_len * 3]
+    d_vals = A[:, file_len * 3:file_len * 4]
+    p_vals = A[:, file_len * 4:file_len * 5]
 
-    # extract the mean and compute eofs for the diffs using log-scale
-    #   for the density and pressure fields
-    A_mean = np.mean(A, axis=0)
-    T_mean = A_mean[file_len * 0:file_len * 1]
-    u_mean = A_mean[file_len * 1:file_len * 2]
-    v_mean = A_mean[file_len * 2:file_len * 3]
-    d_mean = A_mean[file_len * 3:file_len * 4]
-    p_mean = A_mean[file_len * 4:file_len * 5]
+    T_mean = np.mean(T_vals, axis=0)
+    u_mean = np.mean(u_vals, axis=0)
+    v_mean = np.mean(v_vals, axis=0)
+    d_mean = np.mean(d_vals, axis=0)
+    p_mean = np.mean(p_vals, axis=0)
 
-    A_diffs = A[:, :file_len * 3] - np.array([A_mean] * A.shape[0])[:, :file_len * 3]
-    A_diffs = np.hstack((A_diffs, np.log(A[:, file_len * 3:]) - np.log(np.array([A_mean] * A.shape[0])[:, file_len * 3:])))
+    cT_vals =  np.sqrt(gamR * T_vals)
+    cp_vals =  np.sqrt(gamma / 10.0 * p_vals / d_vals)
 
-    _, singular_vals, eofs = np.linalg.svd(A_diffs, full_matrices=False)
+    u_diff  = u_vals - np.array([u_mean] * u_vals.shape[0])
+    v_diff  = v_vals - np.array([v_mean] * v_vals.shape[0])
+    cT_diff = cT_vals - np.array([np.mean(cT_vals, axis=0)] * cT_vals.shape[0])
+    cp_diff = cp_vals - np.array([np.mean(cp_vals, axis=0)] * cp_vals.shape[0])
+    
+    # stack diffs and evaluate SVD
+    diffs = np.hstack((cT_diff, cp_diff))
+    diffs = np.hstack((diffs, u_diff))
+    diffs = np.hstack((diffs, v_diff))
 
-    # normalize the eofs by the altitude resolution
+    _, singular_vals, eofs = np.linalg.svd(diffs, full_matrices=False)
+
+    # normalize the eofs by the altitude resolution and separate into cT, cp, u, v
     eofs = eofs / np.sqrt(abs(alts[1] - alts[0]))
     
-    T_eofs = eofs[:, file_len * 0:file_len * 1]
-    u_eofs = eofs[:, file_len * 1:file_len * 2]
-    v_eofs = eofs[:, file_len * 2:file_len * 3]
-    d_eofs = eofs[:, file_len * 3:file_len * 4]
-    p_eofs = eofs[:, file_len * 4:file_len * 5]
+    cT_eofs = eofs[:, file_len * 0:file_len * 1]
+    cp_eofs = eofs[:, file_len * 1:file_len * 2]
+    u_eofs  = eofs[:, file_len * 2:file_len * 3]
+    v_eofs  = eofs[:, file_len * 3:file_len * 4]
 
     # Write the mean profiles and desired number of EOFs to file
     file_out = open(output_path + "-singular_values.dat", 'w')
@@ -134,16 +171,25 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
         print(n, '\t', singular_vals[n], file=file_out)
     file_out.close()
 
-    file_out = open(output_path + "-means.dat", 'w')
+    file_out = open(output_path + "-mean_atmo.dat", 'w')
     for n in range(len(alts)):
         print(alts[n], '\t', T_mean[n], '\t', u_mean[n], '\t', v_mean[n], '\t', d_mean[n], '\t', p_mean[n], file=file_out)
     file_out.close()
 
-    file_out = open(output_path + "-temperature.eofs", 'w')
+    file_out = open(output_path + "-ideal_gas_snd_spd.eofs", 'w')
     for n in range(len(alts)):
         print(alts[n], '\t', end=' ', file=file_out)
         for m in range(eof_cnt):
-            print('\t', T_eofs[m][n], end=' ', file=file_out)
+            print('\t', cT_eofs[m][n], end=' ', file=file_out)
+        print(' ', file=file_out)
+    file_out.close()
+
+
+    file_out = open(output_path + "-adiabatic_snd_spd.eofs", 'w')
+    for n in range(len(alts)):
+        print(alts[n], '\t', end=' ', file=file_out)
+        for m in range(eof_cnt):
+            print('\t', cp_eofs[m][n], end=' ', file=file_out)
         print(' ', file=file_out)
     file_out.close()
 
@@ -163,52 +209,40 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
         print(' ', file=file_out)
     file_out.close()
 
-    file_out = open(output_path + "-density.eofs", 'w')
-    for n in range(len(alts)):
-        print(alts[n], '\t', end=' ', file=file_out)
-        for m in range(eof_cnt):
-            print('\t', d_eofs[m][n], end=' ', file=file_out)
-        print(' ', file=file_out)
-    file_out.close()
-
-    file_out = open(output_path + "-pressure.eofs", 'w')
-    for n in range(len(alts)):
-        print(alts[n], '\t', end=' ', file=file_out)
-        for m in range(eof_cnt):
-            print('\t', p_eofs[m][n], end=' ', file=file_out)
-        print(' ', file=file_out)
-    file_out.close()
 
 def fit_profile(prof_path, eofs_path, coeff_cnt, skiprows=0, pool=None):
     # load means and eofs
-    means = np.loadtxt(eofs_path + "-means.dat")
-    T_eofs = np.loadtxt(eofs_path + "-temperature.eofs")
+    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
+    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
+    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
     v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
-    d_eofs = np.loadtxt(eofs_path + "-density.eofs")
-    p_eofs = np.loadtxt(eofs_path + "-pressure.eofs")
 
     # load profile and compute interpolations for the differences from the mean
     profile = np.loadtxt(prof_path, skiprows=skiprows)
     
-    T_diff_interp = interp1d(profile[:, 0], profile[:, 1] - means[:, 1], kind='cubic')
+    cT_diff_interp = interp1d(profile[:, 0], np.sqrt(gamR * profile[:, 1]) - np.sqrt(gamR * means[:, 1]), kind='cubic')
+    cp_diff_interp = interp1d(profile[:, 0], np.sqrt(gamma / 10.0 * profile[:, 5] / profile[:, 4])
+                                            - np.sqrt(gamma / 10.0 * means[:, 5] / means[:, 4]), kind='cubic')
+
     u_diff_interp = interp1d(profile[:, 0], profile[:, 2] - means[:, 2], kind='cubic')
     v_diff_interp = interp1d(profile[:, 0], profile[:, 3] - means[:, 3], kind='cubic')
-    d_diff_interp = interp1d(profile[:, 0], np.log(profile[:, 4]) - np.log(means[:, 4]), kind='cubic')
-    p_diff_interp = interp1d(profile[:, 0], np.log(profile[:, 5]) - np.log(means[:, 5]), kind='cubic')
    
-    # integrate to compute the EOF coefficients
+    # define the integration to compute the EOF coefficients
     def calc_coeff(n):
-        T_eof_interp = interp1d(T_eofs[:, 0], T_eofs[:, n + 1], kind='cubic')
+        cT_eof_interp = interp1d(cT_eofs[:, 0], cT_eofs[:, n + 1], kind='cubic')
+        cp_eof_interp = interp1d(cp_eofs[:, 0], cp_eofs[:, n + 1], kind='cubic')
         u_eof_interp = interp1d(u_eofs[:, 0], u_eofs[:, n + 1], kind='cubic')
         v_eof_interp = interp1d(v_eofs[:, 0], v_eofs[:, n + 1], kind='cubic')
-        d_eof_interp = interp1d(d_eofs[:, 0], d_eofs[:, n + 1], kind='cubic')
-        p_eof_interp = interp1d(p_eofs[:, 0], p_eofs[:, n + 1], kind='cubic')
         
         def temp(z):
-            return T_diff_interp(z) * T_eof_interp(z)
-        T_coeff = quad(temp, max(profile[0][0], T_eofs[0][0]), min(profile[-1][0], T_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+            return cT_diff_interp(z) * cT_eof_interp(z)
+        cT_coeff = quad(temp, max(profile[0][0], cT_eofs[0][0]), min(profile[-1][0], cT_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
             
+        def temp(z):
+            return cp_diff_interp(z) * cp_eof_interp(z)
+        cp_coeff = quad(temp, max(profile[0][0], cp_eofs[0][0]), min(profile[-1][0], cp_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
+
         def temp(z):
             return u_diff_interp(z) * u_eof_interp(z)
         u_coeff = quad(temp, max(profile[0][0], u_eofs[0][0]), min(profile[-1][0], u_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
@@ -216,17 +250,10 @@ def fit_profile(prof_path, eofs_path, coeff_cnt, skiprows=0, pool=None):
         def temp(z):
             return v_diff_interp(z) * v_eof_interp(z)
         v_coeff = quad(temp, max(profile[0][0], v_eofs[0][0]), min(profile[-1][0], v_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
-            
-        def temp(z):
-            return d_diff_interp(z) * d_eof_interp(z)
-        d_coeff = quad(temp, max(profile[0][0], d_eofs[0][0]), min(profile[-1][0], d_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
-            
-        def temp(z):
-            return p_diff_interp(z) * p_eof_interp(z)
-        p_coeff = quad(temp, max(profile[0][0], p_eofs[0][0]), min(profile[-1][0], p_eofs[-1][0]), limit=len(profile[:, 0]), epsrel=1.0e-2)[0]
-            
-        return T_coeff + u_coeff + v_coeff + d_coeff + p_coeff
+        
+        return cT_coeff + cp_coeff + u_coeff + v_coeff
 
+    # run the integration
     if pool:
         coeffs = pool.map(calc_coeff, range(coeff_cnt))
     else:
@@ -234,23 +261,24 @@ def fit_profile(prof_path, eofs_path, coeff_cnt, skiprows=0, pool=None):
         for n in range(coeff_cnt):
             coeffs[n] = calc_coeff(n)
 
-    # Generate profile
-    fit = np.copy(means)
-
-    # convert density and pressure to log-space for EOFs
-    fit[:, 4] = np.log(fit[:, 4])
-    fit[:, 5] = np.log(fit[:, 5])
-
+    # Generate the profile fit
+    # compute the fit adiabatic and ideal gas sound speed values
+    cT_fit = np.sqrt(gamR * means[:, 1])
+    cp_fit = np.sqrt(gamma / 10.0 * means[:, 5] / means[:, 4])
     for n in range(coeff_cnt):
-        fit[:, 1] = fit[:, 1] + coeffs[n] * T_eofs[:, n + 1]
+        cT_fit = cT_fit + coeffs[n] * cT_eofs[:, n + 1]
+        cp_fit = cp_fit + coeffs[n] * cp_eofs[:, n + 1]
+
+    # add perturbations to the winds and density
+    fit = np.copy(means)
+    for n in range(coeff_cnt):
         fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
         fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
-        fit[:, 4] = fit[:, 4] + coeffs[n] * d_eofs[:, n + 1]
-        fit[:, 5] = fit[:, 5] + coeffs[n] * p_eofs[:, n + 1]
+        fit[:, 4] = fit[:, 4] + 2.0 / (gamma - 1.0) * (means[:, 4] / cp_fit**2) * coeffs[n] * cp_eofs[:, n + 1]
 
-    # convert density and pressure back to physical units
-    fit[:, 4] = np.exp(fit[:, 4])
-    fit[:, 5] = np.exp(fit[:, 5])
+    # define the temperature and pressure from the sound speed fits
+    fit[:, 1] = cT_fit**2 / gamR
+    fit[:, 5] = fit[:, 4] * cp_fit**2 / (gamma / 10.0)
 
     return profile, fit
 
@@ -516,3 +544,4 @@ def maximum_likelihood_profile(coeffs, eof_path, output_path, eof_cnt=100):
 
     print("Writing maximum likelihood atmosphere to file...")
     np.savetxt(output_path, ml_prof)
+
