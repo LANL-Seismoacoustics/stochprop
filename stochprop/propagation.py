@@ -14,12 +14,12 @@ from infrapy.utils import prog_bar
 
 ncpa_prop_dir = "/Users/pblom/Research/Coding/Packages/ncpaprop-1.3.2/ncpaprop-1.3.2/"
 
-def calc_rays(profs_path, prof_rng, results_file, freq=0.1, z_grnd=0.0, inclinations=[0.5, 45.0, 0.5], azimuths=[-180.0, 180.0, 3.0]):
+def calc_rays(profs_path, prof_cnt, results_file, freq=0.1, z_grnd=0.0, inclinations=[0.5, 45.0, 0.5], azimuths=[-180.0, 180.0, 3.0]):
     open(results_file, 'w').close()
-    for n in prof_rng:
-        filename = profs_path + "%02d" % n + ".met"
+    for n in range(prof_cnt):
+        filename = profs_path + "-%02d" % n + ".met"
         print("Generating ray paths for " + filename)
-        os.system("mpirun -np 7 infraga-accel-3d -prop " + filename + " bounces=0 incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2]) + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2]) + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " calc_amp=False")
+        os.system("mpirun -np 10 infraga-accel-3d -prop " + filename + " bounces=0 incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2]) + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2]) + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " calc_amp=False")
 
         os.system("cat " + filename[:-4] + ".results.dat >> " +  results_file)
         os.system("rm " + filename[:-4] + "*.dat")

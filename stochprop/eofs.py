@@ -51,7 +51,11 @@ def profs_check(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
             dvdz = np.gradient(atmo[:,3]) / np.gradient(atmo[:,0])
 
             if max(abs(dTdz)) > 50.0 or max(abs(dudz)) > 50.0 or max(abs(dvdz)) > 50.0:
-                os.system("mv " + path + file + " " + path + "bad_profs")
+                if not os.path.isdir(path + "bad_profs/"):
+                    os.system("mkdir " + path + "bad_profs/")
+
+                os.system("mv " + path + file + " " + path + "bad_profs/")
+                print("Bad profile:", file)
                 if plot_bad_profs:
                     plt.figure(1)
                     plt.clf()
@@ -63,7 +67,7 @@ def profs_check(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
         print("WARNING!! No profiles matching specified pattern in path.")
 
 def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
-    print("Loading profiles from " + path + " with pattern: " + pattern)
+    print('\t' + "Loading profiles from " + path + " with pattern: " + pattern)
 
     file_list = []
     dir_files = os.listdir(path)
@@ -275,7 +279,6 @@ def fit_profile(prof_path, eofs_path, eof_cnt, skiprows=0, pool=None):
 
         fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
         fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
-        fit[:, 4] = fit[:, 4] + 2.0 / (gamma - 1.0) * (means[:, 4] / cp0) * coeffs[n] * cp_eofs[:, n + 1]
 
     fit[:, 1] = cT_fit**2 / gamR
     fit[:, 5] = fit[:, 4] * cp_fit**2 / (gamma / 10.0)
@@ -283,8 +286,8 @@ def fit_profile(prof_path, eofs_path, eof_cnt, skiprows=0, pool=None):
     return profile, fit
 
 
-def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=50, pool=None):
-    print("Computing EOF coefficients for set of profiles...", '\t', end=' ')
+def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
+    print('\t' + "Computing EOF coefficients for profiles...", '\t', end=' ')
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -355,7 +358,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=50, pool=None):
     return coeffs
 
 
-def compute_overlap(coeffs, eof_cnt=50):
+def compute_overlap(coeffs, eof_cnt=100):
     print("-" * 50 + '\n' + "Computing coefficient PDF overlap...")
     overlap = np.empty((eof_cnt, 12, 12))
        
@@ -417,8 +420,8 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
 
     return drawn_vals
 
-def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=50, prof_cnt=100):
-    print("-" * 50 + '\n' + "Generating atmosphere states from coefficient PDFs...")
+def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
+    print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
 
     print('\t' + "Loading mean profile info and eofs...")
     means  =  np.loadtxt(eofs_path + "-mean_atmo.dat")
@@ -454,20 +457,20 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=50, prof_cnt=100):
 
             sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
-            sampled_profs[pn][:, 4] = sampled_profs[pn][:, 4] + sampled_coeffs[pn] * 2.0 / (gamma - 1.0) * (means[:, 4] / cp0) * cp_eofs[:, eof_id + 1]
-
 
     sampled_profs[:, :, 1] = sampled_cTs**2 / gamR
     sampled_profs[:, :, 5] = sampled_profs[:, :, 4] * sampled_cps**2 / (gamma / 10.0)
 
     # save the individual profiles and the mean profile
+    print('\t' + "Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
         np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn])
     np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0))
+    np.savetxt(output_path + "-stdev.met", np.std(sampled_profs, axis=0))
 
 
-def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=50):
-    print("-" * 50 + '\n' + "Generating atmosphere states from coefficient PDFs...")
+def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
+    print("-" * 50 + '\n' + "Generating maximum likelihood atmosphere states from coefficient PDFs...")
     # load mean profile and eofs
     print('\t' + "Loading mean profile info and eofs...")
     means  =  np.loadtxt(eofs_path + "-mean_atmo.dat")
@@ -501,14 +504,58 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=50):
     
         ml_prof[:, 2] = ml_prof[:, 2] + coeff_ml * u_eofs[:, n + 1]
         ml_prof[:, 3] = ml_prof[:, 3] + coeff_ml * v_eofs[:, n + 1]
-        ml_prof[:, 4] = ml_prof[:, 4] + 2.0 / (gamma - 1.0) * (means[:, 4] / cp0) * coeff_ml * cp_eofs[:, n + 1]
     
     ml_prof[:, 1] = cT_ml**2 / gamR
     ml_prof[:, 5] = ml_prof[:, 4] * cp_ml**2 / (gamma / 10.0)
     
-    print("Writing maximum likelihood atmosphere to file...")
+    print('\t' + "Writing maximum likelihood atmosphere to file...", '\n')
     np.savetxt(output_path+ "-maximum_likelihood.met", ml_prof)
+
+
+def perturb_atmo(ref_atmo_path, eofs_path, output_path, coeff_sig=25.0, eof_cnt=100, sample_cnt=1):
+    ref_atmo = np.loadtxt(ref_atmo_path)
     
+    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
+    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    u_eofs  = np.loadtxt(eofs_path + "-zonal_winds.eofs")
+    v_eofs  = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    sing_vals = np.loadtxt(eofs_path + "-singular_values.dat")
     
+    # Define altitude limits
+    alt_min = max(cT_eofs[ 0, 0], ref_atmo[ 0, 0])
+    alt_max = min(cT_eofs[-1, 0], ref_atmo[-1, 0])
+    
+    eof_mask = np.logical_and(alt_min <= cT_eofs[:, 0], cT_eofs[:, 0] <= alt_max)
+    ref_mask = np.logical_and(alt_min <= ref_atmo[:, 0], ref_atmo[:, 0] <= alt_max)
+    
+    # interpolate the eofs and add random contributions to the reference profile
+    for m in range(sample_cnt):
+        print("Generating atmospheric sample " + str(m) + "...")
+        z_vals = np.copy(ref_atmo[:, 0][ref_mask])
+        T_vals = np.copy(ref_atmo[:, 1][ref_mask])
+        u_vals = np.copy(ref_atmo[:, 2][ref_mask])
+        v_vals = np.copy(ref_atmo[:, 3][ref_mask])
+        d_vals = np.copy(ref_atmo[:, 4][ref_mask])
+        p_vals = np.copy(ref_atmo[:, 5][ref_mask])
+        
+        cT_vals = np.sqrt(gamR * T_vals)
+        cp_vals = np.sqrt(gamma / 10.0 * p_vals / d_vals)
+        
+        for n in range(eof_cnt):
+            coeff_val = np.random.randn() * coeff_sig * np.sqrt(sing_vals[n, 1] / sing_vals[0, 1])
+            
+            cT_vals = cT_vals + coeff_val * interp1d(cT_eofs[:, 0][eof_mask], cT_eofs[:, n + 1][eof_mask])(z_vals)
+            cp_vals = cp_vals + coeff_val * interp1d(cp_eofs[:, 0][eof_mask], cp_eofs[:, n + 1][eof_mask])(z_vals)
+            u_vals = u_vals + coeff_val * interp1d(u_eofs[:, 0][eof_mask],  u_eofs[:, n + 1][eof_mask])(z_vals)
+            v_vals = v_vals + coeff_val * interp1d(v_eofs[:, 0][eof_mask],  v_eofs[:, n + 1][eof_mask])(z_vals)
+        
+        T_vals = cT_vals**2 / gamR
+        p_vals = d_vals * cp_vals**2 / (gamma / 10.0)
+        
+        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T)
+
+
+
+
 
 
