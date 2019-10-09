@@ -26,9 +26,13 @@ if __name__ == '__main__':
     #    atmosphere sampling    #
     # ######################### #
 
-    loc_id = "US_WSMR"
+    loc_id = "label"
 
-    labels = ["winter", "spring", "summer", "fall"]
+    labels = ["winter",
+              "spring",
+              "summer",
+              "fall"]
+              
     season_months = [["10", "11", "12", "01", "02", "03"],
                      ["04", "05"],
                      ["06", "07"],

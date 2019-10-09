@@ -512,7 +512,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
     np.savetxt(output_path+ "-maximum_likelihood.met", ml_prof)
 
 
-def perturb_atmo(ref_atmo_path, eofs_path, output_path, coeff_sig=25.0, eof_cnt=100, sample_cnt=1):
+def perturb_atmo(ref_atmo_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100, eof_cnt=50, sample_cnt=1):
     ref_atmo = np.loadtxt(ref_atmo_path)
     
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -541,8 +541,8 @@ def perturb_atmo(ref_atmo_path, eofs_path, output_path, coeff_sig=25.0, eof_cnt=
         cT_vals = np.sqrt(gamR * T_vals)
         cp_vals = np.sqrt(gamma / 10.0 * p_vals / d_vals)
         
-        for n in range(eof_cnt):
-            coeff_val = np.random.randn() * coeff_sig * np.sqrt(sing_vals[n, 1] / sing_vals[0, 1])
+        for n in np.random.choice(range(eof_max), eof_cnt, replace=False):
+            coeff_val = np.random.randn() * coeff_sig * (sing_vals[n, 1] / sing_vals[0, 1])**0.33
             
             cT_vals = cT_vals + coeff_val * interp1d(cT_eofs[:, 0][eof_mask], cT_eofs[:, n + 1][eof_mask])(z_vals)
             cp_vals = cp_vals + coeff_val * interp1d(cp_eofs[:, 0][eof_mask], cp_eofs[:, n + 1][eof_mask])(z_vals)

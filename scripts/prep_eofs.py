@@ -10,9 +10,9 @@ import os
 from stochprop import eofs
 
 # Set location and g2s file info
-loc_dir = "US_RM"
+loc_dir = "label"
 
-prof_dir = "ncpag2s.r5ahhb/"
+prof_dir = "dir/of/g2s/"
 prof_prefix = "g2stxt_"
 year_lims = [2010, 2016]
 
