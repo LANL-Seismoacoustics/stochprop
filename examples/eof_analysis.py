@@ -47,9 +47,6 @@ if __name__ == '__main__':
     #    Build directories to   #
     #      organize results     #
     # ######################### #
-    
-    # UNCOMMENT TO BUILD POPULATE DIRECTORIES
-    '''
     print("Creating directories...")
     for dir in eof_dirs:
         if not os.path.isdir(dir):
@@ -62,7 +59,9 @@ if __name__ == '__main__':
     for season in season_labels:
         if not os.path.isdir("samples/" + season):
             os.system("mkdir samples/" + season)
-    
+
+    # UNCOMMENT TO POPULATE DIRECTORIES and QC
+    '''
     print('\n' + "Moving profiles into profs directory...")
     for year in range(year_lims[0], year_lims[1] + 1):
         print('\t' + "Moving " + "{:04d}".format(year) + " profiles...")
