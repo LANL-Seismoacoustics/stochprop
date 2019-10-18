@@ -212,80 +212,6 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
     file_out.close()
 
 
-def fit_profile(prof_path, eofs_path, eof_cnt, skiprows=0, pool=None):
-    # load means and eofs
-    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
-    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
-
-    # load profile and identify common altitudes
-    # Note: means and eofs are assumed to have identical sampling (means[:, 0] = {..}_eofs[:, 0])
-    #       but the profile being fit may not have matching sampling
-    profile = np.loadtxt(prof_path, skiprows=skiprows)
-    
-    alt_min = max(means[0, 0], profile[0, 0])
-    alt_max = min(means[-1, 0], profile[-1, 0])
-
-    eofs_mask = np.logical_and(alt_min <= means[:, 0], means[:, 0] <= alt_max)
-    prof_mask = np.logical_and(alt_min <= profile[:, 0], profile[:, 0] <= alt_max)
-    
-    # interpolate the profile and evaluate differences at the sampled points of the mean/eofs
-    T_interp = interp1d(profile[:, 0][prof_mask], profile[:, 1][prof_mask], kind='cubic')
-    u_interp = interp1d(profile[:, 0][prof_mask], profile[:, 2][prof_mask], kind='cubic')
-    v_interp = interp1d(profile[:, 0][prof_mask], profile[:, 3][prof_mask], kind='cubic')
-    d_interp = interp1d(profile[:, 0][prof_mask], profile[:, 4][prof_mask], kind='cubic')
-    p_interp = interp1d(profile[:, 0][prof_mask], profile[:, 5][prof_mask], kind='cubic')
-
-    cT_diff =  np.sqrt(gamR * T_interp(means[:, 0][eofs_mask]))
-    cT_diff -= np.sqrt(gamR * means[:, 1][eofs_mask])
-
-    cp_diff =  np.sqrt(gamma / 10.0 * p_interp(means[:, 0][eofs_mask]) / d_interp(means[:, 0][eofs_mask]))
-    cp_diff -= np.sqrt(gamma / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
-    
-    u_diff = u_interp(means[:, 0][eofs_mask]) - means[:, 2][eofs_mask]
-    v_diff = v_interp(means[:, 0][eofs_mask]) - means[:, 3][eofs_mask]
-   
-    # define the integration to compute the EOF coefficients
-    def calc_coeff(n):
-        result  = simps(cT_diff * cT_eofs[:, n + 1][eofs_mask], cT_eofs[:, 0][eofs_mask])
-        result += simps(cp_diff * cp_eofs[:, n + 1][eofs_mask], cp_eofs[:, 0][eofs_mask])
-        result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], u_eofs[:, 0][eofs_mask])
-        result += simps(v_diff * v_eofs[:, n + 1][eofs_mask], v_eofs[:, 0][eofs_mask])
-
-        return result
-
-    # run the integration to define coefficients
-    if pool:
-        args = list(range(eof_cnt))
-        coeffs = pool.map(calc_coeff, args)
-    else:
-        coeffs = np.empty(eof_cnt)
-        for n in range(eof_cnt):
-            coeffs[n] = calc_coeff(n)
-
-    # Generate the profile fit
-    cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gamma / 10.0 * means[:, 5] / means[:, 4])
-
-    fit = np.copy(means)
-    cT_fit = np.copy(cT0)
-    cp_fit = np.copy(cp0)
-
-    for n in range(eof_cnt):
-        cT_fit = cT_fit + coeffs[n] * cT_eofs[:, n + 1]
-        cp_fit = cp_fit + coeffs[n] * cp_eofs[:, n + 1]
-
-        fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
-        fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
-
-    fit[:, 1] = cT_fit**2 / gamR
-    fit[:, 5] = fit[:, 4] * cp_fit**2 / (gamma / 10.0)
-
-    return profile, fit
-
-
 def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     print('\t' + "Computing EOF coefficients for profiles...", '\t', end=' ')
     # load means and eofs
@@ -512,8 +438,82 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
     np.savetxt(output_path+ "-maximum_likelihood.met", ml_prof)
 
 
-def perturb_atmo(ref_atmo_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100, eof_cnt=50, sample_cnt=1):
-    ref_atmo = np.loadtxt(ref_atmo_path)
+
+################################
+#   Define methods to fit or   #
+#    perturb specific atmos    #
+################################
+def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
+    # load means and eofs
+    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
+    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
+    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
+    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    
+    # load profile and identify common altitudes
+    # Note: means and eofs are assumed to have identical sampling (means[:, 0] = {..}_eofs[:, 0])
+    #       but the profile being fit may not have matching sampling
+    profile = np.loadtxt(prof_path)
+    
+    alt_min = max(means[0, 0], profile[0, 0])
+    alt_max = min(means[-1, 0], profile[-1, 0])
+    
+    eofs_mask = np.logical_and(alt_min <= means[:, 0], means[:, 0] <= alt_max)
+    prof_mask = np.logical_and(alt_min <= profile[:, 0], profile[:, 0] <= alt_max)
+    
+    # interpolate the profile and evaluate differences at the sampled points of the mean/eofs
+    T_interp = interp1d(profile[:, 0][prof_mask], profile[:, 1][prof_mask], kind='cubic')
+    u_interp = interp1d(profile[:, 0][prof_mask], profile[:, 2][prof_mask], kind='cubic')
+    v_interp = interp1d(profile[:, 0][prof_mask], profile[:, 3][prof_mask], kind='cubic')
+    d_interp = interp1d(profile[:, 0][prof_mask], profile[:, 4][prof_mask], kind='cubic')
+    p_interp = interp1d(profile[:, 0][prof_mask], profile[:, 5][prof_mask], kind='cubic')
+    
+    cT_diff =  np.sqrt(gamR * T_interp(means[:, 0][eofs_mask]))
+    cT_diff -= np.sqrt(gamR * means[:, 1][eofs_mask])
+    
+    cp_diff =  np.sqrt(gamma / 10.0 * p_interp(means[:, 0][eofs_mask]) / d_interp(means[:, 0][eofs_mask]))
+    cp_diff -= np.sqrt(gamma / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
+    
+    u_diff = u_interp(means[:, 0][eofs_mask]) - means[:, 2][eofs_mask]
+    v_diff = v_interp(means[:, 0][eofs_mask]) - means[:, 3][eofs_mask]
+    
+    # define the integration to compute the EOF coefficients
+    def calc_coeff(n):
+        result  = simps(cT_diff * cT_eofs[:, n + 1][eofs_mask], cT_eofs[:, 0][eofs_mask])
+        result += simps(cp_diff * cp_eofs[:, n + 1][eofs_mask], cp_eofs[:, 0][eofs_mask])
+        result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], u_eofs[:, 0][eofs_mask])
+        result += simps(v_diff * v_eofs[:, n + 1][eofs_mask], v_eofs[:, 0][eofs_mask])
+        
+        return result
+    
+    # run the integration to define coefficients
+    coeffs = np.empty(eof_cnt)
+    for n in range(eof_cnt):
+        coeffs[n] = calc_coeff(n)
+
+    # Generate the profile fit
+    cT0 = np.sqrt(gamR * means[:, 1])
+    cp0 = np.sqrt(gamma / 10.0 * means[:, 5] / means[:, 4])
+
+    fit = np.copy(means)
+    cT_fit = np.copy(cT0)
+    cp_fit = np.copy(cp0)
+
+    for n in range(eof_cnt):
+        cT_fit = cT_fit + coeffs[n] * cT_eofs[:, n + 1]
+        cp_fit = cp_fit + coeffs[n] * cp_eofs[:, n + 1]
+    
+        fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
+        fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
+    
+    fit[:, 1] = cT_fit**2 / gamR
+    fit[:, 5] = fit[:, 4] * cp_fit**2 / (gamma / 10.0)
+
+    np.savetxt(output_path, fit)
+
+def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100, eof_cnt=50, sample_cnt=1):
+    ref_atmo = np.loadtxt(prof_path)
     
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
     cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")

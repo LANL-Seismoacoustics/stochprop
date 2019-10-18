@@ -8,3 +8,6 @@ Copy*
 *copy.*
 *save.*
 *.egg-info
+examples/samples/*/*
+examples/eofs/*
+examples/coeffs/*
