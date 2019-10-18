@@ -444,6 +444,8 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
 #    perturb specific atmos    #
 ################################
 def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
+    print("Generating EOF fit to " + prof_path + "...")
+
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -513,6 +515,7 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     np.savetxt(output_path, fit)
 
 def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100, eof_cnt=50, sample_cnt=1):
+    print("Generating EOF perturbaions to " + prof_path + "...")
     ref_atmo = np.loadtxt(prof_path)
     
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -530,7 +533,6 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
     
     # interpolate the eofs and add random contributions to the reference profile
     for m in range(sample_cnt):
-        print("Generating atmospheric sample " + str(m) + "...")
         z_vals = np.copy(ref_atmo[:, 0][ref_mask])
         T_vals = np.copy(ref_atmo[:, 1][ref_mask])
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
