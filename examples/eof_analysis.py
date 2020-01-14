@@ -6,18 +6,13 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
-import sys
 import os
 import numpy as np
-
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
 
 import pathos.multiprocessing as mp
 from multiprocessing import cpu_count
 
 from stochprop import eofs
-from infrapy.association import hjl
 
 eof_dirs = ["coeffs", "eofs", "profs", "samples"]
 season_labels = ["winter", "spring", "summer", "fall"]

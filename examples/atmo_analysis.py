@@ -6,18 +6,9 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
-import sys
 import os
-import numpy as np
-
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
-
-import pathos.multiprocessing as mp
-from multiprocessing import cpu_count
 
 from stochprop import eofs
-from infrapy.association import hjl
 
 if __name__ == '__main__':
 
@@ -32,10 +23,8 @@ if __name__ == '__main__':
     fit_eof_cnts = [1, 10, 25, 50]
 
     perturb_sigma = 20.0
-    eof_max = 50
-    eof_cnt = 20
+    eof_cnt, eof_max = 25, 50
     smpl_cnt = 10
-
 
     # ####################################### #
     #  Fit the profile using limited numbers  #
