@@ -767,7 +767,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
             Number of perturbed atmospheric samples to generate
     """
 
-    print("Generating EOF perturbaions to " + prof_path + "...")
+    print("Generating EOF perturbations to " + prof_path + "...")
     ref_atmo = np.loadtxt(prof_path)
     
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
