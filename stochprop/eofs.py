@@ -16,26 +16,40 @@ import warnings
 
 import matplotlib.pyplot as plt
 
+from scipy.cluster import hierarchy
 from scipy.integrate import quad, simps
 from scipy.interpolate import interp1d
 from scipy.optimize import bisect, minimize
 from scipy.stats import gaussian_kde
+from scipy.spatial.distance import squareform
 
 from infrapy.association import hjl
 from infrapy.utils import prog_bar
 
-gamma = 1.4
-gamR = gamma * 287.06
+gam = 1.4
+gamR = gam * 287.06
 
-def profile_qc(g2s_file):
-    profile = np.loadtxt(g2s_file)
-    dTdz = np.gradient(profile[:,1]) / np.gradient(profile[:,0])
-    if max(abs(dTdz)) > 50.0:
-        return False
-    else:
-        return True
 
-def profs_check(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
+def profiles_qc(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
+    """
+        Runs a quality control (QC) check on profiles in the path
+        matching the pattern.  It can optionally plot the bad
+        profiles.  If it finds any, it makes a new direcotry
+        in the path location called "bad_profs" and moves those
+        profiles into the directory for you to check
+
+        Parameters
+        ----------
+        path : string
+            Path to the profiles to be QC'd
+        pattern : string
+            Pattern defining the list of profiles in the path
+        skiprows : int
+            Number of header rows in the profiles
+        plot_bad_profs : boolean
+            Flag to plot bad profiles identified in the analysis
+    """
+
     print("Running QC on profiles in " + path + " matching pattern " + pattern + "...")
     file_list = []
     dir_files = os.listdir(path)
@@ -67,6 +81,27 @@ def profs_check(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
         print("WARNING!! No profiles matching specified pattern in path.")
 
 def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
+    """
+        Read in a list of atmosphere files from the path location
+            matching a specified patter for continued analysis.
+
+        Parameters
+        ----------
+        path : string
+            Path to the profiles to be QC'd
+        pattern : string
+            Pattern defining the list of profiles in the path
+        skiprows : int
+            Number of header rows in the profiles
+        ref_alts : 1darray
+            Reference altitudes if comparison is needed
+
+        Returns:
+        A : 2darray
+            Atmosphere array of size M x (5 * N) for M atmospheres
+                where each atmosphere samples N altitudes
+    """
+
     print('\t' + "Loading profiles from " + path + " with pattern: " + pattern)
 
     file_list = []
@@ -123,6 +158,25 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
         return None, None
 
 def compute_svd(A, alts, output_path, eof_cnt=100):
+    """
+        Computes the singular value decomposition (SVD)
+            of an atmosphere set read into an array by
+            stochprop.eofs.build_atmo_matrix() and saves
+            the basis functions (empirical orthogonal
+            functions) and singular values to file
+
+        Parameters
+        ----------
+        A : 2darray
+            Suite of atmosphere specifications from build_atmo_matrix
+        alts : 1darray
+            Altitudes at which the atmosphere is sampled from build_atmo_matrix
+        output_path : string
+            Path to output the SVD results
+        eof_cnt : int
+            Number of basic functions to save
+    """
+
     file_len = int(A.shape[1] / 5)
     alts_len = len(alts)
     if file_len != alts_len:
@@ -148,7 +202,7 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
     p_mean = np.mean(p_vals, axis=0)
 
     cT_vals =  np.sqrt(gamR * T_vals)
-    cp_vals =  np.sqrt((gamma / 10.0) * p_vals / d_vals)
+    cp_vals =  np.sqrt((gam / 10.0) * p_vals / d_vals)
 
     u_diff  = u_vals - np.array([u_mean] * u_vals.shape[0])
     v_diff  = v_vals - np.array([v_mean] * v_vals.shape[0])
@@ -213,6 +267,31 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
 
 
 def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
+    """
+        Compute the EOF coefficients for a suite of atmospheres
+            and store the coefficient values.
+
+        Parameters
+        ----------
+        A : 2darray
+            Suite of atmosphere specifications from build_atmo_matrix
+        alts : 1darray
+            Altitudes at which the atmosphere is sampled from build_atmo_matrix
+        eofs_path : string
+            Path to the .eof results from compute_svd
+        output_path : string
+            Path where output will be stored
+        eof_cnt : int
+            Number of EOFs to consider in computing coefficients
+        pool : pathos.multiprocessing.ProcessingPool
+            Multiprocessing pool for accelerating calculations            
+
+        Returns:
+        coeffs : 2darray
+            Array containing coefficient values of size prof_cnt
+                by eof_cnt.  Result is also written to file.
+    """
+
     print('\t' + "Computing EOF coefficients for profiles...", '\t', end=' ')
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
@@ -252,8 +331,8 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
         cT_diff =  np.sqrt(gamR * T_interp(eof_alts))
         cT_diff -= np.sqrt(gamR * means[:, 1][eofs_mask])
     
-        cp_diff =  np.sqrt(gamma / 10.0 * p_interp(eof_alts) / d_interp(eof_alts))
-        cp_diff -= np.sqrt(gamma / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
+        cp_diff =  np.sqrt(gam / 10.0 * p_interp(eof_alts) / d_interp(eof_alts))
+        cp_diff -= np.sqrt(gam / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
     
         u_diff = u_interp(eof_alts) - means[:, 2][eofs_mask]
         v_diff = v_interp(eof_alts) - means[:, 3][eofs_mask]
@@ -285,6 +364,23 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
 
 
 def compute_overlap(coeffs, eof_cnt=100):
+    """
+        Compute the overlap of EOF coefficient distributions
+
+        Parameters
+        ----------
+        coeffs : list of 2darrays
+            List of 2darrays containing coefficients to consider 
+                overlap in PDF of values
+        eof_cnt : int
+            Number of EOFs to compute
+
+        Returns:
+        overlap : 3darray
+            Array containing overlap values of size coeff_cnt
+                by coeff_cnt by eof_cnt
+    """
+
     print("-" * 50 + '\n' + "Computing coefficient PDF overlap...")
     overlap = np.empty((eof_cnt, 12, 12))
        
@@ -313,16 +409,77 @@ def compute_overlap(coeffs, eof_cnt=100):
     return overlap
 
 
+def compute_seasonality(overlap_file, eofs_path, file_id=None):
+    """
+        Compute the overlap of EOF coefficients for
+
+        Parameters
+        ----------
+        overlap_file : string
+            Path and name of file containing results of stochprop.eofs.compute_overlap
+        eofs_path : string
+            Path to the .eof results from compute_svd
+        file_id : string
+            Path and ID to save the dendrogram result of the overlap analysis
+    """
+
+    overlap = np.load(overlap_file)
+    eof_weights = np.loadtxt(eofs_path + "-singular_values.dat")[:, 1]
+
+    dist_mat = -np.log(np.average(overlap, weights=eof_weights[:overlap.shape[0]], axis=0))
+    np.fill_diagonal(dist_mat, 0.0)
+
+    links = hierarchy.linkage(squareform(dist_mat), 'weighted')
+
+    f, (ax1) = plt.subplots(1, 1)
+    den = hierarchy.dendrogram(links, orientation="right", ax=ax1, labels=[calendar.month_abbr[n] for n in range(1, 13)])
+    if file_id:
+        plt.savefig(file_id + "-seasonality.png", dpi=300)
+    plt.show(block=False)
+    plt.pause(5.0)
+    plt.close('all')
+
+
 ################################
 #   Define methods to sample   #
 #     the coefficient PDFs     #
 ################################
-def define_limits(coeff_vals):
+def define_coeff_limits(coeff_vals):
+    """
+        Compute upper and lower bounds for coefficient values
+
+        Parameters
+        ----------
+        coeff_vals : 2darrays
+            Coefficients computed with stochprop.eofs.compute_coeffs
+
+        Returns:
+        lims : 1darray
+            Lower and upper bounds of coefficient value distribution
+    """
+
     coeff_min, coeff_max = min(coeff_vals), max(coeff_vals)
     return np.array([(coeff_max + coeff_min) / 2.0 - 1.5 * (coeff_max - coeff_min),
                      (coeff_max + coeff_min) / 2.0 + 1.5 * (coeff_max - coeff_min)])
 
 def build_cdf(pdf, lims, pnts=250):
+    """
+        Compute the cumulative distribution of a pdf within specified limits
+
+        Parameters
+        ----------
+        pdf : function
+            Probability distribution function (PDF) for a single variable
+        lims : 1darray
+            Iterable containing lower and upper bound for integration
+        pnts : int
+            Number of points to consider in defining the cumulative distribution
+
+        Returns:
+        cfd : interp1d
+            Interpolated results for the cdf
+    """
+
     norm = quad(pdf, lims[0], lims[1])[0]
 
     x_vals = np.linspace(lims[0], lims[1], pnts)
@@ -333,6 +490,26 @@ def build_cdf(pdf, lims, pnts=250):
     return interp1d(x_vals, cdf_vals)
 
 def draw_from_pdf(pdf, lims, cdf=None, size=1):
+    """
+        Sample a number of values from a probability distribution 
+            function (pdf) with specified limits
+
+        Parameters
+        ----------
+        pdf : function
+            Probability distribution function (PDF) for a single variable
+        lims : 1darray
+            Iterable containing lower and upper bound for integration
+        cdf : function
+            Cumulative distribution function (CDF) from stochprop.eofs.build_cfd
+        size : int
+            Number of samples to generate
+
+        Returns:
+        samples : 1darray
+            Sampled values from the PDF
+    """
+
     if not cdf:
         cdf = build_cdf(pdf, lims)
 
@@ -340,15 +517,32 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
         return cdf(x) - d
 
     rnd_vals = np.random.random(size)
-    drawn_vals = np.empty_like(rnd_vals)
+    samples = np.empty_like(rnd_vals)
     for n in range(size):
-        drawn_vals[n] = bisect(cdf_w_shift, lims[0], lims[1], args=(rnd_vals[n],))
+        samples[n] = bisect(cdf_w_shift, lims[0], lims[1], args=(rnd_vals[n],))
 
-    return drawn_vals
+    return samples
 
 def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
-    print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
+    """
+        Generate atmosphere states using coefficient distributions for 
+            a set of empirical orthogonal basis functions
 
+        Parameters
+        ----------
+        coeffs : 2darrays
+            Coefficients computed with stochprop.eofs.compute_coeffs
+        eofs_path : string
+            Path to the .eof results from compute_svd
+        output_path : string
+            Path where output will be stored
+        eof_cnt : int
+            Number of EOFs to use in building sampled specifications
+        prof_cnt : int
+            Number of atmospheric specification samples to generate
+    """
+    
+    print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
     print('\t' + "Loading mean profile info and eofs...")
     means  =  np.loadtxt(eofs_path + "-mean_atmo.dat")
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -362,12 +556,12 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
     kernels, lims = [0] * eof_cnt, np.empty((eof_cnt, 2))
     for eof_id in range(eof_cnt):
         kernels[eof_id] = gaussian_kde(coeffs[:, eof_id])
-        lims[eof_id] = define_limits(coeffs[:, eof_id])
+        lims[eof_id] = define_coeff_limits(coeffs[:, eof_id])
 
     # Generate prof_cnt random atmosphere samples
     print('\t' + "Generating sample atmosphere profiles...")
     cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gamma / 10.0 * means[:, 5]  / means[:, 4])
+    cp0 = np.sqrt(gam / 10.0 * means[:, 5]  / means[:, 4])
     
     sampled_profs = np.array([np.copy(means)] * prof_cnt)
     sampled_cTs = np.array([cT0] * prof_cnt)
@@ -385,7 +579,7 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
 
     sampled_profs[:, :, 1] = sampled_cTs**2 / gamR
-    sampled_profs[:, :, 5] = sampled_profs[:, :, 4] * sampled_cps**2 / (gamma / 10.0)
+    sampled_profs[:, :, 5] = sampled_profs[:, :, 4] * sampled_cps**2 / (gam / 10.0)
 
     # save the individual profiles and the mean profile
     print('\t' + "Writing sampled atmospheres to file...", '\n')
@@ -396,6 +590,22 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
 
 
 def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
+    """
+        Use coefficient distributions for a set of empirical orthogonal
+            basis functions to compute the maximum likelihood specification
+
+        Parameters
+        ----------
+        coeffs : 2darrays
+            Coefficients computed with stochprop.eofs.compute_coeffs
+        eofs_path : string
+            Path to the .eof results from compute_svd
+        output_path : string
+            Path where output will be stored
+        eof_cnt : int
+            Number of EOFs to use in building sampled specifications
+    """
+
     print("-" * 50 + '\n' + "Generating maximum likelihood atmosphere states from coefficient PDFs...")
     # load mean profile and eofs
     print('\t' + "Loading mean profile info and eofs...")
@@ -413,14 +623,14 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
 
     # Generate the profile fit
     cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gamma / 10.0 * means[:, 5] / means[:, 4])
+    cp0 = np.sqrt(gam / 10.0 * means[:, 5] / means[:, 4])
     
     ml_prof = np.copy(means)
     cT_ml = np.copy(cT0)
     cp_ml = np.copy(cp0)
     for n in range(eof_cnt):
         kernel = gaussian_kde(coeffs[:, n])
-        lims = define_limits(coeffs[:, n])
+        lims = define_coeff_limits(coeffs[:, n])
         
         c_vals = np.linspace(lims[0], lims[1], 1001)
         coeff_ml = c_vals[np.argmax(kernel.pdf(c_vals))]
@@ -432,7 +642,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
         ml_prof[:, 3] = ml_prof[:, 3] + coeff_ml * v_eofs[:, n + 1]
     
     ml_prof[:, 1] = cT_ml**2 / gamR
-    ml_prof[:, 5] = ml_prof[:, 4] * cp_ml**2 / (gamma / 10.0)
+    ml_prof[:, 5] = ml_prof[:, 4] * cp_ml**2 / (gam / 10.0)
     
     print('\t' + "Writing maximum likelihood atmosphere to file...", '\n')
     np.savetxt(output_path+ "-maximum_likelihood.met", ml_prof)
@@ -444,6 +654,24 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
 #    perturb specific atmos    #
 ################################
 def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
+    """
+        Compute a given number of EOF coefficients to fit a given
+            atmophere specification using the basic functions.  Write
+            the resulting approximated atmospheric specification to
+            file.
+
+        Parameters
+        ----------
+        prof_path : string
+            Path and name of the specification to be fit
+        eofs_path : string
+            Path to the .eof results from compute_svd
+        output_path : string
+            Path where output will be stored
+        eof_cnt : int
+            Number of EOFs to use in building approximate specification
+    """
+
     print("Generating EOF fit to " + prof_path + "...")
 
     # load means and eofs
@@ -474,8 +702,8 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     cT_diff =  np.sqrt(gamR * T_interp(means[:, 0][eofs_mask]))
     cT_diff -= np.sqrt(gamR * means[:, 1][eofs_mask])
     
-    cp_diff =  np.sqrt(gamma / 10.0 * p_interp(means[:, 0][eofs_mask]) / d_interp(means[:, 0][eofs_mask]))
-    cp_diff -= np.sqrt(gamma / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
+    cp_diff =  np.sqrt(gam / 10.0 * p_interp(means[:, 0][eofs_mask]) / d_interp(means[:, 0][eofs_mask]))
+    cp_diff -= np.sqrt(gam / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
     
     u_diff = u_interp(means[:, 0][eofs_mask]) - means[:, 2][eofs_mask]
     v_diff = v_interp(means[:, 0][eofs_mask]) - means[:, 3][eofs_mask]
@@ -496,7 +724,7 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
 
     # Generate the profile fit
     cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gamma / 10.0 * means[:, 5] / means[:, 4])
+    cp0 = np.sqrt(gam / 10.0 * means[:, 5] / means[:, 4])
 
     fit = np.copy(means)
     cT_fit = np.copy(cT0)
@@ -510,12 +738,36 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
         fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
     
     fit[:, 1] = cT_fit**2 / gamR
-    fit[:, 5] = fit[:, 4] * cp_fit**2 / (gamma / 10.0)
+    fit[:, 5] = fit[:, 4] * cp_fit**2 / (gam / 10.0)
 
     np.savetxt(output_path, fit)
 
 def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100, eof_cnt=50, sample_cnt=1):
-    print("Generating EOF perturbaions to " + prof_path + "...")
+    """
+        Compute a given number of EOF coefficients to fit a given
+            atmophere specification using the basic functions.  Write
+            the resulting approximated atmospheric specification to
+            file.
+
+        Parameters
+        ----------
+        prof_path : string
+            Path and name of the specification to be fit
+        eofs_path : string
+            Path to the .eof results from compute_svd
+        output_path : string
+            Path where output will be stored
+        coeff_sig : float
+            Standard deviation used to sample coefficient perturbations
+        eof_max : int
+            Higher numbered EOF to sample
+        eof_cnt : int
+            Number of EOFs to sample in the perturbation (can be less than eof_max)
+        sample_cnt : int
+            Number of perturbed atmospheric samples to generate
+    """
+
+    print("Generating EOF perturbations to " + prof_path + "...")
     ref_atmo = np.loadtxt(prof_path)
     
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -541,7 +793,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
         p_vals = np.copy(ref_atmo[:, 5][ref_mask])
         
         cT_vals = np.sqrt(gamR * T_vals)
-        cp_vals = np.sqrt(gamma / 10.0 * p_vals / d_vals)
+        cp_vals = np.sqrt(gam / 10.0 * p_vals / d_vals)
         
         for n in np.random.choice(range(eof_max), eof_cnt, replace=False):
             coeff_val = np.random.randn() * coeff_sig * (sing_vals[n, 1] / sing_vals[0, 1])**0.33
@@ -552,7 +804,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
             v_vals = v_vals + coeff_val * interp1d(v_eofs[:, 0][eof_mask],  v_eofs[:, n + 1][eof_mask])(z_vals)
         
         T_vals = cT_vals**2 / gamR
-        p_vals = d_vals * cp_vals**2 / (gamma / 10.0)
+        p_vals = d_vals * cp_vals**2 / (gam / 10.0)
         
         np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T)
 

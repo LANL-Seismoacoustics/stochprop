@@ -7,23 +7,78 @@
 
 import sys
 import os
+import fnmatch
+import warnings
 
 import numpy as np
 
-from infrapy.utils import prog_bar
+ncpaprop_dir = "/Users/pblom/Research/Coding/Packages/ncpaprop-1.3.2/ncpaprop-1.3.2/"
+infraga_dir = ""
 
-ncpa_prop_dir = "/Users/pblom/Research/Coding/Packages/ncpaprop-1.3.2/ncpaprop-1.3.2/"
+##################################
+#  Running infraga and NCPAprop  #
+#     with multiple profiles     #
+##################################
+def run_infraga_prop(profs_path, results_file, pattern="*.met", file_format_len=4, cpu_cnt=None, geom="3d", bounces=25, inclinations=[0.5, 45.0, 0.5], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0):
+    """
+        Run the infraga -prop algorithm to compute path geometry
+            statistics for BISL using a suite of specifications 
+            and combining results into single file
 
-def calc_rays(profs_path, prof_cnt, results_file, freq=0.1, z_grnd=0.0, inclinations=[0.5, 45.0, 0.5], azimuths=[-180.0, 180.0, 3.0]):
+        Parameters
+        ----------
+        profs_path : string
+            Path to atmospheric specification files
+        results_file : string
+            Path and name of file where results will be written
+        pattern : string
+            Pattern identifying atmospheric specification within profs_path location
+        file_format_len : int
+            Length of file format string (e.g., 4 for ".met")
+        cpu_cnt : int
+            Number of threads to use in OpenMPI implementation.  None runs non-OpenMPI version of infraga
+        geom : string
+            Defines geometry of the infraga simulations ("2d", "3d", or "sph")
+        bounces : int
+            Maximum number of ground reflections to consider in ray tracing
+        inclinations : iterable object
+            Iterable of starting, ending, and step for ray launch inclination
+        azimuths : iterable object
+            Iterable of starting, ending, and step for ray launch azimuths
+        freq : float
+            Frequency to use for Sutherland Bass absorption calculation
+        z_grnd : float
+            Elevation of the ground surface relative to sea level
+        rng_max : float
+            Maximum propagation range for propagation paths
+        src_loc : iterable object
+            The horizontal (x and y or latitude and longitude) and altitude of the source
+        """
+
+    if geom is not ("2d" or "3d" or "sph"):
+        msg = "Incompatible geometry option for infraga: {}.  Options are '2d', '3d', and 'sph'".format(geom)
+        warnings.warn(msg)
+
     open(results_file, 'w').close()
-    for n in range(prof_cnt):
-        filename = profs_path + "-%02d" % n + ".met"
-        print("Generating ray paths for " + filename)
-        os.system("mpirun -np 10 infraga-accel-3d -prop " + filename + " bounces=0 incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2]) + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2]) + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " calc_amp=False")
 
-        os.system("cat " + filename[:-4] + ".results.dat >> " +  results_file)
-        os.system("rm " + filename[:-4] + "*.dat")
+    dir_files = os.listdir(profs_path)
+    for file_name in dir_files:
+        if fnmatch.fnmatch(file_name, pattern):
+            print("Generating ray paths for " + file_name)
+            if cpu_cnt:
+                command = "mpirun -np " + cpu_cnt + " " + infraga_dir + " infraga-accel-" + geom + " -prop "
+            else:
+                command = infraga_dir + " infraga-" + geom + " -prop "
+            
+            command = command + file_name + " bounces=" + str(bnc_max) + " src_alt=" = str(src_alt)
+            command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
+            command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
+            command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max) + " calc_amp=False"
+            print(command)
 
+            os.system(command)
+            os.system("cat " + profs_path + "/" + file_name[:-file_format_len] + ".results.dat >> " + results_file)
+            os.system("rm "  + profs_path + "/" + file_name[:-file_format_len] + "*.dat")
 
 '''
 run_nm requires making modifications to the
@@ -47,13 +102,13 @@ def run_nm(profile, azimuth, freq, id, prog_step=0, z_grnd = 0.0):
     os.system(ncpa_prop_dir + "bin/Modess --atmosfile " + profile + " --atmosfileorder ztuvdp --skiplines 0 --azimuth " + str(azimuth) + " --freq " + str(freq) + " --zground_km " + str(z_grnd) + " > /dev/null")
     os.system("mv tloss_1d-%.3f.nm result." % freq + str(id) + ".dat")
     os.system("mv tloss_1d-%.3f.lossless.nm result.lossless." % freq + str(id) + ".dat")
-    prog_bar.increment(prog_step)
 
 
-def run_nm_wrapper(args): return run_nm(*args)
+def run_nm_wrapper(args):
+    return run_nm(*args)
 
 
-def calc_tloss(profs_path, prof_rng, results_id, freq_vals, pool, azimuths=[-180.0, 180.0, 3.0], z_grnd=0.0, crit_angle_lim = 2.0, prog_scalar = 3):
+def calc_tloss(profs_path, prof_rng, results_id, freq_vals, pool, azimuths=[-180.0, 180.0, 3.0], z_grnd=0.0, crit_angle_lim = 2.0):
     for n in prof_rng:
         filename = profs_path + "%02d" % n + ".met"
         print("Generating ray paths for " + filename)
@@ -65,7 +120,6 @@ def calc_tloss(profs_path, prof_rng, results_id, freq_vals, pool, azimuths=[-180
         snd_spd_vals = np.sqrt(1.4 * 287.0 * profile[:, 1])
         u_vals = profile[:, 2]
         v_vals = profile[:, 3]
-
 
         # Define the tloss output files at each frequency
         tloss1_out = [''] * len(freq_vals)
@@ -93,9 +147,7 @@ def calc_tloss(profs_path, prof_rng, results_id, freq_vals, pool, azimuths=[-180
                 for nf, freq in enumerate(freq_vals):
                     args_list[nf] = (filename, azimuth, freq, nf, prog_scalar, z_grnd)
 
-                prog_bar.prep(len(freq_vals) * prog_scalar)
                 pool.map(run_nm_wrapper, args_list)
-                prog_bar.close()
 
                 # Open each of the results files, convert the format from [r, re(A), im(A)] to [r, az, |A|], and write to tloss_out
                 # using scaling to reference point at 1 km (first entry of the file)
