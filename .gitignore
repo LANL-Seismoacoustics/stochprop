@@ -1,6 +1,7 @@
 *.pyc
 *.o
 *.a
+*.nm
 .DS_Store
 ._*
 *~

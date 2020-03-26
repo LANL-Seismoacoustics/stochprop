@@ -83,12 +83,12 @@ def profiles_qc(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
 def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
     """
         Read in a list of atmosphere files from the path location
-            matching a specified patter for continued analysis.
+            matching a specified pattern for continued analysis.
 
         Parameters
         ----------
         path : string
-            Path to the profiles to be QC'd
+            Path to the profiles to be loaded
         pattern : string
             Pattern defining the list of profiles in the path
         skiprows : int
@@ -304,7 +304,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     file_len = int(A.shape[1] / 5)
     alts_len = len(alts)
     if file_len != alts_len:
-        print("Warning!  Altitudes don't match dimension of A matrix.")
+        print("Warning!  Altitudes don't match dimension of atmosphere matrix.")
         return 0
 
     alt_min = max(means[0, 0], alts[0])
@@ -348,8 +348,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     
         # run the integration to define coefficients
         if pool:
-            args = list(range(eof_cnt))
-            coeffs[n] = pool.map(calc_coeff, args)
+            coeffs[n] = pool.map(calc_coeff, list(range(eof_cnt)))
         else:
             for m in range(eof_cnt):
                 coeffs[n][m] = calc_coeff(m)
@@ -523,7 +522,7 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
 
     return samples
 
-def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
+def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, output_mean=False):
     """
         Generate atmosphere states using coefficient distributions for 
             a set of empirical orthogonal basis functions
@@ -540,6 +539,8 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
             Number of EOFs to use in building sampled specifications
         prof_cnt : int
             Number of atmospheric specification samples to generate
+        output_mean : bool
+            Flag to output the mean profile from the samples generated
     """
     
     print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
@@ -585,8 +586,9 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250):
     print('\t' + "Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
         np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn])
-    np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0))
-    np.savetxt(output_path + "-stdev.met", np.std(sampled_profs, axis=0))
+    if output_mean:
+        np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0))
+        np.savetxt(output_path + "-stdev.met", np.std(sampled_profs, axis=0))
 
 
 def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
@@ -742,12 +744,9 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
 
     np.savetxt(output_path, fit)
 
-def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100, eof_cnt=50, sample_cnt=1):
+def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=100, eof_cnt=50, sample_cnt=1, alt_wt_pow=2.0, sing_val_wt_pow=0.25):
     """
-        Compute a given number of EOF coefficients to fit a given
-            atmophere specification using the basic functions.  Write
-            the resulting approximated atmospheric specification to
-            file.
+        Use EOFs to perturb a specified profile using a given scale
 
         Parameters
         ----------
@@ -757,14 +756,18 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
             Path to the .eof results from compute_svd
         output_path : string
             Path where output will be stored
-        coeff_sig : float
-            Standard deviation used to sample coefficient perturbations
+        uncertainty : float
+            Estimate of uncertainty in wind speeds; 95% confidence is set to this value
         eof_max : int
             Higher numbered EOF to sample
         eof_cnt : int
             Number of EOFs to sample in the perturbation (can be less than eof_max)
         sample_cnt : int
             Number of perturbed atmospheric samples to generate
+        alt_wt_pow : float
+            Power raising relative mean altitude value in weighting
+        sing_val_wt_pow : float
+            Power raising relative singular value in weighting
     """
 
     print("Generating EOF perturbations to " + prof_path + "...")
@@ -777,15 +780,51 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
     sing_vals = np.loadtxt(eofs_path + "-singular_values.dat")
     
     # Define altitude limits
-    alt_min = max(cT_eofs[ 0, 0], ref_atmo[ 0, 0])
-    alt_max = min(cT_eofs[-1, 0], ref_atmo[-1, 0])
+    alt_min = max(u_eofs[ 0, 0], ref_atmo[ 0, 0])
+    alt_max = min(u_eofs[-1, 0], ref_atmo[-1, 0])
     
-    eof_mask = np.logical_and(alt_min <= cT_eofs[:, 0], cT_eofs[:, 0] <= alt_max)
+    eof_mask = np.logical_and(alt_min <= u_eofs[:, 0], u_eofs[:, 0] <= alt_max)
     ref_mask = np.logical_and(alt_min <= ref_atmo[:, 0], ref_atmo[:, 0] <= alt_max)
-    
-    # interpolate the eofs and add random contributions to the reference profile
+    z_vals = np.copy(ref_atmo[:, 0][ref_mask])
+
+    # interpolate the eofs and use random coefficients to generate perturbations
+    cT_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
+    cp_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
+    u_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
+    v_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
+
+    for m in range(sample_cnt):        
+        wts = np.empty(eof_cnt)
+
+        cT_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
+        cp_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
+        u_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
+        v_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
+
+        for j, n in enumerate(np.random.choice(range(eof_max), eof_cnt, replace=False)):
+            coeff_val = np.random.randn();    
+            
+            cT_perturb[j] = coeff_val * interp1d(cT_eofs[:, 0][eof_mask], cT_eofs[:, n + 1][eof_mask])(z_vals)
+            cp_perturb[j] = coeff_val * interp1d(cp_eofs[:, 0][eof_mask], cp_eofs[:, n + 1][eof_mask])(z_vals)
+            u_perturb[j]  = coeff_val * interp1d(u_eofs[:, 0][eof_mask],  u_eofs[:, n + 1][eof_mask])(z_vals)
+            v_perturb[j]  = coeff_val * interp1d(v_eofs[:, 0][eof_mask],  v_eofs[:, n + 1][eof_mask])(z_vals)
+
+            wts[j]  = simps(u_eofs[:, 0][eof_mask] * abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask]) / simps(abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
+            wts[j] += simps(u_eofs[:, 0][eof_mask] * abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask]) / simps(abs(v_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
+            wts[j] /= (2.0 * max(u_eofs[:, 0][eof_mask]))
+            wts[j] = wts[j]**alt_wt_pow
+
+            wts[j] *= (sing_vals[n, 1] / sing_vals[0, 1])**sing_val_wt_pow
+
+        cT_perturb_all[m] = np.average(cT_perturb, axis=0, weights=wts)
+        cp_perturb_all[m] = np.average(cp_perturb, axis=0, weights=wts)
+        u_perturb_all[m]  = np.average(u_perturb, axis=0, weights=wts)
+        v_perturb_all[m]  = np.average(v_perturb, axis=0, weights=wts)
+
+    wind_perturbation = np.sqrt(u_perturb_all**2 + v_perturb_all**2)
+    mid_alt_mask = np.logical_and(30.0 <= u_eofs[:, 0][eof_mask], u_eofs[:, 0][eof_mask] <= 90.0)
+
     for m in range(sample_cnt):
-        z_vals = np.copy(ref_atmo[:, 0][ref_mask])
         T_vals = np.copy(ref_atmo[:, 1][ref_mask])
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
         v_vals = np.copy(ref_atmo[:, 3][ref_mask])
@@ -794,20 +833,16 @@ def perturb_atmo(prof_path, eofs_path, output_path, coeff_sig=25.0, eof_max=100,
         
         cT_vals = np.sqrt(gamR * T_vals)
         cp_vals = np.sqrt(gam / 10.0 * p_vals / d_vals)
-        
-        for n in np.random.choice(range(eof_max), eof_cnt, replace=False):
-            coeff_val = np.random.randn() * coeff_sig * (sing_vals[n, 1] / sing_vals[0, 1])**0.33
-            
-            cT_vals = cT_vals + coeff_val * interp1d(cT_eofs[:, 0][eof_mask], cT_eofs[:, n + 1][eof_mask])(z_vals)
-            cp_vals = cp_vals + coeff_val * interp1d(cp_eofs[:, 0][eof_mask], cp_eofs[:, n + 1][eof_mask])(z_vals)
-            u_vals = u_vals + coeff_val * interp1d(u_eofs[:, 0][eof_mask],  u_eofs[:, n + 1][eof_mask])(z_vals)
-            v_vals = v_vals + coeff_val * interp1d(v_eofs[:, 0][eof_mask],  v_eofs[:, n + 1][eof_mask])(z_vals)
-        
+
+        cT_vals = cT_vals + cT_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
+        cp_vals = cp_vals + cp_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
+        u_vals = u_vals + u_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
+        v_vals = v_vals + v_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
+
         T_vals = cT_vals**2 / gamR
         p_vals = d_vals * cp_vals**2 / (gam / 10.0)
         
         np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T)
-
 
 
 
