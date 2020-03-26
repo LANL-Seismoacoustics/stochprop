@@ -12,5 +12,6 @@ Copy*
 examples/samples/*/*
 examples/eofs/*
 examples/coeffs/*
+examples/prop/*/*
 examples/*.met
 
