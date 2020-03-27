@@ -15,6 +15,8 @@ import itertools
 
 import numpy as np
 
+from pyproj import Geod
+
 from scipy.interpolate import interp1d, interp2d, RectBivariateSpline
 from scipy.optimize import curve_fit
 from scipy.stats import norm, gaussian_kde
@@ -23,6 +25,8 @@ from scipy.signal import savgol_filter
 import matplotlib.cm as cm
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+
+sph_proj = Geod(ellps='sphere')
 
 ##################################
 #  Running infraga and NCPAprop  #
@@ -256,10 +260,14 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0]):
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping path geometry model construction...")
         else:
+            if geom is not ("3d" or "sph"):
+                msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
+                warnings.warn(msg)
+            
             print('Builing celerity and azimuth priors from file:', arrivals_file)
 
             # define range bins and parameter arrays
@@ -274,13 +282,20 @@ class PathGeometryModel(object):
             rcel_std = np.empty((self.az_bin_cnt, rng_cnt, 3))
 
             # load infraGA/GeoAc predictions
-            theta, phi, n, x, y, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
+            if geom == "3d":
+                theta, phi, n, x, y, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
 
-            rngs = np.sqrt(x**2 + y**2)
-            rcel = t / rngs
+                rngs = np.sqrt(x**2 + y**2)
+                az = 90.0 - np.degrees(np.arctan2(y, x))
+                az_dev = (90.0 - np.degrees(np.arctan2(-y, -x))) - back_az
+            else:
+                theta, phi, n, lats, lons, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
 
-            az = 90.0 - np.degrees(np.arctan2(y, x))
-            az_dev = (90.0 - np.degrees(np.arctan2(-y, -x))) - back_az
+                az, temp_az, rngs = sph_proj.inv(np.array([src_loc[1]] * len(lons)), np.array([src_loc[0]] * len(lats)), lons, lats)
+                rngs = rngs / 1000.0
+                az_dev = np.array(temp_az) - back_az
+        
+            rcel = 1.0 / cel
 
             # wrap angles to +/- 180 degrees
             phi[phi > 180.0] -= 360.0
