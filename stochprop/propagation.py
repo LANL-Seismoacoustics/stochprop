@@ -73,8 +73,6 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
             warnings.warn(msg)
 
-        open(results_file, 'w').close()
-
         dir_files = os.listdir(profs_path)
         for file_name in dir_files:
             if fnmatch.fnmatch(file_name, pattern):
