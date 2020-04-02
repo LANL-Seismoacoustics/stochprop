@@ -23,9 +23,6 @@ from scipy.optimize import bisect, minimize
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
 
-from infrapy.association import hjl
-from infrapy.utils import prog_bar
-
 gam = 1.4
 gamR = gam * 287.06
 
@@ -177,6 +174,9 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
             Number of basic functions to save
     """
 
+    print('\t' + "Building EOFs using SVD...")
+
+
     file_len = int(A.shape[1] / 5)
     alts_len = len(alts)
     if file_len != alts_len:
@@ -292,7 +292,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
                 by eof_cnt.  Result is also written to file.
     """
 
-    print('\t' + "Computing EOF coefficients for profiles...", '\t', end=' ')
+    print('\t' + "Computing EOF coefficients for profiles...")
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
     cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
@@ -318,7 +318,6 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
                         
     # cycle through profiles in A to define coefficients
     coeffs = np.empty((A.shape[0], eof_cnt))
-    prog_bar.prep(50)
     for n, An in enumerate(A):
         # interpolate the profile
         T_interp = interp1d(A_alts, An[file_len * 0:file_len * 1][A_mask], kind='cubic')
@@ -352,9 +351,6 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
         else:
             for m in range(eof_cnt):
                 coeffs[n][m] = calc_coeff(m)
-
-        prog_bar.increment(int(np.floor((50.0 * (n + 1)) / A.shape[0]) - np.floor((50.0 * n) / A.shape[0])))
-    prog_bar.close()
 
     # store coefficient values as numpy array file
     np.save(output_path + "-coeffs", coeffs)
