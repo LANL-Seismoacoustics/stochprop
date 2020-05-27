@@ -32,7 +32,7 @@ sph_proj = Geod(ellps='sphere')
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 ##################################
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[0.5, 45.0, 1.5], azimuths=[-180.0, 180.0, 6.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=""):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=50, inclinations=[0.5, 45.0, 1.5], azimuths=[-180.0, 180.0, 6.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=""):
     """
         Run the infraga -prop algorithm to compute path geometry
             statistics for BISL using a suite of specifications 
@@ -69,40 +69,40 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
     if os.path.isfile(results_file):
         print(results_file + " already exists  --->  Skipping infraGA/GeoAc ray tracing runs...")
     else:
-        if geom is not ("3d" or "sph"):
+        if not ((geom is "3d") or (geom is "sph")):
             msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
             warnings.warn(msg)
+        else:
+            dir_files = os.listdir(profs_path)
+            for file_name in dir_files:
+                if fnmatch.fnmatch(file_name, pattern):
+                    print("Generating ray paths for " + file_name)
+                    file_id = os.path.splitext(file_name)[0]
 
-        dir_files = os.listdir(profs_path)
-        for file_name in dir_files:
-            if fnmatch.fnmatch(file_name, pattern):
-                print("Generating ray paths for " + file_name)
-                file_id = os.path.splitext(file_name)[0]
-
-                if cpu_cnt:
-                    command = "mpirun -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
-                else:
-                    command = infraga_path + " infraga-" + geom + " -prop "
+                    if cpu_cnt:
+                        command = "mpirun --oversubscribe -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+                    else:
+                        command = infraga_path + " infraga-" + geom + " -prop "
             
-                command = command + profs_path + "/" + file_name
-                command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
-                command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
-                if geom == "sph":
-                    command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
-                command = command + " src_alt=" + str(src_loc[2])
-                command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
-                command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" 
+                    command = command + profs_path + "/" + file_name
+                    command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
+                    command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
+                    if geom == "sph":
+                        command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
+                    command = command + " src_alt=" + str(src_loc[2])
+                    command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
+                    command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" 
 
-                print(command)
-                os.system(command)
+                    print(command)
+                    os.system(command)
     
-        command = "cat " + profs_path + "/*.arrivals.dat > " + results_file
-        print(command)
-        os.system(command)
+            command = "cat " + profs_path + "/*.arrivals.dat > " + results_file
+            print(command)
+            os.system(command)
     
-        command = "rm "  + profs_path + "/*.dat"
-        print(command)
-        os.system(command)
+            command = "rm "  + profs_path + "/*.dat"
+            print(command)
+            os.system(command)
 
 
 def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths=[-180.0, 180.0, 6.0], freqs=[0.1, 1.0, 10], z_grnd=0.0, rng_max=1000.0, ncpaprop_path=""):
@@ -171,11 +171,10 @@ def find_azimuth_bin(az, bin_cnt=8):
 
 
 class PathGeometryModel(object):
-    az_bin_cnt, az_bin_wdth = 8, 60.0
-
+    az_bin_cnt, az_bin_wdth = 16, 30.0
     rng_max = 1000.0
 
-    default_az_dev_std = 4.0
+    default_az_dev_std = 3.75
     min_az_dev_std = 0.9
 
     tropo_strat_bnd = 1.0 / 0.32
@@ -258,215 +257,219 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0]):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0):
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping path geometry model construction...")
         else:
-            if geom is not ("3d" or "sph"):
+            if not ((geom is "3d") or (geom is "sph")):
                 msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
                 warnings.warn(msg)
-            
-            print('Builing celerity and azimuth priors from file:', arrivals_file)
-
-            # define range bins and parameter arrays
-            rng_bins = np.arange(0.0, self.rng_max, rng_spacing)
-            rng_cnt = len(rng_bins)
-
-            az_dev_mns = np.empty((self.az_bin_cnt, rng_cnt))
-            az_dev_std = np.empty((self.az_bin_cnt, rng_cnt))
-
-            rcel_wts = np.empty((self.az_bin_cnt, rng_cnt, 3))
-            rcel_mns = np.empty((self.az_bin_cnt, rng_cnt, 3))
-            rcel_std = np.empty((self.az_bin_cnt, rng_cnt, 3))
-
-            # load infraGA/GeoAc predictions
-            if geom == "3d":
-                theta, phi, n, x, y, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
-
-                rngs = np.sqrt(x**2 + y**2)
-                az = 90.0 - np.degrees(np.arctan2(y, x))
-                az_dev = (90.0 - np.degrees(np.arctan2(-y, -x))) - back_az
             else:
-                theta, phi, n, lats, lons, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
+                print('Builing celerity and azimuth priors from file:', arrivals_file)
 
-                az, temp_az, rngs = sph_proj.inv(np.array([src_loc[1]] * len(lons)), np.array([src_loc[0]] * len(lats)), lons, lats)
-                rngs = rngs / 1000.0
-                az_dev = np.array(temp_az) - back_az
-        
-            rcel = 1.0 / cel
+                # define range bins and parameter arrays
+                rng_bins = np.arange(0.0, self.rng_max, rng_spacing)
+                rng_cnt = len(rng_bins)
 
-            # wrap angles to +/- 180 degrees
-            phi[phi > 180.0] -= 360.0
-            phi[phi < -180.0] += 360.0
+                az_dev_mns = np.empty((self.az_bin_cnt, rng_cnt))
+                az_dev_std = np.empty((self.az_bin_cnt, rng_cnt))
 
-            az[az > 180.0] -= 360.0
-            az[az < -180.0] += 360.0
+                rcel_wts = np.empty((self.az_bin_cnt, rng_cnt, 3))
+                rcel_mns = np.empty((self.az_bin_cnt, rng_cnt, 3))
+                rcel_std = np.empty((self.az_bin_cnt, rng_cnt, 3))
 
-            az_dev[az_dev > 180.0] -= 360.0
-            az_dev[az_dev < -180.0] += 360.0
+                # load infraGA/GeoAc predictions
+                if geom == "3d":
+                    theta, phi, n, x, y, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
 
-            # Cycle through azimuth bins creating fit
-            az_wts = np.empty(self.az_bin_cnt)
-            for n_az in range(self.az_bin_cnt):
-                if n_az == 0:
-                    az_mask = np.logical_or(az > 180.0 - self.az_bin_wdth / 2.0, az < -180.0 + self.az_bin_wdth / 2.0)
+                    rngs = np.sqrt(x**2 + y**2)
+                    az = 90.0 - np.degrees(np.arctan2(y, x))
+                    az_dev = (90.0 - np.degrees(np.arctan2(-y, -x))) - back_az
                 else:
-                    center = -180 + (360.0 / self.az_bin_cnt) * n_az
-                    az_mask = np.logical_and(center - self.az_bin_wdth / 2.0 <= az, az <= center + self.az_bin_wdth / 2.0)
-                az_wts[n_az] = float(len(rngs[az_mask])) / float(len(rngs))
+                    theta, phi, n, lats, lons, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
 
-                # display work if show_fits is enabled
-                if show_fits:
-                    f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 11))
+                    az, temp_az, rngs = sph_proj.inv(np.array([src_loc[1]] * len(lons)), np.array([src_loc[0]] * len(lats)), lons, lats)
+                    rngs = rngs / 1000.0
+                    az_dev = np.array(temp_az) - back_az
+        
+                rcel = 1.0 / cel
 
-                    ax1.set_xlim([0.0, self.rng_max])
-                    ax1.set_ylim([0.2, 0.4])
+                # wrap angles to +/- 180 degrees
+                phi[phi > 180.0] -= 360.0
+                phi[phi < -180.0] += 360.0
 
-                    ax3.set_xlim([0.0, self.rng_max])
-                    ax3.set_ylim([-12.0, 12.0])
+                az[az > 180.0] -= 360.0
+                az[az < -180.0] += 360.0
 
-                    ax1.set_xlabel('Range [km]')
-                    ax1.set_ylabel('Celerity [km/s]')
+                az_dev[az_dev > 180.0] -= 360.0
+                az_dev[az_dev < -180.0] += 360.0
 
-                    ax2.set_xlabel('Celerity [km/s]')
-                    ax2.set_ylabel('Probability')
+                # Cycle through azimuth bins creating fit
+                az_wts = np.empty(self.az_bin_cnt)
+                for n_az in range(self.az_bin_cnt):
+                    if n_az == 0:
+                        az_mask = np.logical_or(az > 180.0 - self.az_bin_wdth / 2.0, az < -180.0 + self.az_bin_wdth / 2.0)
+                    else:
+                        center = -180 + (360.0 / self.az_bin_cnt) * n_az
+                        az_mask = np.logical_and(center - self.az_bin_wdth / 2.0 <= az, az <= center + self.az_bin_wdth / 2.0)
+                    
+                    # combine azimuth and turning height masks
+                    az_mask = np.logical_and(az_mask, min_turning_ht < (z_max - src_loc[2]))
 
-                    ax3.set_xlabel('Range [km]')
-                    ax3.set_ylabel('Azimuth Deviation [degrees]')
+                    az_wts[n_az] = float(len(rngs[az_mask])) / float(len(rngs))
 
-                    ax4.set_xlabel('Azimuth Deviation [degrees]')
-                    ax4.set_ylabel('Probability')
-
-                    plt.suptitle('Path Geometry Statistics (' + az_dirs[n_az] + ')', fontsize=18)
-                    plt.show(block=False)
-
-                    ax1.plot(rngs[az_mask], 1.0 / rcel[az_mask], 'k.', markersize=2.0)
-                    ax1.set_title('Celerity-range scatter')
-                    plt.pause(0.01)
-
-                    ax3.plot(rngs[az_mask], az_dev[az_mask], 'k.', markersize=2.0)
-                    ax3.set_title('Back-azimuth deviation')
-                    plt.pause(0.01)
-
-                # Compute fits (1D interpolations of parameters)
-                rng_wts = np.empty(rng_cnt)
-                for nr in range(rng_cnt):
+                    # display work if show_fits is enabled
                     if show_fits:
-                        window1 = ax1.axvspan(rng_bins[nr], rng_bins[nr] + rng_width, facecolor='b', alpha=0.5)
-                        window2 = ax3.axvspan(rng_bins[nr], rng_bins[nr] + rng_width, facecolor='b', alpha=0.5)
-                        plt.pause(0.1)
+                        f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 11))
 
-                    # define combined azimuth and range mask
-                    rng_mask = np.logical_and(rng_bins[nr] <= rngs, rngs <= rng_bins[nr] + rng_width)
-                    rng_az_mask = np.logical_and(rng_mask, az_mask)
-                    rng_wts[nr] = float(len(rngs[rng_az_mask])) / len(rngs[az_mask])
+                        ax1.set_xlim([0.0, self.rng_max])
+                        ax1.set_ylim([0.2, 0.4])
 
-                    # set azimuth deviation fit
-                    if az_dev[rng_az_mask].shape[0] > self.win_min_pts:
-                        az_dev_mns[n_az][nr] = np.mean(az_dev[rng_az_mask], dtype=np.float64)
-                        az_dev_std[n_az][nr] = max(np.std(az_dev[rng_az_mask], dtype=np.float64), self.min_az_dev_std)
-                    else:
-                        if nr == 0:
-                            az_dev_mns[n_az][nr] = 0.0
-                            az_dev_std[n_az][nr] = self.default_az_dev_std
-                        else:
-                            az_dev_mns[n_az][nr] = az_dev_mns[n_az][nr - 1] * 0.75
-                            az_dev_std[n_az][nr] = self.default_az_dev_std + (az_dev_std[n_az][nr - 1] - self.default_az_dev_std) * 0.5
+                        ax3.set_xlim([0.0, self.rng_max])
+                        ax3.set_ylim([-12.0, 12.0])
 
-                    # set tropospheric contribution to reciprocal celerity fit
-                    combo_mask = np.logical_and(rng_az_mask, rcel < self.tropo_strat_bnd + self.bnd_overlap)
+                        ax1.set_xlabel('Range [km]')
+                        ax1.set_ylabel('Celerity [km/s]')
 
-                    wt1 = float(len(rngs[combo_mask]))
-                    if rcel[combo_mask].shape[0] > self.win_min_pts:
-                        rcel_mns[n_az][nr][0] = np.mean(rcel[combo_mask], dtype=np.float64)
-                        rcel_std[n_az][nr][0] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
-                    else:
-                        if nr == 0:
-                            rcel_mns[n_az][nr][0] = self.mns0[0]
-                            rcel_std[n_az][nr][0] = self.std0[0]
-                        else:
-                            rcel_mns[n_az][nr][0] = self.mns0[0] + (rcel_mns[n_az][nr - 1][0] - self.mns0[0]) * 0.25
-                            rcel_std[n_az][nr][0] = self.std0[0] + (rcel_std[n_az][nr - 1][0] - self.std0[0]) * 0.25
+                        ax2.set_xlabel('Celerity [km/s]')
+                        ax2.set_ylabel('Probability')
 
-                    # set stratospheric contribution to reciprocal celerity fit
-                    strat_mask = np.logical_and(self.tropo_strat_bnd - self.bnd_overlap <= rcel, rcel <= self.strat_therm_bnd + self.bnd_overlap)
-                    combo_mask = np.logical_and(rng_az_mask, strat_mask)
+                        ax3.set_xlabel('Range [km]')
+                        ax3.set_ylabel('Azimuth Deviation [degrees]')
 
-                    wt2 = float(len(rngs[combo_mask]))
-                    if rcel[combo_mask].shape[0] > self.win_min_pts:
-                        rcel_mns[n_az][nr][1] = np.mean(rcel[combo_mask], dtype=np.float64)
-                        rcel_std[n_az][nr][1] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
-                    else:
-                        if nr == 0:
-                            rcel_mns[n_az][nr][1] = self.mns0[1]
-                            rcel_std[n_az][nr][1] = self.std0[1]
-                        else:
-                            rcel_mns[n_az][nr][1] = self.mns0[1] + (rcel_mns[n_az][nr - 1][1] - self.mns0[1]) * 0.25
-                            rcel_std[n_az][nr][1] = self.std0[1] + (rcel_std[n_az][nr - 1][1] - self.std0[1]) * 0.25
+                        ax4.set_xlabel('Azimuth Deviation [degrees]')
+                        ax4.set_ylabel('Probability')
 
-                    # set thermospheric contribution to reciprocal celerity fit
-                    combo_mask = np.logical_and(rng_az_mask, self.strat_therm_bnd - self.bnd_overlap < rcel)
+                        plt.suptitle('Path Geometry Statistics (' + az_dirs[n_az] + ')', fontsize=18)
+                        plt.show(block=False)
 
-                    wt3 = float(len(rngs[combo_mask]))
-                    if rcel[combo_mask].shape[0] > self.win_min_pts:
-                        rcel_mns[n_az][nr][2] = np.mean(rcel[combo_mask], dtype=np.float64)
-                        rcel_std[n_az][nr][2] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
-                    else:
-                        if nr == 0:
-                            rcel_mns[n_az][nr][2] = self.mns0[2]
-                            rcel_std[n_az][nr][2] = self.std0[2]
-                        else:
-                            rcel_mns[n_az][nr][2] = self.mns0[2] + (rcel_mns[n_az][nr - 1][2] - self.mns0[2]) * 0.25
-                            rcel_std[n_az][nr][2] = self.std0[2] + (rcel_std[n_az][nr - 1][2] - self.std0[2]) * 0.25
-
-                    # set weights of reciprocal celerity distribution
-                    if len(rngs[rng_az_mask]) > self.win_min_pts:
-                        rcel_wts[n_az][nr][0] = wt1 / (wt1 + wt2 + wt3)
-                        rcel_wts[n_az][nr][1] = wt2 / (wt1 + wt2 + wt3)
-                        rcel_wts[n_az][nr][2] = wt3 / (wt1 + wt2 + wt3)
-                    else:
-                        rcel_wts[n_az][nr] = [0.0, 0.0, 0.0]
-
-                    if show_fits:
-                        ax4.cla()
-                        ax4.set_xlim([-12.5, 12.5])
-                        ax4.plot(np.linspace(-12.5, 12.5, 1000), 1.0 / az_dev_std[n_az][nr] * norm.pdf((np.linspace(-12.5, 12.5, 1000) - az_dev_mns[n_az][nr]) / az_dev_std[n_az][nr]), linewidth=4.0, color='Blue')
+                        ax1.plot(rngs[az_mask], 1.0 / rcel[az_mask], 'k.', markersize=2.0)
+                        ax1.set_title('Celerity-range scatter')
                         plt.pause(0.01)
 
-                        cel_vals = np.linspace(0.2, 0.4, 1000)
-                        cel_dist1 = (rcel_wts[n_az][nr][0] / len(rngs)) / rcel_std[n_az][nr][0] * norm.pdf((1.0 / cel_vals - rcel_mns[n_az][nr][0]) / rcel_std[n_az][nr][0])
-                        cel_dist2 = (rcel_wts[n_az][nr][1] / len(rngs)) / rcel_std[n_az][nr][1] * norm.pdf((1.0 / cel_vals - rcel_mns[n_az][nr][1]) / rcel_std[n_az][nr][1])
-                        cel_dist3 = (rcel_wts[n_az][nr][2] / len(rngs)) / rcel_std[n_az][nr][2] * norm.pdf((1.0 / cel_vals - rcel_mns[n_az][nr][2]) / rcel_std[n_az][nr][2])
-
-                        ax2.cla()
-                        ax2.set_xlim([0.2, 0.4])
-                        ax2.plot(cel_vals, cel_dist1, linewidth=2.0, color='Green')
-                        ax2.plot(cel_vals, cel_dist2, linewidth=2.0, color='Green')
-                        ax2.plot(cel_vals, cel_dist3, linewidth=2.0, color='Green')
-                        ax2.plot(cel_vals, cel_dist1 + cel_dist2 + cel_dist3, linewidth=4.0, color='Blue')
+                        ax3.plot(rngs[az_mask], az_dev[az_mask], 'k.', markersize=2.0)
+                        ax3.set_title('Back-azimuth deviation')
                         plt.pause(0.01)
 
-                        window1.remove()
-                        window2.remove()
+                    # Compute fits (1D interpolations of parameters)
+                    rng_wts = np.empty(rng_cnt)
+                    for nr in range(rng_cnt):
+                        if show_fits:
+                            window1 = ax1.axvspan(rng_bins[nr], rng_bins[nr] + rng_width, facecolor='b', alpha=0.5)
+                            window2 = ax3.axvspan(rng_bins[nr], rng_bins[nr] + rng_width, facecolor='b', alpha=0.5)
+                            plt.pause(0.1)
 
-                for nr in range(rng_cnt):
-                    rcel_wts[n_az][nr] *= rng_wts[nr] / np.sum(rng_wts)
+                        # define combined azimuth and range mask
+                        rng_mask = np.logical_and(rng_bins[nr] <= rngs, rngs <= rng_bins[nr] + rng_width)
+                        rng_az_mask = np.logical_and(rng_mask, az_mask)
+                        rng_wts[nr] = float(len(rngs[rng_az_mask])) / len(rngs[az_mask])
 
-                plt.close('all')
+                        # set azimuth deviation fit
+                        if az_dev[rng_az_mask].shape[0] > self.win_min_pts:
+                            az_dev_mns[n_az][nr] = np.mean(az_dev[rng_az_mask], dtype=np.float64)
+                            az_dev_std[n_az][nr] = max(np.std(az_dev[rng_az_mask], dtype=np.float64), self.min_az_dev_std)
+                        else:
+                            if nr == 0:
+                                az_dev_mns[n_az][nr] = 0.0
+                                az_dev_std[n_az][nr] = self.default_az_dev_std
+                            else:
+                                az_dev_mns[n_az][nr] = az_dev_mns[n_az][nr - 1] * 0.75
+                                az_dev_std[n_az][nr] = self.default_az_dev_std + (az_dev_std[n_az][nr - 1] - self.default_az_dev_std) * 0.5
 
-            # Normalize weights by total arrivals at all azimuths
-            for n_az in range(self.az_bin_cnt):
-                rcel_wts[n_az] *= az_wts[n_az] / np.sum(az_wts)
+                        # set tropospheric contribution to reciprocal celerity fit
+                        combo_mask = np.logical_and(rng_az_mask, rcel < self.tropo_strat_bnd + self.bnd_overlap)
 
-            priors = [0] * 6
-            priors[0] = rng_bins
-            priors[1] = az_dev_mns
-            priors[2] = az_dev_std
-            priors[3] = rcel_mns
-            priors[4] = rcel_std
-            priors[5] = rcel_wts
+                        wt1 = float(len(rngs[combo_mask]))
+                        if rcel[combo_mask].shape[0] > self.win_min_pts:
+                            rcel_mns[n_az][nr][0] = np.mean(rcel[combo_mask], dtype=np.float64)
+                            rcel_std[n_az][nr][0] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
+                        else:
+                            if nr == 0:
+                                rcel_mns[n_az][nr][0] = self.mns0[0]
+                                rcel_std[n_az][nr][0] = self.std0[0]
+                            else:
+                                rcel_mns[n_az][nr][0] = self.mns0[0] + (rcel_mns[n_az][nr - 1][0] - self.mns0[0]) * 0.25
+                                rcel_std[n_az][nr][0] = self.std0[0] + (rcel_std[n_az][nr - 1][0] - self.std0[0]) * 0.25
 
-            pickle.dump(priors, open(output_file, "wb"))
+                        # set stratospheric contribution to reciprocal celerity fit
+                        strat_mask = np.logical_and(self.tropo_strat_bnd - self.bnd_overlap <= rcel, rcel <= self.strat_therm_bnd + self.bnd_overlap)
+                        combo_mask = np.logical_and(rng_az_mask, strat_mask)
+
+                        wt2 = float(len(rngs[combo_mask]))
+                        if rcel[combo_mask].shape[0] > self.win_min_pts:
+                            rcel_mns[n_az][nr][1] = np.mean(rcel[combo_mask], dtype=np.float64)
+                            rcel_std[n_az][nr][1] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
+                        else:
+                            if nr == 0:
+                                rcel_mns[n_az][nr][1] = self.mns0[1]
+                                rcel_std[n_az][nr][1] = self.std0[1]
+                            else:
+                                rcel_mns[n_az][nr][1] = self.mns0[1] + (rcel_mns[n_az][nr - 1][1] - self.mns0[1]) * 0.25
+                                rcel_std[n_az][nr][1] = self.std0[1] + (rcel_std[n_az][nr - 1][1] - self.std0[1]) * 0.25
+
+                        # set thermospheric contribution to reciprocal celerity fit
+                        combo_mask = np.logical_and(rng_az_mask, self.strat_therm_bnd - self.bnd_overlap < rcel)
+
+                        wt3 = float(len(rngs[combo_mask]))
+                        if rcel[combo_mask].shape[0] > self.win_min_pts:
+                            rcel_mns[n_az][nr][2] = np.mean(rcel[combo_mask], dtype=np.float64)
+                            rcel_std[n_az][nr][2] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
+                        else:
+                            if nr == 0:
+                                rcel_mns[n_az][nr][2] = self.mns0[2]
+                                rcel_std[n_az][nr][2] = self.std0[2]
+                            else:
+                                rcel_mns[n_az][nr][2] = self.mns0[2] + (rcel_mns[n_az][nr - 1][2] - self.mns0[2]) * 0.25
+                                rcel_std[n_az][nr][2] = self.std0[2] + (rcel_std[n_az][nr - 1][2] - self.std0[2]) * 0.25
+
+                        # set weights of reciprocal celerity distribution
+                        if len(rngs[rng_az_mask]) > self.win_min_pts:
+                            rcel_wts[n_az][nr][0] = wt1 / (wt1 + wt2 + wt3)
+                            rcel_wts[n_az][nr][1] = wt2 / (wt1 + wt2 + wt3)
+                            rcel_wts[n_az][nr][2] = wt3 / (wt1 + wt2 + wt3)
+                        else:
+                            rcel_wts[n_az][nr] = [0.0, 0.0, 0.0]
+
+                        if show_fits:
+                            ax4.cla()
+                            ax4.set_xlim([-12.5, 12.5])
+                            ax4.plot(np.linspace(-12.5, 12.5, 1000), 1.0 / az_dev_std[n_az][nr] * norm.pdf((np.linspace(-12.5, 12.5, 1000) - az_dev_mns[n_az][nr]) / az_dev_std[n_az][nr]), linewidth=4.0, color='Blue')
+                            plt.pause(0.01)
+
+                            cel_vals = np.linspace(0.2, 0.4, 1000)
+                            cel_dist1 = (rcel_wts[n_az][nr][0] / len(rngs)) / rcel_std[n_az][nr][0] * norm.pdf((1.0 / cel_vals - rcel_mns[n_az][nr][0]) / rcel_std[n_az][nr][0])
+                            cel_dist2 = (rcel_wts[n_az][nr][1] / len(rngs)) / rcel_std[n_az][nr][1] * norm.pdf((1.0 / cel_vals - rcel_mns[n_az][nr][1]) / rcel_std[n_az][nr][1])
+                            cel_dist3 = (rcel_wts[n_az][nr][2] / len(rngs)) / rcel_std[n_az][nr][2] * norm.pdf((1.0 / cel_vals - rcel_mns[n_az][nr][2]) / rcel_std[n_az][nr][2])
+
+                            ax2.cla()
+                            ax2.set_xlim([0.2, 0.4])
+                            ax2.plot(cel_vals, cel_dist1, linewidth=2.0, color='Green')
+                            ax2.plot(cel_vals, cel_dist2, linewidth=2.0, color='Green')
+                            ax2.plot(cel_vals, cel_dist3, linewidth=2.0, color='Green')
+                            ax2.plot(cel_vals, cel_dist1 + cel_dist2 + cel_dist3, linewidth=4.0, color='Blue')
+                            plt.pause(0.01)
+
+                            window1.remove()
+                            window2.remove()
+
+                    for nr in range(rng_cnt):
+                        rcel_wts[n_az][nr] *= rng_wts[nr] / np.sum(rng_wts)
+
+                    plt.close('all')
+
+                # Normalize weights by total arrivals at all azimuths
+                for n_az in range(self.az_bin_cnt):
+                    rcel_wts[n_az] *= az_wts[n_az] / np.sum(az_wts)
+
+                priors = [0] * 6
+                priors[0] = rng_bins
+                priors[1] = az_dev_mns
+                priors[2] = az_dev_std
+                priors[3] = rcel_mns
+                priors[4] = rcel_std
+                priors[5] = rcel_wts
+
+                pickle.dump(priors, open(output_file, "wb"))
 
     def load(self, model_file, smooth=None):
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
@@ -488,17 +491,17 @@ class PathGeometryModel(object):
         if smooth:
             print("Loading propagation model parameters from " + model_file + " with smoothing.")
             for n_az in range(self.az_bin_cnt):
-                self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 9, 3), kind='cubic')
-                self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 9, 3), kind='cubic')
+                self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 5, 3), kind='cubic')
+                self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 5, 3), kind='cubic')
 
                 self.rcel_mns[n_az] = [0] * 3
                 self.rcel_std[n_az] = [0] * 3
                 self.rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self.rcel_mns[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[3][n_az][:, j], 9, 3), kind='cubic')
-                    self.rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 9, 3), kind='cubic')
-                    self.rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 9, 3), kind='cubic')
+                    self.rcel_mns[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[3][n_az][:, j], 5, 3), kind='cubic')
+                    self.rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
+                    self.rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
         else:
             print("Loading propagation model parameters from " + model_file + " without smoothing.")
             for n_az in range(self.az_bin_cnt):
@@ -634,8 +637,7 @@ class PathGeometryModel(object):
 
 
 class TLossModel(object):
-    az_bin_cnt = 8
-    az_bin_wdth = 60.0
+    az_bin_cnt, az_bin_wdth = 16, 30.0
     
     def __init__(self):
         self.rng_vals = [0]

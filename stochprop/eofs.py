@@ -428,9 +428,10 @@ def compute_seasonality(overlap_file, eofs_path, file_id=None):
 
     f, (ax1) = plt.subplots(1, 1)
     den = hierarchy.dendrogram(links, orientation="right", ax=ax1, labels=[calendar.month_abbr[n] for n in range(1, 13)])
+    plt.title(file_id.rpartition('/')[-1])
     if file_id:
         plt.savefig(file_id + "-seasonality.png", dpi=300)
-    plt.show(block=False)
+    plt.show(block=False)    
     plt.pause(5.0)
     plt.close('all')
 
@@ -570,7 +571,7 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, outpu
 
         for pn in range(prof_cnt):
             sampled_cTs[pn] = sampled_cTs[pn] + sampled_coeffs[pn] * cT_eofs[:, eof_id + 1]
-            sampled_cTs[pn] = sampled_cTs[pn] + sampled_coeffs[pn] * cp_eofs[:, eof_id + 1]
+            sampled_cps[pn] = sampled_cps[pn] + sampled_coeffs[pn] * cp_eofs[:, eof_id + 1]
 
             sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
@@ -630,7 +631,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
         kernel = gaussian_kde(coeffs[:, n])
         lims = define_coeff_limits(coeffs[:, n])
         
-        c_vals = np.linspace(lims[0], lims[1], 1001)
+        c_vals = np.linspace(lims[0], lims[1], 5001)
         coeff_ml = c_vals[np.argmax(kernel.pdf(c_vals))]
         
         cT_ml = cT_ml + coeff_ml * cT_eofs[:, n + 1]
