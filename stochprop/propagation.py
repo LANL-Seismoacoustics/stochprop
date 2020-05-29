@@ -76,33 +76,36 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             dir_files = os.listdir(profs_path)
             for file_name in dir_files:
                 if fnmatch.fnmatch(file_name, pattern):
-                    print("Generating ray paths for " + file_name)
                     file_id = os.path.splitext(file_name)[0]
 
-                    if cpu_cnt:
-                        command = "mpirun --oversubscribe -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+                    if os.path.isfile(profs_path + "/" + file_id + ".arrivals.dat"):
+                        print("InfraGA/GeoAc arrivals for " + file_name + " already finished...")
                     else:
-                        command = infraga_path + " infraga-" + geom + " -prop "
+                        print("Generating ray paths for " + file_name)
+                        if cpu_cnt:
+                            command = "mpirun --oversubscribe -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+                        else:
+                            command = infraga_path + " infraga-" + geom + " -prop "
             
-                    command = command + profs_path + "/" + file_name
-                    command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
-                    command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
-                    if geom == "sph":
-                        command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
-                    command = command + " src_alt=" + str(src_loc[2])
-                    command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
-                    command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" 
+                        command = command + profs_path + "/" + file_name
+                        command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
+                        command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
+                        if geom == "sph":
+                            command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
+                        command = command + " src_alt=" + str(src_loc[2])
+                        command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
+                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" 
 
-                    print(command)
-                    os.system(command)
+                        print(command)
+                        os.system(command)
     
             command = "cat " + profs_path + "/*.arrivals.dat > " + results_file
             print(command)
             os.system(command)
     
-            command = "rm "  + profs_path + "/*.dat"
-            print(command)
-            os.system(command)
+            # command = "rm "  + profs_path + "/*.dat"
+            # print(command)
+            # os.system(command)
 
 
 def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths=[-180.0, 180.0, 6.0], freqs=[0.1, 1.0, 10], z_grnd=0.0, rng_max=1000.0, ncpaprop_path=""):
