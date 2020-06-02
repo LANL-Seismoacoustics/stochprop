@@ -32,13 +32,9 @@ if __name__ == '__main__':
     #          with some uncertainty          #
     # ####################################### #
     if not os.path.isfile(eofs_path + "-singular_values.dat"):
-        print("eofs/" + run_id + "-singular_values.dat doesn't exist  --->  run eof_analysis.py first to build EOFs")
+        print(eofs_path + "-singular_values.dat doesn't exist  --->  run eof_analysis.py first to build EOFs")
     else:
         for N in fit_eof_cnts:
             eofs.fit_atmo(prof_path, eofs_path, "eof_fit-N=" + str(N) + ".met", eof_cnt=N)
 
         eofs.perturb_atmo(prof_path, eofs_path, "eof_perturb", uncertainty=uncertainty, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=smpl_cnt)
-
-
-
-

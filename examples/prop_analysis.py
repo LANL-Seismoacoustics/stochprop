@@ -6,7 +6,7 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
-import os
+import subprocess
 
 import numpy as np
 
@@ -39,18 +39,18 @@ if __name__ == '__main__':
     #            geometry statistics             #
     # ########################################## #
     if not os.path.isdir(results_dir):
-        os.system("mkdir " + results_dir)
+        subprocess.call("mkdir " + results_dir, shell=True)
 
     for season in season_labels:
         if not os.path.isdir(results_dir + "/" + season):
-            os.system("mkdir " + results_dir + "/" + season)
+            subprocess.call("mkdir " + results_dir + "/" + season, shell=True)
 
         propagation.run_infraga(sample_dirs + "/" + season, results_dir + "/" + season + "/" + season + ".arrivals.dat", cpu_cnt=cpu_cnt, geom="sph", inclinations=[5.0, 45.0, 1.5], azimuths=azimuths, src_loc=src_loc)
         pgm = propagation.PathGeometryModel()
         pgm.build(results_dir + "/" + season + "/" + season + ".arrivals.dat", results_dir + "/" + season + "/" + season + ".pgm", show_fits=False, geom="sph", src_loc=src_loc)
-        pgm.load(results_dir + "/" + season + "/" + season +  ".pgm", smooth=True)
+        pgm.load(results_dir + "/" + season + "/" + season + ".pgm", smooth=True)
         pgm.display(file_id=(results_dir + "/" + season + "/" + season), subtitle=season)
-        
+
         '''
         propagation.run_modess(sample_dirs + "/" + season, results_dir + "/" + season + "/" + season, azimuths=azimuths, freqs=freqs)
         tlm = propagation.TLossModel()
