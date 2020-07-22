@@ -1,9 +1,10 @@
 # eofs.py
 #
-# Methods to construct a singular value decomposition (SVD) from a set of
-# G2S profiles and define empirical orthogonal functions.  Also included
-# are methods to compute coefficient values for the profiles and define
-# statistics of those coefficients to randomly sample the atmosphere state
+# Methods to construct a singular value decomposition (SVD) of a set of
+# G2S profiles and define empirical orthogonal functions (EOFs).  Also included
+# are methods to compute coefficient values for the profiles and estimate
+# statistics of those coefficients to generate atmospheric samples for
+# different seasons
 #
 # Philip Blom (pblom@lanl.gov)
 
@@ -28,7 +29,7 @@ gam = 1.4
 gamR = gam * 287.06
 
 
-def profiles_qc(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
+def profiles_qc(path, pattern="*.met", skiprows=0):
     """
         Runs a quality control (QC) check on profiles in the path
         matching the pattern.  It can optionally plot the bad
@@ -44,8 +45,6 @@ def profiles_qc(path, pattern="*.met", skiprows=0, plot_bad_profs=False):
             Pattern defining the list of profiles in the path
         skiprows : int
             Number of header rows in the profiles
-        plot_bad_profs : boolean
-            Flag to plot bad profiles identified in the analysis
     """
 
     print("Running QC on profiles in " + path + " matching pattern " + pattern + "...")
@@ -781,21 +780,22 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
 
     eof_mask = np.logical_and(alt_min <= u_eofs[:, 0], u_eofs[:, 0] <= alt_max)
     ref_mask = np.logical_and(alt_min <= ref_atmo[:, 0], ref_atmo[:, 0] <= alt_max)
+
     z_vals = np.copy(ref_atmo[:, 0][ref_mask])
 
     # interpolate the eofs and use random coefficients to generate perturbations
-    cT_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
-    cp_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
-    u_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
-    v_perturb_all = np.empty((sample_cnt, len(u_eofs[:, 0][eof_mask])))
+    cT_perturb_all = np.empty((sample_cnt, len(z_vals)))
+    cp_perturb_all = np.empty((sample_cnt, len(z_vals)))
+    u_perturb_all = np.empty((sample_cnt, len(z_vals)))
+    v_perturb_all = np.empty((sample_cnt, len(z_vals)))
 
     for m in range(sample_cnt):
         wts = np.empty(eof_cnt)
 
-        cT_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
-        cp_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
-        u_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
-        v_perturb = np.zeros((eof_cnt, len(u_eofs[:, 0][eof_mask])))
+        cT_perturb = np.zeros((eof_cnt, len(z_vals)))
+        cp_perturb = np.zeros((eof_cnt, len(z_vals)))
+        u_perturb = np.zeros((eof_cnt, len(z_vals)))
+        v_perturb = np.zeros((eof_cnt, len(z_vals)))
 
         for j, n in enumerate(np.random.choice(range(eof_max), eof_cnt, replace=False)):
             coeff_val = np.random.randn()
@@ -817,8 +817,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
         u_perturb_all[m] = np.average(u_perturb, axis=0, weights=wts)
         v_perturb_all[m] = np.average(v_perturb, axis=0, weights=wts)
 
-    wind_perturbation = np.sqrt(u_perturb_all**2 + v_perturb_all**2)
-    mid_alt_mask = np.logical_and(30.0 <= u_eofs[:, 0][eof_mask], u_eofs[:, 0][eof_mask] <= 90.0)
+    scaling = uncertainty / (np.sqrt(2.0) * np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
 
     for m in range(sample_cnt):
         T_vals = np.copy(ref_atmo[:, 1][ref_mask])
@@ -830,10 +829,10 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
         cT_vals = np.sqrt(gamR * T_vals)
         cp_vals = np.sqrt(gam / 10.0 * p_vals / d_vals)
 
-        cT_vals = cT_vals + cT_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
-        cp_vals = cp_vals + cp_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
-        u_vals = u_vals + u_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
-        v_vals = v_vals + v_perturb_all[m] * (uncertainty / (np.average(wind_perturbation[:, mid_alt_mask]) * 2.0))
+        cT_vals = cT_vals + cT_perturb_all[m] * scaling
+        cp_vals = cp_vals + cp_perturb_all[m] * scaling
+        u_vals = u_vals + u_perturb_all[m] * scaling
+        v_vals = v_vals + v_perturb_all[m] * scaling
 
         T_vals = cT_vals**2 / gamR
         p_vals = d_vals * cp_vals**2 / (gam / 10.0)

@@ -27,12 +27,11 @@ import matplotlib.pyplot as plt
 
 sph_proj = Geod(ellps='sphere')
 
-
 # ############################## #
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=50, inclinations=[0.5, 45.0, 1.5], azimuths=[-180.0, 180.0, 6.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=""):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=""):
     """
         Run the infraga -prop algorithm to compute path geometry
             statistics for BISL using a suite of specifications
@@ -49,7 +48,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
         cpu_cnt : int
             Number of threads to use in OpenMPI implementation.  None runs non-OpenMPI version of infraga
         geom : string
-            Defines geometry of the infraga simulations ("2d", "3d", or "sph")
+            Defines geometry of the infraga simulations (3d" or "sph")
         bounces : int
             Maximum number of ground reflections to consider in ray tracing
         inclinations : iterable object
@@ -64,6 +63,8 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             Maximum propagation range for propagation paths
         src_loc : iterable object
             The horizontal (latitude and longitude) and altitude of the source
+        infraga_path : string
+            Location of infraGA executables
         """
 
     if os.path.isfile(results_file):
@@ -108,7 +109,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             # subprocess.call(command, shell=True)
 
 
-def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths=[-180.0, 180.0, 6.0], freqs=[0.1, 1.0, 10], z_grnd=0.0, rng_max=1000.0, ncpaprop_path=""):
+def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path=""):
     """
         Run the NCPAprop normal mode methods to compute transmission
             loss values for a suite of atmospheric specifications at
@@ -124,8 +125,8 @@ def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths
             Pattern identifying atmospheric specification within profs_path location
         azimuths : iterable object
             Iterable of starting, ending, and step for propagation azimuths
-        freqs : float
-            Iterable of starting, ending, and step for frequencies
+        freq : float
+            Frequency for simulation
         z_grnd : float
             Elevation of the ground surface relative to sea level
         rng_max : float
@@ -133,29 +134,30 @@ def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths
         """
 
     dir_files = os.listdir(profs_path)
-    for fn in np.logspace(np.log10(freqs[0]), np.log10(freqs[1]), freqs[2]):
-        if os.path.isfile(results_path + "_%.3f" % fn + ".lossless.nm"):
-            print(results_path + "_%.3f" % fn + ".lossless.nm alraedy exists  --->  Skipping NCPAprop modess runs...")
-        else:
-            for file_name in dir_files:
-                if fnmatch.fnmatch(file_name, pattern):
-                    file_id = os.path.splitext(file_name)[0]
 
-                    print('\t' + "Running NCPAprop modess for " + profs_path + "/" + file_name + " at " + "%.3f" % fn + " Hz...")
-                    command = ncpaprop_path + "Modess --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines 0 --freq " + str(fn)
-                    command = command + " --Nby2Dprop --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
-                    command = command + "  --maxrange_km " + str(rng_max) + "--zground_km " + str(z_grnd) + " > /dev/null &"
-                    subprocess.call(command, shell=True)
+    if os.path.isfile(results_path + "_%.3f" % freq + ".lossless.nm"):
+        print(results_path + "_%.3f" % freq + ".lossless.nm alraedy exists  --->  Skipping NCPAprop modess runs...")
+    else:
+        for file_name in dir_files:
+            if fnmatch.fnmatch(file_name, pattern):
+                file_id = os.path.splitext(file_name)[0]
 
-                    subprocess.call("mv Nby2D_tloss_1d.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % fn + "Hz.lossless.nm", shell=True)
-                    subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % fn + "Hz.nm", shell=True)
+                print('\t' + "Running NCPAprop modess for " + profs_path + "/" + file_name + " at " + "%.3f" % freq + " Hz...")
+                command = ncpaprop_path + "Modess --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines 0 --freq " + str(freq)
+                command = command + " --Nby2Dprop --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
+                command = command + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) # + " > /dev/null &"
+                print(command)
+                subprocess.call(command, shell=True)
 
-            print('\t' + "Combining transmission loss predictions..." + '\n')
-            subprocess.call("cat " + profs_path + "/*_%.3f" % fn + "Hz.lossless.nm > " + results_path + "_%.3f" % fn + ".lossless.nm", shell=True)
-            subprocess.call("rm " + profs_path + "/*_%.3f" % fn + "Hz.lossless.nm", shell=True)
+                subprocess.call("mv Nby2D_tloss_1d.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
+                subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
 
-            subprocess.call("cat " + profs_path + "/*_%.3f" % fn + "Hz.nm > " + results_path + "_%.3f" % fn + ".nm", shell=True)
-            subprocess.call("rm " + profs_path + "/*_%.3f" % fn + "Hz.nm", shell=True)
+        print('\t' + "Combining transmission loss predictions..." + '\n')
+        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + "_%.3f" % freq + ".lossless.nm", shell=True)
+        subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm", shell=True)
+
+        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + "_%.3f" % freq + ".nm", shell=True)
+        subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.nm", shell=True)
 
 
 # ############################ #
@@ -165,7 +167,7 @@ def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths
 az_dirs = ['S', 'SW', 'W', 'NW', 'N', 'NE', 'E', 'SE']
 
 
-def find_azimuth_bin(az, bin_cnt=8):
+def find_azimuth_bin(az, bin_cnt=16):
     reduced = np.degrees(np.arctan2(np.sin(np.radians(az)), np.cos(np.radians(az))))
     bins = np.arange(-180.0, 180.0, 360.0 / (bin_cnt * 2.0))
 
