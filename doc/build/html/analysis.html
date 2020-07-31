@@ -1,0 +1,254 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Stochastic Propagation Analysis &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Empirical Orthogonal Function Analysis" href="eofs.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Stochastic Propagation Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="eofs.html">Empirical Orthogonal Function Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sampling.html">Atmospheric Fitting, Sampling, and Perturbation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="propagation.html">Propagation Statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stochprop.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">stochprop</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Stochastic Propagation Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/analysis.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="stochastic-propagation-analysis">
+<span id="analysis"></span><h1>Stochastic Propagation Analysis<a class="headerlink" href="#stochastic-propagation-analysis" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>The atmospheric state at a given time and location is uncertainty due to its dynamic and poorly sampled nature</p></li>
+<li><p>Propagation effects for infrasonic signals must also include this uncertainty in order to properly quantify uncertainty in analysis results</p></li>
+<li><p>A methodology of constructing propagation statistics has been developed that identifies a suite of atmospheric states that characterize the possible space of scenarios, runs propagation simulations through each possible state, and builds statistical distributions for propagation effects</p></li>
+</ul>
+<div class="align-center figure" id="id1">
+<a class="reference internal image-reference" href="_images/stochprop_fig1.jpg"><img alt="alternate text" src="_images/stochprop_fig1.jpg" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<ul class="simple">
+<li><p>The tools included here provide a framework for constructing such models as well as perform a number of other analyses related to atmospheric variability and uncertainty</p></li>
+</ul>
+<div class="section" id="eofs">
+<h2><a class="reference internal" href="eofs.html#eofs"><span class="std std-ref">Empirical Orthogonal Function Analysis</span></a><a class="headerlink" href="#eofs" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Empirical Orthogonal Functions (EOFs) provide a mathematical means of measuring variations in the atmospheric state</p></li>
+<li><p>Methods measure EOF statistics to reduce the number of atmospheric samples necessary to characterize the atmosphere at a given location during a specified time period</p></li>
+</ul>
+</div>
+<div class="section" id="sampling">
+<h2><a class="reference internal" href="sampling.html#sampling"><span class="std std-ref">Atmospheric Fitting, Sampling, and Perturbation</span></a><a class="headerlink" href="#sampling" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>EOFs can be used to fit a specified atmosphere by computing coefficients for each EOF</p></li>
+<li><p>Statistics of the coefficients for a suite of atmospheric states can be used to generate a set of characteristics samples</p></li>
+<li><p>Randomly generated EOF coefficients can be used to generate perturbations to an initial atmospheric specification to generate a suite of atmospheric states that fall within expected uncertainty</p></li>
+</ul>
+</div>
+<div class="section" id="propagation">
+<h2><a class="reference internal" href="propagation.html#propagation"><span class="std std-ref">Propagation Statistics</span></a><a class="headerlink" href="#propagation" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>InfraGA/GeoAc ray tracing analysis can be applied to a suite of atmospheric states to predict geometric propagation characteristics such as arrival location, travel time, and direction of arrival needed to estimate the source location</p></li>
+<li><p>NCPAprop modal simulations can be applied to a suite of atmospheric states to predict finite frequency transmission loss needed to characterize the infrasonic source</p>
+<blockquote>
+<div><div class="toctree-wrapper compound">
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="eofs.html" class="btn btn-neutral float-right" title="Empirical Orthogonal Function Analysis" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Philip Blom
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

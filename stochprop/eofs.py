@@ -1,10 +1,11 @@
 # eofs.py
 #
 # Methods to construct a singular value decomposition (SVD) of a set of
-# G2S profiles and define empirical orthogonal functions (EOFs).  Also included
-# are methods to compute coefficient values for the profiles and estimate
-# statistics of those coefficients to generate atmospheric samples for
-# different seasons
+# G2S profiles and define empirical orthogonal functions (EOFs).  Also 
+# included are methods to compute coefficient values for the profiles and
+# estimate statistics of those coefficients to generate atmospheric 
+# samples for different seasons.  Lastly, tools are included to perturb
+# an initial atmospheric state given some specified level of uncertainty.
 #
 # Philip Blom (pblom@lanl.gov)
 
@@ -39,11 +40,11 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 
         Parameters
         ----------
-        path : string
+        path: string
             Path to the profiles to be QC'd
-        pattern : string
+        pattern: string
             Pattern defining the list of profiles in the path
-        skiprows : int
+        skiprows: int
             Number of header rows in the profiles
     """
 
@@ -74,23 +75,23 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
     """
         Read in a list of atmosphere files from the path location
-            matching a specified pattern for continued analysis.
+        matching a specified pattern for continued analysis.
 
         Parameters
         ----------
-        path : string
+        path: string
             Path to the profiles to be loaded
-        pattern : string
+        pattern: string
             Pattern defining the list of profiles in the path
-        skiprows : int
+        skiprows: int
             Number of header rows in the profiles
-        ref_alts : 1darray
+        ref_alts: 1darray
             Reference altitudes if comparison is needed
 
-        Returns:
-        A : 2darray
-            Atmosphere array of size M x (5 * N) for M atmospheres
-                where each atmosphere samples N altitudes
+        Returns
+        -------
+        A: 2darray
+            Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes
     """
 
     print('\t' + "Loading profiles from " + path + " with pattern: " + pattern)
@@ -148,23 +149,23 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
         return None, None
 
 
-def compute_svd(A, alts, output_path, eof_cnt=100):
+def compute_eofs(A, alts, output_path, eof_cnt=100):
     """
         Computes the singular value decomposition (SVD)
-            of an atmosphere set read into an array by
-            stochprop.eofs.build_atmo_matrix() and saves
-            the basis functions (empirical orthogonal
-            functions) and singular values to file
+        of an atmosphere set read into an array by
+        stochprop.eofs.build_atmo_matrix() and saves
+        the basis functions (empirical orthogonal
+        functions) and singular values to file
 
         Parameters
         ----------
-        A : 2darray
+        A: 2darray
             Suite of atmosphere specifications from build_atmo_matrix
-        alts : 1darray
+        alts: 1darray
             Altitudes at which the atmosphere is sampled from build_atmo_matrix
-        output_path : string
+        output_path: string
             Path to output the SVD results
-        eof_cnt : int
+        eof_cnt: int
             Number of basic functions to save
     """
 
@@ -262,27 +263,27 @@ def compute_svd(A, alts, output_path, eof_cnt=100):
 def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     """
         Compute the EOF coefficients for a suite of atmospheres
-            and store the coefficient values.
+        and store the coefficient values.
 
         Parameters
         ----------
-        A : 2darray
+        A: 2darray
             Suite of atmosphere specifications from build_atmo_matrix
-        alts : 1darray
+        alts: 1darray
             Altitudes at which the atmosphere is sampled from build_atmo_matrix
-        eofs_path : string
-            Path to the .eof results from compute_svd
-        output_path : string
+        eofs_path: string
+            Path to the .eof results from compute_eofs
+        output_path: string
             Path where output will be stored
-        eof_cnt : int
+        eof_cnt: int
             Number of EOFs to consider in computing coefficients
-        pool : pathos.multiprocessing.ProcessingPool
+        pool: pathos.multiprocessing.ProcessingPool
             Multiprocessing pool for accelerating calculations
 
-        Returns:
-        coeffs : 2darray
-            Array containing coefficient values of size prof_cnt
-                by eof_cnt.  Result is also written to file.
+        Returns
+        -------
+        coeffs: 2darray
+            Array containing coefficient values of size prof_cnt by eof_cnt.  Result is also written to file.
     """
 
     print('\t' + "Computing EOF coefficients for profiles...")
@@ -357,16 +358,16 @@ def compute_overlap(coeffs, eof_cnt=100):
 
         Parameters
         ----------
-        coeffs : list of 2darrays
+        coeffs: list of 2darrays
             List of 2darrays containing coefficients to consider
                 overlap in PDF of values
-        eof_cnt : int
+        eof_cnt: int
             Number of EOFs to compute
 
-        Returns:
-        overlap : 3darray
-            Array containing overlap values of size coeff_cnt
-                by coeff_cnt by eof_cnt
+        Returns
+        -------
+        overlap: 3darray
+            Array containing overlap values of size coeff_cnt by coeff_cnt by eof_cnt
     """
 
     print("-" * 50 + '\n' + "Computing coefficient PDF overlap...")
@@ -399,15 +400,15 @@ def compute_overlap(coeffs, eof_cnt=100):
 
 def compute_seasonality(overlap_file, eofs_path, file_id=None):
     """
-        Compute the overlap of EOF coefficients for
+        Compute the overlap of EOF coefficients to identify seasonality
 
         Parameters
         ----------
-        overlap_file : string
+        overlap_file: string
             Path and name of file containing results of stochprop.eofs.compute_overlap
-        eofs_path : string
-            Path to the .eof results from compute_svd
-        file_id : string
+        eofs_path: string
+            Path to the .eof results from compute_eofs
+        file_id: string
             Path and ID to save the dendrogram result of the overlap analysis
     """
 
@@ -441,11 +442,12 @@ def define_coeff_limits(coeff_vals):
 
         Parameters
         ----------
-        coeff_vals : 2darrays
+        coeff_vals: 2darrays
             Coefficients computed with stochprop.eofs.compute_coeffs
 
-        Returns:
-        lims : 1darray
+        Returns
+        -------
+        lims: 1darray
             Lower and upper bounds of coefficient value distribution
     """
 
@@ -460,15 +462,16 @@ def build_cdf(pdf, lims, pnts=250):
 
         Parameters
         ----------
-        pdf : function
+        pdf: function
             Probability distribution function (PDF) for a single variable
-        lims : 1darray
+        lims: 1darray
             Iterable containing lower and upper bound for integration
-        pnts : int
+        pnts: int
             Number of points to consider in defining the cumulative distribution
 
-        Returns:
-        cfd : interp1d
+        Returns
+        -------
+        cfd: interp1d
             Interpolated results for the cdf
     """
 
@@ -485,21 +488,22 @@ def build_cdf(pdf, lims, pnts=250):
 def draw_from_pdf(pdf, lims, cdf=None, size=1):
     """
         Sample a number of values from a probability distribution
-            function (pdf) with specified limits
+        function (pdf) with specified limits
 
         Parameters
         ----------
-        pdf : function
+        pdf: function
             Probability distribution function (PDF) for a single variable
-        lims : 1darray
+        lims: 1darray
             Iterable containing lower and upper bound for integration
-        cdf : function
+        cdf: function
             Cumulative distribution function (CDF) from stochprop.eofs.build_cfd
-        size : int
+        size: int
             Number of samples to generate
 
-        Returns:
-        samples : 1darray
+        Returns
+        -------
+        samples: 1darray
             Sampled values from the PDF
     """
 
@@ -520,21 +524,21 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
 def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, output_mean=False):
     """
         Generate atmosphere states using coefficient distributions for
-            a set of empirical orthogonal basis functions
+        a set of empirical orthogonal basis functions
 
         Parameters
         ----------
-        coeffs : 2darrays
+        coeffs: 2darrays
             Coefficients computed with stochprop.eofs.compute_coeffs
-        eofs_path : string
-            Path to the .eof results from compute_svd
-        output_path : string
+        eofs_path: string
+            Path to the .eof results from compute_eofs
+        output_path: string
             Path where output will be stored
-        eof_cnt : int
+        eof_cnt: int
             Number of EOFs to use in building sampled specifications
-        prof_cnt : int
+        prof_cnt: int
             Number of atmospheric specification samples to generate
-        output_mean : bool
+        output_mean: bool
             Flag to output the mean profile from the samples generated
     """
 
@@ -589,17 +593,17 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, outpu
 def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
     """
         Use coefficient distributions for a set of empirical orthogonal
-            basis functions to compute the maximum likelihood specification
+        basis functions to compute the maximum likelihood specification
 
         Parameters
         ----------
-        coeffs : 2darrays
+        coeffs: 2darrays
             Coefficients computed with stochprop.eofs.compute_coeffs
-        eofs_path : string
-            Path to the .eof results from compute_svd
-        output_path : string
+        eofs_path: string
+            Path to the .eof results from compute_eofs
+        output_path: string
             Path where output will be stored
-        eof_cnt : int
+        eof_cnt: int
             Number of EOFs to use in building sampled specifications
     """
 
@@ -652,19 +656,19 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
 def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     """
         Compute a given number of EOF coefficients to fit a given
-            atmophere specification using the basic functions.  Write
-            the resulting approximated atmospheric specification to
-            file.
+        atmophere specification using the basic functions.  Write
+        the resulting approximated atmospheric specification to
+        file.
 
         Parameters
         ----------
-        prof_path : string
+        prof_path: string
             Path and name of the specification to be fit
-        eofs_path : string
-            Path to the .eof results from compute_svd
-        output_path : string
+        eofs_path: string
+            Path to the .eof results from compute_eofs
+        output_path: string
             Path where output will be stored
-        eof_cnt : int
+        eof_cnt: int
             Number of EOFs to use in building approximate specification
     """
 
@@ -745,23 +749,23 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
 
         Parameters
         ----------
-        prof_path : string
+        prof_path: string
             Path and name of the specification to be fit
-        eofs_path : string
-            Path to the .eof results from compute_svd
-        output_path : string
+        eofs_path: string
+            Path to the .eof results from compute_eofs
+        output_path: string
             Path where output will be stored
-        uncertainty : float
+        uncertainty: float
             Estimate of uncertainty in wind speeds; 95% confidence is set to this value
-        eof_max : int
+        eof_max: int
             Higher numbered EOF to sample
-        eof_cnt : int
+        eof_cnt: int
             Number of EOFs to sample in the perturbation (can be less than eof_max)
-        sample_cnt : int
+        sample_cnt: int
             Number of perturbed atmospheric samples to generate
-        alt_wt_pow : float
+        alt_wt_pow: float
             Power raising relative mean altitude value in weighting
-        sing_val_wt_pow : float
+        sing_val_wt_pow: float
             Power raising relative singular value in weighting
     """
 

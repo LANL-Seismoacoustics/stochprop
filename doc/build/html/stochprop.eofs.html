@@ -1,0 +1,533 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Empirical Orthogonal Function Analysis &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Propagation Statistics" href="stochprop.propagation.html" />
+    <link rel="prev" title="API" href="stochprop.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="stochprop.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Empirical Orthogonal Function Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html">Propagation Statistics</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">stochprop</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="stochprop.html">API</a> &raquo;</li>
+        
+      <li>Empirical Orthogonal Function Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/stochprop.eofs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="empirical-orthogonal-function-analysis">
+<h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-stochprop.eofs"></span><dl class="function">
+<dt id="stochprop.eofs.build_atmo_matrix">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">build_atmo_matrix</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">pattern='*.met'</em>, <em class="sig-param">skiprows=0</em>, <em class="sig-param">ref_alts=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_atmo_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.build_atmo_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read in a list of atmosphere files from the path location
+matching a specified pattern for continued analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path: string</strong></dt><dd><p>Path to the profiles to be loaded</p>
+</dd>
+<dt><strong>pattern: string</strong></dt><dd><p>Pattern defining the list of profiles in the path</p>
+</dd>
+<dt><strong>skiprows: int</strong></dt><dd><p>Number of header rows in the profiles</p>
+</dd>
+<dt><strong>ref_alts: 1darray</strong></dt><dd><p>Reference altitudes if comparison is needed</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>A: 2darray</dt><dd><p>Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.build_cdf">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">build_cdf</code><span class="sig-paren">(</span><em class="sig-param">pdf</em>, <em class="sig-param">lims</em>, <em class="sig-param">pnts=250</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_cdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.build_cdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the cumulative distribution of a pdf within specified limits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pdf: function</strong></dt><dd><p>Probability distribution function (PDF) for a single variable</p>
+</dd>
+<dt><strong>lims: 1darray</strong></dt><dd><p>Iterable containing lower and upper bound for integration</p>
+</dd>
+<dt><strong>pnts: int</strong></dt><dd><p>Number of points to consider in defining the cumulative distribution</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>cfd: interp1d</dt><dd><p>Interpolated results for the cdf</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.compute_coeffs">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">compute_coeffs</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">alts</em>, <em class="sig-param">eofs_path</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em>, <em class="sig-param">pool=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_coeffs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the EOF coefficients for a suite of atmospheres
+and store the coefficient values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A: 2darray</strong></dt><dd><p>Suite of atmosphere specifications from build_atmo_matrix</p>
+</dd>
+<dt><strong>alts: 1darray</strong></dt><dd><p>Altitudes at which the atmosphere is sampled from build_atmo_matrix</p>
+</dd>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of EOFs to consider in computing coefficients</p>
+</dd>
+<dt><strong>pool: pathos.multiprocessing.ProcessingPool</strong></dt><dd><p>Multiprocessing pool for accelerating calculations</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>coeffs: 2darray</dt><dd><p>Array containing coefficient values of size prof_cnt by eof_cnt.  Result is also written to file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.compute_overlap">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">compute_overlap</code><span class="sig-paren">(</span><em class="sig-param">coeffs</em>, <em class="sig-param">eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the overlap of EOF coefficient distributions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coeffs: list of 2darrays</strong></dt><dd><dl class="simple">
+<dt>List of 2darrays containing coefficients to consider</dt><dd><p>overlap in PDF of values</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of EOFs to compute</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>overlap: 3darray</dt><dd><p>Array containing overlap values of size coeff_cnt by coeff_cnt by eof_cnt</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.compute_seasonality">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">compute_seasonality</code><span class="sig-paren">(</span><em class="sig-param">overlap_file</em>, <em class="sig-param">eofs_path</em>, <em class="sig-param">file_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_seasonality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_seasonality" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the overlap of EOF coefficients to identify seasonality</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>overlap_file: string</strong></dt><dd><p>Path and name of file containing results of stochprop.eofs.compute_overlap</p>
+</dd>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+</dd>
+<dt><strong>file_id: string</strong></dt><dd><p>Path and ID to save the dendrogram result of the overlap analysis</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.compute_svd">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">compute_svd</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">alts</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_svd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_svd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the singular value decomposition (SVD)
+of an atmosphere set read into an array by
+stochprop.eofs.build_atmo_matrix() and saves
+the basis functions (empirical orthogonal
+functions) and singular values to file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A: 2darray</strong></dt><dd><p>Suite of atmosphere specifications from build_atmo_matrix</p>
+</dd>
+<dt><strong>alts: 1darray</strong></dt><dd><p>Altitudes at which the atmosphere is sampled from build_atmo_matrix</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path to output the SVD results</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of basic functions to save</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.define_coeff_limits">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">define_coeff_limits</code><span class="sig-paren">(</span><em class="sig-param">coeff_vals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#define_coeff_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.define_coeff_limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute upper and lower bounds for coefficient values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coeff_vals: 2darrays</strong></dt><dd><p>Coefficients computed with stochprop.eofs.compute_coeffs</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>lims: 1darray</dt><dd><p>Lower and upper bounds of coefficient value distribution</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.draw_from_pdf">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">draw_from_pdf</code><span class="sig-paren">(</span><em class="sig-param">pdf</em>, <em class="sig-param">lims</em>, <em class="sig-param">cdf=None</em>, <em class="sig-param">size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#draw_from_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.draw_from_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sample a number of values from a probability distribution
+function (pdf) with specified limits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pdf: function</strong></dt><dd><p>Probability distribution function (PDF) for a single variable</p>
+</dd>
+<dt><strong>lims: 1darray</strong></dt><dd><p>Iterable containing lower and upper bound for integration</p>
+</dd>
+<dt><strong>cdf: function</strong></dt><dd><p>Cumulative distribution function (CDF) from stochprop.eofs.build_cfd</p>
+</dd>
+<dt><strong>size: int</strong></dt><dd><p>Number of samples to generate</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>samples: 1darray</dt><dd><p>Sampled values from the PDF</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.fit_atmo">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">fit_atmo</code><span class="sig-paren">(</span><em class="sig-param">prof_path</em>, <em class="sig-param">eofs_path</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#fit_atmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.fit_atmo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a given number of EOF coefficients to fit a given
+atmophere specification using the basic functions.  Write
+the resulting approximated atmospheric specification to
+file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>prof_path: string</strong></dt><dd><p>Path and name of the specification to be fit</p>
+</dd>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of EOFs to use in building approximate specification</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.maximum_likelihood_profile">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">maximum_likelihood_profile</code><span class="sig-paren">(</span><em class="sig-param">coeffs</em>, <em class="sig-param">eofs_path</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#maximum_likelihood_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.maximum_likelihood_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use coefficient distributions for a set of empirical orthogonal
+basis functions to compute the maximum likelihood specification</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coeffs: 2darrays</strong></dt><dd><p>Coefficients computed with stochprop.eofs.compute_coeffs</p>
+</dd>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of EOFs to use in building sampled specifications</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.perturb_atmo">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">perturb_atmo</code><span class="sig-paren">(</span><em class="sig-param">prof_path</em>, <em class="sig-param">eofs_path</em>, <em class="sig-param">output_path</em>, <em class="sig-param">uncertainty=10.0</em>, <em class="sig-param">eof_max=100</em>, <em class="sig-param">eof_cnt=50</em>, <em class="sig-param">sample_cnt=1</em>, <em class="sig-param">alt_wt_pow=2.0</em>, <em class="sig-param">sing_val_wt_pow=0.25</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#perturb_atmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.perturb_atmo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use EOFs to perturb a specified profile using a given scale</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>prof_path: string</strong></dt><dd><p>Path and name of the specification to be fit</p>
+</dd>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
+</dd>
+<dt><strong>uncertainty: float</strong></dt><dd><p>Estimate of uncertainty in wind speeds; 95% confidence is set to this value</p>
+</dd>
+<dt><strong>eof_max: int</strong></dt><dd><p>Higher numbered EOF to sample</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of EOFs to sample in the perturbation (can be less than eof_max)</p>
+</dd>
+<dt><strong>sample_cnt: int</strong></dt><dd><p>Number of perturbed atmospheric samples to generate</p>
+</dd>
+<dt><strong>alt_wt_pow: float</strong></dt><dd><p>Power raising relative mean altitude value in weighting</p>
+</dd>
+<dt><strong>sing_val_wt_pow: float</strong></dt><dd><p>Power raising relative singular value in weighting</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.profiles_qc">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">profiles_qc</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">pattern='*.met'</em>, <em class="sig-param">skiprows=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#profiles_qc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.profiles_qc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs a quality control (QC) check on profiles in the path
+matching the pattern.  It can optionally plot the bad
+profiles.  If it finds any, it makes a new direcotry
+in the path location called “bad_profs” and moves those
+profiles into the directory for you to check</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path: string</strong></dt><dd><p>Path to the profiles to be QC’d</p>
+</dd>
+<dt><strong>pattern: string</strong></dt><dd><p>Pattern defining the list of profiles in the path</p>
+</dd>
+<dt><strong>skiprows: int</strong></dt><dd><p>Number of header rows in the profiles</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.sample_atmo">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">sample_atmo</code><span class="sig-paren">(</span><em class="sig-param">coeffs</em>, <em class="sig-param">eofs_path</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em>, <em class="sig-param">prof_cnt=250</em>, <em class="sig-param">output_mean=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#sample_atmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.sample_atmo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate atmosphere states using coefficient distributions for
+a set of empirical orthogonal basis functions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coeffs: 2darrays</strong></dt><dd><p>Coefficients computed with stochprop.eofs.compute_coeffs</p>
+</dd>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of EOFs to use in building sampled specifications</p>
+</dd>
+<dt><strong>prof_cnt: int</strong></dt><dd><p>Number of atmospheric specification samples to generate</p>
+</dd>
+<dt><strong>output_mean: bool</strong></dt><dd><p>Flag to output the mean profile from the samples generated</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stochprop.propagation.html" class="btn btn-neutral float-right" title="Propagation Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="stochprop.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Philip Blom
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

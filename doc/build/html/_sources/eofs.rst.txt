@@ -1,0 +1,77 @@
+.. _eofs:
+
+=======================================
+Empirical Orthogonal Function Analysis
+=======================================
+
+* Empirical orthogonal functions (EOFs) are a mathematical tools useful for characterizing a set of vectors or functions sampled over a set of points.
+* Consider :math:`N` fields, :math:`a_n (\vec{z})`, sampled at :math:`M` points, :math:`z_m`:
+.. math::
+	A \left( \vec{z} \right) = 
+    \begin{pmatrix}
+    a_1 \left( z_1 \right) & a_2 \left( z_1 \right) 	& \cdots 	& a_N \left( z_1 \right) \\
+    a_1 \left( z_2 \right) & a_2 \left( z_2 \right) 	& \cdots 	& a_N \left( z_2 \right) \\
+    \vdots 				& \vdots					& \ddots	& \vdots 	 \\
+    a_1 \left( z_M \right) & a_2 \left( z_M \right)	& \cdots 	& a_N \left( z_M \right)
+    \end{pmatrix}
+    
+* Analysis of this :math:`N \times M` matrix to compute EOFs entails first extracting the mean set of values and then applying a singular value decomposition (SVD) to define singular values and orthogonal vectors
+.. math::
+    A \left( \vec{x} \right) 
+    \, \xrightarrow{\text{SVD}} \, 
+    \bar{a} \left( z_m \right), \mathcal{S}_n^{(a)}, \mathcal{E}_n^{(a)} \left( z_m \right)
+
+* The resulting EOF information can be used to reproduce any other other field sampled on the same set of points,
+.. math::
+	\hat{b} \left( x_m \right) = \bar{a} \left( x_m \right) + \sum_n{ \mathcal{C}_n^{(b)} \mathcal{E}_n^{(a)} \left( x_m \right)},
+	
+   	\mathcal{C}_n^{(b)} = \sum_m{\mathcal{E}_n^{(a)} \left( x_m \right) \left( b \left( x_m \right) - \bar{a} \left( x_m \right) \right)},
+
+* Note that the coefficients, :math:`\mathcal{C}_n^{(b)}`, are defined by the projection of the new function onto each EOF (accounting for the mean, :math:`\bar{a}`)
+
+* Lastly, consider a second matrix, :math:`B\left( \vec{z} \right)` defined by a set of :math:`K` fields, :math:`b_k \left( \vec{z} \right)`.  Each of these columns produces a set of coefficients that can be used to define a distribution via a kernel density estimate (KDE),
+
+.. math::
+    \left\{ \mathcal{C}_n^{(b_1)},  \mathcal{C}_n^{(b_2)}, \ldots, \mathcal{C}_n^{(b_K)} \right\}
+	\, \xrightarrow{\text{KDE}} \,
+	\mathcal{P}_n^{(B)} \left( \mathcal{C} \right).
+
+* In the case of EOF analysis for atmospheric states, each :math:`a_m(\vec{z})` is an atmospheric specification sampled at a set of altitudes, :math:`\vec{z}`, and the set of atmospheric states in :math:`A` includes the entire set of possible states.  The second set of atmospheres, :math:`B`, is a subset of :math:`A` selected to be those corresponding to a specific season or month or interest.  The coefficients for that subset provide the distribution of coefficients needed to generate samples of typical atmospheres during the time period used to define :math:`B`.
+
+
+************************
+EOF methods in stochprop
+************************
+* Overview of methods in :code:`stochprop.eofs`
+
+------------------------------
+Load Atmosphere Specifications
+------------------------------
+
+* Atmospheric specifications are available through a number of repositories including the Ground-to-Space (G2S) system, the (ECMWF), and others
+* A convenient source for G2S specifications the University of Mississippi's National Center for Physical Acoustics (NCPA) G2S server at http://g2s.ncpa.olemiss.edu
+
+.. code-block:: python
+
+    prof_dir = "dir/of/g2s/"
+    prof_prefix = "g2stxt_"
+    year_lims = [2010, 2016]
+    run_id = "example"
+    eof_cnt = 50
+
+
+-------------
+Building EOFs
+-------------
+
+* Discussion
+
+
+    
+
+----------------------------------------------
+Compute Coefficients and Determine Seasonality
+----------------------------------------------
+* Discussion...
+
+
