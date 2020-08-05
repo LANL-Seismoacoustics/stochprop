@@ -197,7 +197,7 @@ azimuth deviation/scatter statistics</p>
 </table>
 <dl class="method">
 <dt id="stochprop.propagation.PathGeometryModel.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom='3d', src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom='3d', src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct propagation statistics from a ray tracing arrival file (concatenated from
 multiple runs most likely) and output a path geometry model</p>
 <dl class="field-list simple">
@@ -218,6 +218,10 @@ multiple runs most likely) and output a path geometry model</p>
 <dt><strong>src_loc: iterable</strong></dt><dd><p>[x, y, z] or [lat, lon, elev] location of the source used in infraGA/GeoAc simulations.  Note: ‘3d’ simulations assume source at origin.</p>
 </dd>
 <dt><strong>min_turning_ht: float</strong></dt><dd><p>Minimum turning height used to filter out boundary layer paths if not of interest</p>
+</dd>
+<dt><strong>az_bin_cnt: int</strong></dt><dd><p>Number of azimuth bins to use in analysis</p>
+</dd>
+<dt><strong>az_bin_width: float</strong></dt><dd><p>Azimuth bin width in degrees for analysis</p>
 </dd>
 </dl>
 </dd>
@@ -356,7 +360,7 @@ at specified range, reciprocal celerity, and azimuth</p>
 </table>
 <dl class="method">
 <dt id="stochprop.propagation.TLossModel.build">
-<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">tloss_file</em>, <em class="sig-param">output_file</em>, <em class="sig-param">show_fits=False</em>, <em class="sig-param">use_coh=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.build" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">tloss_file</em>, <em class="sig-param">output_file</em>, <em class="sig-param">show_fits=False</em>, <em class="sig-param">use_coh=False</em>, <em class="sig-param">az_bin_cnt=16</em>, <em class="sig-param">az_bin_wdth=30.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
 multiple runs most likely) and output a transmission loss model</p>
 <dl class="field-list simple">
@@ -369,6 +373,10 @@ multiple runs most likely) and output a transmission loss model</p>
 <dt><strong>show_fits: boolean</strong></dt><dd><p>Option ot visualize model construction (for QC purposes)</p>
 </dd>
 <dt><strong>use_coh: boolean</strong></dt><dd><p>Option to use coherent transmission loss</p>
+</dd>
+<dt><strong>az_bin_cnt: int</strong></dt><dd><p>Number of azimuth bins to use in analysis</p>
+</dd>
+<dt><strong>az_bin_width: float</strong></dt><dd><p>Azimuth bin width in degrees for analysis</p>
 </dd>
 </dl>
 </dd>

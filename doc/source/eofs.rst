@@ -6,6 +6,7 @@ Empirical Orthogonal Function Analysis
 
 * Empirical orthogonal functions (EOFs) are a mathematical tool useful for characterizing a suite of vectors or functions via construction of basis vectors or functions.
 * Consider :math:`N` fields, :math:`a_n (\vec{z})`, sampled at :math:`M` points, :math:`z_m` that define a matrix,
+
 .. math::
 	A \left( \vec{z} \right) = 
     \begin{pmatrix}
@@ -15,13 +16,15 @@ Empirical Orthogonal Function Analysis
     a_1 \left( z_M \right) & a_2 \left( z_M \right)	& \cdots 	& a_N \left( z_M \right)
     \end{pmatrix}
     
-* Analysis of this :math:`N \times M` matrix to compute EOFs entails first extracting the mean set of values and then applying a singular value decomposition (SVD) to define singular values and orthogonal vectors
+* Analysis of this :math:`N \times M` matrix to compute EOFs entails first extracting the mean set of values and then applying a singular value decomposition (SVD) to define singular values and orthogonal functions,
+
 .. math::
     A \left( \vec{z} \right) 
     \, \xrightarrow{\text{SVD}} \, 
     \bar{a} \left( z_m \right), \mathcal{S}_n^{(a)}, \mathcal{E}_n^{(A)} \left( z_m \right)
 
 * The resulting EOF information can be used to reproduce any other other field sampled on the same set of points,
+
 .. math::
 	\hat{b} \left( z_m \right) = \bar{a} \left( z_m \right) + \sum_n{ \mathcal{C}_n^{(b)} \mathcal{E}_n^{(A)} \left( z_m \right)},
 	
@@ -82,6 +85,7 @@ Load Atmosphere Specifications
 
 	- For seasonal analysis, it is useful to initially separate atmospheric specifications by month.  Assuming subdirectories labeled "01", "02", "03", ... "12" contain profiles for January through December (see the subdirectories in the examples directory of the package), atmospheres can be ingested and combined using :code:`numpy.vstack`
 	- The optional argument, ref_alts, should be used to ensure a common vertical sampling if multiple directories are being ingested in this manner.
+
 	.. code-block:: python
 	
 		A, z0 = eofs.build_atmo_matrix("profs/01/", "g2stxt_*")
@@ -90,6 +94,7 @@ Load Atmosphere Specifications
 			A = np.vstack((A, A_temp))
 
 	- Alternately, if all profiles are contained within a common directory, ingestion can be completed using a single call,
+
 	.. code-block:: python
 
 		A, z0 = eofs.build_atmo_matrix("profs/", "g2stxt_*")
@@ -124,13 +129,25 @@ Computing EOFs
 
 * The EOF file formats is such that the first column contains the altitude points, :math:`\vec{z}`, and each subsequent column contains the :math:`n^{th}` EOF, :math:`\mathcal{E}_n^{(A)} \left( \vec{z} \right)`
 
-
 * As discussed in Waxler et al. (2020), the EOFs are computed using stacked wind and sound speed values to conserve coupling between the different atmospheric parameters and maintain consistent units (velocity) in the EOF coefficients
     
+* The resulting EOFs can be used for a number of analyses including atmospheric updating, seasonal studies, perturbation analysis, and similar analyses
+
+.. figure:: _static/_images/US_NE-eofs.png
+    :width: 1000px
+    :align: center
+    :alt: alternate text
+    :figclass: align-center
+    
+    Mean atmospheric states (left) and the first 10 EOFs for the adiabatic sound speed (upper row) and zonal and meridional winds (lower row, blue and red, respectively) for analysis of the atmosphere in the northeastern US
+
+
 ----------------------------------------------
 Compute Coefficients and Determine Seasonality
 ----------------------------------------------
-* Discussion...
+* Using the EOFs for the entire calendar year, coefficient sets can be defined for individual months (or other sub-intervals) using the :code:`stochprop.eofs.compute_coeffs` function.
+
+* For identification of seasonality by month, the coefficient sets are first computed for each individual month using:
 
 .. code-block:: python
 
@@ -139,13 +156,22 @@ Compute Coefficients and Determine Seasonality
         Am, zm = eofs.build_atmo_matrix("profs/{:02d}/".format(m), g2stxt_*")
         coeffs[m - 1] = eofs.compute_coeffs(Am, zm, "eofs/example", "coeffs/example_{:02d}".format(m), eof_cnt=eof_cnt)
 
-* More discussion...
+* The resulting coefficient sets are analyzed using :code:`stochprop.eofs.compute_overlap` to identify how similar various month pairs are:
 
 .. code-block:: python
 
     overlap = eofs.compute_overlap(coeffs, eof_cnt=eof_cnt)    
     eofs.compute_seasonality("coeffs/example-overlap.npy", "eofs/example", "coeffs/example")
 
+* The output of this analysis is a dendrogram identifying those months that are most similar.  In the below result, May - August is identified as a consistent "summer" season, October - March as "winter", and September and April as "spring/fall" transition between the two dominant seasons 
+
+.. figure:: _static/_images/example_seasonality.png
+    :width: 400px
+    :align: center
+    :alt: alternate text
+    :figclass: align-center
+    
+    Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure
 
 
 

@@ -38,7 +38,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="stochprop.html" />
-    <link rel="prev" title="Sampling, Fitting, and Perturbing Specifications" href="sampling.html" /> 
+    <link rel="prev" title="Atmospheric Fitting, Sampling, and Perturbation" href="sampling.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -90,7 +90,7 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="eofs.html">Empirical Orthogonal Function Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sampling.html">Sampling, Fitting, and Perturbing Specifications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sampling.html">Atmospheric Fitting, Sampling, and Perturbation</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Propagation Statistics</a></li>
 </ul>
 </li>
@@ -166,11 +166,40 @@
 <ul class="simple">
 <li><p>Overview of building propagation statistics and their use in BISL and SpYE</p></li>
 </ul>
+<div class="align-center figure" id="id1">
+<a class="reference internal image-reference" href="_images/stochprop_fig1.jpg"><img alt="alternate text" src="_images/stochprop_fig1.jpg" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
 <div class="section" id="path-geometry-models-pgms">
 <h2>Path Geometry Models (PGMs)<a class="headerlink" href="#path-geometry-models-pgms" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Stuff…</p></li>
 </ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">propagation</span>
+
+    <span class="n">propagation</span><span class="o">.</span><span class="n">run_infraga</span><span class="p">(</span><span class="n">sample_dirs</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">,</span> <span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.arrivals.dat&quot;</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="n">cpu_cnt</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;sph&quot;</span><span class="p">,</span> <span class="n">inclinations</span><span class="o">=</span><span class="p">[</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">45.0</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">],</span> <span class="n">azimuths</span><span class="o">=</span><span class="n">azimuths</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="n">src_loc</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>More stuff…</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span> <span class="o">=</span> <span class="n">propagation</span><span class="o">.</span><span class="n">PathGeometryModel</span><span class="p">()</span>
+<span class="n">pgm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.arrivals.dat&quot;</span><span class="p">,</span> <span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.pgm&quot;</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;sph&quot;</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="n">src_loc</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>More stuff…</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.pgm&quot;</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pgm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">),</span> <span class="n">subtitle</span><span class="o">=</span><span class="n">season</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Use in InfraPy BISL</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">),</span> <span class="n">subtitle</span><span class="o">=</span><span class="n">season</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="transmission-loss-models-tlms">
 <h2>Transmission Loss Models (TLMs)<a class="headerlink" href="#transmission-loss-models-tlms" title="Permalink to this headline">¶</a></h2>
@@ -191,7 +220,7 @@
         <a href="stochprop.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="sampling.html" class="btn btn-neutral float-left" title="Sampling, Fitting, and Perturbing Specifications" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sampling.html" class="btn btn-neutral float-left" title="Atmospheric Fitting, Sampling, and Perturbation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

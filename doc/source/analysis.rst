@@ -16,7 +16,7 @@ Stochastic Propagation Analysis
     
     Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects
     
-* The tools included here provide a framework for constructing such models as well as perform a number of other analyses related to atmospheric variability and uncertainty
+* The tools included here provide a framework for constructing such models as well as perform a number of analyses related to atmospheric variability and uncertainty
     
 _______________________________________
 :ref:`eofs`

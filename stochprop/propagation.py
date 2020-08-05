@@ -184,11 +184,14 @@ def find_azimuth_bin(az, bin_cnt=16):
             Index of azimuth bin
     """
 
+    # wrap angles to range (-180, 180) degrees
     reduced = np.degrees(np.arctan2(np.sin(np.radians(az)), np.cos(np.radians(az))))
-    bins = np.arange(-180.0, 180.0, 360.0 / (bin_cnt * 2.0))
 
+    # Identify the index of the nearest bin
+    bins = np.arange(-180.0, 180.0, 360.0 / (bin_cnt * 2.0))
     result = np.asarray(np.digitize(reduced, bins) / 2)
     result[result >= bin_cnt] = 0
+
     return result.astype(int)
 
 
@@ -199,8 +202,7 @@ class PathGeometryModel(object):
         azimuth deviation/scatter statistics
     """
 
-    _az_bin_cnt = 16     # Azimuth bin count
-    _az_bin_wdth = 30.0  # Azimuth bin width (degrees)
+    _az_bin_cnt = 16
     _rng_max = 1000.0
 
     _default_az_dev_std = 4.0
@@ -338,7 +340,7 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0):
         """
             Construct propagation statistics from a ray tracing arrival file (concatenated from
             multiple runs most likely) and output a path geometry model
@@ -362,6 +364,10 @@ class PathGeometryModel(object):
                 [x, y, z] or [lat, lon, elev] location of the source used in infraGA/GeoAc simulations.  Note: '3d' simulations assume source at origin.
             min_turning_ht: float
                 Minimum turning height used to filter out boundary layer paths if not of interest
+            az_bin_cnt: int
+                Number of azimuth bins to use in analysis
+            az_bin_width: float
+                Azimuth bin width in degrees for analysis
 
         """
         if os.path.isfile(output_file):
@@ -372,6 +378,8 @@ class PathGeometryModel(object):
                 warnings.warn(msg)
             else:
                 print('Builing celerity and azimuth priors from file:', arrivals_file)
+
+                self._az_bin_cnt = az_bin_cnt
 
                 # define range bins and parameter arrays
                 rng_bins = np.arange(0.0, self._rng_max, rng_spacing)
@@ -414,10 +422,10 @@ class PathGeometryModel(object):
                 az_wts = np.empty(self._az_bin_cnt)
                 for n_az in range(self._az_bin_cnt):
                     if n_az == 0:
-                        az_mask = np.logical_or(az > 180.0 - self._az_bin_wdth / 2.0, az < -180.0 + self._az_bin_wdth / 2.0)
+                        az_mask = np.logical_or(az > 180.0 - az_bin_wdth / 2.0, az < -180.0 + az_bin_wdth / 2.0)
                     else:
                         center = -180 + (360.0 / self._az_bin_cnt) * n_az
-                        az_mask = np.logical_and(center - self._az_bin_wdth / 2.0 <= az, az <= center + self._az_bin_wdth / 2.0)
+                        az_mask = np.logical_and(center - az_bin_wdth / 2.0 <= az, az <= center + az_bin_wdth / 2.0)
 
                     # combine azimuth and turning height masks
                     az_mask = np.logical_and(az_mask, min_turning_ht < (z_max - src_loc[2]))
@@ -591,6 +599,7 @@ class PathGeometryModel(object):
         """
 
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+        self._az_bin_cnt = len(fit_params[1])
 
         self._rng_max = max(fit_params[0])
 
@@ -776,7 +785,7 @@ class TLossModel(object):
         self.pdf_vals = [0] * self._az_bin_cnt
         self.pdf_fits = [0] * self._az_bin_cnt
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
@@ -792,12 +801,18 @@ class TLossModel(object):
                 Option ot visualize model construction (for QC purposes)
             use_coh: boolean
                 Option to use coherent transmission loss
+            az_bin_cnt: int
+                Number of azimuth bins to use in analysis
+            az_bin_width: float
+                Azimuth bin width in degrees for analysis
         """
 
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping transmission loss model construction...")
         else:
             print('Builing transmission loss models from file:', tloss_file)
+
+            self._az_bin_cnt = az_bin_cnt
 
             # read in data, convert tloss to dB relative to 1 km, and wrap azimuths to [-180.0:180.0]
             print('\t' + "Reading in data...")
@@ -822,9 +837,9 @@ class TLossModel(object):
             for az_index in range(self._az_bin_cnt):
                 center = -180 + 360.0 / self._az_bin_cnt * az_index
                 if az_index == 0:
-                    az_mask = np.logical_or(az >= 180.0 - self._az_bin_wdth / 2.0, az <= -180.0 + self._az_bin_wdth / 2.0)
+                    az_mask = np.logical_or(az >= 180.0 - az_bin_wdth / 2.0, az <= -180.0 + az_bin_wdth / 2.0)
                 else:
-                    az_mask = np.logical_and(center - self._az_bin_wdth / 2.0 <= az, az <= center + self._az_bin_wdth / 2.0)
+                    az_mask = np.logical_and(center - az_bin_wdth / 2.0 <= az, az <= center + az_bin_wdth / 2.0)
 
                 if show_fits:
                     f, ((ax1, ax2)) = plt.subplots(2, 1, figsize=(7.5, 10))
@@ -883,13 +898,14 @@ class TLossModel(object):
             Path to TLoss file constructed using stochprop.propagation.TLossModel.build()
 
         """
-        priors = pickle.load(open(model_file, "rb"), encoding='latin1')
+        fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+        self._az_bin_cnt = len(fit_params[2])
 
-        self.rng_vals = priors[0]
-        self.tloss_vals = priors[1]
+        self.rng_vals = fit_params[0]
+        self.tloss_vals = fit_params[1]
 
         for az_index in range(self._az_bin_cnt):
-            self.pdf_vals[az_index] = priors[2][az_index]
+            self.pdf_vals[az_index] = fit_params[2][az_index]
             self.pdf_fits[az_index] = RectBivariateSpline(self.rng_vals, self.tloss_vals, self.pdf_vals[az_index])
 
     def eval(self, rng, tloss, az):

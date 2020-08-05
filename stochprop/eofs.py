@@ -821,7 +821,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
         u_perturb_all[m] = np.average(u_perturb, axis=0, weights=wts)
         v_perturb_all[m] = np.average(v_perturb, axis=0, weights=wts)
 
-    scaling = uncertainty / (np.sqrt(2.0) * np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
+    scaling = uncertainty / (np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
 
     for m in range(sample_cnt):
         T_vals = np.copy(ref_atmo[:, 1][ref_mask])

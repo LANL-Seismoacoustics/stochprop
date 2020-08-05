@@ -164,31 +164,92 @@
   <div class="section" id="atmospheric-fitting-sampling-and-perturbation">
 <span id="sampling"></span><h1>Atmospheric Fitting, Sampling, and Perturbation<a class="headerlink" href="#atmospheric-fitting-sampling-and-perturbation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p>Overview of building propagation statistics and their use in BISL and SpYE</p></li>
+<li><p>The Empirical Orthogonal Functions (EOFs) constructed using a suite of atmospheric specifications can be utilized in a number of different analyses of the atmospheric state</p></li>
+<li><p>In general, an atmospheric state can be constructed by defining a reference atmosphere, <span class="math notranslate nohighlight">\(b_0 \left( z_m \right)\)</span>, and a set of coefficients, <span class="math notranslate nohighlight">\(\mathcal{C}_n\)</span>,</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[\hat{b} \left( z_m \right) = b_0 \left( z_m \right) + \sum_n{ \mathcal{C}_n \mathcal{E}_n \left( z_m \right)},\]</div>
 <div class="section" id="fitting-an-atmospheric-specification-using-eofs">
 <h2>Fitting an Atmospheric Specification using EOFs<a class="headerlink" href="#fitting-an-atmospheric-specification-using-eofs" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Stuff…</p></li>
-<li><p>Test math input:</p></li>
+<li><p>In the case that a specific state, <span class="math notranslate nohighlight">\(b \left(z_m \right)\)</span>, is known, it can be approximated using the EOF set by using the mean state pulled from the original SVD analysis and coefficients defined by projecting the atmospheric state difference from this mean onto each EOF,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[y = m x + b\]</div>
+\[b_0 \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n^{(b)} = \sum_m{\mathcal{E}_n \left( z_m \right) \left( b \left( z_m \right) - \bar{a} \left( z_m \right) \right)},\]</div>
 <ul class="simple">
-<li><p>Test inline math input, <span class="math notranslate nohighlight">\(y = m x + b\)</span>, and then it stops?</p></li>
+<li><p>These coefficient calculations and construction of a new atmospheric specification can be completed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.fit_atmo</span></code> with the path to specific atmospheric state, a set of EOFs, and a specified number of coefficients to compute,</p></li>
 </ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">prof_path</span> <span class="o">=</span> <span class="s2">&quot;profs/01/g2stxt_2010010100_39.7393_-104.9900.dat&quot;</span>
+<span class="n">eofs_path</span> <span class="o">=</span> <span class="s2">&quot;eofs/example&quot;</span>
+
+<span class="n">eofs</span><span class="o">.</span><span class="n">fit_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;eof_fit-N=30.met&quot;</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This analysis is useful to determine how many coefficients are needed to accurately reproduce an atmospheric state from a set of EOFs.  Such an analysis is shown below for varying number of coefficients and convergence is found at 50 - 60 terms.</p></li>
+</ul>
+<div class="align-center figure" id="id1">
+<a class="reference internal image-reference" href="_images/US_NE-fits.png"><img alt="alternate text" src="_images/US_NE-fits.png" style="width: 700px;" /></a>
+<p class="caption"><span class="caption-text">Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 - 60 terms in the summation</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 <div class="section" id="sampling-specifications-using-eof-coefficient-distributions">
 <h2>Sampling Specifications using EOF Coefficient Distributions<a class="headerlink" href="#sampling-specifications-using-eof-coefficient-distributions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Stuff…</p></li>
+<li><p>Samples can be generated that are representative of a given coefficient distributions as constructed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_coeffs</span></code> or a combination of them.</p></li>
+<li><p>In such a case, the reference atmosphere is again the mean state from the SVD analysis and the coefficients are randomly generated from the distributions defined by kernel density estimates (KDE’s) of the coefficient results</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[b_0^{(B)} \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n \longleftarrow \mathcal{P}_n^{(B)} \left( \mathcal{C} \right)\]</div>
+<ul class="simple">
+<li><p>In addition to sampling the coefficient distributions, the maximum likelihood atmospheric state can be defined by defining each coefficient to be the maximum of the distribution,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[b_0^{(B)} \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n = \text{argmax} \left[ \mathcal{P}_n^{(B)} \left( \mathcal{C} \right) \right]\]</div>
+<ul class="simple">
+<li><p>This sampling and maximum likelihood calculation can be run by loading coefficient results and running,</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_05-coeffs.npy&quot;</span><span class="p">)</span>
+<span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_06-coeffs.npy&quot;</span><span class="p">)))</span>
+<span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_07-coeffs.npy&quot;</span><span class="p">)))</span>
+<span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_08-coeffs.npy&quot;</span><span class="p">)))</span>
+
+<span class="n">eofs</span><span class="o">.</span><span class="n">sample_atmo</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;samples/summer/example-summer&quot;</span><span class="p">,</span> <span class="n">prof_cnt</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="n">eofs</span><span class="o">.</span><span class="n">maximum_likelihood_profile</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;samples/example-summer&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This analysis can be completed for each identified season to generate a suite of atmospheric specifications representative of the season as shown in the figure below.  This can often provide a significant amount of data reduction for propagation studies as multiple years of specifications (numbering in the 100’s or 1,000’s) can be used to construct a representative set of 10’s of atmospheres that characterize the time period of interest as in the figure below.</p></li>
+</ul>
+<div class="align-center figure" id="id2">
+<a class="reference internal image-reference" href="_images/US_RM-samples.png"><img alt="alternate text" src="_images/US_RM-samples.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Samples for seasonal trends in the western US show the change in directionality of the stratospheric waveguide in summer and winter</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 <div class="section" id="perturbing-specifications-to-account-for-uncertainty">
 <h2>Perturbing Specifications to Account for Uncertainty<a class="headerlink" href="#perturbing-specifications-to-account-for-uncertainty" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Stuff…</p></li>
+<li><p>In most infrasonic analysis, propagation analysis through a specification for the approximate time and location of an event doesn’t produce the exact arrivals observed due to the dynamic and sparsely sampled nature of the atmosphere</p></li>
+<li><p>Because of this, it is useful to apply random perturbations to the estimated atmospheric state covering some confidence level and consider propagation through the entire suite of “possible” states</p></li>
+<li><p>In such a case, the reference atmosphere, <span class="math notranslate nohighlight">\(c_0 \left( z_m \right)\)</span> defines the initial states, coefficients are randomly generated from a normal distribution, and weighting is applied based on the singular values and mean altitudes of the EOFs,</p></li>
 </ul>
+<div class="math notranslate nohighlight">
+\[b_0 \left( z_m \right) = c_0 \left( z_m \right), \quad \quad \mathcal{C}_n \longleftarrow \mathcal{N} \left(0, \sigma^* \right), \quad \quad w_n = \mathcal{S}_n^{\gamma} \; \bar{z}_n^{\eta}\]</div>
+<ul class="simple">
+<li><p>The set of perturbations is scaled to match the specified standard deviation after summing over coefficients and averaged over the entire set of altitudes</p></li>
+<li><p>Unlike the above methods, in this analysis a weighting is defined by the singular value of the associated EOF and the mean altitude of the EOF, <span class="math notranslate nohighlight">\(\bar{z}_n = \sum_m{z_m \mathcal{E}_n \left( z_m \right)}\)</span> in order to avoid rapidly oscillating EOFs from contributing too much noise and to focus perturbations at higher altitudes where uncertainties are larger, respectively.  The exponential coefficients have default values of <span class="math notranslate nohighlight">\(\gamma = 0.25\)</span> and <span class="math notranslate nohighlight">\(\eta=2\)</span>, but can be modified in the function call.</p></li>
+<li><p>This perturbation analysis can be completed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.perturb_atmo</span></code> with a specified starting atmosphere, set of EOFs, output path, uncertainty measure in meters-per-second, and number of samples needed,</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">eofs</span><span class="o">.</span><span class="n">perturb_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;eof_perturb&quot;</span><span class="p">,</span> <span class="n">uncertainty</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">sample_cnt</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The below figure shows a sampling of results using uncertainties of 5.0, 10.0, and 15.0 meters-per-second.  The black curve is input as the estimated atmospheric state and the red curves are generated by the perturbations.</p></li>
+</ul>
+<div class="align-center figure" id="id3">
+<a class="reference internal image-reference" href="_images/atmo_perturb.png"><img alt="alternate text" src="_images/atmo_perturb.png" style="width: 500px;" /></a>
+<p class="caption"><span class="caption-text">Perturbations to a reference atmospheric state can be computed using randomly generated coefficients for a suite of EOFs with specified standard deviation</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 </div>
 

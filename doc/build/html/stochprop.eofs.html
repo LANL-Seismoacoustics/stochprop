@@ -225,7 +225,7 @@ and store the coefficient values.</p>
 </dd>
 <dt><strong>alts: 1darray</strong></dt><dd><p>Altitudes at which the atmosphere is sampled from build_atmo_matrix</p>
 </dd>
-<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_eofs</p>
 </dd>
 <dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
 </dd>
@@ -238,6 +238,30 @@ and store the coefficient values.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt>coeffs: 2darray</dt><dd><p>Array containing coefficient values of size prof_cnt by eof_cnt.  Result is also written to file.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.eofs.compute_eofs">
+<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">compute_eofs</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">alts</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_eofs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_eofs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the singular value decomposition (SVD)
+of an atmosphere set read into an array by
+stochprop.eofs.build_atmo_matrix() and saves
+the basis functions (empirical orthogonal
+functions) and singular values to file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>A: 2darray</strong></dt><dd><p>Suite of atmosphere specifications from build_atmo_matrix</p>
+</dd>
+<dt><strong>alts: 1darray</strong></dt><dd><p>Altitudes at which the atmosphere is sampled from build_atmo_matrix</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path to output the SVD results</p>
+</dd>
+<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of basic functions to save</p>
 </dd>
 </dl>
 </dd>
@@ -278,33 +302,9 @@ and store the coefficient values.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>overlap_file: string</strong></dt><dd><p>Path and name of file containing results of stochprop.eofs.compute_overlap</p>
 </dd>
-<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_eofs</p>
 </dd>
 <dt><strong>file_id: string</strong></dt><dd><p>Path and ID to save the dendrogram result of the overlap analysis</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="stochprop.eofs.compute_svd">
-<code class="sig-prename descclassname">stochprop.eofs.</code><code class="sig-name descname">compute_svd</code><span class="sig-paren">(</span><em class="sig-param">A</em>, <em class="sig-param">alts</em>, <em class="sig-param">output_path</em>, <em class="sig-param">eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_svd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_svd" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the singular value decomposition (SVD)
-of an atmosphere set read into an array by
-stochprop.eofs.build_atmo_matrix() and saves
-the basis functions (empirical orthogonal
-functions) and singular values to file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>A: 2darray</strong></dt><dd><p>Suite of atmosphere specifications from build_atmo_matrix</p>
-</dd>
-<dt><strong>alts: 1darray</strong></dt><dd><p>Altitudes at which the atmosphere is sampled from build_atmo_matrix</p>
-</dd>
-<dt><strong>output_path: string</strong></dt><dd><p>Path to output the SVD results</p>
-</dd>
-<dt><strong>eof_cnt: int</strong></dt><dd><p>Number of basic functions to save</p>
 </dd>
 </dl>
 </dd>
@@ -370,7 +370,7 @@ file.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>prof_path: string</strong></dt><dd><p>Path and name of the specification to be fit</p>
 </dd>
-<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_eofs</p>
 </dd>
 <dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
 </dd>
@@ -391,7 +391,7 @@ basis functions to compute the maximum likelihood specification</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>coeffs: 2darrays</strong></dt><dd><p>Coefficients computed with stochprop.eofs.compute_coeffs</p>
 </dd>
-<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_eofs</p>
 </dd>
 <dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
 </dd>
@@ -411,7 +411,7 @@ basis functions to compute the maximum likelihood specification</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>prof_path: string</strong></dt><dd><p>Path and name of the specification to be fit</p>
 </dd>
-<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_eofs</p>
 </dd>
 <dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
 </dd>
@@ -464,7 +464,7 @@ a set of empirical orthogonal basis functions</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>coeffs: 2darrays</strong></dt><dd><p>Coefficients computed with stochprop.eofs.compute_coeffs</p>
 </dd>
-<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_svd</p>
+<dt><strong>eofs_path: string</strong></dt><dd><p>Path to the .eof results from compute_eofs</p>
 </dd>
 <dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
 </dd>
