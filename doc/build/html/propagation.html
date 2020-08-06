@@ -173,7 +173,7 @@
 <div class="section" id="path-geometry-models-pgms">
 <h2>Path Geometry Models (PGMs)<a class="headerlink" href="#path-geometry-models-pgms" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Stuff…</p></li>
+<li><p>Run infraga methods…</p></li>
 </ul>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">propagation</span>
 
@@ -181,21 +181,21 @@
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>More stuff…</p></li>
+<li><p>Ingest arrival file and build a path geometry model…</p></li>
 </ul>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span> <span class="o">=</span> <span class="n">propagation</span><span class="o">.</span><span class="n">PathGeometryModel</span><span class="p">()</span>
 <span class="n">pgm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.arrivals.dat&quot;</span><span class="p">,</span> <span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.pgm&quot;</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;sph&quot;</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="n">src_loc</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>More stuff…</p></li>
+<li><p>Load modeland visualize…</p></li>
 </ul>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;.pgm&quot;</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">pgm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">),</span> <span class="n">subtitle</span><span class="o">=</span><span class="n">season</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Use in InfraPy BISL</p></li>
+<li><p>Use in InfraPy BISL…</p></li>
 </ul>
 <div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">),</span> <span class="n">subtitle</span><span class="o">=</span><span class="n">season</span><span class="p">)</span>
 </pre></div>
@@ -204,8 +204,33 @@
 <div class="section" id="transmission-loss-models-tlms">
 <h2>Transmission Loss Models (TLMs)<a class="headerlink" href="#transmission-loss-models-tlms" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>Stuff…</p></li>
+<li><p>Run NCPAprop modess methods…</p></li>
 </ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">propagation</span>
+
+<span class="n">propagation</span><span class="o">.</span><span class="n">run_modess</span><span class="p">(</span><span class="n">sample_dirs</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">,</span> <span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">,</span> <span class="n">azimuths</span><span class="o">=</span><span class="n">azimuths</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Ingest arrival file and build a path geometry model…</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tlm</span> <span class="o">=</span> <span class="n">propagation</span><span class="o">.</span><span class="n">TLossModel</span><span class="p">()</span>
+<span class="n">tlm</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">fn</span> <span class="o">+</span> <span class="s2">&quot;.nm&quot;</span><span class="p">,</span> <span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">fn</span> <span class="o">+</span> <span class="s2">&quot;.tlm&quot;</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Load modeland visualize…</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">tlm</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">fn</span> <span class="o">+</span> <span class="s2">&quot;.tlm&quot;</span><span class="p">)</span>
+<span class="n">tlm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">fn</span><span class="p">),</span> <span class="n">title</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Transmission Loss Statistics&quot;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;, </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span><span class="n">fn</span> <span class="o">+</span> <span class="s2">&quot; Hz&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Use in InfraPy BISL…</p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">pgm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="n">results_dir</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">),</span> <span class="n">subtitle</span><span class="o">=</span><span class="n">season</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
