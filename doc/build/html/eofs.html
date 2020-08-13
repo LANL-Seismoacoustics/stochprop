@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Empirical Orthogonal Function Analysis &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Atmospheric Fitting, Sampling, and Perturbation" href="sampling.html" />
+    <link rel="prev" title="Stochastic Propagation Analysis" href="analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Empirical Orthogonal Function Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sampling.html">Atmospheric Fitting, Sampling, and Perturbation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="propagation.html">Propagation Statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stochprop.html">API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">stochprop</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="analysis.html">Stochastic Propagation Analysis</a> &raquo;</li>
+        
+      <li>Empirical Orthogonal Function Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/eofs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="empirical-orthogonal-function-analysis">
+<span id="eofs"></span><h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>Empirical orthogonal functions (EOFs) are a mathematical tool useful for characterizing a suite of vectors or functions via construction of basis vectors or functions.</p></li>
+<li><p>Consider <span class="math notranslate nohighlight">\(N\)</span> fields, <span class="math notranslate nohighlight">\(a_n (\vec{z})\)</span>, sampled at <span class="math notranslate nohighlight">\(M\)</span> points, <span class="math notranslate nohighlight">\(z_m\)</span> that define a matrix,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}A \left( \vec{z} \right) =
+\begin{pmatrix}
+a_1 \left( z_1 \right) &amp; a_2 \left( z_1 \right)     &amp; \cdots        &amp; a_N \left( z_1 \right) \\
+a_1 \left( z_2 \right) &amp; a_2 \left( z_2 \right)     &amp; \cdots        &amp; a_N \left( z_2 \right) \\
+\vdots                              &amp; \vdots                                        &amp; \ddots        &amp; \vdots         \\
+a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp; a_N \left( z_M \right)
+\end{pmatrix}\end{split}\]</div>
+<ul class="simple">
+<li><p>Analysis of this <span class="math notranslate nohighlight">\(N \times M\)</span> matrix to compute EOFs entails first extracting the mean set of values and then applying a singular value decomposition (SVD) to define singular values and orthogonal functions,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[A \left( \vec{z} \right)
+\, \xrightarrow{\text{SVD}} \,
+\bar{a} \left( z_m \right), \mathcal{S}_n^{(a)}, \mathcal{E}_n^{(A)} \left( z_m \right)\]</div>
+<ul class="simple">
+<li><p>The resulting EOF information can be used to reproduce any other other field sampled on the same set of points,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\hat{b} \left( z_m \right) = \bar{a} \left( z_m \right) + \sum_n{ \mathcal{C}_n^{(b)} \mathcal{E}_n^{(A)} \left( z_m \right)},\\\mathcal{C}_n^{(b)} = \sum_m{\mathcal{E}_n^{(A)} \left( z_m \right) \left( b \left( z_m \right) - \bar{a} \left( z_m \right) \right)},\end{aligned}\end{align} \]</div>
+<ul class="simple">
+<li><p>Note that the coefficients, <span class="math notranslate nohighlight">\(\mathcal{C}_n^{(b)}\)</span>, are defined by the projection of the new function onto each EOF (accounting for the mean, <span class="math notranslate nohighlight">\(\bar{a}\)</span>)</p></li>
+<li><p>Consider a second matrix, <span class="math notranslate nohighlight">\(B\left( \vec{z} \right)\)</span> defined by a set of <span class="math notranslate nohighlight">\(K\)</span> fields, <span class="math notranslate nohighlight">\(b_k \left( \vec{z} \right)\)</span>.  Each of these columns produces a set of coefficients that can be used to define a distribution via a kernel density estimate (KDE),</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\left\{ \mathcal{C}_n^{(b_1)},  \mathcal{C}_n^{(b_2)}, \ldots, \mathcal{C}_n^{(b_K)} \right\}
+    \, \xrightarrow{\text{KDE}} \,
+    \mathcal{P}_n^{(B)} \left( \mathcal{C} \right).\]</div>
+<ul class="simple">
+<li><p>Comparison of the distributions for various matrices, <span class="math notranslate nohighlight">\(B_1, B_2, B_3, \ldots\)</span>, allows one to define the relative similarity between differen sets by computing the overlap and weighting each term by the EOF singular values,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\Gamma_{j,k}  =  \sum_n{ \mathcal{S}_n^{(\text{all})} \int{\mathcal{P}_n^{(B_j)} \left( \mathcal{C} \right) \mathcal{P}_n^{(B_k)} \left( \mathcal{C} \right) d \mathcal{C} }}\]</div>
+<ul class="simple">
+<li><p>In the case of EOF analysis for atmospheric seasonality and variability, each <span class="math notranslate nohighlight">\(a_m(\vec{z})\)</span> is an atmospheric specification sampled at a set of altitudes, <span class="math notranslate nohighlight">\(\vec{z}\)</span>, and the set of atmospheric states in <span class="math notranslate nohighlight">\(A\)</span> includes all possible states for the entire year (and potentially multiple years).  The sets of atmospheres in each matrix, <span class="math notranslate nohighlight">\(B_j\)</span>, is a subset of <span class="math notranslate nohighlight">\(A\)</span> corresponding to a specific month or other interval.  The coefficient overlap can be computed for all combinations to identify seasonality and determine the grouping of intervals for which propagation effects will be similar.</p></li>
+</ul>
+<div class="section" id="eof-methods-in-stochprop">
+<h2>EOF methods in stochprop<a class="headerlink" href="#eof-methods-in-stochprop" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Empirical Orthogonal Function analysis methods can be accessed by importing <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs</span></code></p></li>
+<li><p>Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  This pre-analysis set up can be completed manually or by running:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">eofs</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="n">eof_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eofs&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">]</span>
+        <span class="n">season_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;winter&quot;</span><span class="p">,</span> <span class="s2">&quot;spring&quot;</span><span class="p">,</span> <span class="s2">&quot;summer&quot;</span><span class="p">,</span> <span class="s2">&quot;fall&quot;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">eof_dirs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
+                        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;mkdir &quot;</span> <span class="o">+</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">season</span> <span class="ow">in</span> <span class="n">season_labels</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s2">&quot;samples/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">):</span>
+                        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;mkdir samples/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="load-atmosphere-specifications">
+<h3>Load Atmosphere Specifications<a class="headerlink" href="#load-atmosphere-specifications" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>Atmospheric specifications are available through a number of repositories including the Ground-to-Space (G2S) system, the European Centre for Medium-Range Weather Forecasts (ECMWF), and other sources</p></li>
+<li><p>A convenient source for G2S specifications is the University of Mississippi’s National Center for Physical Acoustics (NCPA) G2S server at <a class="reference external" href="http://g2s.ncpa.olemiss.edu">http://g2s.ncpa.olemiss.edu</a></p></li>
+<li><p>The current implementation of EOF methods in stochprop assumes the ingested specifications are formatted such that the columns contain altitude, temperature, zonal winds, meridional winds, density, pressure (that is, <code class="code docutils literal notranslate"><span class="pre">zTuvdp</span></code> in the infraGA/GeoAc profile options), which is the default output format of the G2S server at NCPA.  Note: a script is included in the infraGA/GeoAc methods to extract profiles in this format from ECMWF netCDF files.</p></li>
+<li><p>The atmosphere matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span> can be constructed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.build_atmo_matrix</span></code> which accepts the path where specifications are located and a pattern to identify which files to ingest.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>For seasonal analysis, it is useful to initially separate atmospheric specifications by month.  Assuming subdirectories labeled “01”, “02”, “03”, … “12” contain profiles for January through December (see the subdirectories in the examples directory of the package), atmospheres can be ingested and combined using <code class="code docutils literal notranslate"><span class="pre">numpy.vstack</span></code></p></li>
+<li><p>The optional argument, ref_alts, should be used to ensure a common vertical sampling if multiple directories are being ingested in this manner.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/01/&quot;</span><span class="p">,</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
+        <span class="n">A_temp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/</span><span class="si">{:02d}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="n">z0</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">A_temp</span><span class="p">))</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Alternately, if all profiles are contained within a common directory, ingestion can be completed using a single call,</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="computing-eofs">
+<h3>Computing EOFs<a class="headerlink" href="#computing-eofs" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Once the atmosphere matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span> has been ingested, EOF analysis can be completed using:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eofs</span><span class="o">.</span><span class="n">compute_eofs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="s2">&quot;eofs/examples&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The analysis results are written into files with prefix specified in the function call (“eofs/examples” in this case).  The contents of the files are summarized is the below table.</p></li>
+</ul>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>EOF Output File</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>eofs/example-mean_atmo.dat</p></td>
+<td><p>Mean values, <span class="math notranslate nohighlight">\(\bar{a} \left( \vec{z} \right)\)</span> in the above discussion</p></td>
+</tr>
+<tr class="row-odd"><td><p>eofs/example-singular_values.dat</p></td>
+<td><p>Singular values corresponding each EOF index</p></td>
+</tr>
+<tr class="row-even"><td><p>eofs/example-adiabatic_snd_spd.eofs</p></td>
+<td><p>EOFs for the adiabatic sound speed, <span class="math notranslate nohighlight">\(c_\text{ad} = \sqrt{ \gamma \frac{p}{\rho}}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>eofs/example-ideal_gas_snd_spd.eofs</p></td>
+<td><p>EOFs for the ideal gas sound speed, <span class="math notranslate nohighlight">\(c_\text{ad} = \sqrt{ \gamma R T}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>eofs/example-merid_winds.eofs</p></td>
+<td><p>EOFs for the meridional (north/south) winds</p></td>
+</tr>
+<tr class="row-odd"><td><p>eofs/example-zonal_winds.eofs</p></td>
+<td><p>EOFs for the zonal (east/west) winds</p></td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li><p>The EOF file formats is such that the first column contains the altitude points, <span class="math notranslate nohighlight">\(\vec{z}\)</span>, and each subsequent column contains the <span class="math notranslate nohighlight">\(n^{th}\)</span> EOF, <span class="math notranslate nohighlight">\(\mathcal{E}_n^{(A)} \left( \vec{z} \right)\)</span></p></li>
+<li><p>As discussed in Waxler et al. (2020), the EOFs are computed using stacked wind and sound speed values to conserve coupling between the different atmospheric parameters and maintain consistent units (velocity) in the EOF coefficients</p></li>
+<li><p>The resulting EOFs can be used for a number of analyses including atmospheric updating, seasonal studies, perturbation analysis, and similar analyses</p></li>
+</ul>
+<div class="align-center figure" id="id1">
+<a class="reference internal image-reference" href="_images/US_NE-eofs.png"><img alt="alternate text" src="_images/US_NE-eofs.png" style="width: 1000px;" /></a>
+<p class="caption"><span class="caption-text">Mean atmospheric states (left) and the first 10 EOFs for the adiabatic sound speed (upper row) and zonal and meridional winds (lower row, blue and red, respectively) for analysis of the atmosphere in the northeastern US</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="compute-coefficients-and-determine-seasonality">
+<h3>Compute Coefficients and Determine Seasonality<a class="headerlink" href="#compute-coefficients-and-determine-seasonality" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Using the EOFs for the entire calendar year, coefficient sets can be defined for individual months (or other sub-intervals) using the <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_coeffs</span></code> function.</p></li>
+<li><p>For identification of seasonality by month, the coefficient sets are first computed for each individual month using:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span>
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
+    <span class="n">Am</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/</span><span class="si">{:02d}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">g2stxt_</span><span class="o">*</span><span class="s2">&quot;)</span>
+    <span class="n">coeffs</span><span class="p">[</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">compute_coeffs</span><span class="p">(</span><span class="n">Am</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="s2">&quot;eofs/example&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs/example_</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="n">eof_cnt</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The resulting coefficient sets are analyzed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_overlap</span></code> to identify how similar various month pairs are:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">overlap</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">compute_overlap</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="n">eof_cnt</span><span class="p">)</span>
+<span class="n">eofs</span><span class="o">.</span><span class="n">compute_seasonality</span><span class="p">(</span><span class="s2">&quot;coeffs/example-overlap.npy&quot;</span><span class="p">,</span> <span class="s2">&quot;eofs/example&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs/example&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The output of this analysis is a dendrogram identifying those months that are most similar.  In the below result, May - August is identified as a consistent “summer” season, October - March as “winter”, and September and April as “spring/fall” transition between the two dominant seasons</p></li>
+</ul>
+<div class="align-center figure" id="id2">
+<a class="reference internal image-reference" href="_images/example_seasonality.png"><img alt="alternate text" src="_images/example_seasonality.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text">Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="sampling.html" class="btn btn-neutral float-right" title="Atmospheric Fitting, Sampling, and Perturbation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="analysis.html" class="btn btn-neutral float-left" title="Stochastic Propagation Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Philip Blom
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

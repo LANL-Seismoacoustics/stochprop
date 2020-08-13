@@ -1,0 +1,34 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Contents}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Authorship \& License Info}{1}{section.1.1}
+\contentsline {section}{\numberline {1.2}Installation}{1}{section.1.2}
+\contentsline {subsection}{\numberline {1.2.1}Anaconda}{1}{subsection.1.2.1}
+\contentsline {subsection}{\numberline {1.2.2}Installing Dependencies}{1}{subsection.1.2.2}
+\contentsline {subsubsection}{Propagation Modeling Methods}{1}{subsubsection*.3}
+\contentsline {subsubsection}{InfraPy Signal Analysis Methods}{1}{subsubsection*.4}
+\contentsline {subsection}{\numberline {1.2.3}Installing stochprop}{2}{subsection.1.2.3}
+\contentsline {subsection}{\numberline {1.2.4}Testing stochprop}{2}{subsection.1.2.4}
+\contentsline {section}{\numberline {1.3}Stochastic Propagation Analysis}{3}{section.1.3}
+\contentsline {subsection}{\numberline {1.3.1}Empirical Orthogonal Function Analysis}{3}{subsection.1.3.1}
+\contentsline {subsubsection}{Empirical Orthogonal Function Analysis}{3}{subsubsection*.5}
+\contentsline {subsection}{\numberline {1.3.2}Atmospheric Sampling, Fitting, and Perturbation}{4}{subsection.1.3.2}
+\contentsline {subsubsection}{Atmospheric Sampling, Fitting, and Perturbation}{4}{subsubsection*.6}
+\contentsline {subsection}{\numberline {1.3.3}Propagation Statistics}{4}{subsection.1.3.3}
+\contentsline {subsubsection}{Propagation Statistics}{4}{subsubsection*.7}
+\contentsline {subsection}{\numberline {1.3.4}Section Links}{4}{subsection.1.3.4}
+\contentsline {subsubsection}{Empirical Orthogonal Function Analysis}{4}{subsubsection*.8}
+\contentsline {paragraph}{Define Run Parameters}{4}{paragraph*.9}
+\contentsline {paragraph}{Load Atmosphere Specifications and Building EOFs}{4}{paragraph*.10}
+\contentsline {paragraph}{Compute Coefficients and Determine Seasonality}{4}{paragraph*.11}
+\contentsline {paragraph}{Generate Samples from a Coefficient Set}{5}{paragraph*.12}
+\contentsline {subsubsection}{Atmospheric Sampling, Fitting, and Perturbation}{5}{subsubsection*.13}
+\contentsline {paragraph}{Fitting an Atmospheric Specification using EOFs}{5}{paragraph*.14}
+\contentsline {paragraph}{Sampling Specifications using EOF Coefficient Distributions}{5}{paragraph*.15}
+\contentsline {paragraph}{Perturbing Specifications to Account for Uncertainty}{5}{paragraph*.16}
+\contentsline {subsubsection}{Propagation Statistics}{5}{subsubsection*.17}
+\contentsline {paragraph}{Path Geometry Models (PGMs)}{5}{paragraph*.18}
+\contentsline {paragraph}{Transmission Loss Models (TLMs)}{5}{paragraph*.19}
+\contentsline {section}{\numberline {1.4}API}{5}{section.1.4}
+\contentsline {subsection}{\numberline {1.4.1}Empirical Orthogonal Function Analysis}{5}{subsection.1.4.1}
+\contentsline {subsection}{\numberline {1.4.2}Propagation Statistics}{9}{subsection.1.4.2}
+\contentsline {chapter}{Python Module Index}{13}{section*.49}

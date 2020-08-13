@@ -15,7 +15,7 @@ from multiprocessing import cpu_count
 
 from stochprop import eofs
 
-eof_dirs = ["coeffs", "eofs", "profs", "samples"]
+eof_dirs = ["coeffs", "eofs", "samples"]
 season_labels = ["winter", "spring", "summer", "fall"]
 
 if __name__ == '__main__':
@@ -54,10 +54,6 @@ if __name__ == '__main__':
         if not os.path.isdir(dir):
             subprocess.call("mkdir " + dir, shell=True)
 
-    for M in range(1, 13):
-        if not os.path.isdir("profs/" + "{:02d}".format(M)):
-            subprocess.call("mkdir profs/" + "{:02d}".format(M), shell=True)
-
     for season in season_labels:
         if not os.path.isdir("samples/" + season):
             subprocess.call("mkdir samples/" + season, shell=True)
@@ -83,16 +79,11 @@ if __name__ == '__main__':
         print("eofs/" + run_id + "-singular_values.dat exists  --->  Skipping construction of EOFs")
     else:
         print("Building atmosphere matrix for all profiles...")
-        A0, z0 = eofs.build_atmo_matrix("profs/{:02d}/".format(1), prof_prefix + "*")
-
-        A_list = [A0]
+        A, z0 = eofs.build_atmo_matrix("profs/{:02d}/".format(1), prof_prefix + "*")
         for n in range(1, 12):
-            A_temp, z_temp = eofs.build_atmo_matrix("profs/{:02d}/".format(n + 1), prof_prefix + "*", ref_alts=z0)
-            if np.any(A_temp):
-                A_list += [A_temp]
-
-        A = np.array(A_list).reshape(len(A_list) * A_list[0].shape[0], A_list[0].shape[1])
-        eofs.compute_svd(A, z0, "eofs/" + run_id, eof_cnt=eof_cnt)
+            A_temp, _ = eofs.build_atmo_matrix("profs/{:02d}/".format(n + 1), prof_prefix + "*", ref_alts=z0)
+            A = np.vstack((A, A_temp))
+        eofs.compute_eofs(A, z0, "eofs/" + run_id, eof_cnt=eof_cnt)
 
     # #################################### #
     #  Compute EOFs coefficients for each  #

@@ -34,36 +34,36 @@ sph_proj = Geod(ellps='sphere')
 def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=""):
     """
         Run the infraga -prop algorithm to compute path geometry
-            statistics for BISL using a suite of specifications
-            and combining results into single file
+        statistics for BISL using a suite of specifications
+        and combining results into single file
 
         Parameters
         ----------
-        profs_path : string
+        profs_path: string
             Path to atmospheric specification files
-        results_file : string
+        results_file: string
             Path and name of file where results will be written
-        pattern : string
+        pattern: string
             Pattern identifying atmospheric specification within profs_path location
-        cpu_cnt : int
+        cpu_cnt: int
             Number of threads to use in OpenMPI implementation.  None runs non-OpenMPI version of infraga
-        geom : string
+        geom: string
             Defines geometry of the infraga simulations (3d" or "sph")
-        bounces : int
+        bounces: int
             Maximum number of ground reflections to consider in ray tracing
-        inclinations : iterable object
+        inclinations: iterable object
             Iterable of starting, ending, and step for ray launch inclination
-        azimuths : iterable object
+        azimuths: iterable object
             Iterable of starting, ending, and step for ray launch azimuths
-        freq : float
+        freq: float
             Frequency to use for Sutherland Bass absorption calculation
-        z_grnd : float
+        z_grnd: float
             Elevation of the ground surface relative to sea level
-        rng_max : float
+        rng_max: float
             Maximum propagation range for propagation paths
-        src_loc : iterable object
+        src_loc: iterable object
             The horizontal (latitude and longitude) and altitude of the source
-        infraga_path : string
+        infraga_path: string
             Location of infraGA executables
         """
 
@@ -112,24 +112,24 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
 def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path=""):
     """
         Run the NCPAprop normal mode methods to compute transmission
-            loss values for a suite of atmospheric specifications at
-            a set of frequency values
+        loss values for a suite of atmospheric specifications at
+        a set of frequency values
 
         Parameters
         ----------
-        profs_path : string
+        profs_path: string
             Path to atmospheric specification files
-        results_file : string
+        results_file: string
             Path and name of file where results will be written
-        pattern : string
+        pattern: string
             Pattern identifying atmospheric specification within profs_path location
-        azimuths : iterable object
+        azimuths: iterable object
             Iterable of starting, ending, and step for propagation azimuths
-        freq : float
+        freq: float
             Frequency for simulation
-        z_grnd : float
+        z_grnd: float
             Elevation of the ground surface relative to sea level
-        rng_max : float
+        rng_max: float
             Maximum propagation range for propagation paths
         """
 
@@ -168,100 +168,208 @@ az_dirs = ['S', 'SW', 'W', 'NW', 'N', 'NE', 'E', 'SE']
 
 
 def find_azimuth_bin(az, bin_cnt=16):
-    reduced = np.degrees(np.arctan2(np.sin(np.radians(az)), np.cos(np.radians(az))))
-    bins = np.arange(-180.0, 180.0, 360.0 / (bin_cnt * 2.0))
+    """
+        Identify the azimuth bin index given some specified number of bins
 
+        Parameters
+        ----------
+        az: float
+            Azimuth in degrees
+        bin_cnt: int
+            Number of bins used in analysis
+
+        Returns
+        -------
+        index: int
+            Index of azimuth bin
+    """
+
+    # wrap angles to range (-180, 180) degrees
+    reduced = np.degrees(np.arctan2(np.sin(np.radians(az)), np.cos(np.radians(az))))
+
+    # Identify the index of the nearest bin
+    bins = np.arange(-180.0, 180.0, 360.0 / (bin_cnt * 2.0))
     result = np.asarray(np.digitize(reduced, bins) / 2)
     result[result >= bin_cnt] = 0
+
     return result.astype(int)
 
 
 class PathGeometryModel(object):
-    az_bin_cnt, az_bin_wdth = 16, 30.0
-    rng_max = 1000.0
+    """
+        Propagation path geometry statistics computed using ray tracing
+        analysis on a suite of specifications includes celerity-range and
+        azimuth deviation/scatter statistics
+    """
 
-    default_az_dev_std = 3.75
-    min_az_dev_std = 0.9
+    _az_bin_cnt = 16
+    _rng_max = 1000.0
 
-    tropo_strat_bnd = 1.0 / 0.32
-    strat_therm_bnd = 1.0 / 0.26
-    bnd_overlap = 0.05
+    _default_az_dev_std = 4.0
+    _min_az_dev_std = 1.0
 
-    wts0 = np.array([0.0539, 0.0899, 0.8562])
-    std0 = np.array([0.066, 0.08, 0.33])
-    mns0 = np.array([1.0 / 0.33, 1.0 / 0.29, 1.0 / 0.26])
+    _tropo_strat_bnd = 1.0 / 0.32
+    _strat_therm_bnd = 1.0 / 0.26
+    _bnd_overlap = 0.05
 
-    win_min_pts = 25
-    rcel_std_min = 0.05
-    rcel_wt_min = 1.0e-2
+    _wts0 = np.array([0.0539, 0.0899, 0.8562])
+    _std0 = np.array([0.066, 0.08, 0.33])
+    _mns0 = np.array([1.0 / 0.33, 1.0 / 0.29, 1.0 / 0.26])
+
+    _win_min_pts = 25
+    _rcel_std_min = 0.05
+    _rcel_wt_min = 1.0e-2
 
     def __init__(self):
         self.rngs = np.array([])
 
-        self.rcel_wts = []
-        self.rcel_mns = []
-        self.rcel_std = []
+        self._rcel_wts = []
+        self._rcel_mns = []
+        self._rcel_std = []
 
         self.az_dev_mns = []
         self.az_dev_std = []
 
     def eval_rcel_gmm(self, rng, rcel, az):
+        """
+            Evaluate reciprocal celerity Gaussian Mixture Model (GMM)
+            at specified range, reciprocal celerity, and azimuth
+
+            Parameters
+            ----------
+            rng: float
+                Range from source
+            rcel: float
+                Reciprocal celerity (travel time divided by propagation range)
+            az: float
+                Propagation azimuth (relative to North)
+
+            Returns
+            -------
+            pdf: float
+                Probability of observing an infrasonic arrival with specified celerity at specified range and azimuth
+
+        """
         rng_eval = np.array(rng)
-        rng_eval[rng_eval > self.rng_max] = self.rng_max
+        rng_eval[rng_eval > self._rng_max] = self._rng_max
 
         if len(np.atleast_1d(rng)) == 1:
-            n_az = find_azimuth_bin(az, self.az_bin_cnt)
-            fit_rcel_wts = np.array([f(rng_eval) for f in self.rcel_wts[n_az]])
-            fit_rcel_mns = np.array([f(rng_eval) for f in self.rcel_mns[n_az]])
-            fit_rcel_std = np.array([f(rng_eval) for f in self.rcel_std[n_az]])
+            n_az = find_azimuth_bin(az, self._az_bin_cnt)
+            fit_rcel_wts = np.array([f(rng_eval) for f in self._rcel_wts[n_az]])
+            fit_rcel_mns = np.array([f(rng_eval) for f in self._rcel_mns[n_az]])
+            fit_rcel_std = np.array([f(rng_eval) for f in self._rcel_std[n_az]])
             result = np.sum(fit_rcel_wts / fit_rcel_std * norm.pdf((rcel - fit_rcel_mns) / fit_rcel_std))
         else:
             mn = np.empty((len(rng_eval), 3))
             vr = np.empty((len(rng_eval), 3))
             wt = np.empty((len(rng_eval), 3))
 
-            az_indices = find_azimuth_bin(az, self.az_bin_cnt)
-            for n_az in range(self.az_bin_cnt):
+            az_indices = find_azimuth_bin(az, self._az_bin_cnt)
+            for n_az in range(self._az_bin_cnt):
                 mask = tuple([az_indices == n_az])
                 if np.any(mask):
-                    mn[mask] = np.array([f(rng_eval[mask]) for f in self.rcel_mns[n_az]]).T
-                    vr[mask] = np.array([f(rng_eval[mask]) for f in self.rcel_std[n_az]]).T
-                    wt[mask] = np.array([f(rng_eval[mask]) for f in self.rcel_wts[n_az]]).T
+                    mn[mask] = np.array([f(rng_eval[mask]) for f in self._rcel_mns[n_az]]).T
+                    vr[mask] = np.array([f(rng_eval[mask]) for f in self._rcel_std[n_az]]).T
+                    wt[mask] = np.array([f(rng_eval[mask]) for f in self._rcel_wts[n_az]]).T
 
             result = np.sum(wt / vr * norm.pdf((np.array([rcel] * 3).T - mn) / vr), axis=1)
         return result
 
     def eval_az_dev_mn(self, rng, az):
+        """
+            Evaluate the mean back azimuth deviation at a given range
+            and propagation azimuth
+
+            Parameters
+            ----------
+            rng: float
+                Range from source
+            az: float
+                Propagation azimuth (relative to North)
+
+            Returns
+            -------
+            bias: float
+                Predicted bias in the arrival back azimuth at specified arrival range and azimuth
+
+        """
         if len(np.atleast_1d(rng)) == 1:
-            return self.az_dev_mns[find_azimuth_bin(az, self.az_bin_cnt)](min(rng, self.rng_max))
+            return self.az_dev_mns[find_azimuth_bin(az, self._az_bin_cnt)](min(rng, self._rng_max))
         else:
             rng_eval = np.array(rng)
-            rng_eval[rng_eval > self.rng_max] = self.rng_max
-            az_indices = find_azimuth_bin(az, self.az_bin_cnt)
+            rng_eval[rng_eval > self._rng_max] = self._rng_max
+            az_indices = find_azimuth_bin(az, self._az_bin_cnt)
 
             mn = np.empty_like(rng_eval)
-            for n_az in range(self.az_bin_cnt):
+            for n_az in range(self._az_bin_cnt):
                 mask = az_indices == n_az
                 if np.any(mask):
                     mn[mask] = self.az_dev_mns[n_az](rng_eval[mask])
             return mn
 
-    def eval_az_dev_vr(self, rng, az):
+    def eval_az_dev_std(self, rng, az):
+        """
+            Evaluate the standard deviation of the back azimuth at a given range
+            and propagation azimuth
+
+
+            Parameters
+            ----------
+            rng: float
+                Range from source
+            az: float
+                Propagation azimuth (relative to North)
+
+            Returns
+            -------
+            stdev: float
+                Standard deviation of arrival back azimuths at specified range and azimuth
+
+        """
         if len(np.atleast_1d(rng)) == 1:
-            return self.az_dev_std[find_azimuth_bin(az, self.az_bin_cnt)](min(rng, self.rng_max))
+            return self.az_dev_std[find_azimuth_bin(az, self._az_bin_cnt)](min(rng, self._rng_max))
         else:
             rng_eval = np.array(rng)
-            rng_eval[rng_eval > self.rng_max] = self.rng_max
-            az_indices = find_azimuth_bin(az, self.az_bin_cnt)
+            rng_eval[rng_eval > self._rng_max] = self._rng_max
+            az_indices = find_azimuth_bin(az, self._az_bin_cnt)
 
             vr = np.empty_like(rng_eval)
-            for n_az in range(self.az_bin_cnt):
+            for n_az in range(self._az_bin_cnt):
                 mask = az_indices == n_az
                 if np.any(mask):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0):
+        """
+            Construct propagation statistics from a ray tracing arrival file (concatenated from
+            multiple runs most likely) and output a path geometry model
+
+
+            Parameters
+            ----------
+            arrivals_file: string
+                Path to file containing infraGA/GeoAc arrival information
+            output_file: string
+                Path to file where results will be saved
+            show_fits: boolean
+                Option ot visualize model construction (for QC purposes)
+            rng_width: float
+                Range bin width in kilometers
+            rng_spacing: float
+                Spacing between range bins in kilometers
+            geom: string
+                Geometry used in infraGA/GeoAc simulation.  Options are "3d" and "sph"
+            src_loc: iterable
+                [x, y, z] or [lat, lon, elev] location of the source used in infraGA/GeoAc simulations.  Note: '3d' simulations assume source at origin.
+            min_turning_ht: float
+                Minimum turning height used to filter out boundary layer paths if not of interest
+            az_bin_cnt: int
+                Number of azimuth bins to use in analysis
+            az_bin_width: float
+                Azimuth bin width in degrees for analysis
+
+        """
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping path geometry model construction...")
         else:
@@ -271,16 +379,18 @@ class PathGeometryModel(object):
             else:
                 print('Builing celerity and azimuth priors from file:', arrivals_file)
 
+                self._az_bin_cnt = az_bin_cnt
+
                 # define range bins and parameter arrays
-                rng_bins = np.arange(0.0, self.rng_max, rng_spacing)
+                rng_bins = np.arange(0.0, self._rng_max, rng_spacing)
                 rng_cnt = len(rng_bins)
 
-                az_dev_mns = np.empty((self.az_bin_cnt, rng_cnt))
-                az_dev_std = np.empty((self.az_bin_cnt, rng_cnt))
+                az_dev_mns = np.empty((self._az_bin_cnt, rng_cnt))
+                az_dev_std = np.empty((self._az_bin_cnt, rng_cnt))
 
-                rcel_wts = np.empty((self.az_bin_cnt, rng_cnt, 3))
-                rcel_mns = np.empty((self.az_bin_cnt, rng_cnt, 3))
-                rcel_std = np.empty((self.az_bin_cnt, rng_cnt, 3))
+                rcel_wts = np.empty((self._az_bin_cnt, rng_cnt, 3))
+                rcel_mns = np.empty((self._az_bin_cnt, rng_cnt, 3))
+                rcel_std = np.empty((self._az_bin_cnt, rng_cnt, 3))
 
                 # load infraGA/GeoAc predictions
                 if geom == "3d":
@@ -309,13 +419,13 @@ class PathGeometryModel(object):
                 az_dev[az_dev < -180.0] += 360.0
 
                 # Cycle through azimuth bins creating fit
-                az_wts = np.empty(self.az_bin_cnt)
-                for n_az in range(self.az_bin_cnt):
+                az_wts = np.empty(self._az_bin_cnt)
+                for n_az in range(self._az_bin_cnt):
                     if n_az == 0:
-                        az_mask = np.logical_or(az > 180.0 - self.az_bin_wdth / 2.0, az < -180.0 + self.az_bin_wdth / 2.0)
+                        az_mask = np.logical_or(az > 180.0 - az_bin_wdth / 2.0, az < -180.0 + az_bin_wdth / 2.0)
                     else:
-                        center = -180 + (360.0 / self.az_bin_cnt) * n_az
-                        az_mask = np.logical_and(center - self.az_bin_wdth / 2.0 <= az, az <= center + self.az_bin_wdth / 2.0)
+                        center = -180 + (360.0 / self._az_bin_cnt) * n_az
+                        az_mask = np.logical_and(center - az_bin_wdth / 2.0 <= az, az <= center + az_bin_wdth / 2.0)
 
                     # combine azimuth and turning height masks
                     az_mask = np.logical_and(az_mask, min_turning_ht < (z_max - src_loc[2]))
@@ -325,10 +435,10 @@ class PathGeometryModel(object):
                     if show_fits:
                         f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 11))
 
-                        ax1.set_xlim([0.0, self.rng_max])
+                        ax1.set_xlim([0.0, self._rng_max])
                         ax1.set_ylim([0.2, 0.4])
 
-                        ax3.set_xlim([0.0, self.rng_max])
+                        ax3.set_xlim([0.0, self._rng_max])
                         ax3.set_ylim([-12.0, 12.0])
 
                         ax1.set_xlabel('Range [km]')
@@ -368,65 +478,65 @@ class PathGeometryModel(object):
                         rng_wts[nr] = float(len(rngs[rng_az_mask])) / len(rngs[az_mask])
 
                         # set azimuth deviation fit
-                        if az_dev[rng_az_mask].shape[0] > self.win_min_pts:
+                        if az_dev[rng_az_mask].shape[0] > self._win_min_pts:
                             az_dev_mns[n_az][nr] = np.mean(az_dev[rng_az_mask], dtype=np.float64)
-                            az_dev_std[n_az][nr] = max(np.std(az_dev[rng_az_mask], dtype=np.float64), self.min_az_dev_std)
+                            az_dev_std[n_az][nr] = max(np.std(az_dev[rng_az_mask], dtype=np.float64), self._min_az_dev_std)
                         else:
                             if nr == 0:
                                 az_dev_mns[n_az][nr] = 0.0
-                                az_dev_std[n_az][nr] = self.default_az_dev_std
+                                az_dev_std[n_az][nr] = self._default_az_dev_std
                             else:
                                 az_dev_mns[n_az][nr] = az_dev_mns[n_az][nr - 1] * 0.75
-                                az_dev_std[n_az][nr] = self.default_az_dev_std + (az_dev_std[n_az][nr - 1] - self.default_az_dev_std) * 0.5
+                                az_dev_std[n_az][nr] = self._default_az_dev_std + (az_dev_std[n_az][nr - 1] - self._default_az_dev_std) * 0.5
 
                         # set tropospheric contribution to reciprocal celerity fit
-                        combo_mask = np.logical_and(rng_az_mask, rcel < self.tropo_strat_bnd + self.bnd_overlap)
+                        combo_mask = np.logical_and(rng_az_mask, rcel < self._tropo_strat_bnd + self._bnd_overlap)
 
                         wt1 = float(len(rngs[combo_mask]))
-                        if rcel[combo_mask].shape[0] > self.win_min_pts:
+                        if rcel[combo_mask].shape[0] > self._win_min_pts:
                             rcel_mns[n_az][nr][0] = np.mean(rcel[combo_mask], dtype=np.float64)
-                            rcel_std[n_az][nr][0] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
+                            rcel_std[n_az][nr][0] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self._rcel_std_min)
                         else:
                             if nr == 0:
-                                rcel_mns[n_az][nr][0] = self.mns0[0]
-                                rcel_std[n_az][nr][0] = self.std0[0]
+                                rcel_mns[n_az][nr][0] = self._mns0[0]
+                                rcel_std[n_az][nr][0] = self._std0[0]
                             else:
-                                rcel_mns[n_az][nr][0] = self.mns0[0] + (rcel_mns[n_az][nr - 1][0] - self.mns0[0]) * 0.25
-                                rcel_std[n_az][nr][0] = self.std0[0] + (rcel_std[n_az][nr - 1][0] - self.std0[0]) * 0.25
+                                rcel_mns[n_az][nr][0] = self._mns0[0] + (rcel_mns[n_az][nr - 1][0] - self._mns0[0]) * 0.25
+                                rcel_std[n_az][nr][0] = self._std0[0] + (rcel_std[n_az][nr - 1][0] - self._std0[0]) * 0.25
 
                         # set stratospheric contribution to reciprocal celerity fit
-                        strat_mask = np.logical_and(self.tropo_strat_bnd - self.bnd_overlap <= rcel, rcel <= self.strat_therm_bnd + self.bnd_overlap)
+                        strat_mask = np.logical_and(self._tropo_strat_bnd - self._bnd_overlap <= rcel, rcel <= self._strat_therm_bnd + self._bnd_overlap)
                         combo_mask = np.logical_and(rng_az_mask, strat_mask)
 
                         wt2 = float(len(rngs[combo_mask]))
-                        if rcel[combo_mask].shape[0] > self.win_min_pts:
+                        if rcel[combo_mask].shape[0] > self._win_min_pts:
                             rcel_mns[n_az][nr][1] = np.mean(rcel[combo_mask], dtype=np.float64)
-                            rcel_std[n_az][nr][1] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
+                            rcel_std[n_az][nr][1] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self._rcel_std_min)
                         else:
                             if nr == 0:
-                                rcel_mns[n_az][nr][1] = self.mns0[1]
-                                rcel_std[n_az][nr][1] = self.std0[1]
+                                rcel_mns[n_az][nr][1] = self._mns0[1]
+                                rcel_std[n_az][nr][1] = self._std0[1]
                             else:
-                                rcel_mns[n_az][nr][1] = self.mns0[1] + (rcel_mns[n_az][nr - 1][1] - self.mns0[1]) * 0.25
-                                rcel_std[n_az][nr][1] = self.std0[1] + (rcel_std[n_az][nr - 1][1] - self.std0[1]) * 0.25
+                                rcel_mns[n_az][nr][1] = self._mns0[1] + (rcel_mns[n_az][nr - 1][1] - self._mns0[1]) * 0.25
+                                rcel_std[n_az][nr][1] = self._std0[1] + (rcel_std[n_az][nr - 1][1] - self._std0[1]) * 0.25
 
                         # set thermospheric contribution to reciprocal celerity fit
-                        combo_mask = np.logical_and(rng_az_mask, self.strat_therm_bnd - self.bnd_overlap < rcel)
+                        combo_mask = np.logical_and(rng_az_mask, self._strat_therm_bnd - self._bnd_overlap < rcel)
 
                         wt3 = float(len(rngs[combo_mask]))
-                        if rcel[combo_mask].shape[0] > self.win_min_pts:
+                        if rcel[combo_mask].shape[0] > self._win_min_pts:
                             rcel_mns[n_az][nr][2] = np.mean(rcel[combo_mask], dtype=np.float64)
-                            rcel_std[n_az][nr][2] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self.rcel_std_min)
+                            rcel_std[n_az][nr][2] = max(np.std(rcel[combo_mask], dtype=np.float64) * 1.25, self._rcel_std_min)
                         else:
                             if nr == 0:
-                                rcel_mns[n_az][nr][2] = self.mns0[2]
-                                rcel_std[n_az][nr][2] = self.std0[2]
+                                rcel_mns[n_az][nr][2] = self._mns0[2]
+                                rcel_std[n_az][nr][2] = self._std0[2]
                             else:
-                                rcel_mns[n_az][nr][2] = self.mns0[2] + (rcel_mns[n_az][nr - 1][2] - self.mns0[2]) * 0.25
-                                rcel_std[n_az][nr][2] = self.std0[2] + (rcel_std[n_az][nr - 1][2] - self.std0[2]) * 0.25
+                                rcel_mns[n_az][nr][2] = self._mns0[2] + (rcel_mns[n_az][nr - 1][2] - self._mns0[2]) * 0.25
+                                rcel_std[n_az][nr][2] = self._std0[2] + (rcel_std[n_az][nr - 1][2] - self._std0[2]) * 0.25
 
                         # set weights of reciprocal celerity distribution
-                        if len(rngs[rng_az_mask]) > self.win_min_pts:
+                        if len(rngs[rng_az_mask]) > self._win_min_pts:
                             rcel_wts[n_az][nr][0] = wt1 / (wt1 + wt2 + wt3)
                             rcel_wts[n_az][nr][1] = wt2 / (wt1 + wt2 + wt3)
                             rcel_wts[n_az][nr][2] = wt3 / (wt1 + wt2 + wt3)
@@ -461,7 +571,7 @@ class PathGeometryModel(object):
                     plt.close('all')
 
                 # Normalize weights by total arrivals at all azimuths
-                for n_az in range(self.az_bin_cnt):
+                for n_az in range(self._az_bin_cnt):
                     rcel_wts[n_az] *= az_wts[n_az] / np.sum(az_wts)
 
                 priors = [0] * 6
@@ -474,53 +584,79 @@ class PathGeometryModel(object):
 
                 pickle.dump(priors, open(output_file, "wb"))
 
-    def load(self, model_file, smooth=None):
+    def load(self, model_file, smooth=False):
+        """
+        Load a path geometry model file for use
+
+        Parameters
+        ----------
+
+        model_file: string
+            Path to PGM file constructed using stochprop.propagation.PathGeometryModel.build()
+        smooth: boolean
+            Option to use scipy.signal.savgol_filter to smooth discrete GMM parameters along range
+
+        """
+
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+        self._az_bin_cnt = len(fit_params[1])
 
-        self.rng_max = max(fit_params[0])
+        self._rng_max = max(fit_params[0])
 
-        self.az_dev_mns = [0] * self.az_bin_cnt
-        self.az_dev_std = [0] * self.az_bin_cnt
+        self.az_dev_mns = [0] * self._az_bin_cnt
+        self.az_dev_std = [0] * self._az_bin_cnt
 
-        self.rcel_wts = [0] * self.az_bin_cnt
-        self.rcel_mns = [0] * self.az_bin_cnt
-        self.rcel_std = [0] * self.az_bin_cnt
+        self._rcel_wts = [0] * self._az_bin_cnt
+        self._rcel_mns = [0] * self._az_bin_cnt
+        self._rcel_std = [0] * self._az_bin_cnt
 
-        for n_az in range(self.az_bin_cnt):
-            self.rcel_mns[n_az] = [0] * 3
-            self.rcel_std[n_az] = [0] * 3
-            self.rcel_wts[n_az] = [0] * 3
+        for n_az in range(self._az_bin_cnt):
+            self._rcel_mns[n_az] = [0] * 3
+            self._rcel_std[n_az] = [0] * 3
+            self._rcel_wts[n_az] = [0] * 3
 
         if smooth:
             print("Loading propagation model parameters from " + model_file + " with smoothing.")
-            for n_az in range(self.az_bin_cnt):
+            for n_az in range(self._az_bin_cnt):
                 self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 5, 3), kind='cubic')
                 self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 5, 3), kind='cubic')
 
-                self.rcel_mns[n_az] = [0] * 3
-                self.rcel_std[n_az] = [0] * 3
-                self.rcel_wts[n_az] = [0] * 3
+                self._rcel_mns[n_az] = [0] * 3
+                self._rcel_std[n_az] = [0] * 3
+                self._rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self.rcel_mns[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[3][n_az][:, j], 5, 3), kind='cubic')
-                    self.rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
-                    self.rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_mns[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[3][n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
         else:
             print("Loading propagation model parameters from " + model_file + " without smoothing.")
-            for n_az in range(self.az_bin_cnt):
+            for n_az in range(self._az_bin_cnt):
                 self.az_dev_mns[n_az] = interp1d(fit_params[0], fit_params[1][n_az], kind='cubic')
                 self.az_dev_std[n_az] = interp1d(fit_params[0], fit_params[2][n_az], kind='cubic')
 
-                self.rcel_mns[n_az] = [0] * 3
-                self.rcel_std[n_az] = [0] * 3
-                self.rcel_wts[n_az] = [0] * 3
+                self._rcel_mns[n_az] = [0] * 3
+                self._rcel_std[n_az] = [0] * 3
+                self._rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self.rcel_mns[n_az][j] = interp1d(fit_params[0], fit_params[3][n_az][:, j], kind='cubic')
-                    self.rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
-                    self.rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
+                    self._rcel_mns[n_az][j] = interp1d(fit_params[0], fit_params[3][n_az][:, j], kind='cubic')
+                    self._rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
+                    self._rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
 
     def display(self, file_id=None, subtitle=None):
+        """
+        Display the propagation geometry statistics
+
+        Parameters
+        ----------
+        file_id: string
+            File prefix to save visualization
+        subtitle: string
+            Subtitle used in figures
+
+        """
+
         resol = 100
         rngs = np.linspace(0.0, 1000.0, resol)
         bias = np.empty([resol])
@@ -558,7 +694,7 @@ class PathGeometryModel(object):
 
         def plot_az_stats(axis_id, azimuth):
             bias = self.eval_az_dev_mn(rngs, [azimuth] * len(rngs))
-            width = self.eval_az_dev_vr(rngs, [azimuth] * len(rngs))
+            width = self.eval_az_dev_std(rngs, [azimuth] * len(rngs))
             axis_id.fill_between(rngs, bias - 2.0 * width, bias + 2.0 * width, facecolor=var_color)
             axis_id.plot(rngs, bias, linewidth=2.0, color=bias_color)
             axis_id.plot(rngs, [0] * len(rngs), 'k:')
@@ -640,19 +776,43 @@ class PathGeometryModel(object):
 
 
 class TLossModel(object):
-    az_bin_cnt, az_bin_wdth = 16, 30.0
+    _az_bin_cnt = 16
+    _az_bin_wdth = 30.0
 
     def __init__(self):
         self.rng_vals = [0]
         self.tloss_vals = [0]
-        self.pdf_vals = [0] * self.az_bin_cnt
-        self.pdf_fits = [0] * self.az_bin_cnt
+        self.pdf_vals = [0] * self._az_bin_cnt
+        self.pdf_fits = [0] * self._az_bin_cnt
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0):
+        """
+            Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
+            multiple runs most likely) and output a transmission loss model
+
+
+            Parameters
+            ----------
+            tloss_file: string
+                Path to file containing NCPAprop transmission loss information
+            output_file: string
+                Path to file where results will be saved
+            show_fits: boolean
+                Option ot visualize model construction (for QC purposes)
+            use_coh: boolean
+                Option to use coherent transmission loss
+            az_bin_cnt: int
+                Number of azimuth bins to use in analysis
+            az_bin_width: float
+                Azimuth bin width in degrees for analysis
+        """
+
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping transmission loss model construction...")
         else:
             print('Builing transmission loss models from file:', tloss_file)
+
+            self._az_bin_cnt = az_bin_cnt
 
             # read in data, convert tloss to dB relative to 1 km, and wrap azimuths to [-180.0:180.0]
             print('\t' + "Reading in data...")
@@ -672,14 +832,14 @@ class TLossModel(object):
             tloss[np.isposinf(tloss)] = max(tloss[np.isfinite(tloss)])
 
             tloss_vals = np.linspace(-75.0, 0.0, len(output_rngs))
-            pdf_vals = np.empty((self.az_bin_cnt, len(output_rngs), len(tloss_vals)))
+            pdf_vals = np.empty((self._az_bin_cnt, len(output_rngs), len(tloss_vals)))
 
-            for az_index in range(self.az_bin_cnt):
-                center = -180 + 360.0 / self.az_bin_cnt * az_index
+            for az_index in range(self._az_bin_cnt):
+                center = -180 + 360.0 / self._az_bin_cnt * az_index
                 if az_index == 0:
-                    az_mask = np.logical_or(az >= 180.0 - self.az_bin_wdth / 2.0, az <= -180.0 + self.az_bin_wdth / 2.0)
+                    az_mask = np.logical_or(az >= 180.0 - az_bin_wdth / 2.0, az <= -180.0 + az_bin_wdth / 2.0)
                 else:
-                    az_mask = np.logical_and(center - self.az_bin_wdth / 2.0 <= az, az <= center + self.az_bin_wdth / 2.0)
+                    az_mask = np.logical_and(center - az_bin_wdth / 2.0 <= az, az <= center + az_bin_wdth / 2.0)
 
                 if show_fits:
                     f, ((ax1, ax2)) = plt.subplots(2, 1, figsize=(7.5, 10))
@@ -728,30 +888,71 @@ class TLossModel(object):
             print(' ')
 
     def load(self, model_file):
-        priors = pickle.load(open(model_file, "rb"), encoding='latin1')
+        """
+        Load a transmission loss file for use
 
-        self.rng_vals = priors[0]
-        self.tloss_vals = priors[1]
+        Parameters
+        ----------
 
-        for az_index in range(self.az_bin_cnt):
-            self.pdf_vals[az_index] = priors[2][az_index]
+        model_file: string
+            Path to TLoss file constructed using stochprop.propagation.TLossModel.build()
+
+        """
+        fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+        self._az_bin_cnt = len(fit_params[2])
+
+        self.rng_vals = fit_params[0]
+        self.tloss_vals = fit_params[1]
+
+        for az_index in range(self._az_bin_cnt):
+            self.pdf_vals[az_index] = fit_params[2][az_index]
             self.pdf_fits[az_index] = RectBivariateSpline(self.rng_vals, self.tloss_vals, self.pdf_vals[az_index])
 
     def eval(self, rng, tloss, az):
-        az_index = find_azimuth_bin(az, self.az_bin_cnt)
+        """
+            Evaluate TLoss model at specified range, transmission loss, and azimuth
+
+            Parameters
+            ----------
+            rng: float
+                Range from source
+            tloss: float
+                Transmission loss
+            az: float
+                Propagation azimuth (relative to North)
+
+            Returns
+            -------
+            pdf: float
+                Probability of observing an infrasonic arrival with specified transmission loss at specified range and azimuth
+
+
+        """
+        az_index = find_azimuth_bin(az, self._az_bin_cnt)
 
         if len(np.atleast_1d(rng)) == 1:
             result = self.pdf_fits[az_index].ev(rng, tloss)
         else:
             result = np.empty(len(rng))
-            for n_az in range(self.az_bin_cnt):
+            for n_az in range(self._az_bin_cnt):
                 mask = az_index == n_az
                 if np.any(mask):
                     result[mask] = self.pdf_fits[n_az].ev(np.array(rng)[mask], np.array(tloss)[mask])
 
         return result
 
-    def display(self, title="Transmission Loss Statistics", file_id=None):
+    def display(self, file_id=None, title="Transmission Loss Statistics"):
+        """
+        Display the transmission loss statistics
+
+        Parameters
+        ----------
+        file_id: string
+            File prefix to save visualization
+        subtitle: string
+            Subtitle used in figures
+
+        """
         scale_max = 0.1
         compass_file = imp.find_module('stochprop')[1] + '/compass.png'
 

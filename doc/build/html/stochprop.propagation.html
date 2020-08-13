@@ -1,0 +1,581 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Propagation Statistics &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Empirical Orthogonal Function Analysis" href="stochprop.eofs.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="stochprop.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html">Empirical Orthogonal Function Analysis</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Propagation Statistics</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">stochprop</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="stochprop.html">API</a> &raquo;</li>
+        
+      <li>Propagation Statistics</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/stochprop.propagation.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-stochprop.propagation">
+<span id="propagation-statistics"></span><h1>Propagation Statistics<a class="headerlink" href="#module-stochprop.propagation" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="stochprop.propagation.PathGeometryModel">
+<em class="property">class </em><code class="sig-prename descclassname">stochprop.propagation.</code><code class="sig-name descname">PathGeometryModel</code><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Propagation path geometry statistics computed using ray tracing
+analysis on a suite of specifications includes celerity-range and
+azimuth deviation/scatter statistics</p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.build" title="stochprop.propagation.PathGeometryModel.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(arrivals_file, output_file[, …])</p></td>
+<td><p>Construct propagation statistics from a ray tracing arrival file (concatenated from multiple runs most likely) and output a path geometry model</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.display" title="stochprop.propagation.PathGeometryModel.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>([file_id, subtitle])</p></td>
+<td><p>Display the propagation geometry statistics</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.eval_az_dev_mn" title="stochprop.propagation.PathGeometryModel.eval_az_dev_mn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_az_dev_mn</span></code></a>(rng, az)</p></td>
+<td><p>Evaluate the mean back azimuth deviation at a given range and propagation azimuth</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.eval_az_dev_std" title="stochprop.propagation.PathGeometryModel.eval_az_dev_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_az_dev_std</span></code></a>(rng, az)</p></td>
+<td><p>Evaluate the standard deviation of the back azimuth at a given range and propagation azimuth</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.eval_rcel_gmm" title="stochprop.propagation.PathGeometryModel.eval_rcel_gmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_rcel_gmm</span></code></a>(rng, rcel, az)</p></td>
+<td><p>Evaluate reciprocal celerity Gaussian Mixture Model (GMM) at specified range, reciprocal celerity, and azimuth</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.load" title="stochprop.propagation.PathGeometryModel.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(model_file[, smooth])</p></td>
+<td><p>Load a path geometry model file for use</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="stochprop.propagation.PathGeometryModel.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom='3d', src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct propagation statistics from a ray tracing arrival file (concatenated from
+multiple runs most likely) and output a path geometry model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>arrivals_file: string</strong></dt><dd><p>Path to file containing infraGA/GeoAc arrival information</p>
+</dd>
+<dt><strong>output_file: string</strong></dt><dd><p>Path to file where results will be saved</p>
+</dd>
+<dt><strong>show_fits: boolean</strong></dt><dd><p>Option ot visualize model construction (for QC purposes)</p>
+</dd>
+<dt><strong>rng_width: float</strong></dt><dd><p>Range bin width in kilometers</p>
+</dd>
+<dt><strong>rng_spacing: float</strong></dt><dd><p>Spacing between range bins in kilometers</p>
+</dd>
+<dt><strong>geom: string</strong></dt><dd><p>Geometry used in infraGA/GeoAc simulation.  Options are “3d” and “sph”</p>
+</dd>
+<dt><strong>src_loc: iterable</strong></dt><dd><p>[x, y, z] or [lat, lon, elev] location of the source used in infraGA/GeoAc simulations.  Note: ‘3d’ simulations assume source at origin.</p>
+</dd>
+<dt><strong>min_turning_ht: float</strong></dt><dd><p>Minimum turning height used to filter out boundary layer paths if not of interest</p>
+</dd>
+<dt><strong>az_bin_cnt: int</strong></dt><dd><p>Number of azimuth bins to use in analysis</p>
+</dd>
+<dt><strong>az_bin_width: float</strong></dt><dd><p>Azimuth bin width in degrees for analysis</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.PathGeometryModel.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">file_id=None</em>, <em class="sig-param">subtitle=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the propagation geometry statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>file_id: string</strong></dt><dd><p>File prefix to save visualization</p>
+</dd>
+<dt><strong>subtitle: string</strong></dt><dd><p>Subtitle used in figures</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.PathGeometryModel.eval_az_dev_mn">
+<code class="sig-name descname">eval_az_dev_mn</code><span class="sig-paren">(</span><em class="sig-param">rng</em>, <em class="sig-param">az</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.eval_az_dev_mn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.eval_az_dev_mn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the mean back azimuth deviation at a given range
+and propagation azimuth</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
+</dd>
+<dt><strong>az: float</strong></dt><dd><p>Propagation azimuth (relative to North)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>bias: float</dt><dd><p>Predicted bias in the arrival back azimuth at specified arrival range and azimuth</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.PathGeometryModel.eval_az_dev_std">
+<code class="sig-name descname">eval_az_dev_std</code><span class="sig-paren">(</span><em class="sig-param">rng</em>, <em class="sig-param">az</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.eval_az_dev_std"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.eval_az_dev_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate the standard deviation of the back azimuth at a given range
+and propagation azimuth</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
+</dd>
+<dt><strong>az: float</strong></dt><dd><p>Propagation azimuth (relative to North)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>stdev: float</dt><dd><p>Standard deviation of arrival back azimuths at specified range and azimuth</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.PathGeometryModel.eval_rcel_gmm">
+<code class="sig-name descname">eval_rcel_gmm</code><span class="sig-paren">(</span><em class="sig-param">rng</em>, <em class="sig-param">rcel</em>, <em class="sig-param">az</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.eval_rcel_gmm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.eval_rcel_gmm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate reciprocal celerity Gaussian Mixture Model (GMM)
+at specified range, reciprocal celerity, and azimuth</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
+</dd>
+<dt><strong>rcel: float</strong></dt><dd><p>Reciprocal celerity (travel time divided by propagation range)</p>
+</dd>
+<dt><strong>az: float</strong></dt><dd><p>Propagation azimuth (relative to North)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>pdf: float</dt><dd><p>Probability of observing an infrasonic arrival with specified celerity at specified range and azimuth</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.PathGeometryModel.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">model_file</em>, <em class="sig-param">smooth=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a path geometry model file for use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>model_file: string</strong></dt><dd><p>Path to PGM file constructed using stochprop.propagation.PathGeometryModel.build()</p>
+</dd>
+<dt><strong>smooth: boolean</strong></dt><dd><p>Option to use scipy.signal.savgol_filter to smooth discrete GMM parameters along range</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="stochprop.propagation.TLossModel">
+<em class="property">class </em><code class="sig-prename descclassname">stochprop.propagation.</code><code class="sig-name descname">TLossModel</code><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.TLossModel.build" title="stochprop.propagation.TLossModel.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(tloss_file, output_file[, show_fits, …])</p></td>
+<td><p>Construct propagation statistics from a NCPAprop modess or pape file (concatenated from multiple runs most likely) and output a transmission loss model</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stochprop.propagation.TLossModel.display" title="stochprop.propagation.TLossModel.display"><code class="xref py py-obj docutils literal notranslate"><span class="pre">display</span></code></a>([file_id, title])</p></td>
+<td><p>Display the transmission loss statistics</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.TLossModel.eval" title="stochprop.propagation.TLossModel.eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code></a>(rng, tloss, az)</p></td>
+<td><p>Evaluate TLoss model at specified range, transmission loss, and azimuth</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#stochprop.propagation.TLossModel.load" title="stochprop.propagation.TLossModel.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(model_file)</p></td>
+<td><p>Load a transmission loss file for use</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="stochprop.propagation.TLossModel.build">
+<code class="sig-name descname">build</code><span class="sig-paren">(</span><em class="sig-param">tloss_file</em>, <em class="sig-param">output_file</em>, <em class="sig-param">show_fits=False</em>, <em class="sig-param">use_coh=False</em>, <em class="sig-param">az_bin_cnt=16</em>, <em class="sig-param">az_bin_wdth=30.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
+multiple runs most likely) and output a transmission loss model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>tloss_file: string</strong></dt><dd><p>Path to file containing NCPAprop transmission loss information</p>
+</dd>
+<dt><strong>output_file: string</strong></dt><dd><p>Path to file where results will be saved</p>
+</dd>
+<dt><strong>show_fits: boolean</strong></dt><dd><p>Option ot visualize model construction (for QC purposes)</p>
+</dd>
+<dt><strong>use_coh: boolean</strong></dt><dd><p>Option to use coherent transmission loss</p>
+</dd>
+<dt><strong>az_bin_cnt: int</strong></dt><dd><p>Number of azimuth bins to use in analysis</p>
+</dd>
+<dt><strong>az_bin_width: float</strong></dt><dd><p>Azimuth bin width in degrees for analysis</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.TLossModel.display">
+<code class="sig-name descname">display</code><span class="sig-paren">(</span><em class="sig-param">file_id=None</em>, <em class="sig-param">title='Transmission Loss Statistics'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.display"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.display" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the transmission loss statistics</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>file_id: string</strong></dt><dd><p>File prefix to save visualization</p>
+</dd>
+<dt><strong>subtitle: string</strong></dt><dd><p>Subtitle used in figures</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.TLossModel.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">rng</em>, <em class="sig-param">tloss</em>, <em class="sig-param">az</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluate TLoss model at specified range, transmission loss, and azimuth</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
+</dd>
+<dt><strong>tloss: float</strong></dt><dd><p>Transmission loss</p>
+</dd>
+<dt><strong>az: float</strong></dt><dd><p>Propagation azimuth (relative to North)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>pdf: float</dt><dd><p>Probability of observing an infrasonic arrival with specified transmission loss at specified range and azimuth</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="stochprop.propagation.TLossModel.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">model_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a transmission loss file for use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>model_file: string</strong></dt><dd><p>Path to TLoss file constructed using stochprop.propagation.TLossModel.build()</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.propagation.find_azimuth_bin">
+<code class="sig-prename descclassname">stochprop.propagation.</code><code class="sig-name descname">find_azimuth_bin</code><span class="sig-paren">(</span><em class="sig-param">az</em>, <em class="sig-param">bin_cnt=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#find_azimuth_bin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.find_azimuth_bin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Identify the azimuth bin index given some specified number of bins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>az: float</strong></dt><dd><p>Azimuth in degrees</p>
+</dd>
+<dt><strong>bin_cnt: int</strong></dt><dd><p>Number of bins used in analysis</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>index: int</dt><dd><p>Index of azimuth bin</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.propagation.run_infraga">
+<code class="sig-prename descclassname">stochprop.propagation.</code><code class="sig-name descname">run_infraga</code><span class="sig-paren">(</span><em class="sig-param">profs_path, results_file, pattern='*.met', cpu_cnt=None, geom='3d', bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#run_infraga"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.run_infraga" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the infraga -prop algorithm to compute path geometry
+statistics for BISL using a suite of specifications
+and combining results into single file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>profs_path: string</strong></dt><dd><p>Path to atmospheric specification files</p>
+</dd>
+<dt><strong>results_file: string</strong></dt><dd><p>Path and name of file where results will be written</p>
+</dd>
+<dt><strong>pattern: string</strong></dt><dd><p>Pattern identifying atmospheric specification within profs_path location</p>
+</dd>
+<dt><strong>cpu_cnt: int</strong></dt><dd><p>Number of threads to use in OpenMPI implementation.  None runs non-OpenMPI version of infraga</p>
+</dd>
+<dt><strong>geom: string</strong></dt><dd><p>Defines geometry of the infraga simulations (3d” or “sph”)</p>
+</dd>
+<dt><strong>bounces: int</strong></dt><dd><p>Maximum number of ground reflections to consider in ray tracing</p>
+</dd>
+<dt><strong>inclinations: iterable object</strong></dt><dd><p>Iterable of starting, ending, and step for ray launch inclination</p>
+</dd>
+<dt><strong>azimuths: iterable object</strong></dt><dd><p>Iterable of starting, ending, and step for ray launch azimuths</p>
+</dd>
+<dt><strong>freq: float</strong></dt><dd><p>Frequency to use for Sutherland Bass absorption calculation</p>
+</dd>
+<dt><strong>z_grnd: float</strong></dt><dd><p>Elevation of the ground surface relative to sea level</p>
+</dd>
+<dt><strong>rng_max: float</strong></dt><dd><p>Maximum propagation range for propagation paths</p>
+</dd>
+<dt><strong>src_loc: iterable object</strong></dt><dd><p>The horizontal (latitude and longitude) and altitude of the source</p>
+</dd>
+<dt><strong>infraga_path: string</strong></dt><dd><p>Location of infraGA executables</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.propagation.run_modess">
+<code class="sig-prename descclassname">stochprop.propagation.</code><code class="sig-name descname">run_modess</code><span class="sig-paren">(</span><em class="sig-param">profs_path, results_path, pattern='*.met', cpu_cnt=None, azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#run_modess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.propagation.run_modess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the NCPAprop normal mode methods to compute transmission
+loss values for a suite of atmospheric specifications at
+a set of frequency values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>profs_path: string</strong></dt><dd><p>Path to atmospheric specification files</p>
+</dd>
+<dt><strong>results_file: string</strong></dt><dd><p>Path and name of file where results will be written</p>
+</dd>
+<dt><strong>pattern: string</strong></dt><dd><p>Pattern identifying atmospheric specification within profs_path location</p>
+</dd>
+<dt><strong>azimuths: iterable object</strong></dt><dd><p>Iterable of starting, ending, and step for propagation azimuths</p>
+</dd>
+<dt><strong>freq: float</strong></dt><dd><p>Frequency for simulation</p>
+</dd>
+<dt><strong>z_grnd: float</strong></dt><dd><p>Elevation of the ground surface relative to sea level</p>
+</dd>
+<dt><strong>rng_max: float</strong></dt><dd><p>Maximum propagation range for propagation paths</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="stochprop.eofs.html" class="btn btn-neutral float-left" title="Empirical Orthogonal Function Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Philip Blom
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
