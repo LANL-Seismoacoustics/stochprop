@@ -10,9 +10,18 @@ from distutils.core import setup
 
 setup(name = "stochprop",
       version = '0.1',
-      description = "A set of tools for computing representative atmospheres from statistical analysis of a suite of G2S specifications and then run propagation simulations through the resulting set of atmospheres to build stochastic propagation models.",
+      description = "A set of tools for analyzing atmospheric variability and uncertainty for infrasound propagation studies",
       author_email = 'pblom at lanl dot gov',
       packages = ['stochprop'],
       scripts=[],
-      install_requires = ['numpy', 'scipy', 'obspy', 'IPython', 'infrapy']
+      install_requires = ['fnmatch',
+                          'calendar',
+                          'subprocess',
+                          'numpy',
+                          'matplotlib',
+                          'scipy',
+                          'pickle',
+                          'imp',
+                          'itertools',
+                          'pyproj']
      )

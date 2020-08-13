@@ -9,20 +9,18 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
-import sys
 import os
-import numpy as np
 import calendar
 import fnmatch
-import warnings
 import subprocess
 
+import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy.cluster import hierarchy
 from scipy.integrate import quad, simps
 from scipy.interpolate import interp1d
-from scipy.optimize import bisect, minimize
+from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
 

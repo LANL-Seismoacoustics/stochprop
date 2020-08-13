@@ -5,9 +5,9 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
+import os
 import fnmatch
 import warnings
-import os
 import pickle
 import imp
 import itertools
