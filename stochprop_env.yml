@@ -1,0 +1,20 @@
+name: stochprop_env
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.6
+  - matplotlib
+  - numpy
+  - scipy
+  - ipython
+  - pyproj
+  - pathos
+  - sphinx
+  - pip
+
+  - pip:
+    - -e .
+
