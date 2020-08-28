@@ -27,11 +27,13 @@ import matplotlib.pyplot as plt
 
 sph_proj = Geod(ellps='sphere')
 
+plt.rcParams['font.size'] = 14
+
 # ############################## #
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path=""):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False):
     """
         Run the infraga -prop algorithm to compute path geometry
         statistics for BISL using a suite of specifications
@@ -65,6 +67,8 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             The horizontal (latitude and longitude) and altitude of the source
         infraga_path: string
             Location of infraGA executables
+        clean_up: boolean
+            Flag to remove individual [..].arrival.dat files after combining
         """
 
     if os.path.isfile(results_file):
@@ -74,7 +78,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
             warnings.warn(msg)
         else:
-            dir_files = os.listdir(profs_path)
+            dir_files = np.sort(os.listdir(profs_path))
             for file_name in dir_files:
                 if fnmatch.fnmatch(file_name, pattern):
                     file_id = os.path.splitext(file_name)[0]
@@ -95,7 +99,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                             command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
                         command = command + " src_alt=" + str(src_loc[2])
                         command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
-                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false"
+                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" # + " > /dev/null &"
 
                         print(command)
                         subprocess.call(command, shell=True)
@@ -103,13 +107,14 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             command = "cat " + profs_path + "/*.arrivals.dat > " + results_file
             print(command)
             subprocess.call(command, shell=True)
+            
+            if clean_up:
+                command = "rm "  + profs_path + "/*.dat"
+                print(command)
+                subprocess.call(command, shell=True)
 
-            # command = "rm "  + profs_path + "/*.dat"
-            # print(command)
-            # subprocess.call(command, shell=True)
 
-
-def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path=""):
+def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path="", clean_up=False):
     """
         Run the NCPAprop normal mode methods to compute transmission
         loss values for a suite of atmospheric specifications at
@@ -131,9 +136,11 @@ def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths
             Elevation of the ground surface relative to sea level
         rng_max: float
             Maximum propagation range for propagation paths
+        clean_up: boolean
+            Flag to remove individual .nm files after combining
         """
-
-    dir_files = os.listdir(profs_path)
+# 
+    dir_files = np.sort(os.listdir(profs_path))
 
     if os.path.isfile(results_path + "_%.3f" % freq + ".lossless.nm"):
         print(results_path + "_%.3f" % freq + ".lossless.nm alraedy exists  --->  Skipping NCPAprop modess runs...")
@@ -143,8 +150,8 @@ def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths
                 file_id = os.path.splitext(file_name)[0]
 
                 print('\t' + "Running NCPAprop modess for " + profs_path + "/" + file_name + " at " + "%.3f" % freq + " Hz...")
-                command = ncpaprop_path + "Modess --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines 0 --freq " + str(freq)
-                command = command + " --Nby2Dprop --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
+                command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --freq " + str(freq)
+                command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
                 command = command + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) # + " > /dev/null &"
                 print(command)
                 subprocess.call(command, shell=True)
@@ -153,20 +160,18 @@ def run_modess(profs_path, results_path, pattern="*.met", cpu_cnt=None, azimuths
                 subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
 
         print('\t' + "Combining transmission loss predictions..." + '\n')
-        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + "_%.3f" % freq + ".lossless.nm", shell=True)
-        subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm", shell=True)
+        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
+        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + "_%.3f" % freq + "Hz.nm", shell=True)
 
-        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + "_%.3f" % freq + ".nm", shell=True)
-        subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.nm", shell=True)
+        if clean_up:
+            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm", shell=True)
+            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.nm", shell=True)
 
 
 # ############################ #
 #          Stochastic          #
 #      Propagation Models      #
 # ############################ #
-az_dirs = ['S', 'SW', 'W', 'NW', 'N', 'NE', 'E', 'SE']
-
-
 def find_azimuth_bin(az, bin_cnt=16):
     """
         Identify the azimuth bin index given some specified number of bins
@@ -422,6 +427,7 @@ class PathGeometryModel(object):
                 az_wts = np.empty(self._az_bin_cnt)
                 for n_az in range(self._az_bin_cnt):
                     if n_az == 0:
+                        center = -180.0
                         az_mask = np.logical_or(az > 180.0 - az_bin_wdth / 2.0, az < -180.0 + az_bin_wdth / 2.0)
                     else:
                         center = -180 + (360.0 / self._az_bin_cnt) * n_az
@@ -453,7 +459,7 @@ class PathGeometryModel(object):
                         ax4.set_xlabel('Azimuth Deviation [degrees]')
                         ax4.set_ylabel('Probability')
 
-                        plt.suptitle('Path Geometry Statistics (' + az_dirs[n_az] + ')', fontsize=18)
+                        plt.suptitle('Path Geometry Statistics (' + str(center) + ')', fontsize=18)
                         plt.show(block=False)
 
                         ax1.plot(rngs[az_mask], 1.0 / rcel[az_mask], 'k.', markersize=2.0)
@@ -603,6 +609,10 @@ class PathGeometryModel(object):
 
         self._rng_max = max(fit_params[0])
 
+        print("Loading path geometry model from " + model_file)
+        print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+        print('\t' + "Maximum range: " + str(self._rng_max) + '\n')
+
         self.az_dev_mns = [0] * self._az_bin_cnt
         self.az_dev_std = [0] * self._az_bin_cnt
 
@@ -616,7 +626,7 @@ class PathGeometryModel(object):
             self._rcel_wts[n_az] = [0] * 3
 
         if smooth:
-            print("Loading propagation model parameters from " + model_file + " with smoothing.")
+            print('\t' + "Loading data into GMM with smoothing...")
             for n_az in range(self._az_bin_cnt):
                 self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 5, 3), kind='cubic')
                 self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 5, 3), kind='cubic')
@@ -630,7 +640,7 @@ class PathGeometryModel(object):
                     self._rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
                     self._rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
         else:
-            print("Loading propagation model parameters from " + model_file + " without smoothing.")
+            print('\t' + "Loading data into GMM without smoothing...")
             for n_az in range(self._az_bin_cnt):
                 self.az_dev_mns[n_az] = interp1d(fit_params[0], fit_params[1][n_az], kind='cubic')
                 self.az_dev_std[n_az] = interp1d(fit_params[0], fit_params[2][n_az], kind='cubic')
@@ -644,7 +654,7 @@ class PathGeometryModel(object):
                     self._rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
                     self._rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
 
-    def display(self, file_id=None, subtitle=None):
+    def display(self, file_id=None, subtitle=None, show_colorbar=True):
         """
         Display the propagation geometry statistics
 
@@ -723,9 +733,8 @@ class PathGeometryModel(object):
 
         palette = cm.nipy_spectral_r
 
-        az_dirs = [-180.0, -135.0, -90.0, -45.0, 0.0, 45.0, 90.0, 135.0]
         pdf_max = 0.0
-        for az in az_dirs:
+        for az in np.arange(-180.0, 180.0, 45.0):
             pdf_max = max(pdf_max, max(self.eval_rcel_gmm(R, 1.0 / V, [az] * len(R))))
 
         f2, ax = plt.subplots(3, 3, figsize=(12, 9))
@@ -755,7 +764,10 @@ class PathGeometryModel(object):
 
         pdf = self.eval_rcel_gmm(R, 1.0 / V, [-45.0] * len(R))
         rngcel_plot = ax[0, 0].scatter(R, V, c=pdf, cmap=palette, marker=".", alpha=1.0, edgecolor='none', vmin=0.0, vmax=pdf_max)
-        f1.colorbar(rngcel_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability")
+
+        if show_colorbar:
+            f1.colorbar(rngcel_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability")
+
         plt.pause(0.1)
 
         def plot_celerity_stats(axis_id, azimuth):
@@ -789,7 +801,6 @@ class TLossModel(object):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
-
 
             Parameters
             ----------
@@ -835,7 +846,7 @@ class TLossModel(object):
             pdf_vals = np.empty((self._az_bin_cnt, len(output_rngs), len(tloss_vals)))
 
             for az_index in range(self._az_bin_cnt):
-                center = -180 + 360.0 / self._az_bin_cnt * az_index
+                center = -180 + 360.0 * (az_index / self._az_bin_cnt)
                 if az_index == 0:
                     az_mask = np.logical_or(az >= 180.0 - az_bin_wdth / 2.0, az <= -180.0 + az_bin_wdth / 2.0)
                 else:
@@ -854,13 +865,13 @@ class TLossModel(object):
                     ax2.set_xlim([0.0, 1000.0])
                     ax2.set_ylim([min(tloss) - 5.0, max(tloss) + 5.0])
 
-                    plt.suptitle("Stochastic Transmission Loss Model \n Azimuth: " + az_dirs[az_index], fontsize=18)
+                    plt.suptitle("Stochastic Transmission Loss Model \n Azimuth: " + str(center), fontsize=18)
                     plt.show(block=False)
 
                     ax1.plot(rngs[az_mask][::11], tloss[az_mask][::11], 'ko', markersize=1)
                     plt.pause(0.001)
 
-                print('\t' + "Propagation direction (" + az_dirs[az_index] + ")...")
+                print('\t' + "Propagation direction (" + str(center) + ")...")
 
                 # Define tloss pdf at each range point from KDE
                 for nr, rng_val in enumerate(output_rngs):
@@ -901,8 +912,14 @@ class TLossModel(object):
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
         self._az_bin_cnt = len(fit_params[2])
 
+
         self.rng_vals = fit_params[0]
         self.tloss_vals = fit_params[1]
+
+        print("Loading transmission loss model from " + model_file)
+        print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
+        print('\t' + "Maximum range: " + str(np.max(self.rng_vals)))
+        print('\t' + "Loading data..." + '\n')
 
         for az_index in range(self._az_bin_cnt):
             self.pdf_vals[az_index] = fit_params[2][az_index]
@@ -941,7 +958,7 @@ class TLossModel(object):
 
         return result
 
-    def display(self, file_id=None, title="Transmission Loss Statistics"):
+    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True):
         """
         Display the transmission loss statistics
 
@@ -991,7 +1008,10 @@ class TLossModel(object):
 
         pdf = self.eval(R, TL, np.array([-45.0] * len(R)))
         tloss_plot = ax[0, 0].scatter(R, TL, c=pdf, cmap=palette, marker='o', s=[12.5] * len(R), alpha=0.5, edgecolor='none', vmin=0.0, vmax=scale_max)
-        f1.colorbar(tloss_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability")
+
+        if show_colorbar:
+            f1.colorbar(tloss_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability")
+
         plt.pause(0.01)
 
         def plot_tloss_stats(axis_id, azimuth):

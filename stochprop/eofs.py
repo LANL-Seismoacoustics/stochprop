@@ -12,7 +12,9 @@
 import os
 import calendar
 import fnmatch
+import datetime
 import subprocess
+import pkg_resources
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -434,6 +436,107 @@ def compute_seasonality(overlap_file, eofs_path, file_id=None):
 #   Define methods to sample   #
 #     the coefficient PDFs     #
 ################################
+def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Coefficient KDE Sampling"
+    result = result + '\n' + "# Coeff Label = " + coeff_label
+    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, T, degK"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
+
+    return result
+
+def _coeff_smpl_mean_header_txt(coeff_label, eofs_path, eof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Coefficient KDE Sampling"
+    result = result + '\n' + "# Coeff Label = " + coeff_label
+    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Sample: mean"
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, T, degK"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
+
+    return result
+    
+
+def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Coefficient KDE Sampling"
+    result = result + '\n' + "# Coeff Label = " + coeff_label
+    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Sample: max likelihood"
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, T, degK"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
+
+    return result
+
+def _fit_header_txt(prof_path, eofs_path, eof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Fitting"
+    result = result + '\n' + "# Reference Specification = " + prof_path
+    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, T, degK"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
+
+    return result
+
+def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Perturbation"
+    result = result + '\n' + "# Reference Specification = " + prof_path
+    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Perturbation St Dev (winds) = " + str(stdev) + " m/s"
+    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, T, degK"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
+
+    return result
+
 def define_coeff_limits(coeff_vals):
     """
         Compute upper and lower bounds for coefficient values
@@ -519,7 +622,7 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
     return samples
 
 
-def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, output_mean=False):
+def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, output_mean=False, coeff_label="None"):
     """
         Generate atmosphere states using coefficient distributions for
         a set of empirical orthogonal basis functions
@@ -582,13 +685,13 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, outpu
     # save the individual profiles and the mean profile
     print('\t' + "Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
-        np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn])
+        np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn], header=_coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, pn, prof_cnt), comments='')
+
     if output_mean:
-        np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0))
-        np.savetxt(output_path + "-stdev.met", np.std(sampled_profs, axis=0))
+        np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0), header=_coeff_smpl_mean_header_txt(coeff_label, eofs_path, eof_cnt), comments='')
 
 
-def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
+def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coeff_label="None"):
     """
         Use coefficient distributions for a set of empirical orthogonal
         basis functions to compute the maximum likelihood specification
@@ -644,7 +747,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100):
     ml_prof[:, 5] = ml_prof[:, 4] * cp_ml**2 / (gam / 10.0)
 
     print('\t' + "Writing maximum likelihood atmosphere to file...", '\n')
-    np.savetxt(output_path + "-maximum_likelihood.met", ml_prof)
+    np.savetxt(output_path + "-maximum_likelihood.met", ml_prof, header=_coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt), comments='')
 
 
 # ############################ #
@@ -738,10 +841,10 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     fit[:, 1] = cT_fit**2 / gamR
     fit[:, 5] = fit[:, 4] * cp_fit**2 / (gam / 10.0)
 
-    np.savetxt(output_path, fit)
+    np.savetxt(output_path, fit, header=_fit_header_txt(prof_path, eofs_path, eof_cnt), comments='')
 
 
-def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=100, eof_cnt=50, sample_cnt=1, alt_wt_pow=2.0, sing_val_wt_pow=0.25):
+def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof_cnt=50, sample_cnt=1, alt_wt_pow=2.0, sing_val_wt_pow=0.25):
     """
         Use EOFs to perturb a specified profile using a given scale
 
@@ -753,8 +856,8 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
             Path to the .eof results from compute_eofs
         output_path: string
             Path where output will be stored
-        uncertainty: float
-            Estimate of uncertainty in wind speeds; 95% confidence is set to this value
+        stdev: float
+            Standard deviation of wind speed used to scale perturbation
         eof_max: int
             Higher numbered EOF to sample
         eof_cnt: int
@@ -819,7 +922,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
         u_perturb_all[m] = np.average(u_perturb, axis=0, weights=wts)
         v_perturb_all[m] = np.average(v_perturb, axis=0, weights=wts)
 
-    scaling = uncertainty / (np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
+    scaling = stdev / (np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
 
     for m in range(sample_cnt):
         T_vals = np.copy(ref_atmo[:, 1][ref_mask])
@@ -839,4 +942,4 @@ def perturb_atmo(prof_path, eofs_path, output_path, uncertainty=10.0, eof_max=10
         T_vals = cT_vals**2 / gamR
         p_vals = d_vals * cp_vals**2 / (gam / 10.0)
 
-        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T)
+        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, header=_perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, m, sample_cnt), comments='')

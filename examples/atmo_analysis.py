@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
     fit_eof_cnts = [1, 10, 25, 50]
 
-    uncertainty = 15.0
+    stdev = 10.0
     eof_cnt, eof_max = 50, 50
     smpl_cnt = 10
 
@@ -37,4 +37,4 @@ if __name__ == '__main__':
         for N in fit_eof_cnts:
             eofs.fit_atmo(prof_path, eofs_path, "eof_fit-N=" + str(N) + ".met", eof_cnt=N)
 
-        eofs.perturb_atmo(prof_path, eofs_path, "eof_perturb", uncertainty=uncertainty, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=smpl_cnt)
+        eofs.perturb_atmo(prof_path, eofs_path, "eof_perturb", stdev=stdev, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=smpl_cnt)

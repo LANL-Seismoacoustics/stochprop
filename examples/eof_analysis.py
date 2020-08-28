@@ -121,5 +121,5 @@ if __name__ == '__main__':
         for M in season_months[nS][1:]:
             coeffs = np.vstack((coeffs, np.load("coeffs/" + run_id + "_" + M + "-coeffs.npy")))
 
-        eofs.sample_atmo(coeffs, "eofs/" + run_id, "samples/" + season_labels[nS] + "/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, prof_cnt=smpl_cnt)
-        eofs.maximum_likelihood_profile(coeffs, "eofs/" + run_id, "samples/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt)
+        eofs.sample_atmo(coeffs, "eofs/" + run_id, "samples/" + season_labels[nS] + "/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, prof_cnt=smpl_cnt, coeff_label=season_labels[nS], output_mean=True)
+        eofs.maximum_likelihood_profile(coeffs, "eofs/" + run_id, "samples/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, coeff_label=season_labels[nS])
