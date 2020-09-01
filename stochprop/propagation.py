@@ -142,8 +142,8 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
 # 
     dir_files = np.sort(os.listdir(profs_path))
 
-    if os.path.isfile(results_path + "_%.3f" % freq + ".lossless.nm"):
-        print(results_path + "_%.3f" % freq + ".lossless.nm alraedy exists  --->  Skipping NCPAprop modess runs...")
+    if os.path.isfile(results_path + "_%.3f" % freq + "Hz.lossless.nm"):
+        print(results_path + "_%.3f" % freq + "Hz.lossless.nm alraedy exists  --->  Skipping NCPAprop modess runs...")
     else:
         for file_name in dir_files:
             if fnmatch.fnmatch(file_name, pattern):
