@@ -1,10 +1,10 @@
 # Fdb version 3
-["makeindex stochprop.idx"] 1598641653 "stochprop.idx" "stochprop.ind" "stochprop" 1598641655
-  "stochprop.idx" 1598641655 4688 ab21ae529114863a28fb345cc3d4df87 "pdflatex"
+["makeindex stochprop.idx"] 1603403467 "stochprop.idx" "stochprop.ind" "stochprop" 1603403469
+  "stochprop.idx" 1603403469 4688 5b610beb9c84e1cd1915314cdefd2588 "pdflatex"
   (generated)
-  "stochprop.ind"
   "stochprop.ilg"
-["pdflatex"] 1598641653 "stochprop.tex" "stochprop.pdf" "stochprop" 1598641655
+  "stochprop.ind"
+["pdflatex"] 1603403467 "stochprop.tex" "stochprop.pdf" "stochprop" 1603403469
   "/usr/local/texlive/2020/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/local/texlive/2020/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2020/texmf-dist/fonts/tfm/adobe/courier/pcrb8r.tfm" 1136768653 1292 3059476c50a24578715759f22652f3d0 ""
@@ -175,22 +175,22 @@
   "example_seasonality.png" 1597771905 77723 a3f2b55bb00e29d00d637c7eaa894d68 ""
   "footnotehyper-sphinx.sty" 1597771905 8888 1bbd7bdeae8c8bed1d10d551bddb1cc9 ""
   "sphinx.sty" 1597405876 82155 76e1169ffc917b7b0448ff4c656bfb06 ""
-  "sphinxhighlight.sty" 1598641637 8137 38a433148fcb7611515a989ff1750dd5 ""
+  "sphinxhighlight.sty" 1603403463 8137 38a433148fcb7611515a989ff1750dd5 ""
   "sphinxmanual.cls" 1597771905 4236 124cd90deb92742b5d3922bfc2cd70c0 ""
-  "sphinxmessages.sty" 1598641637 745 3f5fcd6cdd7964ed608767954a8ced6f ""
+  "sphinxmessages.sty" 1603403464 745 3f5fcd6cdd7964ed608767954a8ced6f ""
   "sphinxmulticell.sty" 1597771905 14606 0b6edc2b1a83546ed92026d1f6a311b5 ""
-  "stochprop.aux" 1598641655 18374 374e9233a63e27e9f5473a470ec8d9e3 "pdflatex"
-  "stochprop.ind" 1598641653 3591 23a253b821ba00e14a14aa1e2b1027a1 "makeindex stochprop.idx"
-  "stochprop.out" 1598641655 2863 0c07c0411713a03b97548bcc2a523cac "pdflatex"
-  "stochprop.tex" 1598641637 95161 0c14e8d0f8b31bd1c023d8a40bc0e08e ""
-  "stochprop.toc" 1598641655 2679 3a411aa52b8e304212af660aa66b8023 "pdflatex"
+  "stochprop.aux" 1603403469 18374 7a7928a549f9d5e01a6516d41744df3c "pdflatex"
+  "stochprop.ind" 1603403467 3591 298cbb926879398f31e3c44bb09e1cee "makeindex stochprop.idx"
+  "stochprop.out" 1603403469 2863 0c07c0411713a03b97548bcc2a523cac "pdflatex"
+  "stochprop.tex" 1603403455 96306 3d581980cc332014d155bb2335236e1c ""
+  "stochprop.toc" 1603403469 2679 3a411aa52b8e304212af660aa66b8023 "pdflatex"
   "stochprop_fig1.jpg" 1597771905 890992 d3d746df1b0249e69df18302e507bb1a ""
   "winter-PGMs.jpg" 1597771905 1787956 29a3bdc44e487f00a88db313884d3cd4 ""
   "winter_0.359_tloss.png" 1597771905 2535737 48ebe985e08cb3a3ab5caae4c5717cb3 ""
   (generated)
   "stochprop.idx"
-  "stochprop.out"
   "stochprop.toc"
-  "stochprop.aux"
-  "stochprop.pdf"
   "stochprop.log"
+  "stochprop.pdf"
+  "stochprop.out"
+  "stochprop.aux"

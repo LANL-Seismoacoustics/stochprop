@@ -43,7 +43,7 @@
   \indexspace
   \bigletter L
   \item \spxentry{load()}\spxextra{stochprop.propagation.PathGeometryModel method}, \hyperpage{23}
-  \item \spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}, \hyperpage{24}
+  \item \spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}, \hyperpage{25}
 
   \indexspace
   \bigletter M

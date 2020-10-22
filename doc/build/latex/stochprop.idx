@@ -28,7 +28,7 @@
 \indexentry{build() (stochprop.propagation.TLossModel method)@\spxentry{build()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
 \indexentry{display() (stochprop.propagation.TLossModel method)@\spxentry{display()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
 \indexentry{eval() (stochprop.propagation.TLossModel method)@\spxentry{eval()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
-\indexentry{load() (stochprop.propagation.TLossModel method)@\spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
+\indexentry{load() (stochprop.propagation.TLossModel method)@\spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{25}
 \indexentry{find\_azimuth\_bin() (in module stochprop.propagation)@\spxentry{find\_azimuth\_bin()}\spxextra{in module stochprop.propagation}|hyperpage}{25}
 \indexentry{run\_infraga() (in module stochprop.propagation)@\spxentry{run\_infraga()}\spxextra{in module stochprop.propagation}|hyperpage}{25}
 \indexentry{run\_modess() (in module stochprop.propagation)@\spxentry{run\_modess()}\spxextra{in module stochprop.propagation}|hyperpage}{25}
