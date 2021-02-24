@@ -382,7 +382,7 @@ class PathGeometryModel(object):
                 msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
                 warnings.warn(msg)
             else:
-                print('Builing celerity and azimuth priors from file:', arrivals_file)
+                print('Building celerity and azimuth statistics from file:', arrivals_file)
 
                 self._az_bin_cnt = az_bin_cnt
 
@@ -794,8 +794,6 @@ class TLossModel(object):
     def __init__(self):
         self.rng_vals = [0]
         self.tloss_vals = [0]
-        self.pdf_vals = [0] * self._az_bin_cnt
-        self.pdf_fits = [0] * self._az_bin_cnt
 
     def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0):
         """
@@ -835,10 +833,10 @@ class TLossModel(object):
             az[az < -180.0] += 360.0
 
             if use_coh:
-                tloss = 10.0 * np.log10(tloss_coh * 1000.0)
+                tloss = 10.0 * np.log10(tloss_coh)
             else:
-                tloss = 10.0 * np.log10(np.sqrt(tloss_re**2 + tloss_im**2) * 1000.0)
-
+                tloss = 10.0 * np.log10(np.sqrt(tloss_re**2 + tloss_im**2))
+            
             tloss[np.isneginf(tloss)] = min(tloss[np.isfinite(tloss)])
             tloss[np.isposinf(tloss)] = max(tloss[np.isfinite(tloss)])
 
@@ -873,9 +871,15 @@ class TLossModel(object):
 
                 print('\t' + "Propagation direction (" + str(center) + ")...")
 
+                norm_mask = np.logical_and(az_mask, rngs == min(output_rngs))
+                if use_coh:
+                    tloss_norm = 10.0 * np.log10(np.mean(tloss_coh[norm_mask]))
+                else:
+                    tloss_norm = 10.0 * np.log10(np.mean(np.sqrt(tloss_re**2 + tloss_im**2)[norm_mask]))
+
                 # Define tloss pdf at each range point from KDE
                 for nr, rng_val in enumerate(output_rngs):
-                    masked_tloss = tloss[np.logical_and(az_mask, rngs == rng_val)]
+                    masked_tloss = tloss[np.logical_and(az_mask, rngs == rng_val)] - tloss_norm
 
                     if np.std(masked_tloss) < 0.025:
                         pdf_vals[az_index][nr] = norm.pdf(tloss_vals, loc=np.mean(masked_tloss), scale=0.025)
@@ -910,16 +914,13 @@ class TLossModel(object):
 
         """
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
-        self._az_bin_cnt = len(fit_params[2])
-
 
         self.rng_vals = fit_params[0]
         self.tloss_vals = fit_params[1]
 
-        print("Loading transmission loss model from " + model_file)
-        print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
-        print('\t' + "Maximum range: " + str(np.max(self.rng_vals)))
-        print('\t' + "Loading data..." + '\n')
+        self._az_bin_cnt = len(fit_params[2])
+        self.pdf_vals = [0] * self._az_bin_cnt
+        self.pdf_fits = [0] * self._az_bin_cnt
 
         for az_index in range(self._az_bin_cnt):
             self.pdf_vals[az_index] = fit_params[2][az_index]
@@ -947,12 +948,20 @@ class TLossModel(object):
         """
         az_index = find_azimuth_bin(az, self._az_bin_cnt)
 
+        in_rng_bnds = np.logical_and(self.rng_vals[0] <= rng, rng <= self.rng_vals[-1])
+        in_tloss_bnds = np.logical_and(self.tloss_vals[0] <= tloss, tloss <= self.tloss_vals[-1])
+        in_bnds = np.logical_and(in_rng_bnds, in_tloss_bnds)
+
         if len(np.atleast_1d(rng)) == 1:
-            result = self.pdf_fits[az_index].ev(rng, tloss)
+            if in_bnds:
+                result = self.pdf_fits[az_index].ev(rng, tloss)
+            else:
+                result = 0.0
+
         else:
-            result = np.empty(len(rng))
+            result = np.zeros_like(rng)
             for n_az in range(self._az_bin_cnt):
-                mask = az_index == n_az
+                mask = np.logical_and(in_bnds, az_index == n_az)
                 if np.any(mask):
                     result[mask] = self.pdf_fits[n_az].ev(np.array(rng)[mask], np.array(tloss)[mask])
 
@@ -975,8 +984,7 @@ class TLossModel(object):
 
         resol = 100
         rngs = np.linspace(0.0, 1000.0, resol)
-        tloss_min, tloss_max = -60.0, 0.0
-        tloss = np.linspace(tloss_min, tloss_max, resol)
+        tloss = np.linspace(-60.0, 0.0, resol)
 
         R, TL = np.meshgrid(rngs, tloss)
         R = R.flatten()
@@ -987,8 +995,8 @@ class TLossModel(object):
 
         for n1, n2 in itertools.product(range(3), repeat=2):
             if n1 != 1 or n2 != 1:
-                ax[n1, n2].set_ylim([tloss_min, tloss_max])
-                ax[n1, n2].set_xlim([0, 1000])
+                ax[n1, n2].set_ylim([tloss[0], tloss[-1]])
+                ax[n1, n2].set_xlim([rngs[0], rngs[-1]])
                 ax[n1, n2].set_xticks([0, 250, 500, 750, 1000])
             if n2 != 0:
                 ax[n1, n2].set_yticklabels([])
