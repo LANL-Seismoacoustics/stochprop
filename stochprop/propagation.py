@@ -142,8 +142,8 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
 # 
     dir_files = np.sort(os.listdir(profs_path))
 
-    if os.path.isfile(results_path + "_%.3f" % freq + "Hz.lossless.nm"):
-        print(results_path + "_%.3f" % freq + "Hz.lossless.nm alraedy exists  --->  Skipping NCPAprop modess runs...")
+    if os.path.isfile(results_path + ".lossless.nm"):
+        print(results_path + ".lossless.nm already exists  --->  Skipping NCPAprop modess runs...")
     else:
         for file_name in dir_files:
             if fnmatch.fnmatch(file_name, pattern):
@@ -158,10 +158,10 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
 
                 subprocess.call("mv Nby2D_tloss_1d.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
                 subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
-
+        
         print('\t' + "Combining transmission loss predictions..." + '\n')
-        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
-        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + "_%.3f" % freq + "Hz.nm", shell=True)
+        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + ".lossless.nm", shell=True)
+        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + ".nm", shell=True)
 
         if clean_up:
             subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm", shell=True)
@@ -675,7 +675,7 @@ class PathGeometryModel(object):
         bias_color = 'Blue'
         var_color = 'LightBlue'
 
-        compass_file = imp.find_module('stochprop')[1] + '/compass.png'
+        compass_file = imp.find_module('stochprop')[1] + '/resources/compass.png'
 
         f1, ax = plt.subplots(3, 3, figsize=(12, 9))
 
@@ -980,7 +980,7 @@ class TLossModel(object):
 
         """
         scale_max = 0.1
-        compass_file = imp.find_module('stochprop')[1] + '/compass.png'
+        compass_file = imp.find_module('stochprop')[1] + '/resources/compass.png'
 
         resol = 100
         rngs = np.linspace(0.0, 1000.0, resol)
