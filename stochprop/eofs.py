@@ -74,7 +74,7 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 
 
 
-def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
+def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_format="zTuvdp"):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
@@ -89,6 +89,8 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
             Number of header rows in the profiles
         ref_alts: 1darray
             Reference altitudes if comparison is needed
+        prof_format: string
+            Profile format is either 'ECMWF' or column specifications (e.g., 'zTuvdp')
 
         Returns
         -------
@@ -105,46 +107,53 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
             file_list += [file]
 
     if len(file_list) > 0:
-        atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
-        if np.any(ref_alts) is None:
-            z0 = atmo[:, 0]
-        else:
-            z0 = ref_alts
 
-        if np.allclose(z0, atmo[:, 0]):
-            T = atmo[:, 1]
-            u = atmo[:, 2]
-            v = atmo[:, 3]
-            d = atmo[:, 4]
-            p = atmo[:, 5]
-        else:
-            print("WARNING!!  Altitudes in " + path + file_list[0] + " don't match expected values.  Interpolating to resolve...")
-            T = interp1d(atmo[:, 0], atmo[:, 1])(z0)
-            u = interp1d(atmo[:, 0], atmo[:, 2])(z0)
-            v = interp1d(atmo[:, 0], atmo[:, 3])(z0)
-            d = interp1d(atmo[:, 0], atmo[:, 4])(z0)
-            p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
 
-        for file in file_list[1:]:
-            atmo = np.loadtxt(path + file, skiprows=skiprows)
-            if np.allclose(z0, atmo[:, 0]):
-                T = np.vstack((T, atmo[:, 1]))
-                u = np.vstack((u, atmo[:, 2]))
-                v = np.vstack((v, atmo[:, 3]))
-                d = np.vstack((d, atmo[:, 4]))
-                p = np.vstack((p, atmo[:, 5]))
+        if format == "ecmwf" or prof_format == "ECMWF":
+            A, Z0 = None, None
+        else:
+            # add parser to determine indices of fields of interest (T or p, u, v, d)
+
+            atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
+            if np.any(ref_alts) is None:
+                z0 = atmo[:, 0]
             else:
-                print("WARNING!!  Altitudes in " + path + file + " don't match expected values.  Interpolating to resolve...")
-                T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)))
-                u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)))
-                v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)))
-                d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)))
-                p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)))
+                z0 = ref_alts
 
-        A = np.hstack((T, u))
-        A = np.hstack((A, v))
-        A = np.hstack((A, d))
-        A = np.hstack((A, p))
+            if np.allclose(z0, atmo[:, 0]):
+                T = atmo[:, 1]
+                u = atmo[:, 2]
+                v = atmo[:, 3]
+                d = atmo[:, 4]
+                p = atmo[:, 5]
+            else:
+                print("WARNING!!  Altitudes in " + path + file_list[0] + " don't match expected values.  Interpolating to resolve...")
+                T = interp1d(atmo[:, 0], atmo[:, 1])(z0)
+                u = interp1d(atmo[:, 0], atmo[:, 2])(z0)
+                v = interp1d(atmo[:, 0], atmo[:, 3])(z0)
+                d = interp1d(atmo[:, 0], atmo[:, 4])(z0)
+                p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
+
+            for file in file_list[1:]:
+                atmo = np.loadtxt(path + file, skiprows=skiprows)
+                if np.allclose(z0, atmo[:, 0]):
+                    T = np.vstack((T, atmo[:, 1]))
+                    u = np.vstack((u, atmo[:, 2]))
+                    v = np.vstack((v, atmo[:, 3]))
+                    d = np.vstack((d, atmo[:, 4]))
+                    p = np.vstack((p, atmo[:, 5]))
+                else:
+                    print("WARNING!!  Altitudes in " + path + file + " don't match expected values.  Interpolating to resolve...")
+                    T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)))
+                    u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)))
+                    v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)))
+                    d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)))
+                    p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)))
+
+            A = np.hstack((T, u))
+            A = np.hstack((A, v))
+            A = np.hstack((A, d))
+            A = np.hstack((A, p))
 
         return A, z0
     else:
