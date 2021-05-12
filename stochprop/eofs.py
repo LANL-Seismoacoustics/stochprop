@@ -224,6 +224,7 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             A = np.hstack((A, d))
             A = np.hstack((A, p))
 
+            A = np.atleast_2d(A)
             return A, z0
         else:
             # add parser to determine indices of fields of interest (T or p, u, v, d)
@@ -269,6 +270,7 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             A = np.hstack((A, d))
             A = np.hstack((A, p))
 
+        A = np.atleast_2d(A)
         return A, z0
     else:
         return None, None
