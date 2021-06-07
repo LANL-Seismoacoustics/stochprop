@@ -13,15 +13,18 @@ import os
 import calendar
 import fnmatch
 import datetime
+import imp
 import subprocess
 import pkg_resources
+
+from netCDF4 import Dataset
 
 import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy.cluster import hierarchy
 from scipy.integrate import quad, simps
-from scipy.interpolate import interp1d
+from scipy.interpolate import interp1d, interp2d
 from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
@@ -29,6 +32,55 @@ from scipy.spatial.distance import squareform
 gam = 1.4
 gamR = gam * 287.06
 
+
+gasR = 287.0
+den0 = 0.001225
+coeffs_A = np.array([-3.9082017e-2, -1.1526465e-3, 3.2891937e-5, -2.0494958e-7,
+                        -4.7087295e-2, 1.2506387e-3, -1.5194498e-5, 6.581877e-8])
+coeffs_B = np.array([-4.9244637e-3,  -1.2984142e-6, -1.5701595e-6, 1.5535974e-8,
+                        -2.7221769e-2, 4.247473e-4, -3.9583181e-6, 1.7295795e-8])
+
+def density(z):
+    """
+        Computes the atmospheric density according to 
+            the US standard atmosphere model using a 
+            polynomial fit
+
+        Parameters
+        ----------
+        z : float
+            Altitude above sea level [km]
+
+        Returns:
+        density : float
+            Density of the atmosphere at altitude z [g/cm^3] 
+    """
+
+    poly_A, poly_B = 0.0, 1.0
+    for n in range(4):
+        poly_A += coeffs_A[n] * z**(n + 1)
+        poly_B += coeffs_B[n] * z**(n + 1)
+
+    return den0 * 10.0**(poly_A / poly_B)
+
+def pressure(z, T):
+    """
+        Computes the atmospheric pressure according to 
+            the US standard atmosphere model using a 
+            polynomial fit assuming an ideal gas
+
+        Parameters
+        ----------
+        z : float
+            Altitude above sea level [km]
+
+        Returns:
+        pressure : float
+            Pressure of the atmosphere at altitude z [mbar] 
+    """
+     
+    return density(z) * gasR * T * 10.0
+    
 
 def profiles_qc(path, pattern="*.met", skiprows=0):
     """
@@ -74,7 +126,7 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 
 
 
-def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
+def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
@@ -89,6 +141,8 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
             Number of header rows in the profiles
         ref_alts: 1darray
             Reference altitudes if comparison is needed
+        prof_format: string
+            Profile format is either 'ECMWF' or column specifications (e.g., 'zTuvdp')
 
         Returns
         -------
@@ -105,47 +159,118 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None):
             file_list += [file]
 
     if len(file_list) > 0:
-        atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
-        if np.any(ref_alts) is None:
-            z0 = atmo[:, 0]
-        else:
-            z0 = ref_alts
+        if prof_format == "ecmwf" or prof_format == "ECMWF":
+            # Add a check and download here for the ETOPO file
+            etopo_file = imp.find_module('stochprop')[1] + '/resources/ETOPO1_Ice_g_gmt4.grd'
 
-        if np.allclose(z0, atmo[:, 0]):
-            T = atmo[:, 1]
-            u = atmo[:, 2]
-            v = atmo[:, 3]
-            d = atmo[:, 4]
-            p = atmo[:, 5]
-        else:
-            print("WARNING!!  Altitudes in " + path + file_list[0] + " don't match expected values.  Interpolating to resolve...")
-            T = interp1d(atmo[:, 0], atmo[:, 1])(z0)
-            u = interp1d(atmo[:, 0], atmo[:, 2])(z0)
-            v = interp1d(atmo[:, 0], atmo[:, 3])(z0)
-            d = interp1d(atmo[:, 0], atmo[:, 4])(z0)
-            p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
+            etopo1 = Dataset(etopo_file)
 
-        for file in file_list[1:]:
-            atmo = np.loadtxt(path + file, skiprows=skiprows)
-            if np.allclose(z0, atmo[:, 0]):
-                T = np.vstack((T, atmo[:, 1]))
-                u = np.vstack((u, atmo[:, 2]))
-                v = np.vstack((v, atmo[:, 3]))
-                d = np.vstack((d, atmo[:, 4]))
-                p = np.vstack((p, atmo[:, 5]))
+            grid_lons = etopo1.variables['x'][:]
+            grid_lats = etopo1.variables['y'][:]
+            grid_elev = etopo1.variables['z'][:]
+
+            # Change underwater values to sea level
+            grid_elev[grid_elev < 0.0] = 0.0
+
+            # Interpolate and evaluate the ground level elevation at the specified latitude and longitude
+            lat_mask = np.logical_and(latlon0[0] - 1.0 <= grid_lats, grid_lats <= latlon0[0] + 1.0).nonzero()[0]
+            lon_mask = np.logical_and(latlon0[1] - 1.0 <= grid_lons, grid_lons <= latlon0[1] + 1.0).nonzero()[0]
+
+            etopo_interp = interp2d(grid_lons[lon_mask], grid_lats[lat_mask], grid_elev[lat_mask,:][:,lon_mask] / 1000.0, kind='linear')
+
+            # Load ECMWF file and identify indices of nearest node for specified loccation
+            ecmwf = Dataset(path + file_list[0])
+
+            lat0, dlat = float(ecmwf.variables['ylat0'][:].data), float(ecmwf.variables['dy'][:].data)
+            lon0, dlon = float(ecmwf.variables['xlon0'][:].data), float(ecmwf.variables['dx'][:].data)
+    
+            lat_vals = np.arange(lat0, lat0 + dlat * ecmwf.variables['T'].shape[1], dlat)
+            lon_vals = np.arange(lon0, lon0 + dlon * ecmwf.variables['T'].shape[2], dlon)
+
+            n_lat = np.argmin(abs(lat_vals - latlon0[0]))
+            n_lon = np.argmin(abs(lon_vals - latlon0[1]))
+
+            z_gl = etopo_interp(lon_vals[n_lon], lat_vals[n_lat])[0]
+
+            print("Extracting profile at " + str(lat_vals[n_lat]) + ", " + str(lon_vals[n_lon]) + " with ground elevation " + str(z_gl))    
+
+            z0 = ecmwf.variables['height'][:].data / 1000.0 + z_gl    
+            T = ecmwf.variables['T'][:, n_lat, n_lon].data   
+            u = ecmwf.variables['U'][:, n_lat, n_lon].data   
+            v = ecmwf.variables['V'][:, n_lat, n_lon].data   
+            d = density(z0)
+            p = pressure(z0, ecmwf.variables['T'][:, n_lat, n_lon].data)
+
+            for file in file_list[1:]:
+                ecmwf = Dataset(path + file)
+                
+                lat0, dlat = float(ecmwf.variables['ylat0'][:].data), float(ecmwf.variables['dy'][:].data)
+                lon0, dlon = float(ecmwf.variables['xlon0'][:].data), float(ecmwf.variables['dx'][:].data)
+    
+                lat_vals = np.arange(lat0, lat0 + dlat * ecmwf.variables['T'].shape[1], dlat)
+                lon_vals = np.arange(lon0, lon0 + dlon * ecmwf.variables['T'].shape[2], dlon)
+
+                n_lat = np.argmin(abs(lat_vals - latlon0[0]))
+                n_lon = np.argmin(abs(lon_vals - latlon0[1]))
+
+                T = np.vstack((T, ecmwf.variables['T'][:, n_lat, n_lon].data))
+                u = np.vstack((u, ecmwf.variables['U'][:, n_lat, n_lon].data))
+                v = np.vstack((v, ecmwf.variables['V'][:, n_lat, n_lon].data))
+                d = np.vstack((d, density(z0)))
+                p = np.vstack((p, pressure(z0, ecmwf.variables['T'][:, n_lat, n_lon].data)))
+
+            A = np.hstack((T, u))
+            A = np.hstack((A, v))
+            A = np.hstack((A, d))
+            A = np.hstack((A, p))
+
+            A = np.atleast_2d(A)
+            return A, z0
+        else:
+            # add parser to determine indices of fields of interest (T or p, u, v, d)
+
+            atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
+            if np.any(ref_alts) is None:
+                z0 = atmo[:, 0]
             else:
-                print("WARNING!!  Altitudes in " + path + file + " don't match expected values.  Interpolating to resolve...")
-                T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)))
-                u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)))
-                v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)))
-                d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)))
-                p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)))
+                z0 = ref_alts
 
-        A = np.hstack((T, u))
-        A = np.hstack((A, v))
-        A = np.hstack((A, d))
-        A = np.hstack((A, p))
+            if np.allclose(z0, atmo[:, 0]):
+                T = atmo[:, 1]
+                u = atmo[:, 2]
+                v = atmo[:, 3]
+                d = atmo[:, 4]
+                p = atmo[:, 5]
+            else:
+                print("WARNING!!  Altitudes in " + path + file_list[0] + " don't match expected values.  Interpolating to resolve...")
+                T = interp1d(atmo[:, 0], atmo[:, 1])(z0)
+                u = interp1d(atmo[:, 0], atmo[:, 2])(z0)
+                v = interp1d(atmo[:, 0], atmo[:, 3])(z0)
+                d = interp1d(atmo[:, 0], atmo[:, 4])(z0)
+                p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
 
+            for file in file_list[1:]:
+                atmo = np.loadtxt(path + file, skiprows=skiprows)
+                if np.allclose(z0, atmo[:, 0]):
+                    T = np.vstack((T, atmo[:, 1]))
+                    u = np.vstack((u, atmo[:, 2]))
+                    v = np.vstack((v, atmo[:, 3]))
+                    d = np.vstack((d, atmo[:, 4]))
+                    p = np.vstack((p, atmo[:, 5]))
+                else:
+                    print("WARNING!!  Altitudes in " + path + file + " don't match expected values.  Interpolating to resolve...")
+                    T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)))
+                    u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)))
+                    v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)))
+                    d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)))
+                    p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)))
+
+            A = np.hstack((T, u))
+            A = np.hstack((A, v))
+            A = np.hstack((A, d))
+            A = np.hstack((A, p))
+
+        A = np.atleast_2d(A)
         return A, z0
     else:
         return None, None

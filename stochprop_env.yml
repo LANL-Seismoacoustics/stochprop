@@ -9,6 +9,7 @@ dependencies:
   - matplotlib
   - numpy
   - scipy
+  - netcdf4
   - ipython
   - pyproj
   - pathos

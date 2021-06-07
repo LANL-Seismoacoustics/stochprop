@@ -24,10 +24,12 @@ from scipy.signal import savgol_filter
 import matplotlib.cm as cm
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 sph_proj = Geod(ellps='sphere')
 
-plt.rcParams['font.size'] = 14
+plt.rcParams.update({'font.size': 18})
+
 
 # ############################## #
 #  Running infraga and NCPAprop  #
@@ -606,11 +608,10 @@ class PathGeometryModel(object):
 
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
         self._az_bin_cnt = len(fit_params[1])
-
         self._rng_max = max(fit_params[0])
 
         print("Loading path geometry model from " + model_file)
-        print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+        print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
         print('\t' + "Maximum range: " + str(self._rng_max) + '\n')
 
         self.az_dev_mns = [0] * self._az_bin_cnt
@@ -765,8 +766,9 @@ class PathGeometryModel(object):
         pdf = self.eval_rcel_gmm(R, 1.0 / V, [-45.0] * len(R))
         rngcel_plot = ax[0, 0].scatter(R, V, c=pdf, cmap=palette, marker=".", alpha=1.0, edgecolor='none', vmin=0.0, vmax=pdf_max)
 
-        if show_colorbar:
-            f1.colorbar(rngcel_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability")
+        if show_colorbar:            
+            cbar = f1.colorbar(rngcel_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability", aspect=40)
+            cbar.ax.set_yticklabels([]) 
 
         plt.pause(0.1)
 
@@ -789,7 +791,6 @@ class PathGeometryModel(object):
 
 class TLossModel(object):
     _az_bin_cnt = 16
-    _az_bin_wdth = 30.0
 
     def __init__(self):
         self.rng_vals = [0]
@@ -913,12 +914,16 @@ class TLossModel(object):
             Path to TLoss file constructed using stochprop.propagation.TLossModel.build()
 
         """
+        
         fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
-
         self.rng_vals = fit_params[0]
         self.tloss_vals = fit_params[1]
-
         self._az_bin_cnt = len(fit_params[2])
+
+        print("Loading transmission loss model from " + model_file)
+        print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+        print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
+
         self.pdf_vals = [0] * self._az_bin_cnt
         self.pdf_fits = [0] * self._az_bin_cnt
 
@@ -1018,7 +1023,8 @@ class TLossModel(object):
         tloss_plot = ax[0, 0].scatter(R, TL, c=pdf, cmap=palette, marker='o', s=[12.5] * len(R), alpha=0.5, edgecolor='none', vmin=0.0, vmax=scale_max)
 
         if show_colorbar:
-            f1.colorbar(tloss_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability")
+            cbar = f1.colorbar(tloss_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability", aspect=40)
+            cbar.ax.set_yticklabels([]) 
 
         plt.pause(0.01)
 
