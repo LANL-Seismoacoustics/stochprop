@@ -479,7 +479,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     return coeffs
 
 
-def compute_overlap(coeffs, eof_cnt=100):
+def compute_overlap(coeffs, eofs_path, eof_cnt=100, method="mean"):
     """
         Compute the overlap of EOF coefficient distributions
 
@@ -488,8 +488,13 @@ def compute_overlap(coeffs, eof_cnt=100):
         coeffs: list of 2darrays
             List of 2darrays containing coefficients to consider
                 overlap in PDF of values
+        eofs_path: string
+            Path to the .eof results from compute_eofs
         eof_cnt: int
             Number of EOFs to compute
+        method : string
+            Option to decide which overlap to use ("kde" or "mean")
+            
 
         Returns
         -------
@@ -497,35 +502,52 @@ def compute_overlap(coeffs, eof_cnt=100):
             Array containing overlap values of size coeff_cnt by coeff_cnt by eof_cnt
     """
 
-    print("-" * 50 + '\n' + "Computing coefficient PDF overlap...")
-    overlap = np.empty((eof_cnt, 12, 12))
+    print("-" * 50 + '\n' + "Computing coefficient overlap...")
 
-    for eof_id in range(eof_cnt):
-        print('\t' + "Computing overlap values for EOF " + str(eof_id) + "...")
+    overlap = np.ones((12, 12))
+    
+    eof_weights = np.loadtxt(eofs_path + "-singular_values.dat")[:, 1][:eof_cnt]**2
+    eof_weights /= np.sum(eof_weights)  
 
+    if method == "mean":
         for m1 in range(12):
-            overlap[eof_id][m1][m1] = 1.0
-            kernel1 = gaussian_kde(coeffs[m1][:, eof_id])
-
+            m1_C_means = np.mean(coeffs[m1], axis=0)          
+            norm1 = np.dot(m1_C_means, m1_C_means)
             for m2 in range(m1 + 1, 12):
-                kernel2 = gaussian_kde(coeffs[m2][:, eof_id])
+                m2_C_means = np.mean(coeffs[m2], axis=0)
+                norm2 = np.dot(m2_C_means, m2_C_means)
 
-                # define coefficient value limits
-                lims = np.array([min(min(coeffs[m1][:, eof_id]), min(coeffs[m2][:, eof_id])),
-                                 max(max(coeffs[m1][:, eof_id]), max(coeffs[m2][:, eof_id]))])
-                lims = np.array([(lims[1] + lims[0]) / 2.0 - 1.25 * (lims[1] - lims[0]), (lims[1] + lims[0]) / 2.0 + 1.25 * (lims[1] - lims[0])])
-                c_vals = np.linspace(lims[0], lims[1], 1001)
+                overlap[m1][m2] = (np.dot(eof_weights * m1_C_means, m2_C_means) / np.sqrt(norm1 * norm2) + 1) / 2.0
+                overlap[m2][m1] = overlap[m1][m2]
 
-                # compute coefficient overlap via integration
-                norm1 = simps(kernel1.pdf(c_vals)**2, c_vals)
-                norm2 = simps(kernel2.pdf(c_vals)**2, c_vals)
-                overlap[eof_id][m1][m2] = simps(kernel1.pdf(c_vals) * kernel2.pdf(c_vals), c_vals) / np.sqrt(norm1 * norm2)
-                overlap[eof_id][m2][m1] = overlap[eof_id][m1][m2]
+    else: 
+        overlap_temp = np.ones((eof_cnt, 12, 12))
+        for eof_id in range(eof_cnt):
+            print('\t' + "Computing overlap values for EOF " + str(eof_id) + " using KDE...")
+            for m1 in range(12):
+                kernel1 = gaussian_kde(coeffs[m1][:, eof_id])
+
+                for m2 in range(m1 + 1, 12):
+                    kernel2 = gaussian_kde(coeffs[m2][:, eof_id])
+
+                    # define coefficient value limits
+                    lims = np.array([min(min(coeffs[m1][:, eof_id]), min(coeffs[m2][:, eof_id])),
+                                     max(max(coeffs[m1][:, eof_id]), max(coeffs[m2][:, eof_id]))])
+                    lims = np.array([(lims[1] + lims[0]) / 2.0 - 1.25 * (lims[1] - lims[0]), (lims[1] + lims[0]) / 2.0 + 1.25 * (lims[1] - lims[0])])
+                    c_vals = np.linspace(lims[0], lims[1], 1001)
+
+                    # compute coefficient overlap via integration
+                    norm1 = simps(kernel1.pdf(c_vals)**2, c_vals)
+                    norm2 = simps(kernel2.pdf(c_vals)**2, c_vals)
+                    overlap_temp[eof_id][m1][m2] = simps(kernel1.pdf(c_vals) * kernel2.pdf(c_vals), c_vals) / np.sqrt(norm1 * norm2)
+                    overlap_temp[eof_id][m2][m1] = overlap_temp[eof_id][m1][m2]
+
+        overlap = np.average(overlap_temp, weights=eof_weights, axis=0)
 
     return overlap
 
 
-def compute_seasonality(overlap_file, eofs_path, file_id=None):
+def compute_seasonality(overlap_file, file_id=None):
     """
         Compute the overlap of EOF coefficients to identify seasonality
 
@@ -533,18 +555,14 @@ def compute_seasonality(overlap_file, eofs_path, file_id=None):
         ----------
         overlap_file: string
             Path and name of file containing results of stochprop.eofs.compute_overlap
-        eofs_path: string
-            Path to the .eof results from compute_eofs
         file_id: string
             Path and ID to save the dendrogram result of the overlap analysis
     """
 
-    overlap = np.load(overlap_file)
-    eof_weights = np.loadtxt(eofs_path + "-singular_values.dat")[:, 1]
+    print("Generating seasonality plot...")
 
-    dist_mat = -np.log(np.average(overlap, weights=eof_weights[:overlap.shape[0]], axis=0))
-    np.fill_diagonal(dist_mat, 0.0)
-
+    dist_mat = -np.log(np.load(overlap_file))
+    np.fill_diagonal(dist_mat, 0.0)   
     links = hierarchy.linkage(squareform(dist_mat), 'weighted')
 
     f, (ax1) = plt.subplots(1, 1)
