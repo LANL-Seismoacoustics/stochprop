@@ -116,7 +116,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                 subprocess.call(command, shell=True)
 
 
-def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path="", clean_up=False):
+def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, skiplines=0, ncpaprop_path="", clean_up=False, keep_lossless=False):
     """
         Run the NCPAprop normal mode methods to compute transmission
         loss values for a suite of atmospheric specifications at
@@ -140,30 +140,55 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
             Maximum propagation range for propagation paths
         clean_up: boolean
             Flag to remove individual .nm files after combining
+        keep_lossless: boolean
+            Flag to keep the lossless (no absorption) results
         """
-# 
+
     dir_files = np.sort(os.listdir(profs_path))
 
-    if os.path.isfile(results_path + ".lossless.nm"):
-        print(results_path + ".lossless.nm already exists  --->  Skipping NCPAprop modess runs...")
+    if os.path.isfile(results_path + ".nm"):
+        print(results_path + ".nm already exists  --->  Skipping NCPAprop modess runs...")
     else:
         for file_name in dir_files:
-            if fnmatch.fnmatch(file_name, pattern):
+            if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
                 file_id = os.path.splitext(file_name)[0]
 
                 print('\t' + "Running NCPAprop modess for " + profs_path + "/" + file_name + " at " + "%.3f" % freq + " Hz...")
-                command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --freq " + str(freq)
-                command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
-                command = command + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) # + " > /dev/null &"
+                command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines " + str(skiplines)
+                command = command + " --freq " + str(freq) + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) + " --Nby2Dprop"
+                command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])# + " > /dev/null &"
                 print(command)
                 subprocess.call(command, shell=True)
 
-                subprocess.call("mv Nby2D_tloss_1d.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
-                subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
-        
+                if rng_max > 1000:
+                    # The NCPAprop methods default to 1000 samples, so might need to run a 2nd analysis to get near-source transmission loss for reference
+                    subprocess.call("mv Nby2D_tloss_1d.lossless.nm temp.lossless.nm", shell=True)
+                    subprocess.call("mv Nby2D_tloss_1d.nm temp.nm", shell=True)
+
+                    command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines " + str(skiplines)
+                    command = command + " --freq " + str(freq) + "  --maxrange_km " + str(int(rng_max / 1000.0)) + " --Nrng_steps " + str(int(rng_max / 1000.0)) + " --zground_km " + str(z_grnd) + " --Nby2Dprop"
+                    command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])# + " > /dev/null &"
+                    print(command)
+                    subprocess.call(command, shell=True)
+
+                    subprocess.call("cat Nby2D_tloss_1d.lossless.nm temp.lossless.nm > tloss.lossless.nm", shell=True)
+                    subprocess.call("cat Nby2D_tloss_1d.nm temp.nm > tloss.nm", shell=True)
+
+                    subprocess.call("mv tloss.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
+                    subprocess.call("mv tloss.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
+                else:
+                    subprocess.call("mv Nby2D_tloss_1d.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
+                    subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
+                    
+
         print('\t' + "Combining transmission loss predictions..." + '\n')
-        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + ".lossless.nm", shell=True)
-        subprocess.call("cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + ".nm", shell=True)
+        command = "cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + ".nm"
+        subprocess.call(command, shell=True)
+
+        if keep_lossless:
+            command = "cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + ".lossless.nm"
+            # print('\t\t' + command)
+            subprocess.call(command, shell=True)
 
         if clean_up:
             subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm", shell=True)
@@ -796,7 +821,7 @@ class TLossModel(object):
         self.rng_vals = [0]
         self.tloss_vals = [0]
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear"):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
@@ -828,7 +853,11 @@ class TLossModel(object):
             print('\t' + "Reading in data...")
             rngs, az, tloss_re, tloss_im, tloss_coh = np.loadtxt(tloss_file, unpack=True)
 
-            output_rngs = np.sort(np.unique(rngs)[::2])
+            # output_rngs = np.sort(np.unique(rngs)[::2])
+            if rng_smpls == "linear":
+                output_rngs = np.linspace(rng_lims[0], rng_lims[1], rng_cnt)
+            else:
+                output_rngs = np.logspace(np.log10(rng_lims[0]), np.log10(rng_lims[1]), rng_cnt)
 
             az[az > 180.0] -= 360.0
             az[az < -180.0] += 360.0
@@ -872,18 +901,19 @@ class TLossModel(object):
 
                 print('\t' + "Propagation direction (" + str(center) + ")...")
 
-                norm_mask = np.logical_and(az_mask, rngs == min(output_rngs))
+                norm_mask = np.logical_and(az_mask, rngs == min(rngs))
                 if use_coh:
-                    tloss_norm = 10.0 * np.log10(np.mean(tloss_coh[norm_mask]))
+                    tloss_norm = 10.0 * np.log10(np.mean(tloss_coh[norm_mask]) * min(rngs))
                 else:
-                    tloss_norm = 10.0 * np.log10(np.mean(np.sqrt(tloss_re**2 + tloss_im**2)[norm_mask]))
+                    tloss_norm = 10.0 * np.log10(np.mean(np.sqrt(tloss_re**2 + tloss_im**2)[norm_mask] * min(rngs)))
 
                 # Define tloss pdf at each range point from KDE
                 for nr, rng_val in enumerate(output_rngs):
-                    masked_tloss = tloss[np.logical_and(az_mask, rngs == rng_val)] - tloss_norm
+                    nearest_rng = rngs[np.argmin(abs(rngs - rng_val))]
+                    masked_tloss = tloss[np.logical_and(az_mask, rngs==nearest_rng)] - tloss_norm
 
-                    if np.std(masked_tloss) < 0.025:
-                        pdf_vals[az_index][nr] = norm.pdf(tloss_vals, loc=np.mean(masked_tloss), scale=0.025)
+                    if np.std(masked_tloss) < 0.05:
+                        pdf_vals[az_index][nr] = norm.pdf(tloss_vals, loc=np.mean(masked_tloss), scale=0.05)
                     else:
                         kernel = gaussian_kde(masked_tloss)
                         pdf_vals[az_index][nr] = kernel.evaluate(tloss_vals)
