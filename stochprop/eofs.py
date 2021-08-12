@@ -16,6 +16,7 @@ import datetime
 import imp
 import subprocess
 import pkg_resources
+import re 
 
 from netCDF4 import Dataset
 
@@ -126,7 +127,7 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 
 
 
-def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None):
+def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
@@ -143,6 +144,8 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             Reference altitudes if comparison is needed
         prof_format: string
             Profile format is either 'ECMWF' or column specifications (e.g., 'zTuvdp')
+        return_datetime: bool
+            Option to return the datetime info of ingested atmosphere files for future reference
 
         Returns
         -------
@@ -159,6 +162,7 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             file_list += [file]
 
     if len(file_list) > 0:
+        file_list = np.sort(file_list)
         if prof_format == "ecmwf" or prof_format == "ECMWF":
             # Add a check and download here for the ETOPO file
             etopo_file = imp.find_module('stochprop')[1] + '/resources/ETOPO1_Ice_g_gmt4.grd'
@@ -179,6 +183,10 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             etopo_interp = interp2d(grid_lons[lon_mask], grid_lats[lat_mask], grid_elev[lat_mask,:][:,lon_mask] / 1000.0, kind='linear')
 
             # Load ECMWF file and identify indices of nearest node for specified loccation
+            if return_datetime:
+                dt_parse = re.search(r'\d{10}', file_list[0])
+                dt_list = [np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]
+
             ecmwf = Dataset(path + file_list[0])
 
             lat0, dlat = float(ecmwf.variables['ylat0'][:].data), float(ecmwf.variables['dy'][:].data)
@@ -202,6 +210,9 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             p = pressure(z0, ecmwf.variables['T'][:, n_lat, n_lon].data)
 
             for file in file_list[1:]:
+                if return_datetime:
+                    dt_parse = re.search(r'\d{10}', file)
+                    dt_list = dt_list + [[np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]]
                 ecmwf = Dataset(path + file)
                 
                 lat0, dlat = float(ecmwf.variables['ylat0'][:].data), float(ecmwf.variables['dy'][:].data)
@@ -227,8 +238,11 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             A = np.atleast_2d(A)
             return A, z0
         else:
-            # add parser to determine indices of fields of interest (T or p, u, v, d)
+            if return_datetime:
+                dt_parse = re.search(r'\d{10}', file_list[0])
+                dt_list = [np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]
 
+            # add parser to determine indices of fields of interest (T or p, u, v, d)
             atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
             if np.any(ref_alts) is None:
                 z0 = atmo[:, 0]
@@ -250,6 +264,10 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
                 p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
 
             for file in file_list[1:]:
+                if return_datetime:
+                    dt_parse = re.search(r'\d{10}', file)
+                    dt_list = dt_list + [np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]
+
                 atmo = np.loadtxt(path + file, skiprows=skiprows)
                 if np.allclose(z0, atmo[:, 0]):
                     T = np.vstack((T, atmo[:, 1]))
@@ -271,7 +289,10 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
             A = np.hstack((A, p))
 
         A = np.atleast_2d(A)
-        return A, z0
+        if return_datetime:
+            return A, z0, np.array(dt_list)
+        else:
+            return A, z0
     else:
         return None, None
 
@@ -440,6 +461,9 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     # cycle through profiles in A to define coefficients
     coeffs = np.empty((A.shape[0], eof_cnt))
     for n, An in enumerate(A):
+        if n % 10 == 0:
+            print('\t\t' + "Current on profile " + str(n) + " out of " + str(len(A)) + "...")
+
         # interpolate the profile
         T_interp = interp1d(A_alts, An[file_len * 0:file_len * 1][A_mask], kind='cubic')
         u_interp = interp1d(A_alts, An[file_len * 1:file_len * 2][A_mask], kind='cubic')
