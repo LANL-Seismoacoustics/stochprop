@@ -116,11 +116,15 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                 subprocess.call(command, shell=True)
 
 
-def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, skiplines=0, ncpaprop_path="", clean_up=False, keep_lossless=False):
+def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, skiplines=0, ncpaprop_path="", clean_up=False, keep_lossless=False, cpu_cnt=1):
     """
         Run the NCPAprop normal mode methods to compute transmission
         loss values for a suite of atmospheric specifications at
         a set of frequency values
+        
+        Note: the methods here use the ncpaprop_v2 version that includes an option
+        for --filetag that writes output into a specific location and enables
+        simultaneous calculations via subprocess.popen()
 
         Parameters
         ----------
@@ -142,57 +146,83 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
             Flag to remove individual .nm files after combining
         keep_lossless: boolean
             Flag to keep the lossless (no absorption) results
+        cpu_cnt : integer
+            Number of CPUs to use in subprocess.popen loop for simultaneous calculations
         """
 
     dir_files = np.sort(os.listdir(profs_path))
-
     if os.path.isfile(results_path + ".nm"):
         print(results_path + ".nm already exists  --->  Skipping NCPAprop modess runs...")
     else:
+        print("Running NCPAprop modess for atmospheric specifications in " + profs_path + "...")
+        print('\t' + "Building command list to run all NCPAprop modess simulations...")
+        command_list = []
         for file_name in dir_files:
             if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
-                file_id = os.path.splitext(file_name)[0]
+                command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --freq " + str(freq) + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) 
+                command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
+                command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz" % freq + " > /dev/null"
+                command_list = command_list + [command]
 
-                print('\t' + "Running NCPAprop modess for " + profs_path + "/" + file_name + " at " + "%.3f" % freq + " Hz...")
-                command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines " + str(skiplines)
-                command = command + " --freq " + str(freq) + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) + " --Nby2Dprop"
-                command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])# + " > /dev/null &"
-                print(command)
-                subprocess.call(command, shell=True)
+        for j in range(0, len(command_list), cpu_cnt):              
+            if cpu_cnt==1 or j + 1 == len(command_list):
+                print('\t' + "Running NCPAprop modess for sample " + str(j + 1) + "of " + str(len(command_list)))
+            elif cpu_cnt==2 or j + 2 == len(command_list):
+                print('\t' + "Running NCPAprop modess for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
+            else:
+                print('\t' + "Running NCPAprop modess for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
 
-                if rng_max > 1000:
-                    # The NCPAprop methods default to 1000 samples, so might need to run a 2nd analysis to get near-source transmission loss for reference
-                    subprocess.call("mv Nby2D_tloss_1d.lossless.nm temp.lossless.nm", shell=True)
-                    subprocess.call("mv Nby2D_tloss_1d.nm temp.nm", shell=True)
+            procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
+            for proc in procs_list:
+                proc.communicate()
+                proc.wait()
 
-                    command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --atmosfileorder ztuvdp --skiplines " + str(skiplines)
-                    command = command + " --freq " + str(freq) + "  --maxrange_km " + str(int(rng_max / 1000.0)) + " --Nrng_steps " + str(int(rng_max / 1000.0)) + " --zground_km " + str(z_grnd) + " --Nby2Dprop"
-                    command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])# + " > /dev/null &"
-                    print(command)
-                    subprocess.call(command, shell=True)
+        if rng_max > 1001:
+            command_list = []
+            for file_name in dir_files:
+                if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
+                    command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --freq " + str(freq)
+                    command = command + "  --maxrange_km " + str(int(rng_max / 1000.0)) + " --Nrng_steps " + str(int(rng_max / 1000.0)) + " --zground_km " + str(z_grnd)
+                    command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
+                    command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp" % freq + " > /dev/null"
+                    command_list = command_list + [command]
 
-                    subprocess.call("cat Nby2D_tloss_1d.lossless.nm temp.lossless.nm > tloss.lossless.nm", shell=True)
-                    subprocess.call("cat Nby2D_tloss_1d.nm temp.nm > tloss.nm", shell=True)
-
-                    subprocess.call("mv tloss.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
-                    subprocess.call("mv tloss.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
+            for j in range(0, len(command_list), cpu_cnt):              
+                if cpu_cnt==1 or j + 1 == len(command_list):
+                    print('\t' + "Running NCPAprop modess near-source for sample " + str(j + 1) + "of " + str(len(command_list)))
+                elif cpu_cnt==2 or j + 2 == len(command_list):
+                    print('\t' + "Running NCPAprop modess near-source for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
                 else:
-                    subprocess.call("mv Nby2D_tloss_1d.lossless.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.lossless.nm", shell=True)
-                    subprocess.call("mv Nby2D_tloss_1d.nm " + profs_path + "/" + file_id + "_%.3f" % freq + "Hz.nm", shell=True)
-                    
+                    print('\t' + "Running NCPAprop modess near-source for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
+
+                procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
+                for proc in procs_list:
+                    proc.communicate()
+                    proc.wait()
+
+            command = "cat " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp.Nby2D_tloss_1d.nm" % freq
+            command = command + " >> " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz.Nby2D_tloss_1d.nm" % freq
+            subprocess.call(command, shell=True)                    
+
+            command = "cat " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp.Nby2D_tloss_1d.lossless.nm" % freq
+            command = command + " >> " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz.Nby2D_tloss_1d.lossless.nm" % freq
+            subprocess.call(command, shell=True)
+
+            command = "rm " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp*" % freq
+            subprocess.call(command, shell=True)
 
         print('\t' + "Combining transmission loss predictions..." + '\n')
-        command = "cat " + profs_path + "/*_%.3f" % freq + "Hz.nm > " + results_path + ".nm"
+        command = "cat " + profs_path + "/*_%.3f" % freq + "Hz*.nm > " + results_path + ".nm"
         subprocess.call(command, shell=True)
 
         if keep_lossless:
-            command = "cat " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm > " + results_path + ".lossless.nm"
-            # print('\t\t' + command)
+            command = "cat " + profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm > " + results_path + ".lossless.nm"
+            print('\t\t' + command)
             subprocess.call(command, shell=True)
 
         if clean_up:
-            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.lossless.nm", shell=True)
-            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz.nm", shell=True)
+            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm", shell=True)
+            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.nm", shell=True)
 
 
 # ############################ #
