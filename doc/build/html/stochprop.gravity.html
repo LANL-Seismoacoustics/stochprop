@@ -167,20 +167,38 @@
 <dt id="stochprop.gravity_waves.BV_freq">
 <code class="descclassname">stochprop.gravity_waves.</code><code class="descname">BV_freq</code><span class="sig-paren">(</span><em>H</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#BV_freq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.BV_freq" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
-<div><p>Compute the Brunt-Vaisala frequency defined as $N = sqrt{</p>
+<div><p>Compute the Brunt-Vaisala frequency defined as :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>N = sqrt{</p>
 </div></blockquote>
 <dl class="simple">
-<dt>rac{g}{H}}$ where </dt><dd><p>$H =</p>
+<dt>rac{g}{H}}` where </dt><dd><p>:math:<a href="#id3"><span class="problematic" id="id4">`</span></a>H =</p>
 </dd>
 </dl>
 <p>rac{rho0}{
 rac{partial 
-ho_0}{partial z}$ is the density scale height</p>
+ho_0}{partial z}` is the density scale height</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>H: float</strong></dt><dd><p>Scale height, :math:<a href="#id5"><span class="problematic" id="id6">`</span></a>H =</p>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><p>Returns:
+f_BV: float</p>
+<blockquote>
+<div><p>Brunt-Vaisalla (bouyancy) frequency, :math:<a href="#id7"><span class="problematic" id="id8">`</span></a>f_BV = sqrt{</p>
+</div></blockquote>
+</dd>
+<dt><strong>rac{g}{H}}`</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="stochprop.gravity_waves.build_spec">
-<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">build_spec</code><span class="sig-paren">(</span><em>atmo_specification</em>, <em>t0=14400.0</em>, <em>dx=4.0</em>, <em>dz=0.2</em>, <em>Nk=128</em>, <em>N_om=5</em>, <em>ref_lat=30.0</em>, <em>random_phase=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#build_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.build_spec" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">build_spec</code><span class="sig-paren">(</span><em>atmo_specification</em>, <em>t0=14400.0</em>, <em>dx=4.0</em>, <em>dz=0.2</em>, <em>Nk=128</em>, <em>N_om=5</em>, <em>ref_lat=30.0</em>, <em>random_phase=False</em>, <em>z_src=20.0</em>, <em>m_star=2.5132741228718345</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#build_spec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.build_spec" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function definition…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -207,11 +225,51 @@ ho_0}{partial z}$ is the density scale height</p>
 <dd class="field-even"><dl class="simple">
 <dt>z_vals: 1darray</dt><dd><p>Altitudes of output</p>
 </dd>
-<dt>du_vals: 3darray</dt><dd><p>Zonal (E/W) wind perturbations, du(x, y, z)</p>
+<dt>du_vals: 3darray</dt><dd><p>Zonal (E/W) wind perturbations, du(x, y, z, t0)</p>
 </dd>
-<dt>dv_vals: 3darray</dt><dd><p>Meridional (N/S) wind perturbations, dv(x, y, z)</p>
+<dt>dv_vals: 3darray</dt><dd><p>Meridional (N/S) wind perturbations, dv(x, y, z, t0)</p>
 </dd>
-<dt>dw_vals: 3darray</dt><dd><p>Vertical wind perturbations, dw(x, y, z)</p>
+<dt>dw_vals: 3darray</dt><dd><p>Vertical wind perturbations, dw(x, y, z, t0)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="stochprop.gravity_waves.build_spec2">
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">build_spec2</code><span class="sig-paren">(</span><em>atmo_specification</em>, <em>t0=14400.0</em>, <em>dx=4.0</em>, <em>dz=0.2</em>, <em>Nk=128</em>, <em>N_om=5</em>, <em>ref_lat=30.0</em>, <em>random_phase=False</em>, <em>z_src=20.0</em>, <em>m_star=2.5132741228718345</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#build_spec2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.build_spec2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function definition…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>atmo_specification: string</strong></dt><dd><p>Atmospheric specification file path</p>
+</dd>
+<dt><strong>t0: float</strong></dt><dd><p>Reference time for gravity wave propagation (typically 4 - 6 hours)</p>
+</dd>
+<dt><strong>dx: float</strong></dt><dd><p>Horizontal wavenumber resolution [km]</p>
+</dd>
+<dt><strong>dz: float</strong></dt><dd><p>Vertical resolution for integration steps [km]</p>
+</dd>
+<dt><strong>Nk: int</strong></dt><dd><p>Horizontal wavenumber grid dimensions (Nk x Nk)</p>
+</dd>
+<dt><strong>N_om: int</strong></dt><dd><p>Frequency resolution (typically 5)</p>
+</dd>
+<dt><strong>ref_lat: float</strong></dt><dd><p>Reference latitude used to define the Coriolis frequency used as the minimum frequency</p>
+</dd>
+<dt><strong>random_phase: boolean</strong></dt><dd><p>Controls inclusion of random initial phase shifts</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>z_vals: 1darray</dt><dd><p>Altitudes of output</p>
+</dd>
+<dt>du_vals: 3darray</dt><dd><p>Zonal (E/W) wind perturbations, du(x, y, z, t0)</p>
+</dd>
+<dt>dv_vals: 3darray</dt><dd><p>Meridional (N/S) wind perturbations, dv(x, y, z, t0)</p>
+</dd>
+<dt>dw_vals: 3darray</dt><dd><p>Vertical wind perturbations, dw(x, y, z, t0)</p>
 </dd>
 </dl>
 </dd>
@@ -223,30 +281,92 @@ ho_0}{partial z}$ is the density scale height</p>
 <code class="descclassname">stochprop.gravity_waves.</code><code class="descname">cg</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om_intr</em>, <em>H</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#cg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.cg" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Compute the vertical group velocity for gravity wave propagation 
-as (cg =</p>
+as :math:<a href="#id9"><span class="problematic" id="id10">`</span></a>cg =</p>
 </div></blockquote>
 <p>rac{partial hat{omega}}{partial m} = 
 rac{m k_h N}{k_h^2 + m^2 + 
-rac{1}{4H^2})</p>
+rac{1}{4H^2}`</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om_intr: float</dt><dd><p>Intrinsic frequency (relative to winds), defined as <span class="math notranslate nohighlight">\(\hat{\omega} = \omega - k u_0 - l v_0\)</span></p>
+</dd>
+<dt>H: float</dt><dd><p>Scale height, :math:<a href="#id11"><span class="problematic" id="id12">`</span></a>H =</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><p>Returns:
+c_g: float</p>
+<blockquote>
+<div><p>Vertical group velocity of gravity waves</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="stochprop.gravity_waves.m_imag">
-<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">m_imag</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om_intr</em>, <em>H</em>, <em>T0</em>, <em>d0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#m_imag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.m_imag" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">m_imag</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om_intr</em>, <em>z</em>, <em>H</em>, <em>T0</em>, <em>d0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#m_imag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.m_imag" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Compute the imaginary wave number component to add attenuation effects
-The imaginary component is defined as $ <a href="#id1"><span class="problematic" id="id2">m_</span></a>  ext{im} = -</p>
+The imaginary component is defined as :math:<a href="#id13"><span class="problematic" id="id14">`</span></a><a href="#id29"><span class="problematic" id="id30">m_</span></a> ext{im} = -</p>
 </div></blockquote>
 <p>u 
-rac{m^3}{hat{omega}}$</p>
+rac{m^3}{hat{omega}}`</p>
 <blockquote>
-<div><p>where the viscosity is $</p>
+<div><p>where the viscosity is :math:<a href="#id15"><span class="problematic" id="id16">`</span></a></p>
 </div></blockquote>
 <p>u = 3.563       imes 10^{-7} 
 rac{T_0 left( z 
 ight)}{
 ho_0 left( z 
-ight)}$</p>
+ight)}`</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om_intr: float</dt><dd><p>Intrinsic frequency (relative to winds), defined as <span class="math notranslate nohighlight">\(\hat{\omega} = \omega - k u_0 - l v_0\)</span></p>
+</dd>
+<dt>z: float</dt><dd><p>Absolute height (used for turning attenuation “off” below 100 km)</p>
+</dd>
+<dt>H: float</dt><dd><p>Scale height, :math:<a href="#id17"><span class="problematic" id="id18">`</span></a>H =</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><dl class="simple">
+<dt>T0: float</dt><dd><p>Ambient temperature in the atmosphere</p>
+</dd>
+<dt>d0: float</dt><dd><p>Ambient density in the atmosphere</p>
+</dd>
+</dl>
+<p>Returns:
+m_i: float</p>
+<blockquote>
+<div><p>Imaginary component of the wavenumber used for damping above 100 km (note: 100 km limit is applied elsewhere)</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -254,37 +374,240 @@ ight)}$</p>
 <code class="descclassname">stochprop.gravity_waves.</code><code class="descname">m_sqr</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om_intr</em>, <em>H</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#m_sqr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.m_sqr" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div><p>Compute the vertical wavenumber dispersion relation for gravity wave propagation
-defined as m^2 =</p>
+defined as :math:<a href="#id19"><span class="problematic" id="id20">`</span></a>m^2 =</p>
 </div></blockquote>
 <p>rac{k_h^2}{hat{omega}^2} left( N^2 - hat{omega}^2 
 ight) + 
-rac{1}{4 H^2}</p>
+rac{1}{4 H^2}`</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om_intr: float</dt><dd><p>Intrinsic frequency (relative to winds), defined as <span class="math notranslate nohighlight">\(\hat{\omega} = \omega - k u_0 - l v_0\)</span></p>
+</dd>
+<dt>H: float</dt><dd><p>Scale height, :math:<a href="#id21"><span class="problematic" id="id22">`</span></a>H =</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><p>Returns:
+m_sqr: float</p>
+<blockquote>
+<div><p>Vertical wave number squared, :math:<a href="#id23"><span class="problematic" id="id24">`</span></a>m^2 =</p>
+</div></blockquote>
+</dd>
+<dt><strong>rac{k_h^2}{hat{omega}^2 left( N^2 - hat{omega}^2</strong></dt><dd></dd>
+<dt><strong>ight) +</strong></dt><dd></dd>
+<dt><strong>rac{1}{4 H^2}}`</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="stochprop.gravity_waves.prep">
-<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prep</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om</em>, <em>atmo_info</em>, <em>om_min</em>, <em>k_max</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Identify critical layers ($ hat{omega}(z) = 0$) and turning points ($m(z) = 0$) and compute relevant quantities 
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prep</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om</em>, <em>atmo_info</em>, <em>om_min</em>, <em>k_max</em>, <em>src_index</em>, <em>m_star</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prep" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Identify critical layers ($ hat{omega}(z) = 0$) and turning points ($m(z) = 0$) and compute relevant quantities 
 for the trapped GW solution.  Also checks for valid Fourier component status, group velocity minimum, and other 
 conditions that would produce a bad Fourier component</p>
+</div></blockquote>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om: float</dt><dd><p>Absolute frequency (relative to the ground)</p>
+</dd>
+<dt>atmo_info: 2darray</dt><dd><p>Array with columns containing altitude , scale height, zonal wind, meridional wind, temperature, and density</p>
+</dd>
+<dt>om_min: float</dt><dd><p>Minimum absolute frequency used in analysis</p>
+</dd>
+<dt>k_max: float</dt><dd><p>Maximum horzintal wavenumber value used in 1 grid dimension</p>
+</dd>
+<dt>src_index: int</dt><dd><p>Index of the source height within the atmo_info z values</p>
+</dd>
+<dt>m_star: float</dt><dd><p>Source parameter m_* (default value, :math:<a href="#id25"><span class="problematic" id="id26">`</span></a></p>
+</dd>
+</dl>
+</dd>
+<dt><strong>rac{2 pi}{2.5}        ext{ km}^{-1}` is for 20 km altitude source)</strong></dt><dd><p>Returns:
+crit_lyr_index: int</p>
+<blockquote>
+<div><p>Index of the lowest critical layer altitude (set to len(z_vals) from atmo_info if no critical layer)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>turn_ht_index: int</dt><dd><p>Index of the lowest turning height (set to len(z_vals) from atmo_info if no critical layer)</p>
+</dd>
+<dt>w0: float</dt><dd><p>Source spectral amplitude for this Fourier component</p>
+</dd>
+<dt>refl_phase: float</dt><dd><p>Reflection phase from ground to turning height (relevant if a turning point is identified)</p>
+</dd>
+<dt>refl_time: float</dt><dd><p>Reflection propagation time from ground to turning height (relevant if a turning point is identified)</p>
+</dd>
+<dt>refl_loss: float</dt><dd><p>Reflection attenuation losses from 100 km to turning height (relevant if a turning point is identified, and only computed if the turning height is above 100 km)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="stochprop.gravity_waves.prep_wrapper">
-<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prep_wrapper</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prep_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prep_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="stochprop.gravity_waves.prop_downward">
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prop_downward</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om</em>, <em>zj</em>, <em>t0</em>, <em>crit_lyr_index</em>, <em>turning_ht_index</em>, <em>w0</em>, <em>atmo_info</em>, <em>trapped_info</em>, <em>src_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prop_downward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prop_downward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the gravity wave spectum below the source height ignoring refraction effects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>k: float</strong></dt><dd><p>Zonal wave number [km^{-1}]</p>
+</dd>
+<dt><strong>l: float</strong></dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt><strong>om: float</strong></dt><dd><p>Absolute frequency (relative to the ground)</p>
+</dd>
+<dt><strong>zj: int</strong></dt><dd><p>Index of the current altitude point</p>
+</dd>
+<dt><strong>t0: float</strong></dt><dd><p>Reference propagation time used for free solution maximum altitude and trapped solution reflection count</p>
+</dd>
+<dt><strong>crit_lyr_index: int</strong></dt><dd><p>Index of the shallowest critical layer</p>
+</dd>
+<dt><strong>turning_ht_index: int</strong></dt><dd><p>Index of the shallowest turning height</p>
+</dd>
+<dt><strong>w0: Float</strong></dt><dd><p>Spectral amplitude at the source</p>
+</dd>
+<dt><strong>atmo_info: 2darray</strong></dt><dd><p>Array with columns containing altitude , scale height, zonal wind, meridional wind, temperature, and density</p>
+</dd>
+<dt><strong>trapped_info: float</strong></dt><dd><p>Reflection phase, propagation time, and losses for trapped solution</p>
+</dd>
+<dt><strong>src_index: int</strong></dt><dd><p>Index of the source altitude in atmo_info z_vals</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>u_spec: Complex float</strong></dt><dd><p>Fourier component for the zonal wind perturbation</p>
+</dd>
+<dt><strong>v_spec: Complex float</strong></dt><dd><p>Fourier component for the meridional wind perturbation</p>
+</dd>
+<dt><strong>w_spec: Complex float</strong></dt><dd><p>Fourier component of the vertical wind perturbation</p>
+</dd>
+<dt><strong>w_phase: Float</strong></dt><dd><p>Cumulative vertical Fourier component phase</p>
+</dd>
+<dt><strong>w_loss: Float</strong></dt><dd><p>Cumulative vertical Fourier component attenuation</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="function">
 <dt id="stochprop.gravity_waves.prop_upward">
-<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prop_upward</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om</em>, <em>zj</em>, <em>t0</em>, <em>crit_lyr_index</em>, <em>turning_ht_index</em>, <em>w0</em>, <em>w_phase_prev</em>, <em>w_loss_prev</em>, <em>atmo_info</em>, <em>trapped_info</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prop_upward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prop_upward" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prop_upward</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om</em>, <em>zj</em>, <em>t0</em>, <em>crit_lyr_index</em>, <em>turning_ht_index</em>, <em>w0</em>, <em>atmo_info</em>, <em>trapped_info</em>, <em>src_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prop_upward"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prop_upward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Integrate the gravity wave spectrum upward using the freely propagating solution for Fourier
 combinations without turning points and the Airy function form for trapped components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>k: float</strong></dt><dd><p>Zonal wave number [km^{-1}]</p>
+</dd>
+<dt><strong>l: float</strong></dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt><strong>om: float</strong></dt><dd><p>Absolute frequency (relative to the ground)</p>
+</dd>
+<dt><strong>zj: int</strong></dt><dd><p>Index of the current altitude point</p>
+</dd>
+<dt><strong>t0: float</strong></dt><dd><p>Reference propagation time used for free solution maximum altitude and trapped solution reflection count</p>
+</dd>
+<dt><strong>crit_lyr_index: int</strong></dt><dd><p>Index of the shallowest critical layer</p>
+</dd>
+<dt><strong>turning_ht_index: int</strong></dt><dd><p>Index of the shallowest turning height</p>
+</dd>
+<dt><strong>w0: Float</strong></dt><dd><p>Spectral amplitude at the source</p>
+</dd>
+<dt><strong>atmo_info: 2darray</strong></dt><dd><p>Array with columns containing altitude , scale height, zonal wind, meridional wind, temperature, and density</p>
+</dd>
+<dt><strong>trapped_info: float</strong></dt><dd><p>Reflection phase, propagation time, and losses for trapped solution</p>
+</dd>
+<dt><strong>src_index: int</strong></dt><dd><p>Index of the source altitude in atmo_info z_vals</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>u_spec: Complex float</strong></dt><dd><p>Fourier component for the zonal wind perturbation</p>
+</dd>
+<dt><strong>v_spec: Complex float</strong></dt><dd><p>Fourier component for the meridional wind perturbation</p>
+</dd>
+<dt><strong>w_spec: Complex float</strong></dt><dd><p>Fourier component of the vertical wind perturbation</p>
+</dd>
+<dt><strong>w_phase: Float</strong></dt><dd><p>Cumulative vertical Fourier component phase</p>
+</dd>
+<dt><strong>w_loss: Float</strong></dt><dd><p>Cumulative vertical Fourier component attenuation</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
-<dt id="stochprop.gravity_waves.prop_upward_wrapper">
-<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">prop_upward_wrapper</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prop_upward_wrapper"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.prop_upward_wrapper" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="stochprop.gravity_waves.single_fourier_component">
+<code class="descclassname">stochprop.gravity_waves.</code><code class="descname">single_fourier_component</code><span class="sig-paren">(</span><em>k</em>, <em>l</em>, <em>om</em>, <em>atmo_info</em>, <em>t0</em>, <em>src_index</em>, <em>m_star</em>, <em>om_min</em>, <em>k_max</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#single_fourier_component"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.gravity_waves.single_fourier_component" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Function definition…</p>
+</div></blockquote>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om: float</dt><dd><p>Absolute frequency (relative to the ground) [Hz]</p>
+</dd>
+<dt>atmo_specification: string</dt><dd><p>Atmospheric specification file path</p>
+</dd>
+<dt>t0: float</dt><dd><p>Reference time for gravity wave propagation (typically 4 - 6 hours)</p>
+</dd>
+<dt>src_index: int</dt><dd><p>Index of the source height within the atmo_info z values</p>
+</dd>
+<dt>m_star: float</dt><dd><p>Source parameter m_* (default value, :math:<a href="#id27"><span class="problematic" id="id28">`</span></a></p>
+</dd>
+</dl>
+</dd>
+<dt><strong>rac{2 pi}{2.5}        ext{ km}^{-1}` is for 20 km altitude source)</strong></dt><dd><dl class="simple">
+<dt>om_min: float</dt><dd><p>Minimum absolute frequency used in analysis</p>
+</dd>
+<dt>k_max: float</dt><dd><p>Maximum horzintal wavenumber value used in 1 grid dimension</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt>u_spec: 1darray</dt><dd><blockquote>
+<div><p>Zonal wind perturbation spectrum, hat{u}(k, l, z, omega)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>v_spec: 1darray</dt><dd><p>Meridional wind perturbation spectrum, hat{v}(k, l, z, omega)</p>
+</dd>
+<dt>w_spec: 1darray</dt><dd><p>Vertical wind perturbation spectrum, hat{w}(k, l, z, omega)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

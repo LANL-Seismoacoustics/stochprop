@@ -177,7 +177,7 @@
 <div class="math notranslate nohighlight">
 \[m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}\]</div>
 <ul class="simple">
-<li><p>In this relation <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(l\)</span> are the zonal and meridional wave numbers, <span class="math notranslate nohighlight">\(k_h^2 = \sqrt{k^2 + l^2}\)</span> is the combined horizontal wavenumber, <span class="math notranslate nohighlight">\(H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\)</span> is the scale height, <span class="math notranslate nohighlight">\(N^2 = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}\)</span> is the atmospheric bouyancy frequency, and <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> is the intrinsic angular frequency (relative to the moving air) that is defined relative to the absolute angular frequency (relative to the ground), <span class="math notranslate nohighlight">\(\omega\)</span>,</p></li>
+<li><p>In this relation <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(l\)</span> are the zonal and meridional wave numbers, <span class="math notranslate nohighlight">\(k_h^2 = \sqrt{k^2 + l^2}\)</span> is the combined horizontal wavenumber, <span class="math notranslate nohighlight">\(H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\)</span> is the density scale height, <span class="math notranslate nohighlight">\(N^2 = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}\)</span> is the atmospheric bouyancy frequency, and <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> is the intrinsic angular frequency (relative to the moving air) that is defined relative to the absolute angular frequency (relative to the ground), <span class="math notranslate nohighlight">\(\omega\)</span>,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[\hat{\omega} = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)\]</div>
@@ -210,7 +210,7 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 \[S_n = \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime\]</div>
 </div></blockquote>
 </li>
-<li><p>Lastly, the vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios,</p></li>
+<li><p>The vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios through derivatives of the vertical velocity spectrum,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[\hat{u}^\text{(free)} = - \frac{k m}{k_h^2} \hat{w}, \quad
@@ -218,6 +218,11 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 <div class="math notranslate nohighlight">
 \[\hat{v}^\text{(free)} = - \frac{l m}{k_h^2} \hat{w}, \quad
 \hat{v}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{l}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n\]</div>
+<ul class="simple">
+<li><p>Finally, once computed for the entire atmosphere, the spatial and temporal domain forms can be computed by an inverse Fourier transform,</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}\]</div>
 </div>
 <div class="section" id="damping-source-and-saturation-spectra-and-critical-layers">
 <h2>Damping, Source and Saturation Spectra, and Critical Layers<a class="headerlink" href="#damping-source-and-saturation-spectra-and-critical-layers" title="Permalink to this headline">¶</a></h2>
@@ -241,26 +246,26 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 </ul>
 </div></blockquote>
 </li>
-<li><p>The source spectra defined by Warner &amp; McIntyre (1996) specifies the wave energy density as,</p>
+<li><p>The source spectra defined by Warner &amp; McIntyre (1996) specifies the wave energy density for a source at 20 km altitude (note: <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> exponential corrected in publication errata),</p>
 <blockquote>
 <div><div class="math notranslate nohighlight">
-\[\mathcal{E}_\text{src} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{m}{m_*^4 + m^4} \frac{N^2}{\hat{\omega}^3} \Omega, \quad \Omega = \frac{\hat{\omega}_\text{min}^\frac{2}{3}}{1 - \left( \frac{\hat{\omega}_\text{min}}{N} \right)^\frac{2}{3}}, \quad m_* = \frac{2 \pi}{2.5 \text{km}}\]</div>
+\[\mathcal{E}_\text{src} \left(m, \hat{\omega} \right) = 1.35 \times 10^{-2} \frac{m}{m_*^4 + m^4} \frac{N^2}{\hat{\omega}^\frac{5}{3}} \Omega, \quad \Omega = \frac{\hat{\omega}_\text{min}^\frac{2}{3}}{1 - \left( \frac{\hat{\omega}_\text{min}}{N} \right)^\frac{2}{3}}, \quad m_* = \frac{2 \pi}{2.5 \text{km}}\]</div>
 <ul class="simple">
-<li><p>The wave energy density can be related to the vertical velocity spectrum producing the initial condition for starting the calculation,</p></li>
+<li><p>The wave energy density can be expressed in terms of spectral coordiantes using <span class="math notranslate nohighlight">\(\mathcal{E} \left( k, l, \omega \right) = \mathcal{E} \left( m, \hat{\omega} \right) \frac{m}{k_h^2}\)</span> which can then be related to the vertical velocity spectrum producing the initial condition for starting the calculation,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\mathcal{E} \left(k, l, \omega \right) = \frac{1}{2} \frac{N^2}{\hat{\omega}^2} \left| \hat{w}_0 \right|^2 \quad \rightarrow \quad \left| \hat{w}_0 \right|^2 = 2.7 \times 10^{-2} \frac{m^2}{m^4_* + m^4}  \frac{\Omega}{\hat{\omega} k_h^2}.\]</div>
+\[\mathcal{E} \left(k, l, \omega \right) = \frac{1}{2} \frac{N^2}{\hat{\omega}^2} \left| \hat{w}_0 \right|^2 \quad \rightarrow \quad \left| \hat{w}_0 \right|^2 = 2.7 \times 10^{-2} \frac{m^2}{m^4_* + m^4}  \frac{\hat{\omega}^\frac{1}{3}}{k_h^2} \Omega.\]</div>
 </div></blockquote>
 </li>
-<li><p>Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner &amp; McIntyre (1996) where the spectral coordinate saturation spectrum is,</p>
+<li><p>Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner &amp; McIntyre (1996) where the spectral coordinate saturation spectrum is (note: the exponential for <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> is again corrected in publication errata),</p>
 <blockquote>
 <div><div class="math notranslate nohighlight">
-\[\mathcal{E}_\text{sat} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{N^2}{\hat{\omega}^3 m^3}\]</div>
+\[\mathcal{E}_\text{sat} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{N^2}{\hat{\omega}^\frac{5}{3} m^3}\]</div>
 <ul class="simple">
 <li><p>Again using the relation between wave energy density and vertical velocity spectrum, this produces,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{1}{\hat{\omega} m^2 k_h^2}.\]</div>
+\[\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.\]</div>
 </div></blockquote>
 </li>
 <li><p>Lastly, from the above definition for the vertical group velocity, <span class="math notranslate nohighlight">\(c_g\)</span>, it is possible to have altitudes for which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> and <span class="math notranslate nohighlight">\(c_g\)</span> similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.</p></li>
@@ -268,9 +273,67 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 </div>
 <div class="section" id="gravity-wave-implementation-in-stochprop">
 <h2>Gravity Wave implementation in stochprop<a class="headerlink" href="#gravity-wave-implementation-in-stochprop" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>The implementation of the gravity wave analysis follows that summarized by Drob et al. (2013) and is sumamrized here</p>
+<ul>
+<li><p>Atmospheric information is constructed from a provided atmospheric specification:</p>
 <ul class="simple">
-<li><p>The implementation here…</p></li>
+<li><p>Interpolations of the ambient horizontal winds, <span class="math notranslate nohighlight">\(u_0 \left( z \right)\)</span> and <span class="math notranslate nohighlight">\(v_0 \left( z \right)\)</span>, density, <span class="math notranslate nohighlight">\(\rho_0 \left( Z \right)\)</span>, and temperature, <span class="math notranslate nohighlight">\(T_0 \left( z \right)\)</span> are defined.</p></li>
+<li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right)\)</span>, is computed using finite differences in the ambient density.</p></li>
+<li><p>Atmospheric fields are then re-sampled on a higher resolution set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
 </ul>
+</li>
+<li><p>A grid of <span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(l\)</span>, and <span class="math notranslate nohighlight">\(\omega\)</span> values are defined:</p>
+<ul class="simple">
+<li><p>The horizontal resolution, <span class="math notranslate nohighlight">\(dx\)</span>, is set to 4 meters following Drob et al. (2013) with <span class="math notranslate nohighlight">\(N_k = 128\)</span> (both of these quantities can be modified by the user, but default to the values from Drob et al.)</p></li>
+<li><p>Five frequency values are defined for analysis covering a frequency band from <span class="math notranslate nohighlight">\(\omega_\text{min} = 2 f_\text{Cor}\)</span> to <span class="math notranslate nohighlight">\(\omega_\text{max} = \frac{N}{\sqrt{5}}\)</span> where <span class="math notranslate nohighlight">\(f_\text{Cor}\)</span> is the Coriolis frequency,</p></li>
+</ul>
+<blockquote>
+<div><div class="math notranslate nohighlight">
+\[f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)\]</div>
+</div></blockquote>
+</li>
+<li><p>For each Fourier component combination, <span class="math notranslate nohighlight">\(k, l, \omega\)</span>, several checks are made and pre-analysis completed:</p>
+<ul class="simple">
+<li><p>Those Fourier components for which <span class="math notranslate nohighlight">\(k_h &gt; k_\text{max}\)</span> are masked out of the calculation as well as those for which <span class="math notranslate nohighlight">\(C = \frac{N}{m} &gt; 90 \frac{\text{m}}{\text{s}}\)</span></p></li>
+<li><p>Critical layers at which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> are identified</p></li>
+<li><p>Turning heights at which <span class="math notranslate nohighlight">\(m^2 \left( z_t \right) \rightarrow 0\)</span> are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.</p></li>
+</ul>
+</li>
+<li><p>The relations above for <span class="math notranslate nohighlight">\(\hat{w} \left( k, l, \omega, z \right)\)</span> are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists</p>
+<ul class="simple">
+<li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.</p></li>
+<li><p>Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.</p></li>
+</ul>
+</li>
+<li><p>The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using <code class="code docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code> on the appropriate axes and the <span class="math notranslate nohighlight">\(\omega\)</span> integration is simplified by taking (t=0) in the solution which convert this Fourier inversion to a simple integration.</p></li>
+</ul>
+</li>
+</ul>
+<div class="math notranslate nohighlight">
+\[w \left( x, y, z, 0 \right) = \int{\left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}\]</div>
+<ul class="simple">
+<li><p>Use of the methods is summarized in the below example:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">gravity_waves</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="n">t0</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">*</span> <span class="mf">3600.0</span>
+        <span class="n">dx</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.2</span>
+        <span class="n">Nk</span><span class="p">,</span> <span class="n">N_om</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">5</span>
+
+        <span class="c1"># Run gravity wave calculation</span>
+        <span class="n">z</span><span class="p">,</span> <span class="n">du</span><span class="p">,</span> <span class="n">dv</span><span class="p">,</span> <span class="n">dw</span> <span class="o">=</span> <span class="n">gravity_waves</span><span class="o">.</span><span class="n">build_spec</span><span class="p">(</span><span class="n">atmo_spec</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">Nk</span><span class="p">,</span> <span class="n">N_om</span><span class="p">)</span>
+
+        <span class="c1"># Save results</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;z_vals&quot;</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;du_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">du</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;dv_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">dv</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;dw_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">dw</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 

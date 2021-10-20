@@ -15,7 +15,7 @@ Freely Propagation and Trapped Gravity Waves
 .. math::
 	m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}
  
-* In this relation :math:`k` and :math:`l` are the zonal and meridional wave numbers, :math:`k_h^2 = \sqrt{k^2 + l^2}` is the combined horizontal wavenumber, :math:`H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}` is the scale height, :math:`N^2 = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}` is the atmospheric bouyancy frequency, and :math:`\hat{\omega}` is the intrinsic angular frequency (relative to the moving air) that is defined relative to the absolute angular frequency (relative to the ground), :math:`\omega`,
+* In this relation :math:`k` and :math:`l` are the zonal and meridional wave numbers, :math:`k_h^2 = \sqrt{k^2 + l^2}` is the combined horizontal wavenumber, :math:`H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}` is the density scale height, :math:`N^2 = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}` is the atmospheric bouyancy frequency, and :math:`\hat{\omega}` is the intrinsic angular frequency (relative to the moving air) that is defined relative to the absolute angular frequency (relative to the ground), :math:`\omega`,
 
 .. math::
 	\hat{\omega} = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)
@@ -47,7 +47,7 @@ Freely Propagation and Trapped Gravity Waves
 	.. math::
    		S_n = \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime
 
-* Lastly, the vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios,
+* The vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios through derivatives of the vertical velocity spectrum,
 
 .. math::
 	\hat{u}^\text{(free)} = - \frac{k m}{k_h^2} \hat{w}, \quad
@@ -56,6 +56,12 @@ Freely Propagation and Trapped Gravity Waves
 .. math::
 	\hat{v}^\text{(free)} = - \frac{l m}{k_h^2} \hat{w}, \quad
    	\hat{v}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{l}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
+
+* Finally, once computed for the entire atmosphere, the spatial and temporal domain forms can be computed by an inverse Fourier transform,
+
+.. math::
+	w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}
+
 
 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -79,25 +85,25 @@ Damping, Source and Saturation Spectra, and Critical Layers
 
 	* Note that in both of these forms if :math:`z_t` is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.
 
-* The source spectra defined by Warner & McIntyre (1996) specifies the wave energy density as,
+* The source spectra defined by Warner & McIntyre (1996) specifies the wave energy density for a source at 20 km altitude (note: :math:`\hat{\omega}` exponential corrected in publication errata),
 
 	.. math::
-		\mathcal{E}_\text{src} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{m}{m_*^4 + m^4} \frac{N^2}{\hat{\omega}^3} \Omega, \quad \Omega = \frac{\hat{\omega}_\text{min}^\frac{2}{3}}{1 - \left( \frac{\hat{\omega}_\text{min}}{N} \right)^\frac{2}{3}}, \quad m_* = \frac{2 \pi}{2.5 \text{km}}
+		\mathcal{E}_\text{src} \left(m, \hat{\omega} \right) = 1.35 \times 10^{-2} \frac{m}{m_*^4 + m^4} \frac{N^2}{\hat{\omega}^\frac{5}{3}} \Omega, \quad \Omega = \frac{\hat{\omega}_\text{min}^\frac{2}{3}}{1 - \left( \frac{\hat{\omega}_\text{min}}{N} \right)^\frac{2}{3}}, \quad m_* = \frac{2 \pi}{2.5 \text{km}}
 	
-	* The wave energy density can be related to the vertical velocity spectrum producing the initial condition for starting the calculation, 
+	* The wave energy density can be expressed in terms of spectral coordiantes using :math:`\mathcal{E} \left( k, l, \omega \right) = \mathcal{E} \left( m, \hat{\omega} \right) \frac{m}{k_h^2}` which can then be related to the vertical velocity spectrum producing the initial condition for starting the calculation, 
 
 	.. math::
-		\mathcal{E} \left(k, l, \omega \right) = \frac{1}{2} \frac{N^2}{\hat{\omega}^2} \left| \hat{w}_0 \right|^2 \quad \rightarrow \quad \left| \hat{w}_0 \right|^2 = 2.7 \times 10^{-2} \frac{m^2}{m^4_* + m^4}  \frac{\Omega}{\hat{\omega} k_h^2}.
+		\mathcal{E} \left(k, l, \omega \right) = \frac{1}{2} \frac{N^2}{\hat{\omega}^2} \left| \hat{w}_0 \right|^2 \quad \rightarrow \quad \left| \hat{w}_0 \right|^2 = 2.7 \times 10^{-2} \frac{m^2}{m^4_* + m^4}  \frac{\hat{\omega}^\frac{1}{3}}{k_h^2} \Omega.
 
-* Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner & McIntyre (1996) where the spectral coordinate saturation spectrum is,
+* Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner & McIntyre (1996) where the spectral coordinate saturation spectrum is (note: the exponential for :math:`\hat{\omega}` is again corrected in publication errata),
 
 	.. math::
-		\mathcal{E}_\text{sat} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{N^2}{\hat{\omega}^3 m^3}
+		\mathcal{E}_\text{sat} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{N^2}{\hat{\omega}^\frac{5}{3} m^3}
 
 	* Again using the relation between wave energy density and vertical velocity spectrum, this produces,
 
 	.. math::
-		\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{1}{\hat{\omega} m^2 k_h^2}.
+		\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.
 		
 * Lastly, from the above definition for the vertical group velocity, :math:`c_g`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_g` similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.
 
@@ -105,4 +111,64 @@ Damping, Source and Saturation Spectra, and Critical Layers
 Gravity Wave implementation in stochprop
 ++++++++++++++++++++++++++++++++++++++++
 
-* The implementation here...
+* The implementation of the gravity wave analysis follows that summarized by Drob et al. (2013) and is sumamrized here
+
+  * Atmospheric information is constructed from a provided atmospheric specification:
+
+    * Interpolations of the ambient horizontal winds, :math:`u_0 \left( z \right)` and :math:`v_0 \left( z \right)`, density, :math:`\rho_0 \left( Z \right)`, and temperature, :math:`T_0 \left( z \right)` are defined.  
+
+    * The density scale height, :math:`H \left( z \right)`, is computed using finite differences in the ambient density.  
+  
+    * Atmospheric fields are then re-sampled on a higher resolution set of altitudes with :math:`dz = 200` meters.
+  
+  * A grid of :math:`k`, :math:`l`, and :math:`\omega` values are defined:
+
+    * The horizontal resolution, :math:`dx`, is set to 4 meters following Drob et al. (2013) with :math:`N_k = 128` (both of these quantities can be modified by the user, but default to the values from Drob et al.)
+
+    * Five frequency values are defined for analysis covering a frequency band from :math:`\omega_\text{min} = 2 f_\text{Cor}` to :math:`\omega_\text{max} = \frac{N}{\sqrt{5}}` where :math:`f_\text{Cor}` is the Coriolis frequency,
+
+     .. math::
+	     f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)
+
+  * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
+
+    * Those Fourier components for which :math:`k_h > k_\text{max}` are masked out of the calculation as well as those for which :math:`C = \frac{N}{m} > 90 \frac{\text{m}}{\text{s}}` 
+
+    * Critical layers at which :math:`\hat{\omega} \rightarrow 0` are identified
+
+    * Turning heights at which :math:`m^2 \left( z_t \right) \rightarrow 0` are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.
+
+  * The relations above for :math:`\hat{w} \left( k, l, \omega, z \right)` are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists
+
+    * At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.  
+  
+    * Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.
+
+  * The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using :code:`numpy.fft.ifft` on the appropriate axes and the :math:`\omega` integration is simplified by taking \(t=0\) in the solution which convert this Fourier inversion to a simple integration.
+
+.. math::
+	w \left( x, y, z, 0 \right) = \int{\left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}
+
+
+* Use of the methods is summarized in the below example:
+
+.. code-block:: python
+
+	import numpy as np
+
+	from stochprop import gravity_waves
+
+	if __name__ == '__main__':
+		t0 = 6.0 * 3600.0
+		dx, dz = 2.0, 0.2
+		Nk, N_om = 128, 5
+
+		# Run gravity wave calculation
+		z, du, dv, dw = gravity_waves.build_spec(atmo_spec, t0, dx, dz, Nk, N_om)
+
+		# Save results
+		np.save("z_vals", z)
+		np.save("du_vals-" + str(Nk), du)
+		np.save("dv_vals-" + str(Nk), dv)
+		np.save("dw_vals-" + str(Nk), dw)
+
