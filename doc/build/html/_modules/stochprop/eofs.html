@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,31 +12,29 @@
   
 
   
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
@@ -51,7 +50,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> stochprop
+            <a href="../../index.html" class="icon icon-home"> stochprop
           
 
           
@@ -77,7 +76,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -96,7 +94,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -135,7 +132,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
         
           <li><a href="../index.html">Module code</a> &raquo;</li>
         
@@ -170,22 +167,75 @@
 <span class="kn">import</span> <span class="nn">calendar</span>
 <span class="kn">import</span> <span class="nn">fnmatch</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">imp</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">import</span> <span class="nn">re</span> 
+
+<span class="kn">from</span> <span class="nn">netCDF4</span> <span class="k">import</span> <span class="n">Dataset</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
-<span class="kn">from</span> <span class="nn">scipy.cluster</span> <span class="kn">import</span> <span class="n">hierarchy</span>
-<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="kn">import</span> <span class="n">quad</span><span class="p">,</span> <span class="n">simps</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">interp1d</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">bisect</span>
-<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">gaussian_kde</span>
-<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">squareform</span>
+<span class="kn">from</span> <span class="nn">scipy.cluster</span> <span class="k">import</span> <span class="n">hierarchy</span>
+<span class="kn">from</span> <span class="nn">scipy.integrate</span> <span class="k">import</span> <span class="n">quad</span><span class="p">,</span> <span class="n">simps</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="k">import</span> <span class="n">interp1d</span><span class="p">,</span> <span class="n">interp2d</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="k">import</span> <span class="n">bisect</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="k">import</span> <span class="n">gaussian_kde</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="k">import</span> <span class="n">squareform</span>
 
 <span class="n">gam</span> <span class="o">=</span> <span class="mf">1.4</span>
 <span class="n">gamR</span> <span class="o">=</span> <span class="n">gam</span> <span class="o">*</span> <span class="mf">287.06</span>
 
+
+<span class="n">gasR</span> <span class="o">=</span> <span class="mf">287.0</span>
+<span class="n">den0</span> <span class="o">=</span> <span class="mf">0.001225</span>
+<span class="n">coeffs_A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3.9082017e-2</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.1526465e-3</span><span class="p">,</span> <span class="mf">3.2891937e-5</span><span class="p">,</span> <span class="o">-</span><span class="mf">2.0494958e-7</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">4.7087295e-2</span><span class="p">,</span> <span class="mf">1.2506387e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5194498e-5</span><span class="p">,</span> <span class="mf">6.581877e-8</span><span class="p">])</span>
+<span class="n">coeffs_B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">4.9244637e-3</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.2984142e-6</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5701595e-6</span><span class="p">,</span> <span class="mf">1.5535974e-8</span><span class="p">,</span>
+                        <span class="o">-</span><span class="mf">2.7221769e-2</span><span class="p">,</span> <span class="mf">4.247473e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.9583181e-6</span><span class="p">,</span> <span class="mf">1.7295795e-8</span><span class="p">])</span>
+
+<div class="viewcode-block" id="density"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.density">[docs]</a><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the atmospheric density according to </span>
+<span class="sd">            the US standard atmosphere model using a </span>
+<span class="sd">            polynomial fit</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : float</span>
+<span class="sd">            Altitude above sea level [km]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        density : float</span>
+<span class="sd">            Density of the atmosphere at altitude z [g/cm^3] </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">poly_A</span><span class="p">,</span> <span class="n">poly_B</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
+        <span class="n">poly_A</span> <span class="o">+=</span> <span class="n">coeffs_A</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">z</span><span class="o">**</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">poly_B</span> <span class="o">+=</span> <span class="n">coeffs_B</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">z</span><span class="o">**</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">den0</span> <span class="o">*</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">poly_A</span> <span class="o">/</span> <span class="n">poly_B</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="pressure"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.pressure">[docs]</a><span class="k">def</span> <span class="nf">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the atmospheric pressure according to </span>
+<span class="sd">            the US standard atmosphere model using a </span>
+<span class="sd">            polynomial fit assuming an ideal gas</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        z : float</span>
+<span class="sd">            Altitude above sea level [km]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        pressure : float</span>
+<span class="sd">            Pressure of the atmosphere at altitude z [mbar] </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+     
+    <span class="k">return</span> <span class="n">density</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">gasR</span> <span class="o">*</span> <span class="n">T</span> <span class="o">*</span> <span class="mf">10.0</span></div>
+    
 
 <div class="viewcode-block" id="profiles_qc"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.profiles_qc">[docs]</a><span class="k">def</span> <span class="nf">profiles_qc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -229,7 +279,9 @@
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING!! No profiles matching specified pattern in path.&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="build_atmo_matrix"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.build_atmo_matrix">[docs]</a><span class="k">def</span> <span class="nf">build_atmo_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="build_atmo_matrix"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.build_atmo_matrix">[docs]</a><span class="k">def</span> <span class="nf">build_atmo_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prof_format</span><span class="o">=</span><span class="s2">&quot;zTuvdp&quot;</span><span class="p">,</span> <span class="n">latlon0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_datetime</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read in a list of atmosphere files from the path location</span>
 <span class="sd">        matching a specified pattern for continued analysis.</span>
@@ -244,6 +296,10 @@
 <span class="sd">            Number of header rows in the profiles</span>
 <span class="sd">        ref_alts: 1darray</span>
 <span class="sd">            Reference altitudes if comparison is needed</span>
+<span class="sd">        prof_format: string</span>
+<span class="sd">            Profile format is either &#39;ECMWF&#39; or column specifications (e.g., &#39;zTuvdp&#39;)</span>
+<span class="sd">        return_datetime: bool</span>
+<span class="sd">            Option to return the datetime info of ingested atmosphere files for future reference</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -260,48 +316,137 @@
             <span class="n">file_list</span> <span class="o">+=</span> <span class="p">[</span><span class="n">file</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">atmo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">ref_alts</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">z0</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">z0</span> <span class="o">=</span> <span class="n">ref_alts</span>
+        <span class="n">file_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prof_format</span> <span class="o">==</span> <span class="s2">&quot;ecmwf&quot;</span> <span class="ow">or</span> <span class="n">prof_format</span> <span class="o">==</span> <span class="s2">&quot;ECMWF&quot;</span><span class="p">:</span>
+            <span class="c1"># Add a check and download here for the ETOPO file</span>
+            <span class="n">etopo_file</span> <span class="o">=</span> <span class="n">imp</span><span class="o">.</span><span class="n">find_module</span><span class="p">(</span><span class="s1">&#39;stochprop&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/resources/ETOPO1_Ice_g_gmt4.grd&#39;</span>
 
-        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
-            <span class="n">T</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING!!  Altitudes in &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; don&#39;t match expected values.  Interpolating to resolve...&quot;</span><span class="p">)</span>
-            <span class="n">T</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
-            <span class="n">u</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
-            <span class="n">v</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
-            <span class="n">p</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
+            <span class="n">etopo1</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">etopo_file</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-            <span class="n">atmo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
-                <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
-                <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]))</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]))</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]))</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]))</span>
+            <span class="n">grid_lons</span> <span class="o">=</span> <span class="n">etopo1</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][:]</span>
+            <span class="n">grid_lats</span> <span class="o">=</span> <span class="n">etopo1</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">][:]</span>
+            <span class="n">grid_elev</span> <span class="o">=</span> <span class="n">etopo1</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">][:]</span>
+
+            <span class="c1"># Change underwater values to sea level</span>
+            <span class="n">grid_elev</span><span class="p">[</span><span class="n">grid_elev</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+            <span class="c1"># Interpolate and evaluate the ground level elevation at the specified latitude and longitude</span>
+            <span class="n">lat_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">latlon0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">&lt;=</span> <span class="n">grid_lats</span><span class="p">,</span> <span class="n">grid_lats</span> <span class="o">&lt;=</span> <span class="n">latlon0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">lon_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">latlon0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">&lt;=</span> <span class="n">grid_lons</span><span class="p">,</span> <span class="n">grid_lons</span> <span class="o">&lt;=</span> <span class="n">latlon0</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">etopo_interp</span> <span class="o">=</span> <span class="n">interp2d</span><span class="p">(</span><span class="n">grid_lons</span><span class="p">[</span><span class="n">lon_mask</span><span class="p">],</span> <span class="n">grid_lats</span><span class="p">[</span><span class="n">lat_mask</span><span class="p">],</span> <span class="n">grid_elev</span><span class="p">[</span><span class="n">lat_mask</span><span class="p">,:][:,</span><span class="n">lon_mask</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1000.0</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Load ECMWF file and identify indices of nearest node for specified loccation</span>
+            <span class="k">if</span> <span class="n">return_datetime</span><span class="p">:</span>
+                <span class="n">dt_parse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{10}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">dt_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:00:00&quot;</span><span class="p">)]</span>
+
+            <span class="n">ecmwf</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">lat0</span><span class="p">,</span> <span class="n">dlat</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ylat0&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;dy&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">lon0</span><span class="p">,</span> <span class="n">dlon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;xlon0&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;dx&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    
+            <span class="n">lat_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lat0</span><span class="p">,</span> <span class="n">lat0</span> <span class="o">+</span> <span class="n">dlat</span> <span class="o">*</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dlat</span><span class="p">)</span>
+            <span class="n">lon_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lon0</span><span class="p">,</span> <span class="n">lon0</span> <span class="o">+</span> <span class="n">dlon</span> <span class="o">*</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dlon</span><span class="p">)</span>
+
+            <span class="n">n_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">lat_vals</span> <span class="o">-</span> <span class="n">latlon0</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="n">n_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">lon_vals</span> <span class="o">-</span> <span class="n">latlon0</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+            <span class="n">z_gl</span> <span class="o">=</span> <span class="n">etopo_interp</span><span class="p">(</span><span class="n">lon_vals</span><span class="p">[</span><span class="n">n_lon</span><span class="p">],</span> <span class="n">lat_vals</span><span class="p">[</span><span class="n">n_lat</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Extracting profile at &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">lat_vals</span><span class="p">[</span><span class="n">n_lat</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">lon_vals</span><span class="p">[</span><span class="n">n_lon</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; with ground elevation &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_gl</span><span class="p">))</span>    
+
+            <span class="n">z0</span> <span class="o">=</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span> <span class="o">/</span> <span class="mf">1000.0</span> <span class="o">+</span> <span class="n">z_gl</span>    
+            <span class="n">T</span> <span class="o">=</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>   
+            <span class="n">u</span> <span class="o">=</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>   
+            <span class="n">v</span> <span class="o">=</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>   
+            <span class="n">d</span> <span class="o">=</span> <span class="n">density</span><span class="p">(</span><span class="n">z0</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">pressure</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">if</span> <span class="n">return_datetime</span><span class="p">:</span>
+                    <span class="n">dt_parse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{10}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                    <span class="n">dt_list</span> <span class="o">=</span> <span class="n">dt_list</span> <span class="o">+</span> <span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:00:00&quot;</span><span class="p">)]]</span>
+                <span class="n">ecmwf</span> <span class="o">=</span> <span class="n">Dataset</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file</span><span class="p">)</span>
+                
+                <span class="n">lat0</span><span class="p">,</span> <span class="n">dlat</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;ylat0&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;dy&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">lon0</span><span class="p">,</span> <span class="n">dlon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;xlon0&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">float</span><span class="p">(</span><span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;dx&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+    
+                <span class="n">lat_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lat0</span><span class="p">,</span> <span class="n">lat0</span> <span class="o">+</span> <span class="n">dlat</span> <span class="o">*</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dlat</span><span class="p">)</span>
+                <span class="n">lon_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">lon0</span><span class="p">,</span> <span class="n">lon0</span> <span class="o">+</span> <span class="n">dlon</span> <span class="o">*</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dlon</span><span class="p">)</span>
+
+                <span class="n">n_lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">lat_vals</span> <span class="o">-</span> <span class="n">latlon0</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+                <span class="n">n_lon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">lon_vals</span> <span class="o">-</span> <span class="n">latlon0</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+
+                <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;U&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;V&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="n">density</span><span class="p">(</span><span class="n">z0</span><span class="p">)))</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">pressure</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">ecmwf</span><span class="o">.</span><span class="n">variables</span><span class="p">[</span><span class="s1">&#39;T&#39;</span><span class="p">][:,</span> <span class="n">n_lat</span><span class="p">,</span> <span class="n">n_lon</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)))</span>
+
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">z0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">return_datetime</span><span class="p">:</span>
+                <span class="n">dt_parse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{10}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">dt_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:00:00&quot;</span><span class="p">)]</span>
+
+            <span class="c1"># add parser to determine indices of fields of interest (T or p, u, v, d)</span>
+            <span class="n">atmo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">ref_alts</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">z0</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING!!  Altitudes in &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot; don&#39;t match expected values.  Interpolating to resolve...&quot;</span><span class="p">)</span>
-                <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
-                <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
-                <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
-                <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
-                <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
+                <span class="n">z0</span> <span class="o">=</span> <span class="n">ref_alts</span>
 
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
+                <span class="n">T</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING!!  Altitudes in &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; don&#39;t match expected values.  Interpolating to resolve...&quot;</span><span class="p">)</span>
+                <span class="n">T</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
+                <span class="n">u</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
+                <span class="n">d</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">])(</span><span class="n">z0</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">z0</span>
+            <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_list</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+                <span class="k">if</span> <span class="n">return_datetime</span><span class="p">:</span>
+                    <span class="n">dt_parse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{10}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+                    <span class="n">dt_list</span> <span class="o">=</span> <span class="n">dt_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">datetime64</span><span class="p">(</span><span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;T&quot;</span> <span class="o">+</span> <span class="n">dt_parse</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;:00:00&quot;</span><span class="p">)]</span>
+
+                <span class="n">atmo</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="n">skiprows</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">z0</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]):</span>
+                    <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]))</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]))</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]))</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;WARNING!!  Altitudes in &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="n">file</span> <span class="o">+</span> <span class="s2">&quot; don&#39;t match expected values.  Interpolating to resolve...&quot;</span><span class="p">)</span>
+                    <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
+                    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">u</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
+                    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">v</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">d</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">atmo</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">atmo</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">])(</span><span class="n">z0</span><span class="p">)))</span>
+
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">d</span><span class="p">))</span>
+            <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">p</span><span class="p">))</span>
+
+        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">return_datetime</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dt_list</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">A</span><span class="p">,</span> <span class="n">z0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
 
@@ -470,6 +615,9 @@
     <span class="c1"># cycle through profiles in A to define coefficients</span>
     <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">eof_cnt</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">An</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Current on profile &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; out of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+
         <span class="c1"># interpolate the profile</span>
         <span class="n">T_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">A_alts</span><span class="p">,</span> <span class="n">An</span><span class="p">[</span><span class="n">file_len</span> <span class="o">*</span> <span class="mi">0</span><span class="p">:</span><span class="n">file_len</span> <span class="o">*</span> <span class="mi">1</span><span class="p">][</span><span class="n">A_mask</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
         <span class="n">u_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">A_alts</span><span class="p">,</span> <span class="n">An</span><span class="p">[</span><span class="n">file_len</span> <span class="o">*</span> <span class="mi">1</span><span class="p">:</span><span class="n">file_len</span> <span class="o">*</span> <span class="mi">2</span><span class="p">][</span><span class="n">A_mask</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
@@ -509,7 +657,7 @@
     <span class="k">return</span> <span class="n">coeffs</span></div>
 
 
-<div class="viewcode-block" id="compute_overlap"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_overlap">[docs]</a><span class="k">def</span> <span class="nf">compute_overlap</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_overlap"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_overlap">[docs]</a><span class="k">def</span> <span class="nf">compute_overlap</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the overlap of EOF coefficient distributions</span>
 
@@ -518,8 +666,13 @@
 <span class="sd">        coeffs: list of 2darrays</span>
 <span class="sd">            List of 2darrays containing coefficients to consider</span>
 <span class="sd">                overlap in PDF of values</span>
+<span class="sd">        eofs_path: string</span>
+<span class="sd">            Path to the .eof results from compute_eofs</span>
 <span class="sd">        eof_cnt: int</span>
 <span class="sd">            Number of EOFs to compute</span>
+<span class="sd">        method : string</span>
+<span class="sd">            Option to decide which overlap to use (&quot;kde&quot; or &quot;mean&quot;)</span>
+<span class="sd">            </span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -527,35 +680,52 @@
 <span class="sd">            Array containing overlap values of size coeff_cnt by coeff_cnt by eof_cnt</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Computing coefficient PDF overlap...&quot;</span><span class="p">)</span>
-    <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">eof_cnt</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">50</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Computing coefficient overlap...&quot;</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">eof_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Computing overlap values for EOF &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+    <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+    
+    <span class="n">eof_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-singular_values.dat&quot;</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">][:</span><span class="n">eof_cnt</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">eof_weights</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">eof_weights</span><span class="p">)</span>  
 
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">m1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
-            <span class="n">overlap</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m1</span><span class="p">][</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
-            <span class="n">kernel1</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">])</span>
-
+            <span class="n">m1_C_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>          
+            <span class="n">norm1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m1_C_means</span><span class="p">,</span> <span class="n">m1_C_means</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">m2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>
-                <span class="n">kernel2</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">])</span>
+                <span class="n">m2_C_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                <span class="n">norm2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">m2_C_means</span><span class="p">,</span> <span class="n">m2_C_means</span><span class="p">)</span>
 
-                <span class="c1"># define coefficient value limits</span>
-                <span class="n">lims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">])),</span>
-                                 <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">]))])</span>
-                <span class="n">lims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">1.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
-                <span class="n">c_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1001</span><span class="p">)</span>
+                <span class="n">overlap</span><span class="p">[</span><span class="n">m1</span><span class="p">][</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">eof_weights</span> <span class="o">*</span> <span class="n">m1_C_means</span><span class="p">,</span> <span class="n">m2_C_means</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">norm1</span> <span class="o">*</span> <span class="n">norm2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+                <span class="n">overlap</span><span class="p">[</span><span class="n">m2</span><span class="p">][</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="n">overlap</span><span class="p">[</span><span class="n">m1</span><span class="p">][</span><span class="n">m2</span><span class="p">]</span>
 
-                <span class="c1"># compute coefficient overlap via integration</span>
-                <span class="n">norm1</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">c_vals</span><span class="p">)</span>
-                <span class="n">norm2</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">kernel2</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">c_vals</span><span class="p">)</span>
-                <span class="n">overlap</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m1</span><span class="p">][</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">)</span> <span class="o">*</span> <span class="n">kernel2</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">),</span> <span class="n">c_vals</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">norm1</span> <span class="o">*</span> <span class="n">norm2</span><span class="p">)</span>
-                <span class="n">overlap</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m2</span><span class="p">][</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="n">overlap</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m1</span><span class="p">][</span><span class="n">m2</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="n">overlap_temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">eof_cnt</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">eof_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Computing overlap values for EOF &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; using KDE...&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">m1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
+                <span class="n">kernel1</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">])</span>
+
+                <span class="k">for</span> <span class="n">m2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">):</span>
+                    <span class="n">kernel2</span> <span class="o">=</span> <span class="n">gaussian_kde</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">])</span>
+
+                    <span class="c1"># define coefficient value limits</span>
+                    <span class="n">lims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">]),</span> <span class="nb">min</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">])),</span>
+                                     <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m1</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">coeffs</span><span class="p">[</span><span class="n">m2</span><span class="p">][:,</span> <span class="n">eof_id</span><span class="p">]))])</span>
+                    <span class="n">lims</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">-</span> <span class="mf">1.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span> <span class="o">+</span> <span class="mf">1.25</span> <span class="o">*</span> <span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+                    <span class="n">c_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1001</span><span class="p">)</span>
+
+                    <span class="c1"># compute coefficient overlap via integration</span>
+                    <span class="n">norm1</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">c_vals</span><span class="p">)</span>
+                    <span class="n">norm2</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">kernel2</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">c_vals</span><span class="p">)</span>
+                    <span class="n">overlap_temp</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m1</span><span class="p">][</span><span class="n">m2</span><span class="p">]</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">kernel1</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">)</span> <span class="o">*</span> <span class="n">kernel2</span><span class="o">.</span><span class="n">pdf</span><span class="p">(</span><span class="n">c_vals</span><span class="p">),</span> <span class="n">c_vals</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">norm1</span> <span class="o">*</span> <span class="n">norm2</span><span class="p">)</span>
+                    <span class="n">overlap_temp</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m2</span><span class="p">][</span><span class="n">m1</span><span class="p">]</span> <span class="o">=</span> <span class="n">overlap_temp</span><span class="p">[</span><span class="n">eof_id</span><span class="p">][</span><span class="n">m1</span><span class="p">][</span><span class="n">m2</span><span class="p">]</span>
+
+        <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">overlap_temp</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">eof_weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">overlap</span></div>
 
 
-<div class="viewcode-block" id="compute_seasonality"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_seasonality">[docs]</a><span class="k">def</span> <span class="nf">compute_seasonality</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_seasonality"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_seasonality">[docs]</a><span class="k">def</span> <span class="nf">compute_seasonality</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the overlap of EOF coefficients to identify seasonality</span>
 
@@ -563,18 +733,14 @@
 <span class="sd">        ----------</span>
 <span class="sd">        overlap_file: string</span>
 <span class="sd">            Path and name of file containing results of stochprop.eofs.compute_overlap</span>
-<span class="sd">        eofs_path: string</span>
-<span class="sd">            Path to the .eof results from compute_eofs</span>
 <span class="sd">        file_id: string</span>
 <span class="sd">            Path and ID to save the dendrogram result of the overlap analysis</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">)</span>
-    <span class="n">eof_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-singular_values.dat&quot;</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating seasonality plot...&quot;</span><span class="p">)</span>
 
-    <span class="n">dist_mat</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">overlap</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">eof_weights</span><span class="p">[:</span><span class="n">overlap</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
-    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
-
+    <span class="n">dist_mat</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">))</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>   
     <span class="n">links</span> <span class="o">=</span> <span class="n">hierarchy</span><span class="o">.</span><span class="n">linkage</span><span class="p">(</span><span class="n">squareform</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">),</span> <span class="s1">&#39;weighted&#39;</span><span class="p">)</span>
 
     <span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -1112,19 +1278,11 @@
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020, Philip Blom
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -1135,6 +1293,7 @@
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

@@ -21,7 +21,7 @@ Propagation Modeling Methods
 ****************************************
 
 A subset of the stochprop methods require access to the  LANL InfraGA/GeoAc ray tracing methods as well as the NCPAprop normal mode methods.  Many of the 
-empirical orthogonal function (EOF) based atmospheric statistics methods can be used without these propagation tools, but full usage of stochprop requires them.
+empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.
 
 * InfraGA/GeoAc: https://github.com/LANL-Seismoacoustics/infraGA
 * NCPAprop: https://github.com/chetzer-ncpa/ncpaprop

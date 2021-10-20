@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,31 +12,29 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Atmospheric Fitting, Sampling, and Perturbation" href="sampling.html" />
@@ -53,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> stochprop
+            <a href="index.html" class="icon icon-home"> stochprop
           
 
           
@@ -79,7 +78,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -94,6 +92,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Empirical Orthogonal Function Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="sampling.html">Atmospheric Fitting, Sampling, and Perturbation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="propagation.html">Propagation Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gravity.html">Gravity Wave Perturbations</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="stochprop.html">API</a></li>
@@ -103,7 +102,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -142,7 +140,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
           <li><a href="analysis.html">Stochastic Propagation Analysis</a> &raquo;</li>
         
@@ -215,7 +213,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">eofs</span>
 
@@ -225,11 +223,11 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 
         <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">eof_dirs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
-                        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;mkdir &quot;</span> <span class="o">+</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;mkdir &quot;</span> <span class="o">+</span> <span class="nb">dir</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">season</span> <span class="ow">in</span> <span class="n">season_labels</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="s2">&quot;samples/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">):</span>
-                        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;mkdir samples/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;mkdir samples/&quot;</span> <span class="o">+</span> <span class="n">season</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="section" id="load-atmosphere-specifications">
@@ -246,7 +244,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/01/&quot;</span><span class="p">,</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
-        <span class="n">A_temp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/</span><span class="si">{:02d}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="n">z0</span><span class="p">)</span>
+        <span class="n">A_temp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/{:02d}/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="n">z0</span><span class="p">)</span>
         <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">A_temp</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -271,7 +269,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <ul class="simple">
 <li><p>The analysis results are written into files with prefix specified in the function call (“eofs/examples” in this case).  The contents of the files are summarized is the below table.</p></li>
 </ul>
-<table class="docutils align-default">
+<table class="docutils align-center">
 <colgroup>
 <col style="width: 29%" />
 <col style="width: 71%" />
@@ -320,8 +318,8 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span>
 <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
-    <span class="n">Am</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/</span><span class="si">{:02d}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">g2stxt_</span><span class="o">*</span><span class="s2">&quot;)</span>
-    <span class="n">coeffs</span><span class="p">[</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">compute_coeffs</span><span class="p">(</span><span class="n">Am</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="s2">&quot;eofs/example&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs/example_</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="n">eof_cnt</span><span class="p">)</span>
+    <span class="n">Am</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/{:02d}/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">g2stxt_</span><span class="o">*</span><span class="s2">&quot;)</span>
+    <span class="n">coeffs</span><span class="p">[</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">compute_coeffs</span><span class="p">(</span><span class="n">Am</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="s2">&quot;eofs/example&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs/example_{:02d}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="n">eof_cnt</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -362,19 +360,11 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020, Philip Blom
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -385,6 +375,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

@@ -40,9 +40,16 @@ _________________________________
 * NCPAprop modal simulations can be applied to a suite of atmospheric states to predict finite frequency transmission loss needed to characterize the infrasonic source
 
 
+_________________________________
+:ref:`gravity`
+_________________________________
+* Gravity wave perturbations are spatially and temporally sub-grid scale structures that aren't typically captured in atmospheric specifications
+* The methods included here are based on the vertical ray tracing calculation discussed by Drob et al. (2013) and also investigated by Lalande & Waxler (2016)
+
     .. toctree::
         :hidden:
 
         eofs
         sampling
         propagation
+        gravity
