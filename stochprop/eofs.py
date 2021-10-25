@@ -688,7 +688,7 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
 def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
     result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: Perturbation"
+    result = result + '\n' + "# Method: EOF erturbation"
     result = result + '\n' + "# Reference Specification = " + prof_path
     result = result + '\n' + "# EOF Set = " + eofs_path
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)

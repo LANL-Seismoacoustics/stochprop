@@ -1,0 +1,85 @@
+# cli.py
+#
+# Methods to compute the gravity wave spectra that perturb a G2S specification
+# based on the publication by Drob et al. (2013).  Additional insights from the
+# Lalande & Waxler (2016) analysis and Fritts & Alexander (2003) manuscripts on
+# atmospheric gravity waves.  The source and saturation spectra are from the 
+# Warner & McIntyre (1996) work.
+#  
+#
+# Philip Blom (pblom@lanl.gov)
+
+import click
+
+import numpy as np
+
+from . import eofs
+from . import gravity_waves as grav
+
+@click.group(context_settings={'help_option_names': ['-h', '--help']})
+def main():
+    '''
+    stochprop - Python-based tools for quantifying infrasonic propagation uncertainty via stochastic analyses
+
+    More detailed description...
+    '''
+    pass
+
+
+@main.command('build-oefs', short_help="Build EOF info through SVD")
+@click.option("--atmo-dir", help="Directory of atmspheric specifications (required)", prompt="Reference atmospheric specification: ")
+def build_eofs():
+    print("Build eofs...")
+
+
+@main.command('eof-coeffs', short_help="Compute EOF coefficients")
+@click.option("--atmo-dir", help="Directory of atmspheric specifications (required)", prompt="Reference atmospheric specification: ")
+def build_eofs():
+    print("Compute EOF coefficients...")
+
+@main.command('eof-perturbation', short_help="Use EOFs to perturb a specification")
+@click.option("--atmo-dir", help="Directory of atmspheric specifications (required)", prompt="Reference atmospheric specification: ")
+def build_eofs():
+    print("Generate perturbations with EOF coefficients...")
+
+
+@main.command('gravity-waves', short_help="Construct gravity wave pertuations")
+@click.option("--atmo-file", help="Reference atmspheric specification (required)", prompt="Reference atmospheric specification: ")
+@click.option("--out", help="Output prefix (required)", prompt="Output prefix: ")
+@click.option("--sample-cnt", help="Number of perturbated samples (default: 25)", default=25)
+@click.option("--t0", help="Propagation time from source [hr] (default: 8)", default=8.0)
+@click.option("--dx", help="Horizontal wavenumber scale [km] (default: 2.0)", default=2.0)
+@click.option("--dz", help="Altitude resolution for integration [km] (default: 0.2)", default=0.2)
+@click.option("--nk", help="Horizontal wavenumber resolution (default: 128)", default=128)
+@click.option("--nom", help="Frequency resolution (default: 5)", default=5)
+@click.option("--random-phase", help="Randomize phase at source [bool] (default: False)", default=False)
+@click.option("--z-src", help="Gravity wave source altitude [km] (default: 20.0)", default=20.0)
+@click.option("--m-star", help="Gravity wave source spectrum peak [km] (default: 2.5 / (2 pi))", default=2.0 * np.pi / 2.5)
+@click.option("--taper-below", help="Taper perturbation below source height [bool] (default: True)", default=True)
+@click.option("--cpu-cnt", help="Number of CPUs to use in parallel analysis (default: None)", default=None, type=int)
+def gravity_waves(atmo_file, out, sample_cnt, t0, dx, dz, nk, nom, random_phase, z_src, m_star, taper_below, cpu_cnt):
+    '''
+    Gravity wave perturbation methods based on Drob et al. (2013) method.
+
+    More info...
+    
+    '''
+
+    click.echo("")
+    click.echo("#####################################")
+    click.echo("##                                 ##")
+    click.echo("##            stochprop            ##")
+    click.echo("##    Gravity Wave Perturbations   ##")
+    click.echo("##                                 ##")
+    click.echo("#####################################")
+    click.echo("") 
+
+    grav.perturb_atmo(atmo_file, out, sample_cnt=sample_cnt, t0=t0 * 3600.0, dx=dx, dz=dz, Nk=nk, N_om=nom, 
+            random_phase=random_phase, z_src=z_src, m_star=m_star, env_below=taper_below, cpu_cnt=cpu_cnt)
+
+
+
+
+if __name__ == '__main__':
+    main()
+
