@@ -172,7 +172,7 @@
 <div class="section" id="freely-propagation-and-trapped-gravity-waves">
 <h2>Freely Propagation and Trapped Gravity Waves<a class="headerlink" href="#freely-propagation-and-trapped-gravity-waves" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation can be expressed as,</p></li>
+<li><p>The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber can be expressed as,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}\]</div>
@@ -186,7 +186,7 @@
 </ul>
 <div class="math notranslate nohighlight">
 \[\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad
-c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}}\]</div>
+c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}}\]</div>
 <ul class="simple">
 <li><p>The conservation of wave action leads to a condition on the vertical velocity perturbation spectrum that can be used to define a freely propagating solution,</p></li>
 </ul>
@@ -268,19 +268,19 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 \[\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.\]</div>
 </div></blockquote>
 </li>
-<li><p>Lastly, from the above definition for the vertical group velocity, <span class="math notranslate nohighlight">\(c_g\)</span>, it is possible to have altitudes for which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> and <span class="math notranslate nohighlight">\(c_g\)</span> similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.</p></li>
+<li><p>Lastly, from the above definition for the vertical group velocity, <span class="math notranslate nohighlight">\(c_g\)</span>, it is possible to have altitudes for which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> and <span class="math notranslate nohighlight">\(c_g\)</span> similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.</p></li>
 </ul>
 </div>
 <div class="section" id="gravity-wave-implementation-in-stochprop">
 <h2>Gravity Wave implementation in stochprop<a class="headerlink" href="#gravity-wave-implementation-in-stochprop" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p>The implementation of the gravity wave analysis follows that summarized by Drob et al. (2013) and is sumamrized here</p>
+<li><p>The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is sumamrized here</p>
 <ul>
 <li><p>Atmospheric information is constructed from a provided atmospheric specification:</p>
 <ul class="simple">
 <li><p>Interpolations of the ambient horizontal winds, <span class="math notranslate nohighlight">\(u_0 \left( z \right)\)</span> and <span class="math notranslate nohighlight">\(v_0 \left( z \right)\)</span>, density, <span class="math notranslate nohighlight">\(\rho_0 \left( Z \right)\)</span>, and temperature, <span class="math notranslate nohighlight">\(T_0 \left( z \right)\)</span> are defined.</p></li>
-<li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right)\)</span>, is computed using finite differences in the ambient density.</p></li>
-<li><p>Atmospheric fields are then re-sampled on a higher resolution set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
+<li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right) = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\)</span>, is computed using finite differences of the ambient density.</p></li>
+<li><p>Atmospheric fields are then re-sampled on a set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
 </ul>
 </li>
 <li><p>A grid of <span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(l\)</span>, and <span class="math notranslate nohighlight">\(\omega\)</span> values are defined:</p>
@@ -293,6 +293,7 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 \[f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)\]</div>
 </div></blockquote>
 </li>
+<li><p>Unlike the implementation by Drob et al. (2013), the implementation in <code class="code docutils literal notranslate"><span class="pre">stochprop.gravity_waves</span></code> integrates each Fourier component individually and distributes calculations via <code class="code docutils literal notranslate"><span class="pre">multiprocessing</span></code>.  In preliminary evaluations, the implementation has able to compute the full gravity wave field in less than 2 minutes when using 10 CPUs.</p></li>
 <li><p>For each Fourier component combination, <span class="math notranslate nohighlight">\(k, l, \omega\)</span>, several checks are made and pre-analysis completed:</p>
 <ul class="simple">
 <li><p>Those Fourier components for which <span class="math notranslate nohighlight">\(k_h &gt; k_\text{max}\)</span> are masked out of the calculation as well as those for which <span class="math notranslate nohighlight">\(C = \frac{N}{m} &gt; 90 \frac{\text{m}}{\text{s}}\)</span></p></li>
@@ -300,7 +301,7 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 <li><p>Turning heights at which <span class="math notranslate nohighlight">\(m^2 \left( z_t \right) \rightarrow 0\)</span> are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.</p></li>
 </ul>
 </li>
-<li><p>The relations above for <span class="math notranslate nohighlight">\(\hat{w} \left( k, l, \omega, z \right)\)</span> are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists</p>
+<li><p>The relations above for <span class="math notranslate nohighlight">\(\hat{w} \left( k, l, \omega, z \right)\)</span> are used to define the solution below the source height and to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists</p>
 <ul class="simple">
 <li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.</p></li>
 <li><p>Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.</p></li>
@@ -315,23 +316,23 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 <ul class="simple">
 <li><p>Use of the methods is summarized in the below example:</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">gravity_waves</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">gravity_waves</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+        <span class="n">atmo_spec</span> <span class="o">=</span> <span class="s2">&quot;profs/01/g2stxt_2010010100_39.7393_-104.9900.dat&quot;</span>
+        <span class="n">output_path</span> <span class="o">=</span> <span class="s2">&quot;gw_perturb&quot;</span>
+
         <span class="n">t0</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">*</span> <span class="mf">3600.0</span>
-        <span class="n">dx</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.2</span>
-        <span class="n">Nk</span><span class="p">,</span> <span class="n">N_om</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">5</span>
+        <span class="n">dx</span><span class="p">,</span> <span class="n">Nk</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">128</span>
 
         <span class="c1"># Run gravity wave calculation</span>
-        <span class="n">z</span><span class="p">,</span> <span class="n">du</span><span class="p">,</span> <span class="n">dv</span><span class="p">,</span> <span class="n">dw</span> <span class="o">=</span> <span class="n">gravity_waves</span><span class="o">.</span><span class="n">build_spec</span><span class="p">(</span><span class="n">atmo_spec</span><span class="p">,</span> <span class="n">t0</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">Nk</span><span class="p">,</span> <span class="n">N_om</span><span class="p">)</span>
-
-        <span class="c1"># Save results</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;z_vals&quot;</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;du_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">du</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;dv_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">dv</span><span class="p">)</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;dw_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">dw</span><span class="p">)</span>
+        <span class="n">gravity_waves</span><span class="o">.</span><span class="n">perturb_atmo</span><span class="p">(</span><span class="n">atmo_spec</span><span class="p">,</span> <span class="s2">&quot;gw_perturb&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span> <span class="n">Nk</span><span class="o">=</span><span class="n">Nk</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Command line interface (CLI) options are also included for generating perturbed atmospheric specifications,</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>stochprop gravity-waves --atmo-file profs/01/g2stxt_2010010100_39.7393_-104.9900.dat --out gw_perturb --dx <span class="m">2</span>.0 --nk <span class="m">128</span> --cpu-cnt <span class="m">8</span>
 </pre></div>
 </div>
 </div>

@@ -168,7 +168,7 @@ def m_imag(k, l, om_intr, z, H, T0, d0):
 
 
 
-def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min, k_max, figure_out=None, prog_step=0):
+def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min, k_max, random_phase, figure_out=None, prog_step=0):
     """
         Compute the vertical structure of a specific Fourier component, :math:`\hat{w} \left( k, l, \omega, z \right), 
         by first identifying critical layers and turning heights then using the appropriate solution form (free or 
@@ -194,6 +194,12 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
             Minimum absolute frequency used in analysis
         k_max: float
             Maximum horzintal wavenumber value used in 1 grid dimension
+        random_phase: bool
+            Flag to randomize initial phase of freely propagating solution
+        figure_out: string
+            Path to output figure showing component charcterisitcs 
+        prop_step: int
+            Progress bar increment
 
         Returns
         -------
@@ -203,6 +209,8 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
             Meridional wind perturbation spectrum, \hat{v}(k, l, z, omega)
         w_spec: 1darray
             Vertical wind perturbation spectrum, \hat{w}(k, l, z, omega)
+        eta_spec: 1darray
+            Displacement spectrum used to compute temperature and pressure perturbations 
 
     """
     # extract atmospheric information
@@ -221,8 +229,12 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
     om_intr_vals = om - k * u0_vals - l * v0_vals
     m_sqr_vals = m_sqr(k, l, om_intr_vals, H_vals)
 
-    prog_increment(prog_step)
+    if random_phase:
+        phase0 = np.random.random()[0] * (2.0 * np.pi)
+    else:
+        phase0 = 0.0
 
+    prog_increment(prog_step)
     if kh < 1.0e-6 or kh > k_max:
         return [np.zeros_like(z_vals, dtype=complex)] * 4
     else:
@@ -275,7 +287,7 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
         d0_m_ratio = np.sqrt((d0_vals[src_index] / d0_vals[:src_index + 1]) * (m_src / np.sqrt(m_sqr_vals[:src_index + 1])))
         if turn_ht_index > len(z_vals) or turn_ht_index > crit_lyr_index:
             # free propagating solution
-            w_phase = np.array([m_src * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
+            w_phase = phase0 + np.array([m_src * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
             w_spec[:src_index + 1] = w0 * d0_m_ratio * (np.cos(w_phase) - 1.0j * np.sin(w_phase))
             u_spec[:src_index + 1] = - w_spec[:src_index + 1] * (k / kh**2) * m_src
             v_spec[:src_index + 1] = - w_spec[:src_index + 1] * (l / kh**2) * m_src
@@ -331,7 +343,7 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
                 d0_m_ratio = np.sqrt((d0_vals[src_index] / d0_vals[zj]) * (m_src / m_curr))
 
                 if turn_ht_index > len(z_vals) or t0 < refl_time:
-                    w_phase = simps(np.sqrt(m_sqr_vals[src_index:zj]), z_vals[src_index:zj])
+                    w_phase = phase0 + simps(np.sqrt(m_sqr_vals[src_index:zj]), z_vals[src_index:zj])
                     w_spec[zj] = w0 * d0_m_ratio * (np.cos(w_phase) - 1.0j * np.sin(w_phase))
 
                     if abs(w_spec[zj]) > w_sat:
@@ -500,11 +512,13 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
                     eta_spec[nk][nl][n_om] = results[M][3]
                     M = M + 1
     else:
+        M = 0
         for nk, k in enumerate(k_vals):
             for nl, l in enumerate(l_vals):
                 for n_om, om in enumerate(om_vals):
                     step = prog_set_step(M, Nk* Nk * N_om, float(prog_len))
                     results = single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_vals[0], max(abs(k_vals)), figure_out, step)
+                    M = M + 1
 
                     u_spec[nk][nl][n_om] = results[0]
                     v_spec[nk][nl][n_om] = results[1]
@@ -514,20 +528,20 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
     prog_close()
 
     print('\t' + "Running inverse Fourier transforms to obtain space and time domain solutions.")
-    du_vals = np.fft.ifft(u_spec, axis=0) # * Nk / dx
-    du_vals = np.fft.ifft(du_vals, axis=1) # * Nk / dx
+    du_vals = np.fft.ifft(u_spec, axis=0) * Nk / dx
+    du_vals = np.fft.ifft(du_vals, axis=1) * Nk / dx
     du_vals = simps(du_vals, om_vals, axis=2)
 
-    dv_vals = np.fft.ifft(v_spec, axis=0) # * Nk / dx
-    dv_vals = np.fft.ifft(dv_vals, axis=1) # * Nk / dx
+    dv_vals = np.fft.ifft(v_spec, axis=0) * Nk / dx
+    dv_vals = np.fft.ifft(dv_vals, axis=1) * Nk / dx
     dv_vals = simps(dv_vals, om_vals, axis=2)
 
-    dw_vals = np.fft.ifft(w_spec, axis=0) # * Nk / dx
-    dw_vals = np.fft.ifft(dw_vals, axis=1) # * Nk / dx
+    dw_vals = np.fft.ifft(w_spec, axis=0) * Nk / dx
+    dw_vals = np.fft.ifft(dw_vals, axis=1) * Nk / dx
     dw_vals = simps(dw_vals, om_vals, axis=2)
 
-    eta_vals = np.fft.ifft(eta_spec, axis=0) # * Nk / dx
-    eta_vals = np.fft.ifft(eta_vals, axis=1) # * Nk / dx
+    eta_vals = np.fft.ifft(eta_spec, axis=0) * Nk / dx
+    eta_vals = np.fft.ifft(eta_vals, axis=1) * Nk / dx
     eta_vals = simps(eta_vals, om_vals, axis=2)
 
     return z_vals, np.real(du_vals), np.real(dv_vals), np.real(dw_vals), np.real(eta_vals)
@@ -612,7 +626,6 @@ def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0,
         pl = None
 
     z, du, dv, _, eta = perturbations(atmo_spec, t0=t0, dx=dx, dz=dz, Nk=Nk, N_om=N_om, ref_lat=ref_lat, random_phase=random_phase, z_src=z_src, m_star=m_star, figure_out=None, pool=pl)
-
 
     np.save(output_path + ".z_vals", z)
     np.save(output_path + ".du_vals", du)

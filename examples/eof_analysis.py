@@ -107,9 +107,10 @@ if __name__ == '__main__':
         for m in range(12):
             coeffs[m] = np.load("coeffs/" + run_id + "_{:02d}-coeffs.npy".format(m + 1))
 
-        overlap = eofs.compute_overlap(coeffs, eof_cnt=eof_cnt)
-        np.save("coeffs/" + run_id + "-overlap", overlap)
-    eofs.compute_seasonality("coeffs/" + run_id + "-overlap.npy", "eofs/" + run_id, "coeffs/" + run_id)
+        overlap = eofs.compute_overlap(coeffs, "eofs/" + run_id, eof_cnt=eof_cnt, method="kde") 
+        np.save("coeffs/" + run_id + "-overlap_kde", overlap)
+
+    eofs.compute_seasonality("coeffs/" + run_id + "-overlap_kde.npy", "coeffs/" + run_id + "_kde")
 
     # ################################ #
     #  Load coefficients and generate  #

@@ -162,9 +162,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="empirical-orthogonal-function-analysis">
-<h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-stochprop.eofs"></span><dl class="function">
+  <div class="section" id="module-stochprop.eofs">
+<span id="empirical-orthogonal-function-analysis"></span><h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#module-stochprop.eofs" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
 <dt id="stochprop.eofs.build_atmo_matrix">
 <code class="descclassname">stochprop.eofs.</code><code class="descname">build_atmo_matrix</code><span class="sig-paren">(</span><em>path</em>, <em>pattern='*.met'</em>, <em>skiprows=0</em>, <em>ref_alts=None</em>, <em>prof_format='zTuvdp'</em>, <em>latlon0=None</em>, <em>return_datetime=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_atmo_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.build_atmo_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in a list of atmosphere files from the path location
@@ -189,6 +189,10 @@ matching a specified pattern for continued analysis.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt>A: 2darray</dt><dd><p>Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes</p>
+</dd>
+<dt>z: 1darray</dt><dd><p>Altitude reference values [km]</p>
+</dd>
+<dt>datetime: 1darray</dt><dd><p>List of dates and times for each specification in the matrix (optional output, see Parameters)</p>
 </dd>
 </dl>
 </dd>
@@ -342,18 +346,17 @@ functions) and singular values to file</p>
 <dl class="function">
 <dt id="stochprop.eofs.density">
 <code class="descclassname">stochprop.eofs.</code><code class="descname">density</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.density" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Computes the atmospheric density according to </dt><dd><p>the US standard atmosphere model using a 
-polynomial fit</p>
-</dd>
-</dl>
+<dd><p>Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>z</strong><span class="classifier">float</span></dt><dd><p>Altitude above sea level [km]</p>
+<dt><strong>z: float</strong></dt><dd><p>Altitude above sea level [km]</p>
 </dd>
-<dt><strong>Returns:</strong></dt><dd></dd>
-<dt><strong>density</strong><span class="classifier">float</span></dt><dd><p>Density of the atmosphere at altitude z [g/cm^3]</p>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>density: float</dt><dd><p>Density of the atmosphere at altitude z [g/cm^3]</p>
 </dd>
 </dl>
 </dd>
@@ -464,18 +467,17 @@ basis functions to compute the maximum likelihood specification</p>
 <dl class="function">
 <dt id="stochprop.eofs.pressure">
 <code class="descclassname">stochprop.eofs.</code><code class="descname">pressure</code><span class="sig-paren">(</span><em>z</em>, <em>T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.pressure" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Computes the atmospheric pressure according to </dt><dd><p>the US standard atmosphere model using a 
-polynomial fit assuming an ideal gas</p>
-</dd>
-</dl>
+<dd><p>Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>z</strong><span class="classifier">float</span></dt><dd><p>Altitude above sea level [km]</p>
+<dt><strong>z: float</strong></dt><dd><p>Altitude above sea level [km]</p>
 </dd>
-<dt><strong>Returns:</strong></dt><dd></dd>
-<dt><strong>pressure</strong><span class="classifier">float</span></dt><dd><p>Pressure of the atmosphere at altitude z [mbar]</p>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>pressure: float</dt><dd><p>Pressure of the atmosphere at altitude <span class="math notranslate nohighlight">\(z\)</span> [mbar] and temperature <span class="math notranslate nohighlight">\(T\)</span> [K]</p>
 </dd>
 </dl>
 </dd>
