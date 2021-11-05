@@ -43,17 +43,16 @@ coeffs_B = np.array([-4.9244637e-3,  -1.2984142e-6, -1.5701595e-6, 1.5535974e-8,
 
 def density(z):
     """
-        Computes the atmospheric density according to 
-            the US standard atmosphere model using a 
-            polynomial fit
+        Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit
 
         Parameters
         ----------
-        z : float
+        z: float
             Altitude above sea level [km]
 
-        Returns:
-        density : float
+        Returns
+        -------
+        density: float
             Density of the atmosphere at altitude z [g/cm^3] 
     """
 
@@ -66,18 +65,17 @@ def density(z):
 
 def pressure(z, T):
     """
-        Computes the atmospheric pressure according to 
-            the US standard atmosphere model using a 
-            polynomial fit assuming an ideal gas
+        Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas
 
         Parameters
         ----------
-        z : float
+        z: float
             Altitude above sea level [km]
 
-        Returns:
-        pressure : float
-            Pressure of the atmosphere at altitude z [mbar] 
+        Returns
+        -------
+        pressure: float
+            Pressure of the atmosphere at altitude :math:`z` [mbar] and temperature :math:`T` [K]
     """
      
     return density(z) * gasR * T * 10.0
@@ -99,6 +97,10 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
             Pattern defining the list of profiles in the path
         skiprows: int
             Number of header rows in the profiles
+
+        Returns
+        -------
+
     """
 
     print("Running QC on profiles in " + path + " matching pattern " + pattern + "...")
@@ -151,6 +153,10 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
         -------
         A: 2darray
             Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes
+        z: 1darray
+            Altitude reference values [km]
+        datetime: 1darray
+            List of dates and times for each specification in the matrix (optional output, see Parameters)
     """
 
     print('\t' + "Loading profiles from " + path + " with pattern: " + pattern)
@@ -461,8 +467,10 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     # cycle through profiles in A to define coefficients
     coeffs = np.empty((A.shape[0], eof_cnt))
     for n, An in enumerate(A):
-        if n % 10 == 0:
-            print('\t\t' + "Current on profile " + str(n) + " out of " + str(len(A)) + "...")
+        if len(A) > 20 and n + 1 % 10 == 0:
+            print('\t\t' + "Current on profile " + str(n + 1) + " of " + str(len(A)) + "...")
+        else:
+            print('\t\t' + "Current on profile " + str(n + 1) + " of " + str(len(A)) + "...")
 
         # interpolate the profile
         T_interp = interp1d(A_alts, An[file_len * 0:file_len * 1][A_mask], kind='cubic')
@@ -688,7 +696,7 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
 def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
     result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: EOF erturbation"
+    result = result + '\n' + "# Method: EOF Perturbation"
     result = result + '\n' + "# Reference Specification = " + prof_path
     result = result + '\n' + "# EOF Set = " + eofs_path
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)

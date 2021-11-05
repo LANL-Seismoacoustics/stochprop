@@ -10,7 +10,7 @@ Gravity Wave Perturbations
 ++++++++++++++++++++++++++++++++++++++++++++
 Freely Propagation and Trapped Gravity Waves
 ++++++++++++++++++++++++++++++++++++++++++++
-* The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation can be expressed as,
+* The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber can be expressed as,
 
 .. math::
 	m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}
@@ -24,7 +24,7 @@ Freely Propagation and Trapped Gravity Waves
 
 .. math::
 	\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad 
-	c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}} 
+	c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}} 
 
 * The conservation of wave action leads to a condition on the vertical velocity perturbation spectrum that can be used to define a freely propagating solution,
 
@@ -105,21 +105,27 @@ Damping, Source and Saturation Spectra, and Critical Layers
 	.. math::
 		\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.
 		
-* Lastly, from the above definition for the vertical group velocity, :math:`c_g`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_g` similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.
+* Lastly, from the above definition for the vertical group velocity, :math:`c_g`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_g` similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
 
 ++++++++++++++++++++++++++++++++++++++++
 Gravity Wave implementation in stochprop
 ++++++++++++++++++++++++++++++++++++++++
 
-* The implementation of the gravity wave analysis follows that summarized by Drob et al. (2013) and is sumamrized here
+* The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is sumamrized here
 
   * Atmospheric information is constructed from a provided atmospheric specification:
 
     #. Interpolations of the ambient horizontal winds, :math:`u_0 \left( z \right)` and :math:`v_0 \left( z \right)`, density, :math:`\rho_0 \left( Z \right)`, and temperature, :math:`T_0 \left( z \right)` are defined.  
 
+<<<<<<< HEAD
     #. The density scale height, :math:`H \left( z \right)`, is computed using finite differences in the ambient density.  
   
     #. Atmospheric fields are then re-sampled on a higher resolution set of altitudes with :math:`dz = 200` meters.
+=======
+    * The density scale height, :math:`H \left( z \right) = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`, is computed using finite differences of the ambient density.  
+  
+    * Atmospheric fields are then re-sampled on a set of altitudes with :math:`dz = 200` meters.
+>>>>>>> d683c125dabb73070df0c501e257d9bed412197f
   
   * A grid of :math:`k`, :math:`l`, and :math:`\omega` values are defined:
 
@@ -132,6 +138,12 @@ Gravity Wave implementation in stochprop
 		.. math::
 	 		w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}
 
+<<<<<<< HEAD
+=======
+  * Unlike the implementation by Drob et al. (2013), the implementation in :code:`stochprop.gravity_waves` integrates each Fourier component individually and distributes calculations via :code:`multiprocessing`.  In preliminary evaluations, the implementation has able to compute the full gravity wave field in less than 2 minutes when using 10 CPUs.
+
+  * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
+>>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 
   * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
 
@@ -139,7 +151,7 @@ Gravity Wave implementation in stochprop
 
     #. Turning heights at which :math:`m^2 \left( z_t \right) \rightarrow 0` are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.
 
-  * The relations above for :math:`\hat{w} \left( k, l, \omega, z \right)` are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists
+  * The relations above for :math:`\hat{w} \left( k, l, \omega, z \right)` are used to define the solution below the source height and to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists
 
     #. At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 6 hours to determine whether energy has reached that altitude.  
   
@@ -155,23 +167,25 @@ Gravity Wave implementation in stochprop
 
 .. code-block:: python
 
-	import numpy as np
-
 	from stochprop import gravity_waves
 
 	if __name__ == '__main__':
+		atmo_spec = "profs/01/g2stxt_2010010100_39.7393_-104.9900.dat"
+		output_path = "gw_perturb"
+
 		t0 = 6.0 * 3600.0
-		dx, dz = 2.0, 0.2
-		Nk, N_om = 128, 5
+		dx, Nk = 2.0, 128
 
 		# Run gravity wave calculation
-		z, du, dv, dw = gravity_waves.build_spec(atmo_spec, t0, dx, dz, Nk, N_om)
+		gravity_waves.perturb_atmo(atmo_spec, "gw_perturb", t0=t0, dx=dx, Nk=Nk)
 
-		# Save results
-		np.save("z_vals", z)
-		np.save("du_vals-" + str(Nk), du)
-		np.save("dv_vals-" + str(Nk), dv)
-		np.save("dw_vals-" + str(Nk), dw)
+* Command line interface (CLI) options are also included for generating perturbed atmospheric specifications,
+
+.. code-block:: bash
+
+	stochprop gravity-waves --atmo-file profs/01/g2stxt_2010010100_39.7393_-104.9900.dat --out gw_perturb --dx 2.0 --nk 128 --cpu-cnt 8
+
+
 
 * A command line interface (CLI) method is also included and can be utilized more easily
 

@@ -6,6 +6,8 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
+import os 
+
 import subprocess
 
 import numpy as np
@@ -24,14 +26,14 @@ if __name__ == '__main__':
 
     sample_dirs = "samples"
     results_dir = "prop"
-    season_labels = ["winter", "spring", "summer", "fall"]
+    season_labels = ["spring", "summer", "fall"]
 
     freqs = [0.1, 1.0, 5]
     inclinations = [2.5, 45.0, 2.5]
-    azimuths = [-180.0, 180.0, 6.0]
+    azimuths = [0.0, 360.0, 6.0]
     src_loc = [30.0, -120, 0.0]
 
-    cpu_cnt = cpu_count() - 1
+    cpu_cnt = int(cpu_count() / 2)
 
     # ########################################## #
     #   Build directories for results, run ray   #
@@ -45,16 +47,19 @@ if __name__ == '__main__':
         if not os.path.isdir(results_dir + "/" + season):
             subprocess.call("mkdir " + results_dir + "/" + season, shell=True)
 
-        propagation.run_infraga(sample_dirs + "/" + season, results_dir + "/" + season + "/" + season + ".arrivals.dat", cpu_cnt=cpu_cnt, geom="sph", inclinations=inclinations, azimuths=azimuths, src_loc=src_loc)
+        results_id = results_dir + "/" + season + "/" + season
+
+        propagation.run_infraga(sample_dirs + "/" + season, results_id + ".arrivals.dat", cpu_cnt=cpu_cnt, geom="sph", inclinations=inclinations, azimuths=azimuths, src_loc=src_loc)
 
         pgm = propagation.PathGeometryModel()
-        pgm.build(results_dir + "/" + season + "/" + season + ".arrivals.dat", results_dir + "/" + season + "/" + season + ".pgm", show_fits=False, geom="sph", src_loc=src_loc)
-        pgm.load(results_dir + "/" + season + "/" + season + ".pgm", smooth=True)
-        pgm.display(file_id=(results_dir + "/" + season + "/" + season), subtitle=season)
+        pgm.build(results_id + ".arrivals.dat", results_id + ".pgm", show_fits=False, geom="sph", src_loc=src_loc)
+        pgm.load(results_id + ".pgm", smooth=True)
+        pgm.display(file_id=(results_id), subtitle=season)
 
-        propagation.run_modess(sample_dirs + "/" + season, results_dir + "/" + season + "/" + season, azimuths=azimuths, freqs=freqs)
-        tlm = propagation.TLossModel()
         for fn in np.logspace(np.log10(freqs[0]), np.log10(freqs[1]), freqs[2]):
-            tlm.build(results_dir + "/" + season + "/" + season + "_%.3f" %fn + ".nm", results_dir + "/" + season + "/" + season + "_%.3f" %fn + ".tlm", show_fits=False)
-            tlm.load(results_dir + "/" + season + "/" + season + "_%.3f" %fn + ".tlm")
+            propagation.run_modess(sample_dirs + "/" + season, results_id + "_%.3f" % fn + "Hz", azimuths=azimuths, freq=fn, clean_up=True, cpu_cnt=cpu_cnt)
+
+            tlm = propagation.TLossModel()
+            tlm.build(results_id + "_%.3f" %fn + "Hz.nm", results_id + "_%.3f" %fn + "Hz.tlm", show_fits=False)
+            tlm.load(results_id + "_%.3f" %fn + "Hz.tlm")
             tlm.display(file_id=(results_dir + "/" + season + "/" + season + "_%.3f" %fn), title=("Transmission Loss Statistics" + '\n' + season + ", %.3f" %fn + " Hz"))

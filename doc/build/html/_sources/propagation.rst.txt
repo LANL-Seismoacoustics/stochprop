@@ -93,7 +93,7 @@ Transmission Loss Models (TLMs)
     f_vals = np.logspace(np.log10(f_min), np.log10(f_max), f_cnt)
 
     for fn in f_vals:
-    	propagation.run_modess("samples/winter/example-winter", "prop/winter/example-winter", azimuths=azimuths, freq=fn)
+    	propagation.run_modess("samples/winter/example-winter", "prop/winter/example-winter", azimuths=azimuths, freq=fn, clean_up=True, cpu_cnt=cpu_cnt)
 
 * Each run of this method produces a pair of output files, :code:`prop/winter/example-winter_0.100Hz.nm` and :code:`prop/winter/example-winter_0.100Hz.lossless.nm` that contain the predicted transmission loss with and without thermo-viscous absorption losses.
 

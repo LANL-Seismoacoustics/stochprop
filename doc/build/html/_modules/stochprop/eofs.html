@@ -198,17 +198,16 @@
 
 <div class="viewcode-block" id="density"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.density">[docs]</a><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Computes the atmospheric density according to </span>
-<span class="sd">            the US standard atmosphere model using a </span>
-<span class="sd">            polynomial fit</span>
+<span class="sd">        Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        z : float</span>
+<span class="sd">        z: float</span>
 <span class="sd">            Altitude above sea level [km]</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">        density : float</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        density: float</span>
 <span class="sd">            Density of the atmosphere at altitude z [g/cm^3] </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -221,18 +220,17 @@
 
 <div class="viewcode-block" id="pressure"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.pressure">[docs]</a><span class="k">def</span> <span class="nf">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Computes the atmospheric pressure according to </span>
-<span class="sd">            the US standard atmosphere model using a </span>
-<span class="sd">            polynomial fit assuming an ideal gas</span>
+<span class="sd">        Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        z : float</span>
+<span class="sd">        z: float</span>
 <span class="sd">            Altitude above sea level [km]</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">        pressure : float</span>
-<span class="sd">            Pressure of the atmosphere at altitude z [mbar] </span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        pressure: float</span>
+<span class="sd">            Pressure of the atmosphere at altitude :math:`z` [mbar] and temperature :math:`T` [K]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
      
     <span class="k">return</span> <span class="n">density</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">gasR</span> <span class="o">*</span> <span class="n">T</span> <span class="o">*</span> <span class="mf">10.0</span></div>
@@ -254,6 +252,10 @@
 <span class="sd">            Pattern defining the list of profiles in the path</span>
 <span class="sd">        skiprows: int</span>
 <span class="sd">            Number of header rows in the profiles</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running QC on profiles in &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot; matching pattern &quot;</span> <span class="o">+</span> <span class="n">pattern</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
@@ -306,6 +308,10 @@
 <span class="sd">        -------</span>
 <span class="sd">        A: 2darray</span>
 <span class="sd">            Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes</span>
+<span class="sd">        z: 1darray</span>
+<span class="sd">            Altitude reference values [km]</span>
+<span class="sd">        datetime: 1darray</span>
+<span class="sd">            List of dates and times for each specification in the matrix (optional output, see Parameters)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Loading profiles from &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot; with pattern: &quot;</span> <span class="o">+</span> <span class="n">pattern</span><span class="p">)</span>
@@ -616,8 +622,10 @@
     <span class="c1"># cycle through profiles in A to define coefficients</span>
     <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">A</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">eof_cnt</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">An</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">A</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Current on profile &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; out of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">20</span> <span class="ow">and</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Current on profile &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Current on profile &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
 
         <span class="c1"># interpolate the profile</span>
         <span class="n">T_interp</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">A_alts</span><span class="p">,</span> <span class="n">An</span><span class="p">[</span><span class="n">file_len</span> <span class="o">*</span> <span class="mi">0</span><span class="p">:</span><span class="n">file_len</span> <span class="o">*</span> <span class="mi">1</span><span class="p">][</span><span class="n">A_mask</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
@@ -843,7 +851,11 @@
 <span class="k">def</span> <span class="nf">_perturb_header_txt</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="p">,</span> <span class="n">stdev</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">prof_cnt</span><span class="p">):</span>
     <span class="n">result</span> <span class="o">=</span> <span class="s2">&quot;# Data Source: stochprop v&quot;</span> <span class="o">+</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">get_distribution</span><span class="p">(</span><span class="s2">&quot;stochprop&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">version</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Calculated: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+<<<<<<< HEAD
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Method: EOF erturbation&quot;</span>
+=======
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Method: EOF Perturbation&quot;</span>
+>>>>>>> d683c125dabb73070df0c501e257d9bed412197f
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Reference Specification = &quot;</span> <span class="o">+</span> <span class="n">prof_path</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Set = &quot;</span> <span class="o">+</span> <span class="n">eofs_path</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Cnt = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span>

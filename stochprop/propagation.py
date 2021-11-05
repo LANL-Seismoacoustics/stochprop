@@ -90,7 +90,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                     else:
                         print("Generating ray paths for " + file_name)
                         if cpu_cnt:
-                            command = "mpirun --oversubscribe -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+                            command = "mpirun -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
                         else:
                             command = infraga_path + " infraga-" + geom + " -prop "
 
@@ -101,7 +101,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                             command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
                         command = command + " src_alt=" + str(src_loc[2])
                         command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
-                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" # + " > /dev/null &"
+                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" + " > /dev/null"
 
                         print(command)
                         subprocess.call(command, shell=True)
@@ -116,7 +116,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                 subprocess.call(command, shell=True)
 
 
-def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, skiplines=0, ncpaprop_path="", clean_up=False, keep_lossless=False, cpu_cnt=1):
+def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path="", clean_up=False, keep_lossless=False, cpu_cnt=1):
     """
         Run the NCPAprop normal mode methods to compute transmission
         loss values for a suite of atmospheric specifications at

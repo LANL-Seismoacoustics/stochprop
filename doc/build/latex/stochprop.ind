@@ -1,0 +1,92 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter B
+  \item \spxentry{build()}\spxextra{stochprop.propagation.PathGeometryModel method}, \hyperpage{27}
+  \item \spxentry{build()}\spxextra{stochprop.propagation.TLossModel method}, \hyperpage{29}
+  \item \spxentry{build\_atmo\_matrix()}\spxextra{in module stochprop.eofs}, \hyperpage{23}
+  \item \spxentry{build\_cdf()}\spxextra{in module stochprop.eofs}, \hyperpage{23}
+  \item \spxentry{BV\_freq()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{31}
+
+  \indexspace
+  \bigletter C
+  \item \spxentry{cg()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{31}
+  \item \spxentry{compute\_coeffs()}\spxextra{in module stochprop.eofs}, \hyperpage{23}
+  \item \spxentry{compute\_eofs()}\spxextra{in module stochprop.eofs}, \hyperpage{24}
+  \item \spxentry{compute\_overlap()}\spxextra{in module stochprop.eofs}, \hyperpage{24}
+  \item \spxentry{compute\_seasonality()}\spxextra{in module stochprop.eofs}, \hyperpage{24}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{define\_coeff\_limits()}\spxextra{in module stochprop.eofs}, \hyperpage{24}
+  \item \spxentry{density()}\spxextra{in module stochprop.eofs}, \hyperpage{25}
+  \item \spxentry{display()}\spxextra{stochprop.propagation.PathGeometryModel method}, 
+		\hyperpage{27}
+  \item \spxentry{display()}\spxextra{stochprop.propagation.TLossModel method}, \hyperpage{29}
+  \item \spxentry{draw\_from\_pdf()}\spxextra{in module stochprop.eofs}, \hyperpage{25}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{eval()}\spxextra{stochprop.propagation.TLossModel method}, \hyperpage{29}
+  \item \spxentry{eval\_az\_dev\_mn()}\spxextra{stochprop.propagation.PathGeometryModel method}, 
+		\hyperpage{27}
+  \item \spxentry{eval\_az\_dev\_std()}\spxextra{stochprop.propagation.PathGeometryModel method}, 
+		\hyperpage{28}
+  \item \spxentry{eval\_rcel\_gmm()}\spxextra{stochprop.propagation.PathGeometryModel method}, 
+		\hyperpage{28}
+
+  \indexspace
+  \bigletter F
+  \item \spxentry{find\_azimuth\_bin()}\spxextra{in module stochprop.propagation}, \hyperpage{29}
+  \item \spxentry{fit\_atmo()}\spxextra{in module stochprop.eofs}, \hyperpage{25}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{load()}\spxextra{stochprop.propagation.PathGeometryModel method}, \hyperpage{28}
+  \item \spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}, \hyperpage{29}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{m\_imag()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{31}
+  \item \spxentry{m\_sqr()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{32}
+  \item \spxentry{maximum\_likelihood\_profile()}\spxextra{in module stochprop.eofs}, 
+		\hyperpage{25}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{PathGeometryModel}\spxextra{class in stochprop.propagation}, \hyperpage{27}
+  \item \spxentry{perturb\_atmo()}\spxextra{in module stochprop.eofs}, \hyperpage{25}
+  \item \spxentry{perturb\_atmo()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{33}
+  \item \spxentry{perturbations()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{33}
+  \item \spxentry{pressure()}\spxextra{in module stochprop.eofs}, \hyperpage{26}
+  \item \spxentry{profiles\_qc()}\spxextra{in module stochprop.eofs}, \hyperpage{26}
+  \item \spxentry{prog\_close()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{34}
+  \item \spxentry{prog\_increment()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{34}
+  \item \spxentry{prog\_prep()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{34}
+  \item \spxentry{prog\_set\_step()}\spxextra{in module stochprop.gravity\_waves}, \hyperpage{34}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{run\_infraga()}\spxextra{in module stochprop.propagation}, \hyperpage{30}
+  \item \spxentry{run\_modess()}\spxextra{in module stochprop.propagation}, \hyperpage{30}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{sample\_atmo()}\spxextra{in module stochprop.eofs}, \hyperpage{26}
+  \item \spxentry{single\_fourier\_component()}\spxextra{in module stochprop.gravity\_waves}, 
+		\hyperpage{34}
+  \item \spxentry{single\_fourier\_component\_wrapper()}\spxextra{in module stochprop.gravity\_waves}, 
+		\hyperpage{35}
+  \item \spxentry{stochprop}\spxextra{module}, \hyperpage{3}
+  \item \spxentry{stochprop.eofs}\spxextra{module}, \hyperpage{23}
+  \item \spxentry{stochprop.gravity\_waves}\spxextra{module}, \hyperpage{31}
+  \item \spxentry{stochprop.propagation}\spxextra{module}, \hyperpage{27}
+
+  \indexspace
+  \bigletter T
+  \item \spxentry{TLossModel}\spxextra{class in stochprop.propagation}, \hyperpage{28}
+
+\end{sphinxtheindex}
