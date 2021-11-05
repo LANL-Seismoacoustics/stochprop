@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>stochprop &mdash; stochprop 1.0 documentation</title>
@@ -21,11 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -34,6 +34,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -154,10 +156,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="stochprop">
+  <section id="stochprop">
 <span id="index"></span><h1>stochprop<a class="headerlink" href="#stochprop" title="Permalink to this headline">¶</a></h1>
 <p>Simulations of infrasonic propagation in the atmosphere typically utilize a single atmospheric specification describing the acoustic sound speed, ambient winds, and density as a function of altitude.  Due to the dynamic and sparsely sampled nature of the atmosphere, there is a notable amount of uncertainty in the atmospheric state at a given location and time so that a more robust analysis of infrasonic propagation requires inclusion of this uncertainty.  This Python library, stochprop, has been implemented using methods developed jointly by infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi’s National Center for Physical Acoustics (NCPA).  This software library includes methods to quantify variability in the atmospheric state, identify typical seasonal variability in the atmospheric state and generate suites of representative atmospheric states during a given season, as well as perform uncertainty analysis on a specified atmospheric state given some level of uncertainty.  These methods have been designed to interface between propagation modeling capabilities such as InfraGA/GeoAc and NCPAprop and signal analysis methods in the LANL InfraPy tool.</p>
-<div class="section" id="module-stochprop">
+<section id="module-stochprop">
 <span id="contents"></span><h2>Contents<a class="headerlink" href="#module-stochprop" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
@@ -166,17 +168,15 @@
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="stochprop.html">API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html">Empirical Orthogonal Function Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html">Propagation Statistics</a><ul class="simple">
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html">Propagation Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html">Gravity Wave Perturbation Analysis</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References and Citing Usage</a></li>
 </ul>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -57,7 +57,8 @@ def build_eofs():
 @click.option("--m-star", help="Gravity wave source spectrum peak [km] (default: 2.5 / (2 pi))", default=2.0 * np.pi / 2.5)
 @click.option("--taper-below", help="Taper perturbation below source height [bool] (default: True)", default=True)
 @click.option("--cpu-cnt", help="Number of CPUs to use in parallel analysis (default: None)", default=None, type=int)
-def gravity_waves(atmo_file, out, sample_cnt, t0, dx, dz, nk, nom, random_phase, z_src, m_star, taper_below, cpu_cnt):
+@click.option("--debug-fig", help="Output for figures to aid in debugging (default: None)", default=None, type=str)
+def gravity_waves(atmo_file, out, sample_cnt, t0, dx, dz, nk, nom, random_phase, z_src, m_star, taper_below, cpu_cnt, debug_fig):
     '''
     Gravity wave perturbation methods based on Drob et al. (2013) method.
 
@@ -75,7 +76,7 @@ def gravity_waves(atmo_file, out, sample_cnt, t0, dx, dz, nk, nom, random_phase,
     click.echo("") 
 
     grav.perturb_atmo(atmo_file, out, sample_cnt=sample_cnt, t0=t0 * 3600.0, dx=dx, dz=dz, Nk=nk, N_om=nom, 
-            random_phase=random_phase, z_src=z_src, m_star=m_star, env_below=taper_below, cpu_cnt=cpu_cnt)
+            random_phase=random_phase, z_src=z_src, m_star=m_star, env_below=taper_below, cpu_cnt=cpu_cnt, fig_out=debug_fig)
 
 
 

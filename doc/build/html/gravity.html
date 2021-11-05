@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Gravity Wave Perturbations &mdash; stochprop 1.0 documentation</title>
@@ -21,11 +22,11 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -34,6 +35,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -163,13 +166,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="gravity-wave-perturbations">
+  <section id="gravity-wave-perturbations">
 <span id="gravity"></span><h1>Gravity Wave Perturbations<a class="headerlink" href="#gravity-wave-perturbations" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Atmospheric specifications (e.g., G2S) available for a given location and time are averaged over some spatial and temporal scale so that sub-grid scale fluctuations can be estimated stochastically and applied in order to construct a suite of possible atmospheric states and the primary source of sub-grid fluctuations in the atmosphere is that of bouyancy or gravity waves.</p></li>
 <li><p>The methods available in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> are based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.</p></li>
 </ul>
-<div class="section" id="freely-propagation-and-trapped-gravity-waves">
+<section id="freely-propagation-and-trapped-gravity-waves">
 <h2>Freely Propagation and Trapped Gravity Waves<a class="headerlink" href="#freely-propagation-and-trapped-gravity-waves" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation can be expressed as,</p></li>
@@ -223,8 +226,8 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 </ul>
 <div class="math notranslate nohighlight">
 \[w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}\]</div>
-</div>
-<div class="section" id="damping-source-and-saturation-spectra-and-critical-layers">
+</section>
+<section id="damping-source-and-saturation-spectra-and-critical-layers">
 <h2>Damping, Source and Saturation Spectra, and Critical Layers<a class="headerlink" href="#damping-source-and-saturation-spectra-and-critical-layers" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, <span class="math notranslate nohighlight">\(m \rightarrow m + m_i\)</span>, where,</p>
@@ -270,52 +273,55 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
 </li>
 <li><p>Lastly, from the above definition for the vertical group velocity, <span class="math notranslate nohighlight">\(c_g\)</span>, it is possible to have altitudes for which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> and <span class="math notranslate nohighlight">\(c_g\)</span> similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.</p></li>
 </ul>
-</div>
-<div class="section" id="gravity-wave-implementation-in-stochprop">
+</section>
+<section id="gravity-wave-implementation-in-stochprop">
 <h2>Gravity Wave implementation in stochprop<a class="headerlink" href="#gravity-wave-implementation-in-stochprop" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>The implementation of the gravity wave analysis follows that summarized by Drob et al. (2013) and is sumamrized here</p>
 <ul>
 <li><p>Atmospheric information is constructed from a provided atmospheric specification:</p>
-<ul class="simple">
+<ol class="arabic simple">
 <li><p>Interpolations of the ambient horizontal winds, <span class="math notranslate nohighlight">\(u_0 \left( z \right)\)</span> and <span class="math notranslate nohighlight">\(v_0 \left( z \right)\)</span>, density, <span class="math notranslate nohighlight">\(\rho_0 \left( Z \right)\)</span>, and temperature, <span class="math notranslate nohighlight">\(T_0 \left( z \right)\)</span> are defined.</p></li>
 <li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right)\)</span>, is computed using finite differences in the ambient density.</p></li>
 <li><p>Atmospheric fields are then re-sampled on a higher resolution set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
-</ul>
+</ol>
 </li>
 <li><p>A grid of <span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(l\)</span>, and <span class="math notranslate nohighlight">\(\omega\)</span> values are defined:</p>
-<ul class="simple">
+<blockquote>
+<div><ol class="arabic">
 <li><p>The horizontal resolution, <span class="math notranslate nohighlight">\(dx\)</span>, is set to 4 meters following Drob et al. (2013) with <span class="math notranslate nohighlight">\(N_k = 128\)</span> (both of these quantities can be modified by the user, but default to the values from Drob et al.)</p></li>
-<li><p>Five frequency values are defined for analysis covering a frequency band from <span class="math notranslate nohighlight">\(\omega_\text{min} = 2 f_\text{Cor}\)</span> to <span class="math notranslate nohighlight">\(\omega_\text{max} = \frac{N}{\sqrt{5}}\)</span> where <span class="math notranslate nohighlight">\(f_\text{Cor}\)</span> is the Coriolis frequency,</p></li>
-</ul>
+<li><p>Five frequency values are defined for analysis covering a frequency band from <span class="math notranslate nohighlight">\(\omega_\text{min} = 2 f_\text{Cor}\)</span> to <span class="math notranslate nohighlight">\(\omega_\text{max} = \frac{N_\text{max}}{\sqrt{5}}\)</span> where <span class="math notranslate nohighlight">\(f_\text{Cor}\)</span> is the Coriolis frequency, <span class="math notranslate nohighlight">\(f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)\)</span>.</p></li>
+<li><p>Because sampling is done over intrinsic frequency, a phase shift is introduced in the Fourier transform needed to invert the solution,</p>
 <blockquote>
 <div><div class="math notranslate nohighlight">
-\[f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)\]</div>
+\[w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}\]</div>
+</div></blockquote>
+</li>
+</ol>
 </div></blockquote>
 </li>
 <li><p>For each Fourier component combination, <span class="math notranslate nohighlight">\(k, l, \omega\)</span>, several checks are made and pre-analysis completed:</p>
-<ul class="simple">
-<li><p>Those Fourier components for which <span class="math notranslate nohighlight">\(k_h &gt; k_\text{max}\)</span> are masked out of the calculation as well as those for which <span class="math notranslate nohighlight">\(C = \frac{N}{m} &gt; 90 \frac{\text{m}}{\text{s}}\)</span></p></li>
-<li><p>Critical layers at which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> are identified</p></li>
+<ol class="arabic simple">
+<li><p>Those Fourier components for which <span class="math notranslate nohighlight">\(k_h &gt; k_\text{max}\)</span> are masked out of the calculation as well as those for which <span class="math notranslate nohighlight">\(C = \frac{N}{m} &gt; 90 \frac{\text{m}}{\text{s}}\)</span> and those for which <span class="math notranslate nohighlight">\(c_g \left( z_\text{src} \right) &lt; 0.5 \frac{\text{m}}{\text{s}}\)</span>.</p></li>
 <li><p>Turning heights at which <span class="math notranslate nohighlight">\(m^2 \left( z_t \right) \rightarrow 0\)</span> are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.</p></li>
-</ul>
+</ol>
 </li>
 <li><p>The relations above for <span class="math notranslate nohighlight">\(\hat{w} \left( k, l, \omega, z \right)\)</span> are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists</p>
-<ul class="simple">
-<li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.</p></li>
+<ol class="arabic simple">
+<li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 6 hours to determine whether energy has reached that altitude.</p></li>
 <li><p>Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.</p></li>
-</ul>
+</ol>
 </li>
 <li><p>The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using <code class="code docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code> on the appropriate axes and the <span class="math notranslate nohighlight">\(\omega\)</span> integration is simplified by taking (t=0) in the solution which convert this Fourier inversion to a simple integration.</p></li>
 </ul>
 </li>
 </ul>
 <div class="math notranslate nohighlight">
-\[w \left( x, y, z, 0 \right) = \int{\left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}\]</div>
+\[w \left( x, y, z, 0 \right) =  \iint{ \left(\int{\hat{w} \left( k, l, \hat{\omega}, z \right) d \hat{\omega}} \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl}\]</div>
 <ul class="simple">
 <li><p>Use of the methods is summarized in the below example:</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">gravity_waves</span>
 
@@ -334,8 +340,14 @@ c_g = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + 
         <span class="n">np</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;dw_vals-&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Nk</span><span class="p">),</span> <span class="n">dw</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
+<ul>
+<li><p>A command line interface (CLI) method is also included and can be utilized more easily</p>
+<blockquote>
+<div></div></blockquote>
+</li>
+</ul>
+</section>
+</section>
 
 
            </div>

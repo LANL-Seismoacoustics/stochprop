@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Propagation Statistics &mdash; stochprop 1.0 documentation</title>
@@ -21,11 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -34,6 +34,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -163,24 +165,28 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="propagation-statistics">
+  <section id="propagation-statistics">
 <span id="propagation"></span><h1>Propagation Statistics<a class="headerlink" href="#propagation-statistics" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Propagation statistics for path geometry (e.g., arrival location, travel time, direction of arrival) and transmission loss can be computed for use in improving localization and yield estimation analyses, respectively.</p></li>
 <li><p>In the case of localization, a general celerity (horizontal group velocity) model is available in InfraPy constructed as a three-component Gaussian-mixture-model (GMM).  This model contains peaks corresponding to the tropospheric, stratospheric, and thermospheric waveguides and has been defined by fitting the parameterized GMM to a kernel density estimate of a full year of ray tracing analyses.</p></li>
 </ul>
-<div class="align-center figure" id="id1">
+<figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/cel_dist.jpg"><img alt="alternate text" src="_images/cel_dist.jpg" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">A general travel time model includes three components corresponding to the tropospheric, stratospheric, and thermospheric waveguides.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">A general travel time model includes three components corresponding to the tropospheric, stratospheric, and thermospheric waveguides.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <ul class="simple">
 <li><p>More specific models can be constructed from a limite suite of atmospheric states describing a location and seasonal trend (e.g., winter in the western US) or using an atmospheric state for a specific event with some perturbation analysis.  In either case, propagation simulations are run using the suite of atmospheric states and a statistical model is defined using the outputs to quantify the probability of a given arrival characteristic.</p></li>
 </ul>
-<div class="align-center figure" id="id2">
+<figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="_images/stochprop_fig1.jpg"><img alt="alternate text" src="_images/stochprop_fig1.jpg" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
-<div class="section" id="path-geometry-models-pgms">
+<figcaption>
+<p><span class="caption-text">Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="path-geometry-models-pgms">
 <h2>Path Geometry Models (PGMs)<a class="headerlink" href="#path-geometry-models-pgms" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>Path geometry models describing the arrival location, travel time, direction of arrival (back azimuth, inclination angle) can be computed using geometric modeling simulations such as those in the InfraGA/GeoAc package.</p></li>
@@ -211,10 +217,12 @@
 <span class="n">pgm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="s2">&quot;prop/winter/example-winter&quot;</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="s2">&quot;winter&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="align-center figure" id="id3">
+<figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="_images/winter-PGMs.jpg"><img alt="alternate text" src="_images/winter-PGMs.jpg" style="width: 850px;" /></a>
-<p class="caption"><span class="caption-text">Stochastic propagation-based path geometry model examples for a winter shows the expected stratospheric waveguide for propagation to the east and azimuth deviations to the north and south due to the strong stratospheric cross winds.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Stochastic propagation-based path geometry model examples for a winter shows the expected stratospheric waveguide for propagation to the east and azimuth deviations to the north and south due to the strong stratospheric cross winds.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <ul class="simple">
 <li><p>The path geometry models constructed here can be utilized in the InfraPy Bayesian Infrasonic Source Localization (BISL) analysis by specifying them as the <code class="code docutils literal notranslate"><span class="pre">path_geo_model</span></code> for that analysis.</p></li>
 </ul>
@@ -224,8 +232,8 @@
 <span class="n">result</span><span class="p">,</span> <span class="n">pdf</span> <span class="o">=</span> <span class="n">bisl</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">det_list</span><span class="p">,</span> <span class="n">path_geo_model</span><span class="o">=</span><span class="n">pgm</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="transmission-loss-models-tlms">
+</section>
+<section id="transmission-loss-models-tlms">
 <h2>Transmission Loss Models (TLMs)<a class="headerlink" href="#transmission-loss-models-tlms" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Analysis of source characteristics includes estimation of the power of the acoustic signal at some reference distance from the (typically) complex source mechanism</p></li>
@@ -257,10 +265,12 @@
 <span class="n">tlm</span><span class="o">.</span><span class="n">display</span><span class="p">(</span><span class="n">file_id</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;prop/winter/example-winter_0.359Hz), title=(&quot;</span><span class="n">Transmission</span> <span class="n">Loss</span> <span class="n">Statistics</span><span class="s2">&quot; + &#39;</span><span class="se">\n</span><span class="s2">&#39; + &quot;</span><span class="n">winter</span><span class="p">,</span> <span class="mf">0.359</span> <span class="n">Hz</span><span class="s2">&quot;))</span>
 </pre></div>
 </div>
-<div class="align-center figure" id="id4">
+<figure class="align-center" id="id4">
 <a class="reference internal image-reference" href="_images/winter_0.359_tloss.png"><img alt="alternate text" src="_images/winter_0.359_tloss.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Transmission loss statistics used for source characterization can be constructed using analysis of NCPAprop normal mode algorithm output.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Transmission loss statistics used for source characterization can be constructed using analysis of NCPAprop normal mode algorithm output.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <ul class="simple">
 <li><p>The transmission loss models constructed in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> can be utilized in the InfraPy Spectral Yield Estimation (SpYE) algorithm by specifying a set of models and their associated frequencies (see InfraPy example for detection and waveform data setup),</p></li>
 </ul>
@@ -280,8 +290,8 @@
 <span class="n">yld_vals</span><span class="p">,</span> <span class="n">yld_pdf</span><span class="p">,</span> <span class="n">conf_bnds</span> <span class="o">=</span> <span class="n">spye</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">det_list</span><span class="p">,</span> <span class="n">smn_specs</span><span class="p">,</span> <span class="n">src_loc</span><span class="p">,</span> <span class="n">freq_band</span><span class="p">,</span> <span class="n">tlms</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

@@ -115,42 +115,43 @@ Gravity Wave implementation in stochprop
 
   * Atmospheric information is constructed from a provided atmospheric specification:
 
-    * Interpolations of the ambient horizontal winds, :math:`u_0 \left( z \right)` and :math:`v_0 \left( z \right)`, density, :math:`\rho_0 \left( Z \right)`, and temperature, :math:`T_0 \left( z \right)` are defined.  
+    #. Interpolations of the ambient horizontal winds, :math:`u_0 \left( z \right)` and :math:`v_0 \left( z \right)`, density, :math:`\rho_0 \left( Z \right)`, and temperature, :math:`T_0 \left( z \right)` are defined.  
 
-    * The density scale height, :math:`H \left( z \right)`, is computed using finite differences in the ambient density.  
+    #. The density scale height, :math:`H \left( z \right)`, is computed using finite differences in the ambient density.  
   
-    * Atmospheric fields are then re-sampled on a higher resolution set of altitudes with :math:`dz = 200` meters.
+    #. Atmospheric fields are then re-sampled on a higher resolution set of altitudes with :math:`dz = 200` meters.
   
   * A grid of :math:`k`, :math:`l`, and :math:`\omega` values are defined:
 
-    * The horizontal resolution, :math:`dx`, is set to 4 meters following Drob et al. (2013) with :math:`N_k = 128` (both of these quantities can be modified by the user, but default to the values from Drob et al.)
+	#. The horizontal resolution, :math:`dx`, is set to 4 meters following Drob et al. (2013) with :math:`N_k = 128` (both of these quantities can be modified by the user, but default to the values from Drob et al.)
 
-    * Five frequency values are defined for analysis covering a frequency band from :math:`\omega_\text{min} = 2 f_\text{Cor}` to :math:`\omega_\text{max} = \frac{N}{\sqrt{5}}` where :math:`f_\text{Cor}` is the Coriolis frequency,
+	#. Five frequency values are defined for analysis covering a frequency band from :math:`\omega_\text{min} = 2 f_\text{Cor}` to :math:`\omega_\text{max} = \frac{N_\text{max}}{\sqrt{5}}` where :math:`f_\text{Cor}` is the Coriolis frequency, :math:`f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)`.
 
-     .. math::
-	     f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)
+	#. Because sampling is done over intrinsic frequency, a phase shift is introduced in the Fourier transform needed to invert the solution,
+
+		.. math::
+	 		w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}
+
 
   * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
 
-    * Those Fourier components for which :math:`k_h > k_\text{max}` are masked out of the calculation as well as those for which :math:`C = \frac{N}{m} > 90 \frac{\text{m}}{\text{s}}` 
+    #. Those Fourier components for which :math:`k_h > k_\text{max}` are masked out of the calculation as well as those for which :math:`C = \frac{N}{m} > 90 \frac{\text{m}}{\text{s}}` and those for which :math:`c_g \left( z_\text{src} \right) < 0.5 \frac{\text{m}}{\text{s}}`.
 
-    * Critical layers at which :math:`\hat{\omega} \rightarrow 0` are identified
-
-    * Turning heights at which :math:`m^2 \left( z_t \right) \rightarrow 0` are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.
+    #. Turning heights at which :math:`m^2 \left( z_t \right) \rightarrow 0` are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.
 
   * The relations above for :math:`\hat{w} \left( k, l, \omega, z \right)` are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists
 
-    * At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.  
+    #. At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 6 hours to determine whether energy has reached that altitude.  
   
-    * Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.
+    #. Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.
 
   * The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using :code:`numpy.fft.ifft` on the appropriate axes and the :math:`\omega` integration is simplified by taking \(t=0\) in the solution which convert this Fourier inversion to a simple integration.
 
 .. math::
-	w \left( x, y, z, 0 \right) = \int{\left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}
+	w \left( x, y, z, 0 \right) =  \iint{ \left(\int{\hat{w} \left( k, l, \hat{\omega}, z \right) d \hat{\omega}} \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl}
 
 
-* Use of the methods is summarized in the below example:
+*  Use of the methods is summarized in the below example:
 
 .. code-block:: python
 
@@ -171,4 +172,31 @@ Gravity Wave implementation in stochprop
 		np.save("du_vals-" + str(Nk), du)
 		np.save("dv_vals-" + str(Nk), dv)
 		np.save("dw_vals-" + str(Nk), dw)
+
+* A command line interface (CLI) method is also included and can be utilized more easily
+
+
+	.. code-block:: bash
+		Usage: stochprop gravity-waves [OPTIONS]
+
+		Gravity wave perturbation methods based on Drob et al. (2013) method.
+
+  		More info...
+
+		Options:
+  		  --atmo-file TEXT        Reference atmspheric specification (required)
+		  --out TEXT              Output prefix (required)
+		  --sample-cnt INTEGER    Number of perturbated samples (default: 25)
+		  --t0 FLOAT              Propagation time from source [hr] (default: 8)
+		  --dx FLOAT              Horizontal wavenumber scale [km] (default: 2.0)
+		  --dz FLOAT              Altitude resolution for integration [km] (default: 0.2)
+		  --nk INTEGER            Horizontal wavenumber resolution (default: 128)
+		  --nom INTEGER           Frequency resolution (default: 5)
+		  --random-phase BOOLEAN  Randomize phase at source [bool] (default: False)
+		  --z-src FLOAT           Gravity wave source altitude [km] (default: 20.0)
+		  --m-star FLOAT          Gravity wave source spectrum peak [km] (default: 2.5 / (2 pi))
+		  --taper-below BOOLEAN   Taper perturbation below source height [bool] (default: True)
+		  --cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)
+		  --debug-fig TEXT        Output for figures to aid in debugging (default: None)
+		  -h, --help              Show this message and exit.
 

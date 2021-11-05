@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Empirical Orthogonal Function Analysis &mdash; stochprop 1.0 documentation</title>
@@ -21,11 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -34,6 +34,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -162,11 +164,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="empirical-orthogonal-function-analysis">
+  <section id="empirical-orthogonal-function-analysis">
 <h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-stochprop.eofs"></span><dl class="function">
-<dt id="stochprop.eofs.build_atmo_matrix">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">build_atmo_matrix</code><span class="sig-paren">(</span><em>path</em>, <em>pattern='*.met'</em>, <em>skiprows=0</em>, <em>ref_alts=None</em>, <em>prof_format='zTuvdp'</em>, <em>latlon0=None</em>, <em>return_datetime=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_atmo_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.build_atmo_matrix" title="Permalink to this definition">¶</a></dt>
+<span class="target" id="module-stochprop.eofs"></span><dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.build_atmo_matrix">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">build_atmo_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*.met'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skiprows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prof_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zTuvdp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latlon0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_atmo_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.build_atmo_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read in a list of atmosphere files from the path location
 matching a specified pattern for continued analysis.</p>
 <dl class="field-list simple">
@@ -195,9 +197,9 @@ matching a specified pattern for continued analysis.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.build_cdf">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">build_cdf</code><span class="sig-paren">(</span><em>pdf</em>, <em>lims</em>, <em>pnts=250</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_cdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.build_cdf" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.build_cdf">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">build_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pnts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_cdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.build_cdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the cumulative distribution of a pdf within specified limits</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -219,9 +221,9 @@ matching a specified pattern for continued analysis.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.compute_coeffs">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">compute_coeffs</code><span class="sig-paren">(</span><em>A</em>, <em>alts</em>, <em>eofs_path</em>, <em>output_path</em>, <em>eof_cnt=100</em>, <em>pool=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_coeffs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_coeffs" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.compute_coeffs">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">compute_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eofs_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_coeffs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.compute_coeffs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the EOF coefficients for a suite of atmospheres
 and store the coefficient values.</p>
 <dl class="field-list simple">
@@ -250,9 +252,9 @@ and store the coefficient values.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.compute_eofs">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">compute_eofs</code><span class="sig-paren">(</span><em>A</em>, <em>alts</em>, <em>output_path</em>, <em>eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_eofs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_eofs" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.compute_eofs">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">compute_eofs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alts</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_eofs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.compute_eofs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the singular value decomposition (SVD)
 of an atmosphere set read into an array by
 stochprop.eofs.build_atmo_matrix() and saves
@@ -274,9 +276,9 @@ functions) and singular values to file</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.compute_overlap">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">compute_overlap</code><span class="sig-paren">(</span><em>coeffs</em>, <em>eofs_path</em>, <em>eof_cnt=100</em>, <em>method='mean'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_overlap" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.compute_overlap">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">compute_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeffs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eofs_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_overlap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.compute_overlap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the overlap of EOF coefficient distributions</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -303,9 +305,9 @@ functions) and singular values to file</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.compute_seasonality">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">compute_seasonality</code><span class="sig-paren">(</span><em>overlap_file</em>, <em>file_id=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_seasonality"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.compute_seasonality" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.compute_seasonality">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">compute_seasonality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overlap_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#compute_seasonality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.compute_seasonality" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the overlap of EOF coefficients to identify seasonality</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -319,9 +321,9 @@ functions) and singular values to file</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.define_coeff_limits">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">define_coeff_limits</code><span class="sig-paren">(</span><em>coeff_vals</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#define_coeff_limits"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.define_coeff_limits" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.define_coeff_limits">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">define_coeff_limits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeff_vals</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#define_coeff_limits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.define_coeff_limits" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute upper and lower bounds for coefficient values</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -339,9 +341,9 @@ functions) and singular values to file</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.density">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">density</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.density" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.density">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.density" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Computes the atmospheric density according to </dt><dd><p>the US standard atmosphere model using a 
 polynomial fit</p>
@@ -360,9 +362,9 @@ polynomial fit</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.draw_from_pdf">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">draw_from_pdf</code><span class="sig-paren">(</span><em>pdf</em>, <em>lims</em>, <em>cdf=None</em>, <em>size=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#draw_from_pdf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.draw_from_pdf" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.draw_from_pdf">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">draw_from_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pdf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lims</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cdf</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#draw_from_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.draw_from_pdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sample a number of values from a probability distribution
 function (pdf) with specified limits</p>
 <dl class="field-list simple">
@@ -387,9 +389,9 @@ function (pdf) with specified limits</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.fit_atmo">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">fit_atmo</code><span class="sig-paren">(</span><em>prof_path</em>, <em>eofs_path</em>, <em>output_path</em>, <em>eof_cnt=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#fit_atmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.fit_atmo" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.fit_atmo">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">fit_atmo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prof_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eofs_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#fit_atmo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.fit_atmo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a given number of EOF coefficients to fit a given
 atmophere specification using the basic functions.  Write
 the resulting approximated atmospheric specification to
@@ -410,9 +412,9 @@ file.</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.maximum_likelihood_profile">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">maximum_likelihood_profile</code><span class="sig-paren">(</span><em>coeffs</em>, <em>eofs_path</em>, <em>output_path</em>, <em>eof_cnt=100</em>, <em>coeff_label='None'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#maximum_likelihood_profile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.maximum_likelihood_profile" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.maximum_likelihood_profile">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">maximum_likelihood_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeffs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eofs_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#maximum_likelihood_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.maximum_likelihood_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use coefficient distributions for a set of empirical orthogonal
 basis functions to compute the maximum likelihood specification</p>
 <dl class="field-list simple">
@@ -431,9 +433,9 @@ basis functions to compute the maximum likelihood specification</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.perturb_atmo">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">perturb_atmo</code><span class="sig-paren">(</span><em>prof_path</em>, <em>eofs_path</em>, <em>output_path</em>, <em>stdev=10.0</em>, <em>eof_max=100</em>, <em>eof_cnt=50</em>, <em>sample_cnt=1</em>, <em>alt_wt_pow=2.0</em>, <em>sing_val_wt_pow=0.25</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#perturb_atmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.perturb_atmo" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.perturb_atmo">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">perturb_atmo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prof_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eofs_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stdev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alt_wt_pow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sing_val_wt_pow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#perturb_atmo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.perturb_atmo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use EOFs to perturb a specified profile using a given scale</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -461,9 +463,9 @@ basis functions to compute the maximum likelihood specification</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.pressure">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">pressure</code><span class="sig-paren">(</span><em>z</em>, <em>T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.pressure" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.pressure">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.pressure" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>Computes the atmospheric pressure according to </dt><dd><p>the US standard atmosphere model using a 
 polynomial fit assuming an ideal gas</p>
@@ -482,9 +484,9 @@ polynomial fit assuming an ideal gas</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.profiles_qc">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">profiles_qc</code><span class="sig-paren">(</span><em>path</em>, <em>pattern='*.met'</em>, <em>skiprows=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#profiles_qc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.profiles_qc" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.profiles_qc">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">profiles_qc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*.met'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skiprows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#profiles_qc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.profiles_qc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs a quality control (QC) check on profiles in the path
 matching the pattern.  It can optionally plot the bad
 profiles.  If it finds any, it makes a new direcotry
@@ -504,9 +506,9 @@ profiles into the directory for you to check</p>
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="stochprop.eofs.sample_atmo">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">sample_atmo</code><span class="sig-paren">(</span><em>coeffs</em>, <em>eofs_path</em>, <em>output_path</em>, <em>eof_cnt=100</em>, <em>prof_cnt=250</em>, <em>output_mean=False</em>, <em>coeff_label='None'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#sample_atmo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.sample_atmo" title="Permalink to this definition">¶</a></dt>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.eofs.sample_atmo">
+<span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">sample_atmo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeffs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eofs_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prof_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_mean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coeff_label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#sample_atmo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.sample_atmo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate atmosphere states using coefficient distributions for
 a set of empirical orthogonal basis functions</p>
 <dl class="field-list simple">
@@ -529,7 +531,7 @@ a set of empirical orthogonal basis functions</p>
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>

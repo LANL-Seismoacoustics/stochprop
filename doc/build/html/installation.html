@@ -5,7 +5,8 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <title>Installation &mdash; stochprop 1.0 documentation</title>
@@ -21,11 +22,10 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -34,6 +34,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -155,16 +157,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installation">
+  <section id="installation">
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="anaconda">
+<section id="anaconda">
 <h2>Anaconda<a class="headerlink" href="#anaconda" title="Permalink to this headline">¶</a></h2>
 <p>The installation of stochprop is ideally completed using pip through Anaconda to resolve and download the correct python libraries. If you don’t currently have anaconda installed
 on your system, please do that first.  Anaconda can be downloaded from <a class="reference external" href="https://www.anaconda.com/distribution/">https://www.anaconda.com/distribution/</a>.</p>
-</div>
-<div class="section" id="installing-dependencies">
+</section>
+<section id="installing-dependencies">
 <h2>Installing Dependencies<a class="headerlink" href="#installing-dependencies" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="propagation-modeling-methods">
+<section id="propagation-modeling-methods">
 <h3>Propagation Modeling Methods<a class="headerlink" href="#propagation-modeling-methods" title="Permalink to this headline">¶</a></h3>
 <p>A subset of the stochprop methods require access to the  LANL InfraGA/GeoAc ray tracing methods as well as the NCPAprop normal mode methods.  Many of the
 empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.</p>
@@ -172,15 +174,15 @@ empirical orthogonal function (EOF) based atmospheric statistics and gravity wav
 <li><p>InfraGA/GeoAc: <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraGA">https://github.com/LANL-Seismoacoustics/infraGA</a></p></li>
 <li><p>NCPAprop: <a class="reference external" href="https://github.com/chetzer-ncpa/ncpaprop">https://github.com/chetzer-ncpa/ncpaprop</a></p></li>
 </ul>
-</div>
-<div class="section" id="infrapy-signal-analysis-methods">
+</section>
+<section id="infrapy-signal-analysis-methods">
 <h3>InfraPy Signal Analysis Methods<a class="headerlink" href="#infrapy-signal-analysis-methods" title="Permalink to this headline">¶</a></h3>
 <p>The propagation models constructed in stochprop are intended for use in the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE)
 methods in the LANL InfraPy signal analysis software suite.  As with the InfraGA/GeoAc and NCPAprop linkages, many of the EOF-based atmospheric statistics methods
 can be utilized without InfraPy, but full usage will require installation of InfraPy (<a class="reference external" href="https://github.com/LANL-Seismoacoustics/infrapy">https://github.com/LANL-Seismoacoustics/infrapy</a>).</p>
-</div>
-</div>
-<div class="section" id="installing-stochprop">
+</section>
+</section>
+<section id="installing-stochprop">
 <h2>Installing stochprop<a class="headerlink" href="#installing-stochprop" title="Permalink to this headline">¶</a></h2>
 <p>Once Anaconda is installed, you can install stochprop using pip by navigating to the base directory of the package (there will be a file there
 named setup.py).  Assuming InfraPy has been installed within a conda environment called infrapy_env, it is recommended to install stochprop in the same environment using:</p>
@@ -201,8 +203,8 @@ named setup.py).  Assuming InfraPy has been installed within a conda environment
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt; conda deactivate
 </pre></div>
 </div>
-</div>
-<div class="section" id="testing-stochprop">
+</section>
+<section id="testing-stochprop">
 <h2>Testing stochprop<a class="headerlink" href="#testing-stochprop" title="Permalink to this headline">¶</a></h2>
 <p>Once the installation is complete, you can test the methods by navigating to the /examples directory located in the base directory, and running:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&gt;&gt; python eof_analysis.py
@@ -212,8 +214,8 @@ named setup.py).  Assuming InfraPy has been installed within a conda environment
 <p>A set of propagation analyses are included, but require installation of infraGA/GeoAc and NCPAprop.  These analysis can be run to ensure linkages are
 working between stochprop and the propagation libraries, but note that the simulation of propagation through even the example suite of atmosphere
 takes a significant amount of time.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

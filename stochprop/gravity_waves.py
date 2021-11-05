@@ -168,7 +168,7 @@ def m_imag(k, l, om_intr, z, H, T0, d0):
 
 
 
-def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min, k_max, figure_out=None, prog_step=0):
+def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om_min, k_max, random_phase=False, figure_out=None, prog_step=0):
     """
         Compute the vertical structure of a specific Fourier component, :math:`\hat{w} \left( k, l, \omega, z \right), 
         by first identifying critical layers and turning heights then using the appropriate solution form (free or 
@@ -218,25 +218,13 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
     # Define combined horizontal wavenumber, intrinsic frequency 
     # values, and vertical wavenumber values (squared) 
     kh = np.sqrt(k**2 + l**2)
-    om_intr_vals = om - k * u0_vals - l * v0_vals
-    m_sqr_vals = m_sqr(k, l, om_intr_vals, H_vals)
+    m_sqr_vals = m_sqr(k, l, om_intr, H_vals)
 
     prog_increment(prog_step)
 
     if kh < 1.0e-6 or kh > k_max:
         return [np.zeros_like(z_vals, dtype=complex)] * 4
     else:
-        # check for critical layer and turning height, then 
-        # set the source spectral component
-        if np.all(om_intr_vals > 0.0):
-            crit_lyr_index = len(z_vals) + 1
-        else:
-            jz = np.where(om_intr_vals < 0.0)[0][0]
-            if jz > src_index + 2:
-                crit_lyr_index = jz - 1
-            else:
-                return [np.zeros_like(z_vals, dtype=complex)] * 4
-
         # check for turning height
         if np.all(m_sqr_vals > 0.0):
             turn_ht_index = len(z_vals) + 1
@@ -245,18 +233,19 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
             if jz > src_index + 2:
                 turn_ht_index = jz - 1
                 refl_phase = simps(np.sqrt(m_sqr_vals[:turn_ht_index]), z_vals[:turn_ht_index])
-                refl_time = simps(1.0 / abs(cg(k, l, om_intr_vals[:turn_ht_index], H_vals[:turn_ht_index])), z_vals[:turn_ht_index])
-                refl_loss = simps(m_imag(k, l, om_intr_vals[:turn_ht_index], z_vals[:turn_ht_index], H_vals[:turn_ht_index], T0_vals[:turn_ht_index], d0_vals[:turn_ht_index]), z_vals[:turn_ht_index])
+                refl_time = simps(1.0 / abs(cg(k, l, om_intr, H_vals[:turn_ht_index])), z_vals[:turn_ht_index])
+                refl_loss = simps(m_imag(k, l, om_intr, z_vals[:turn_ht_index], H_vals[:turn_ht_index], T0_vals[:turn_ht_index], d0_vals[:turn_ht_index]), z_vals[:turn_ht_index])
             else:
                 return [np.zeros_like(z_vals, dtype=complex)] * 4
         
         # check velocity condition (N/m < 90 m/s)
-        min_index = min(crit_lyr_index, turn_ht_index)
-        if min_index > 0:
-            velocity_check = np.max(BV_freq(H_vals[:min_index]) / np.sqrt(m_sqr(k, l, om_intr_vals[:min_index], H_vals[:min_index])))
-            if abs(velocity_check) < 0.09:
-                m_sqr_src = m_sqr(k, l, om_intr_vals[src_index], H_vals[src_index])
-                w0 = 2.7e-2 * (m_sqr_src / (m_star**4 + m_sqr_src**2)) * (om_intr_vals[0]**(1.0 / 3.0) / kh**2)
+        if turn_ht_index > 0:
+            velocity_check = np.max(BV_freq(H_vals[:turn_ht_index]) / np.sqrt(m_sqr(k, l, om_intr, H_vals[:turn_ht_index])))
+            src_cg = cg(k, l, om_intr, H_vals[src_index])
+
+            if abs(velocity_check) < 0.09 and src_cg > 5.0e-4:
+                m_sqr_src = m_sqr(k, l, om_intr, H_vals[src_index])
+                w0 = 2.7e-2 * (m_sqr_src / (m_star**4 + m_sqr_src**2)) * (om_intr**(1.0 / 3.0) / kh**2)
                 w0 = w0 * om_min**(2.0 / 3.0) / (1.0 - (om_min / BV_freq(H_vals[0]))**(2.0 / 3.0))
                 w0 = np.sqrt(abs(w0))        
             else:
@@ -268,131 +257,103 @@ def single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_min,
         w_spec = np.zeros_like(z_vals, dtype=complex)
         eta_spec = np.zeros_like(z_vals, dtype=complex)
 
-        # set source elevation values
-        m_src = np.sqrt(m_sqr_vals[src_index])
+        # prep information for spectral calculation
+        m_vals = np.sqrt(abs(m_sqr_vals))
+        d0_m_ratios = np.array([np.sqrt((d0_vals[src_index] / d0_vals[zj]) * (m_vals[src_index] / m_vals[zj])) for zj in range(len(z_vals))])
 
-        # Evaluate values below the source (ignore refraction)
-        d0_m_ratio = np.sqrt((d0_vals[src_index] / d0_vals[:src_index + 1]) * (m_src / np.sqrt(m_sqr_vals[:src_index + 1])))
-        if turn_ht_index > len(z_vals) or turn_ht_index > crit_lyr_index:
-            # free propagating solution
-            w_phase = np.array([m_src * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
-            w_spec[:src_index + 1] = w0 * d0_m_ratio * (np.cos(w_phase) - 1.0j * np.sin(w_phase))
-            u_spec[:src_index + 1] = - w_spec[:src_index + 1] * (k / kh**2) * m_src
-            v_spec[:src_index + 1] = - w_spec[:src_index + 1] * (l / kh**2) * m_src
-            eta_spec[:src_index + 1] = -1.0j * w_spec[:src_index + 1] / om_intr_vals[:src_index + 1]
+        w_sat_vals = np.sqrt(2.7e-2 * om_intr**(1.0 / 3.0) / (m_sqr_vals * kh**2))
+        
+        prop_times = np.zeros_like(z_vals)
+        prop_times[src_index + 1:] = np.array([simps(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zj])), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+        if np.all(prop_times < t0):
+            prop_ht_index = len(z_vals) + 1
         else:
-            # Airy function form in the case of trapped waves
+            prop_ht_index = np.where(prop_times > t0)[0][0]
+
+        w_losses = np.zeros_like(z_vals)
+        w_losses[src_index + 1:] = np.array([simps(m_imag(k, l, om_intr, z_vals[src_index:zj], H_vals[src_index:zj], T0_vals[src_index:zj], d0_vals[src_index:zj]), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+
+        if prop_ht_index <= turn_ht_index:
+            # free propagating solution
+            w_phase_vals = np.zeros_like(z_vals)
+            w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
+            w_phase_vals[src_index + 1: prop_ht_index] = np.array([simps(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, min(len(z_vals), prop_ht_index))])
+
+            if random_phase:
+                ph0 = np.random.random(1)[0] * (2.0 * np.pi)
+            else:
+                ph0 = 0.0
+
+            w_spec[:prop_ht_index] = w0 * d0_m_ratios[:prop_ht_index] * (np.cos(ph0 + w_phase_vals[:prop_ht_index]) - 1.0j * np.sin(ph0 + w_phase_vals[:prop_ht_index]))
+            w_spec[:prop_ht_index] = w_spec[:prop_ht_index] * np.exp(-w_losses[:prop_ht_index])
+
+            u_spec[:prop_ht_index] = - w_spec[:prop_ht_index] * (k / kh**2) * m_vals[:prop_ht_index]
+            v_spec[:prop_ht_index] = - w_spec[:prop_ht_index] * (l / kh**2) * m_vals[:prop_ht_index]
+            eta_spec[:prop_ht_index] = -1.0j * w_spec[:prop_ht_index] / om_intr
+        else:
+            # trapped (Airy function) solution 
+            # set source region below source altitude
             refl_cnt = int(np.floor(t0 / (2.0 * refl_time)))
             refl_ph_shift = np.exp(-refl_cnt * (2.0 * refl_loss))
             refl_ph_shift = refl_ph_shift * (1.0 + np.sum(np.array([np.exp(-1.0j * (N - 1) * (2.0 * refl_phase - np.pi / 2.0)) for N in range(2, refl_cnt)])))
             
-            m_above = np.sqrt(abs(m_sqr(k, l, om_intr_vals[src_index:turn_ht_index], H_vals[src_index:turn_ht_index])))
-            m_integral_above = simps(m_above, z_vals[src_index:turn_ht_index])
-
-            for zj in range(src_index):
-                airy_arg = -((3.0 / 2.0) * (m_integral_above + m_src * abs(z_vals[src_index] - z_vals[zj])))**(2.0 / 3.0)
-                airy_scaling = np.array([(-airy_arg)**0.25 * airy(airy_arg)[n] * np.exp(1.0j * np.pi / 4.0) * refl_ph_shift for n in range(2)])
-
-                w_spec[zj] = -2.0j * np.sqrt(np.pi) * w0 * d0_m_ratio[zj] * airy_scaling[0]
-                u_spec[zj] = -2.0j * np.sqrt(np.pi) * w0 * (k / kh**2) * d0_m_ratio[zj] * airy_scaling[1]
-                v_spec[zj] = -2.0j * np.sqrt(np.pi) * w0 * (l / kh**2) * d0_m_ratio[zj] * airy_scaling[1]
-
-            airy_arg = -((3.0 / 2.0) * m_integral_above)**(2.0 / 3.0)
-            airy_scaling = np.array([(-airy_arg)**0.25 * airy(airy_arg)[n] * np.exp(1.0j * np.pi / 4.0) * refl_ph_shift for n in range(2)])
-
-            w_spec[src_index] = -2.0j * np.sqrt(np.pi) * w0 * airy_scaling[0]
-            u_spec[src_index] = -2.0j * np.sqrt(np.pi) * w0 * (k / kh**2) * airy_scaling[1]
-            v_spec[src_index] = -2.0j * np.sqrt(np.pi) * w0 * (l / kh**2) * airy_scaling[1]
-            eta_spec[src_index] = -1.0j * w_spec[src_index] / om_intr_vals[src_index]
-
-        # Integrate solution upward
-        for zj in range(src_index + 1, len(z_vals)):
-            # compute propagation time to altitude
-            if zj <= crit_lyr_index:
-                prop_time = simps(1.0 / abs(cg(k, l, om_intr_vals[src_index:zj], H_vals[src_index:zj])), z_vals[src_index:zj])
+            if np.all(m_sqr_vals[turn_ht_index:turn_ht_index + int(5.0 / dz)] < 0.0):
+                airy_lim_index = turn_ht_index + int(5.0 / dz)
             else:
-                prop_time = np.inf 
+                airy_lim_index = turn_ht_index + (np.where(m_sqr_vals[turn_ht_index:turn_ht_index + int(5.0 / dz)] > 0.0)[0][0] - 1)
 
-            # check reference time vs. propagation time and that altitude isn't too far above turning height
-            if prop_time < t0 and zj < min(len(z_vals) + 1, turn_ht_index + int(2.0 / dz)):
-                # define attenuation losses
-                if z_vals[zj] > 90.0:
-                    m_imag_vals = m_imag(k, l, om_intr_vals[src_index:zj], z_vals[src_index:zj], H_vals[src_index:zj], T0_vals[src_index:zj], d0_vals[src_index:zj])
-                    w_loss = simps(m_imag_vals, z_vals[src_index:zj])
-                else:
-                    w_loss = 0.0
+            airy_args = np.zeros_like(z_vals)
+            airy_scaling0 = np.zeros_like(z_vals)
+            airy_scaling1 = np.zeros_like(z_vals)
 
-                # define saturation spectra
-                w_sat = np.sqrt(2.7e-2 * om_intr_vals[zj]**(1.0 / 3.0) / (m_sqr_vals[zj] * kh**2))
+            m_integral_above = simps(m_vals[src_index:turn_ht_index], z_vals[src_index:turn_ht_index])
+            airy_args[:src_index + 1] = np.array([-((3.0 / 2.0) * (m_integral_above + m_vals[src_index] * abs(z_vals[src_index] - z_vals[zj])))**(2.0 / 3.0) for zj in range(src_index + 1)])
+            airy_args[src_index + 1:turn_ht_index - 1] = np.array([-((3.0 / 2.0) * simps(m_vals[zj:turn_ht_index], z_vals[zj:turn_ht_index]))**(2.0 / 3.0) for zj in range(src_index, turn_ht_index - 1)])
+            airy_args[turn_ht_index + 1:airy_lim_index] = np.array([((3.0 / 2.0) * simps(m_vals[turn_ht_index:zj], z_vals[turn_ht_index:zj]))**(2.0 / 3.0) for zj in range(turn_ht_index + 1, airy_lim_index)])
 
-                # integrate using free solution if there is no turning point or if the 
-                # evaluation time is less than the trapped propagation time
-                m_curr = np.sqrt(m_sqr_vals[zj])
-                d0_m_ratio = np.sqrt((d0_vals[src_index] / d0_vals[zj]) * (m_src / m_curr))
+            temp = (-airy_args[:airy_lim_index])**0.25 * np.exp(1.0j * np.pi / 4.0) * refl_ph_shift
+            airy_scaling0[:airy_lim_index] = temp * airy(airy_args[:airy_lim_index])[0]
+            airy_scaling1[:airy_lim_index] = temp * airy(airy_args[:airy_lim_index])[1]
 
-                if turn_ht_index > len(z_vals) or t0 < refl_time:
-                    w_phase = simps(np.sqrt(m_sqr_vals[src_index:zj]), z_vals[src_index:zj])
-                    w_spec[zj] = w0 * d0_m_ratio * (np.cos(w_phase) - 1.0j * np.sin(w_phase))
+            u_spec[:airy_lim_index] = -2.0j * np.sqrt(np.pi) * w0 * (k / kh**2) * d0_m_ratios[:airy_lim_index] * airy_scaling1[:airy_lim_index]
+            v_spec[:airy_lim_index] = -2.0j * np.sqrt(np.pi) * w0 * (l / kh**2) * d0_m_ratios[:airy_lim_index] * airy_scaling1[:airy_lim_index]
+            w_spec[:airy_lim_index] = -2.0j * np.sqrt(np.pi) * w0 * d0_m_ratios[:airy_lim_index] * airy_scaling0[:airy_lim_index]
+            eta_spec[:airy_lim_index] = -1.0j * w_spec[:airy_lim_index] / om_intr
 
-                    if abs(w_spec[zj]) > w_sat:
-                        w_spec[zj] = w_spec[zj] * (w_sat / abs(w_spec[zj]))
+        sat_mask = abs(w_spec) > w_sat_vals
+        u_spec[sat_mask] = u_spec[sat_mask] * (w_sat_vals[sat_mask] / abs(w_spec[sat_mask]))
+        v_spec[sat_mask] = v_spec[sat_mask] * (w_sat_vals[sat_mask] / abs(w_spec[sat_mask]))
+        w_spec[sat_mask] = w_spec[sat_mask] * (w_sat_vals[sat_mask] / abs(w_spec[sat_mask]))
 
-                    u_spec[zj] = - w_spec[zj] * (k / kh**2) * m_curr * np.exp(-w_loss)
-                    v_spec[zj] = - w_spec[zj] * (l / kh**2) * m_curr * np.exp(-w_loss)
-                    w_spec[zj] = w_spec[zj] * np.exp(-w_loss)
-                    eta_spec[zj] = -1.0j * w_spec[zj] / om_intr_vals[zj]
-                else:
-                    if zj < turn_ht_index:
-                        airy_arg = -((3.0 / 2.0) * simps(np.sqrt(m_sqr_vals[zj:turn_ht_index]), z_vals[zj:turn_ht_index]))**(2.0 / 3.0)
-                    elif zj > turn_ht_index:
-                        if np.all(m_sqr_vals[turn_ht_index:zj] < 0.0):
-                            j_temp = zj
-                        else:
-                            j_temp = turn_ht_index + (np.where(m_sqr_vals > 0.0)[0][0] - 1)
-                        airy_arg = ((3.0 / 2.0) * simps(np.sqrt(abs(m_sqr_vals[turn_ht_index:j_temp])), z_vals[turn_ht_index:j_temp]))**(2.0 / 3.0)
-                    else:
-                        airy_arg = 0.0
-
-                    airy_scaling = np.array([(-airy_arg)**0.25 * airy(airy_arg)[n] * np.exp(1.0j * np.pi / 4.0) * refl_ph_shift for n in range(2)])
-
-                    u_spec[zj] = -2.0j * np.sqrt(np.pi) * w0 * (k / kh**2) * d0_m_ratio * airy_scaling[1]
-                    v_spec[zj] = -2.0j * np.sqrt(np.pi) * w0 * (l / kh**2) * d0_m_ratio * airy_scaling[1]
-                    w_spec[zj] = -2.0j * np.sqrt(np.pi) * w0 * d0_m_ratio * airy_scaling[0]
-                    eta_spec[zj] = -1.0j * w_spec[zj] / om_intr_vals[zj]
-
-                    if abs(w_spec[zj]) > w_sat:
-                        u_spec[zj] = u_spec[zj] * (w_sat / abs(w_spec[zj]))
-                        v_spec[zj] = v_spec[zj] * (w_sat / abs(w_spec[zj]))
-                        w_spec[zj] = w_spec[zj] * (w_sat / abs(w_spec[zj]))
-                        eta_spec[zj] = eta_spec[zj] * (w_sat / abs(w_spec[zj]))
-            else:
-                u_spec[zj] = 0.0 + 0.0j
-                v_spec[zj] = 0.0 + 0.0j
-                w_spec[zj] = 0.0 + 0.0j
-                eta_spec[zj] = 0.0 + 0.0j
+        wind_phasor = np.cos(-(k * u0_vals + l * v0_vals)) - 1.0j * np.sin(-(k * u0_vals + l * v0_vals))
+        u_spec = u_spec * wind_phasor
+        v_spec = v_spec * wind_phasor
+        w_spec = w_spec * wind_phasor
+        eta_spec = eta_spec * wind_phasor
+        
         if figure_out:
-            prop_times = np.array([simps(1.0 / abs(cg(k, l, om_intr_vals[src_index:zk], H_vals[src_index:zk])), z_vals[src_index:zk]) for zk in range(src_index + 1, crit_lyr_index - 1)])
+            prop_times = np.array([simps(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zk])), z_vals[src_index:zk]) for zk in range(src_index + 1, len(z_vals))])
 
-            f, a = plt.subplots(1, 4, sharey=True)
+            f, a = plt.subplots(1, 3, sharey=True)
             a[0].set_ylabel("Altitue [km]")
             a[0].set_xlabel("prop. time [hrs]")
             a[1].set_xlabel("m^2")
-            a[2].set_xlabel("intrinsic freq")
-            a[3].set_xlabel("spectral component")
+            a[2].set_xlabel("spectral component")
 
-            a[0].plot(prop_times / 3600.0, z_vals[src_index + 1:crit_lyr_index - 1], '-k')
+            a[0].plot(prop_times / 3600.0, z_vals[src_index + 1:], '-k')
             a[0].axvline(t0 / 3600.0, color="k")
             a[1].semilogx(m_sqr_vals, z_vals, '-k')
-            a[2].plot(om_intr_vals, z_vals, '-k')
-            a[3].plot(np.real(w_spec), z_vals, '-b')
-            a[3].plot(np.imag(w_spec), z_vals, '-r')
-            for n in range(4):
+            a[2].plot(np.real(w_spec), z_vals, '-b')
+            a[2].plot(np.imag(w_spec), z_vals, '-r')
+            for n in range(3):
                 a[n].axhline(z_vals[min(turn_ht_index, len(z_vals) - 1)], color="g")
-                a[n].axhline(z_vals[min(crit_lyr_index, len(z_vals) - 1)], color="m")
-            a[1].set_title("(k, l, om) = (" + str(k) + ", " + str(l) + ", " + str(om) + ")")
+            a[1].set_title("(k, l, om_intr) = (" + str(k) + ", " + str(l) + ", " + str(om_intr) + ")" + '\n' + "Source cg: " + str(cg(k, l, om_intr, H_vals[src_index])))
         
-            plt.savefig(figure_out + "-" + str(k) + "-" + str(l) + "-" + str(om) + ".png", dpi=250)
+            plt.savefig(figure_out + "-" + str(k) + "-" + str(l) + "-" + str(om_intr) + ".png", dpi=250)
+            plt.close()
         
+
+
         return [u_spec, v_spec, w_spec, eta_spec]
 
 
@@ -465,7 +426,7 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
 
     k_vals = np.fft.fftfreq(Nk, d=(2.0 * np.pi) / dx)
     l_vals = np.fft.fftfreq(Nk, d=(2.0 * np.pi) / dx)
-    om_vals = np.linspace(om_min, om_max, N_om)
+    intr_om_vals = np.linspace(om_min, om_max, N_om)
 
     # Define spectral information for each Fourier component
     u_spec = np.zeros((Nk, Nk, N_om, len(z_vals)), dtype=complex)
@@ -483,9 +444,9 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
         M = 0
         for nk, k in enumerate(k_vals):
             for nl, l in enumerate(l_vals):
-                for n_om, om in enumerate(om_vals):
+                for n_om, om in enumerate(intr_om_vals):
                     step = prog_set_step(M, Nk * Nk * N_om, float(prog_len))
-                    args = args + [[k, l, om, atmo_info, t0, src_index, m_star, om_vals[0], max(abs(k_vals)), figure_out, step]]
+                    args = args + [[k, l, om, atmo_info, t0, src_index, m_star, intr_om_vals[0], max(abs(k_vals)), random_phase, figure_out, step]]
                     M = M + 1
 
         results = pool.map(single_fourier_component_wrapper, args)
@@ -502,9 +463,9 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
     else:
         for nk, k in enumerate(k_vals):
             for nl, l in enumerate(l_vals):
-                for n_om, om in enumerate(om_vals):
+                for n_om, om in enumerate(intr_om_vals):
                     step = prog_set_step(M, Nk* Nk * N_om, float(prog_len))
-                    results = single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, om_vals[0], max(abs(k_vals)), figure_out, step)
+                    results = single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, intr_om_vals[0], max(abs(k_vals)), random_phase, figure_out, step)
 
                     u_spec[nk][nl][n_om] = results[0]
                     v_spec[nk][nl][n_om] = results[1]
@@ -514,21 +475,25 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
     prog_close()
 
     print('\t' + "Running inverse Fourier transforms to obtain space and time domain solutions.")
-    du_vals = np.fft.ifft(u_spec, axis=0) # * Nk / dx
-    du_vals = np.fft.ifft(du_vals, axis=1) # * Nk / dx
-    du_vals = simps(du_vals, om_vals, axis=2)
 
-    dv_vals = np.fft.ifft(v_spec, axis=0) # * Nk / dx
-    dv_vals = np.fft.ifft(dv_vals, axis=1) # * Nk / dx
-    dv_vals = simps(dv_vals, om_vals, axis=2)
+    # dk = Nk / (2.0 * dx)
+    dk = (2.0 * np.pi) / dx 
 
-    dw_vals = np.fft.ifft(w_spec, axis=0) # * Nk / dx
-    dw_vals = np.fft.ifft(dw_vals, axis=1) # * Nk / dx
-    dw_vals = simps(dw_vals, om_vals, axis=2)
+    du_vals = np.fft.ifft(u_spec, axis=0) * dk 
+    du_vals = np.fft.ifft(du_vals, axis=1) * dk
+    du_vals = simps(du_vals, intr_om_vals, axis=2)
 
-    eta_vals = np.fft.ifft(eta_spec, axis=0) # * Nk / dx
-    eta_vals = np.fft.ifft(eta_vals, axis=1) # * Nk / dx
-    eta_vals = simps(eta_vals, om_vals, axis=2)
+    dv_vals = np.fft.ifft(v_spec, axis=0) * dk 
+    dv_vals = np.fft.ifft(dv_vals, axis=1) * dk 
+    dv_vals = simps(dv_vals, intr_om_vals, axis=2)
+
+    dw_vals = np.fft.ifft(w_spec, axis=0) * dk 
+    dw_vals = np.fft.ifft(dw_vals, axis=1) * dk 
+    dw_vals = simps(dw_vals, intr_om_vals, axis=2)
+
+    eta_vals = np.fft.ifft(eta_spec, axis=0) * dk 
+    eta_vals = np.fft.ifft(eta_vals, axis=1) * dk 
+    eta_vals = simps(eta_vals, intr_om_vals, axis=2)
 
     return z_vals, np.real(du_vals), np.real(dv_vals), np.real(dw_vals), np.real(eta_vals)
 
@@ -559,7 +524,7 @@ def _perturb_header_txt(prof_path, t0, dx, Nk, N_om, random_phase, z_src, m_star
 
     return result
 
-def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0, dz=0.2, Nk=128, N_om=5, random_phase=False, z_src=20.0, m_star=2.0*np.pi/2.5, env_below=True, cpu_cnt=None):
+def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0, dz=0.2, Nk=128, N_om=5, random_phase=False, z_src=20.0, m_star=2.0*np.pi/2.5, env_below=True, cpu_cnt=None, fig_out=None):
     """
         Use gravity waves to perturb a specified profile using the methods in Drob et al. (2013)
 
@@ -611,8 +576,7 @@ def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0,
     else:
         pl = None
 
-    z, du, dv, _, eta = perturbations(atmo_spec, t0=t0, dx=dx, dz=dz, Nk=Nk, N_om=N_om, ref_lat=ref_lat, random_phase=random_phase, z_src=z_src, m_star=m_star, figure_out=None, pool=pl)
-
+    z, du, dv, _, eta = perturbations(atmo_spec, t0=t0, dx=dx, dz=dz, Nk=Nk, N_om=N_om, ref_lat=ref_lat, random_phase=random_phase, z_src=z_src, m_star=m_star, figure_out=fig_out, pool=pl)
 
     np.save(output_path + ".z_vals", z)
     np.save(output_path + ".du_vals", du)
