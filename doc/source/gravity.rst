@@ -117,15 +117,9 @@ Gravity Wave implementation in stochprop
 
     #. Interpolations of the ambient horizontal winds, :math:`u_0 \left( z \right)` and :math:`v_0 \left( z \right)`, density, :math:`\rho_0 \left( Z \right)`, and temperature, :math:`T_0 \left( z \right)` are defined.  
 
-<<<<<<< HEAD
     #. The density scale height, :math:`H \left( z \right)`, is computed using finite differences in the ambient density.  
   
     #. Atmospheric fields are then re-sampled on a higher resolution set of altitudes with :math:`dz = 200` meters.
-=======
-    * The density scale height, :math:`H \left( z \right) = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`, is computed using finite differences of the ambient density.  
-  
-    * Atmospheric fields are then re-sampled on a set of altitudes with :math:`dz = 200` meters.
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
   
   * A grid of :math:`k`, :math:`l`, and :math:`\omega` values are defined:
 
@@ -138,12 +132,6 @@ Gravity Wave implementation in stochprop
 		.. math::
 	 		w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}
 
-<<<<<<< HEAD
-=======
-  * Unlike the implementation by Drob et al. (2013), the implementation in :code:`stochprop.gravity_waves` integrates each Fourier component individually and distributes calculations via :code:`multiprocessing`.  In preliminary evaluations, the implementation has able to compute the full gravity wave field in less than 2 minutes when using 10 CPUs.
-
-  * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 
   * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
 
