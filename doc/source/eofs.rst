@@ -173,5 +173,33 @@ Compute Coefficients and Determine Seasonality
     
     Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure
 
+----------------------
+Command Line interface
+----------------------
 
+* A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running :code:`stochprop build-eofs --help`:
 
+	.. code-block:: console
+
+		Usage: stochprop build-eofs [OPTIONS]
+
+		Empirical orthogonal funciton (EOF) construction for a directory of atmospehric specifications.
+
+		--------------------
+
+  		EOF construction methods...
+
+		Options:
+		  --atmo-dir TEXT          Directory of atmspheric specifications (required)
+		  --eofs-path TEXT         EOF output path and prefix (required)
+		  --atmo-pattern TEXT      Specification file pattern (default: '*.met')
+		  --atmo-format TEXT       Specification format (default: 'zTuvdp'
+		  --save-datetime BOOLEAN  Save date time info (default: False)
+		  --eof-cnt INTEGER        Number of EOFs to store (default: 100)
+		  -h, --help               Show this message and exit.
+
+* An example CLI usage:
+
+.. code-block:: bash
+
+	stochprop build-eofs --atmo-dir profs/01/ --atmo-pattern g2stxt_* --eofs-path eofs/examples

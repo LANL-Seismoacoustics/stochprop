@@ -25,6 +25,7 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
+import os 
 import sys
 import time
 import pkg_resources
@@ -364,8 +365,6 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
             plt.savefig(figure_out + "-" + str(k) + "-" + str(l) + "-" + str(om_intr) + ".png", dpi=250)
             plt.close()
         
-
-
         return [u_spec, v_spec, w_spec, eta_spec]
 
 
@@ -515,7 +514,7 @@ def _perturb_header_txt(prof_path, t0, dx, Nk, N_om, random_phase, z_src, m_star
     result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Gravity Wave Perturbation"
-    result = result + '\n' + "# Reference Specification = " + prof_path
+    result = result + '\n' + "# Reference Specification = " + prof_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# Gravity Wave Propagation Time [hr] = " + str(t0 / 3600.0)
     result = result + '\n' + "# Gravity Wave Spatial Scale Factor (dx) [km] = " + str(dx)
     result = result + '\n' + "# Gravity Wave Spatial Resolution (N_k) = " + str(Nk)

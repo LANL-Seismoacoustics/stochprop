@@ -169,27 +169,27 @@
   <section id="gravity-wave-perturbations">
 <span id="gravity"></span><h1>Gravity Wave Perturbations<a class="headerlink" href="#gravity-wave-perturbations" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><p>Atmospheric specifications (e.g., G2S) available for a given location and time are averaged over some spatial and temporal scale so that sub-grid scale fluctuations can be estimated stochastically and applied in order to construct a suite of possible atmospheric states and the primary source of sub-grid fluctuations in the atmosphere is that of bouyancy or gravity waves.</p></li>
-<li><p>The methods available in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> are based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.</p></li>
+<li><p>Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of bouyancy or gravity waves.</p></li>
+<li><p>Stochastic gravity wave perturbation methods are included in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.</p></li>
 </ul>
 <section id="freely-propagation-and-trapped-gravity-waves">
 <h2>Freely Propagation and Trapped Gravity Waves<a class="headerlink" href="#freely-propagation-and-trapped-gravity-waves" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber can be expressed as,</p></li>
+<li><p>Gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber, <span class="math notranslate nohighlight">\(m\)</span>, can be expressed as,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}\]</div>
 <ul class="simple">
-<li><p>In this relation <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(l\)</span> are the zonal and meridional wave numbers, <span class="math notranslate nohighlight">\(k_h^2 = \sqrt{k^2 + l^2}\)</span> is the combined horizontal wavenumber, <span class="math notranslate nohighlight">\(H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\)</span> is the density scale height, <span class="math notranslate nohighlight">\(N^2 = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}\)</span> is the atmospheric bouyancy frequency, and <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> is the intrinsic angular frequency (relative to the moving air) that is defined relative to the absolute angular frequency (relative to the ground), <span class="math notranslate nohighlight">\(\omega\)</span>,</p></li>
+<li><p>In this relation <span class="math notranslate nohighlight">\(k\)</span> and <span class="math notranslate nohighlight">\(l\)</span> are the zonal and meridional wave numbers, <span class="math notranslate nohighlight">\(k_h^2 = \sqrt{k^2 + l^2}\)</span> is the combined horizontal wavenumber, <span class="math notranslate nohighlight">\(H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\)</span> is the density scale height, <span class="math notranslate nohighlight">\(\rho_0 \left( z \right)\)</span> is the ambient atmospheric density, <span class="math notranslate nohighlight">\(N = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}\)</span> is the atmospheric bouyancy frequency, and <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> is the intrinsic angular frequency (relative to the moving air) that is defined from to the absolute angular frequency (relative to the ground), <span class="math notranslate nohighlight">\(\omega\)</span>, horizontal wavenumbers, and winds,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
-\[\hat{\omega} = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)\]</div>
+\[\hat{\omega} \left( k, l, \omega, z \right) = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)\]</div>
 <ul class="simple">
-<li><p>This dispersion relation can alternately be solved for <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> and used to define the vertical group velocity,</p></li>
+<li><p>This dispersion relation can be solved for <span class="math notranslate nohighlight">\(\hat{\omega}\)</span> and used to define the vertical group velocity,</p></li>
 </ul>
 <div class="math notranslate nohighlight">
 \[\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad
-c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}}\]</div>
+c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}}\]</div>
 <ul class="simple">
 <li><p>The conservation of wave action leads to a condition on the vertical velocity perturbation spectrum that can be used to define a freely propagating solution,</p></li>
 </ul>
@@ -230,7 +230,7 @@ c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -
 <section id="damping-source-and-saturation-spectra-and-critical-layers">
 <h2>Damping, Source and Saturation Spectra, and Critical Layers<a class="headerlink" href="#damping-source-and-saturation-spectra-and-critical-layers" title="Permalink to this headline">¶</a></h2>
 <ul>
-<li><p>At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, <span class="math notranslate nohighlight">\(m \rightarrow m + m_i\)</span>, where,</p>
+<li><p>At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, <span class="math notranslate nohighlight">\(m \rightarrow m + m_i,\)</span> where,</p>
 <blockquote>
 <div><div class="math notranslate nohighlight">
 \[m_i \left(k, l, \omega, z \right) = -\nu \frac{m^3}{\hat{\omega}}, \quad \nu = 3.563 \times 10^{-7} \frac{T_0^{\, 0.69}}{\rho_0}\]</div>
@@ -245,7 +245,7 @@ c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -
 <div class="math notranslate nohighlight">
 \[S_n = e^{-2 n \Psi} \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime, \quad \Psi = \int_0^{z_t} m_i \left( z^\prime \right) d z^\prime,\]</div>
 <ul class="simple">
-<li><p>Note that in both of these forms if <span class="math notranslate nohighlight">\(z_t\)</span> is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.</p></li>
+<li><p>Note that if <span class="math notranslate nohighlight">\(z_t\)</span> is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.</p></li>
 </ul>
 </div></blockquote>
 </li>
@@ -271,7 +271,7 @@ c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -
 \[\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.\]</div>
 </div></blockquote>
 </li>
-<li><p>Lastly, from the above definition for the vertical group velocity, <span class="math notranslate nohighlight">\(c_g\)</span>, it is possible to have altitudes for which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> and <span class="math notranslate nohighlight">\(c_g\)</span> similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.</p></li>
+<li><p>Lastly, from the above definition for the vertical group velocity, <span class="math notranslate nohighlight">\(c_{g,z}\)</span>, it is possible to have altitudes for which <span class="math notranslate nohighlight">\(\hat{\omega} \rightarrow 0\)</span> and <span class="math notranslate nohighlight">\(c_{g,z}\)</span> similarly goes to zero.  In such a location the wave energy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.</p></li>
 </ul>
 </section>
 <section id="gravity-wave-implementation-in-stochprop">
@@ -281,51 +281,39 @@ c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -
 <ul>
 <li><p>Atmospheric information is constructed from a provided atmospheric specification:</p>
 <ol class="arabic simple">
-<li><p>Interpolations of the ambient horizontal winds, <span class="math notranslate nohighlight">\(u_0 \left( z \right)\)</span> and <span class="math notranslate nohighlight">\(v_0 \left( z \right)\)</span>, density, <span class="math notranslate nohighlight">\(\rho_0 \left( Z \right)\)</span>, and temperature, <span class="math notranslate nohighlight">\(T_0 \left( z \right)\)</span> are defined.</p></li>
-<<<<<<< HEAD
-<li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right)\)</span>, is computed using finite differences in the ambient density.</p></li>
-<li><p>Atmospheric fields are then re-sampled on a higher resolution set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
+<li><p>Interpolations of the ambient horizontal winds, <span class="math notranslate nohighlight">\(u_0 \left( z \right)\)</span> and <span class="math notranslate nohighlight">\(v_0 \left( z \right)\)</span>, density, <span class="math notranslate nohighlight">\(\rho_0 \left( z \right)\)</span>, and temperature, <span class="math notranslate nohighlight">\(T_0 \left( z \right)\)</span> are defined.</p></li>
+<li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right)\)</span>, is computed using finite differences of the ambient density.</p></li>
+<li><p>Atmospheric fields are re-sampled on a higher resolution set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
 </ol>
-=======
-<li><p>The density scale height, <span class="math notranslate nohighlight">\(H \left( z \right) = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\)</span>, is computed using finite differences of the ambient density.</p></li>
-<li><p>Atmospheric fields are then re-sampled on a set of altitudes with <span class="math notranslate nohighlight">\(dz = 200\)</span> meters.</p></li>
-</ul>
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 </li>
 <li><p>A grid of <span class="math notranslate nohighlight">\(k\)</span>, <span class="math notranslate nohighlight">\(l\)</span>, and <span class="math notranslate nohighlight">\(\omega\)</span> values are defined:</p>
 <blockquote>
 <div><ol class="arabic">
 <li><p>The horizontal resolution, <span class="math notranslate nohighlight">\(dx\)</span>, is set to 4 meters following Drob et al. (2013) with <span class="math notranslate nohighlight">\(N_k = 128\)</span> (both of these quantities can be modified by the user, but default to the values from Drob et al.)</p></li>
-<li><p>Five frequency values are defined for analysis covering a frequency band from <span class="math notranslate nohighlight">\(\omega_\text{min} = 2 f_\text{Cor}\)</span> to <span class="math notranslate nohighlight">\(\omega_\text{max} = \frac{N_\text{max}}{\sqrt{5}}\)</span> where <span class="math notranslate nohighlight">\(f_\text{Cor}\)</span> is the Coriolis frequency, <span class="math notranslate nohighlight">\(f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)\)</span>.</p></li>
+<li><p>Five frequency values are defined for analysis covering a frequency band from <span class="math notranslate nohighlight">\(\omega_\text{min} = 2 f_\text{Cor}\)</span> to <span class="math notranslate nohighlight">\(\omega_\text{max} = \frac{N_\text{max}}{\sqrt{5}}\)</span> where <span class="math notranslate nohighlight">\(f_\text{Cor}\)</span> is the Coriolis frequency, <span class="math notranslate nohighlight">\(f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \theta \right),\)</span> where <span class="math notranslate nohighlight">\(\theta\)</span> is the latitude at which the atmosphere sample was calculated.</p></li>
 <li><p>Because sampling is done over intrinsic frequency, a phase shift is introduced in the Fourier transform needed to invert the solution,</p>
 <blockquote>
 <div><div class="math notranslate nohighlight">
-\[w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}\]</div>
+\[w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}\]</div>
 </div></blockquote>
 </li>
 </ol>
 </div></blockquote>
 </li>
-<li><p>Unlike the implementation by Drob et al. (2013), the implementation in <code class="code docutils literal notranslate"><span class="pre">stochprop.gravity_waves</span></code> integrates each Fourier component individually and distributes calculations via <code class="code docutils literal notranslate"><span class="pre">multiprocessing</span></code>.  In preliminary evaluations, the implementation has able to compute the full gravity wave field in less than 2 minutes when using 10 CPUs.</p></li>
 <li><p>For each Fourier component combination, <span class="math notranslate nohighlight">\(k, l, \omega\)</span>, several checks are made and pre-analysis completed:</p>
 <ol class="arabic simple">
-<li><p>Those Fourier components for which <span class="math notranslate nohighlight">\(k_h &gt; k_\text{max}\)</span> are masked out of the calculation as well as those for which <span class="math notranslate nohighlight">\(C = \frac{N}{m} &gt; 90 \frac{\text{m}}{\text{s}}\)</span> and those for which <span class="math notranslate nohighlight">\(c_g \left( z_\text{src} \right) &lt; 0.5 \frac{\text{m}}{\text{s}}\)</span>.</p></li>
+<li><p>Those Fourier components for which <span class="math notranslate nohighlight">\(k_h &gt; k_\text{max}\)</span> are masked out of the calculation as well as those for which <span class="math notranslate nohighlight">\(C = \frac{N}{m} &gt; 90 \frac{\text{m}}{\text{s}}\)</span> and those for which <span class="math notranslate nohighlight">\(c_{g,z} \left( z_\text{src} \right) &lt; 0.5 \frac{\text{m}}{\text{s}}\)</span>.</p></li>
 <li><p>Turning heights at which <span class="math notranslate nohighlight">\(m^2 \left( z_t \right) \rightarrow 0\)</span> are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.</p></li>
 </ol>
 </li>
-<<<<<<< HEAD
-<li><p>The relations above for <span class="math notranslate nohighlight">\(\hat{w} \left( k, l, \omega, z \right)\)</span> are used to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists</p>
-<ol class="arabic simple">
-<li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 6 hours to determine whether energy has reached that altitude.</p></li>
-=======
 <li><p>The relations above for <span class="math notranslate nohighlight">\(\hat{w} \left( k, l, \omega, z \right)\)</span> are used to define the solution below the source height and to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists</p>
-<ul class="simple">
-<li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.</p></li>
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
+<ol class="arabic simple">
+<li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 8 hours to determine whether energy has reached that altitude.</p></li>
 <li><p>Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.</p></li>
+<li><p>Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> compute each Fourier component independently and use available <code class="code docutils literal notranslate"><span class="pre">multiprocessing</span></code> tools to run the calculations in parallel.  For <span class="math notranslate nohighlight">\(N_k = 128\)</span> and <span class="math notranslate nohighlight">\(dx=4\)</span>, the gravity wave perturbations can be computed using 10 CPUs in approximatley 5 minutes.</p></li>
 </ol>
 </li>
-<li><p>The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using <code class="code docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code> on the appropriate axes and the <span class="math notranslate nohighlight">\(\omega\)</span> integration is simplified by taking (t=0) in the solution which convert this Fourier inversion to a simple integration.</p></li>
+<li><p>The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using <code class="code docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code> on the appropriate axes and the <span class="math notranslate nohighlight">\(\omega\)</span> integration is simplified by setting <span class="math notranslate nohighlight">\(t=0\)</span> in the solution which reduces the time/frequency domain inversion to a simple integration,</p></li>
 </ul>
 </li>
 </ul>
@@ -334,37 +322,59 @@ c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -
 <ul class="simple">
 <li><p>Use of the methods is summarized in the below example:</p></li>
 </ul>
-<<<<<<< HEAD
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-
-<span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">gravity_waves</span>
-=======
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stochprop</span> <span class="kn">import</span> <span class="n">gravity_waves</span>
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
         <span class="n">atmo_spec</span> <span class="o">=</span> <span class="s2">&quot;profs/01/g2stxt_2010010100_39.7393_-104.9900.dat&quot;</span>
         <span class="n">output_path</span> <span class="o">=</span> <span class="s2">&quot;gw_perturb&quot;</span>
 
         <span class="n">t0</span> <span class="o">=</span> <span class="mf">6.0</span> <span class="o">*</span> <span class="mf">3600.0</span>
-        <span class="n">dx</span><span class="p">,</span> <span class="n">Nk</span> <span class="o">=</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mi">128</span>
 
         <span class="c1"># Run gravity wave calculation</span>
-        <span class="n">gravity_waves</span><span class="o">.</span><span class="n">perturb_atmo</span><span class="p">(</span><span class="n">atmo_spec</span><span class="p">,</span> <span class="s2">&quot;gw_perturb&quot;</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span> <span class="n">Nk</span><span class="o">=</span><span class="n">Nk</span><span class="p">)</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>Command line interface (CLI) options are also included for generating perturbed atmospheric specifications,</p></li>
-</ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>stochprop gravity-waves --atmo-file profs/01/g2stxt_2010010100_39.7393_-104.9900.dat --out gw_perturb --dx <span class="m">2</span>.0 --nk <span class="m">128</span> --cpu-cnt <span class="m">8</span>
+        <span class="n">gravity_waves</span><span class="o">.</span><span class="n">perturb_atmo</span><span class="p">(</span><span class="n">atmo_spec</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">t0</span><span class="o">=</span><span class="n">t0</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul>
-<li><p>A command line interface (CLI) method is also included and can be utilized more easily</p>
+<li><p>A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">gravity-waves</span> <span class="pre">--help</span></code>:</p>
 <blockquote>
-<div></div></blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop gravity-waves [OPTIONS]</span>
+
+<span class="go">Gravity wave perturbation methods based on Drob et al. (2013) method.</span>
+
+<span class="go">More info...</span>
+
+<span class="go">Options:</span>
+<span class="go">  --atmo-file TEXT        Reference atmspheric specification (required)</span>
+<span class="go">  --out TEXT              Output prefix (required)</span>
+<span class="go">  --sample-cnt INTEGER    Number of perturbated samples (default: 25)</span>
+<span class="go">  --t0 FLOAT              Propagation time from source [hr] (default: 8)</span>
+<span class="go">  --dx FLOAT              Horizontal wavenumber scale [km] (default: 2.0)</span>
+<span class="go">  --dz FLOAT              Altitude resolution for integration [km] (default: 0.2)</span>
+<span class="go">  --Nk INTEGER            Horizontal wavenumber resolution (default: 128)</span>
+<span class="go">  --Nom INTEGER           Frequency resolution (default: 5)</span>
+<span class="go">  --random-phase BOOLEAN  Randomize phase at source [bool] (default: False)</span>
+<span class="go">  --z-src FLOAT           Gravity wave source altitude [km] (default: 20.0)</span>
+<span class="go">  --m-star FLOAT          Gravity wave source spectrum peak [km] (default: 2.5 / (2 pi))</span>
+<span class="go">  --cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)</span>
+<span class="go">  -h, --help              Show this message and exit.</span>
+</pre></div>
+</div>
+</div></blockquote>
 </li>
+<li><p>An example CLI usage is:</p></li>
 </ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>stochprop gravity-waves --atmo-file profs/01/g2stxt_2010010100_39.7393_-104.9900.dat --out gw_perturb --cpu-cnt <span class="m">10</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>An example set of perturbations is shown below.</p></li>
+</ul>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/gw_example.png"><img alt="alternate text" src="_images/gw_example.png" style="width: 300px;" /></a>
+<figcaption>
+<p><span class="caption-text">Atmospheric perturbations using the <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">gravity-waves</span></code> methods.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 </section>
 </section>
 

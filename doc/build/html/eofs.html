@@ -344,6 +344,37 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </figcaption>
 </figure>
 </section>
+<section id="command-line-interface">
+<h3>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h3>
+<ul>
+<li><p>A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">build-eofs</span> <span class="pre">--help</span></code>:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop build-eofs [OPTIONS]</span>
+
+<span class="go">Gravity wave perturbation methods based on Drob et al. (2013) method.</span>
+
+<span class="go">--------------------</span>
+
+<span class="go">EOF construction methods...</span>
+
+<span class="go">Options:</span>
+<span class="go">  --atmo-dir TEXT          Directory of atmspheric specifications (required)</span>
+<span class="go">  --eofs-path TEXT         EOF output path and prefix (required)</span>
+<span class="go">  --atmo-pattern TEXT      Specification file pattern (default: &#39;*.met&#39;)</span>
+<span class="go">  --atmo-format TEXT       Specification format (default: &#39;zTuvdp&#39;</span>
+<span class="go">  --save-datetime BOOLEAN  Save date time info (default: False)</span>
+<span class="go">  --eof-cnt INTEGER        Number of EOFs to store (default: 100)</span>
+<span class="go">  -h, --help               Show this message and exit.</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>An example CLI usage is:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>stochprop build-eofs --atmo-dir profs/01/ --atmo-pattern g2stxt_* --eofs-path eofs/examples
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 

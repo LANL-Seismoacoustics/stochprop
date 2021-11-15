@@ -26,6 +26,7 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -164,19 +165,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-<<<<<<< HEAD
-  <section id="empirical-orthogonal-function-analysis">
-<h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-stochprop.eofs"></span><dl class="py function">
+  <section id="module-stochprop.eofs">
+<span id="empirical-orthogonal-function-analysis"></span><h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#module-stochprop.eofs" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
 <dt class="sig sig-object py" id="stochprop.eofs.build_atmo_matrix">
 <span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">build_atmo_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'*.met'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skiprows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_alts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prof_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'zTuvdp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">latlon0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_datetime</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_atmo_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.build_atmo_matrix" title="Permalink to this definition">¶</a></dt>
-=======
-  <div class="section" id="module-stochprop.eofs">
-<span id="empirical-orthogonal-function-analysis"></span><h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#module-stochprop.eofs" title="Permalink to this headline">¶</a></h1>
-<dl class="function">
-<dt id="stochprop.eofs.build_atmo_matrix">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">build_atmo_matrix</code><span class="sig-paren">(</span><em>path</em>, <em>pattern='*.met'</em>, <em>skiprows=0</em>, <em>ref_alts=None</em>, <em>prof_format='zTuvdp'</em>, <em>latlon0=None</em>, <em>return_datetime=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#build_atmo_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.build_atmo_matrix" title="Permalink to this definition">¶</a></dt>
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 <dd><p>Read in a list of atmosphere files from the path location
 matching a specified pattern for continued analysis.</p>
 <dl class="field-list simple">
@@ -353,21 +346,10 @@ functions) and singular values to file</p>
 </dl>
 </dd></dl>
 
-<<<<<<< HEAD
 <dl class="py function">
 <dt class="sig sig-object py" id="stochprop.eofs.density">
 <span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">density</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#density"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.density" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Computes the atmospheric density according to </dt><dd><p>the US standard atmosphere model using a 
-polynomial fit</p>
-</dd>
-</dl>
-=======
-<dl class="function">
-<dt id="stochprop.eofs.density">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">density</code><span class="sig-paren">(</span><em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.density" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit</p>
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -485,21 +467,10 @@ basis functions to compute the maximum likelihood specification</p>
 </dl>
 </dd></dl>
 
-<<<<<<< HEAD
 <dl class="py function">
 <dt class="sig sig-object py" id="stochprop.eofs.pressure">
 <span class="sig-prename descclassname"><span class="pre">stochprop.eofs.</span></span><span class="sig-name descname"><span class="pre">pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#pressure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.eofs.pressure" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Computes the atmospheric pressure according to </dt><dd><p>the US standard atmosphere model using a 
-polynomial fit assuming an ideal gas</p>
-</dd>
-</dl>
-=======
-<dl class="function">
-<dt id="stochprop.eofs.pressure">
-<code class="descclassname">stochprop.eofs.</code><code class="descname">pressure</code><span class="sig-paren">(</span><em>z</em>, <em>T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/eofs.html#pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#stochprop.eofs.pressure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas</p>
->>>>>>> d683c125dabb73070df0c501e257d9bed412197f
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
