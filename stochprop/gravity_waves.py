@@ -230,9 +230,9 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
     m_sqr_vals = m_sqr(k, l, om_intr, H_vals)
 
     if random_phase:
-        phase0 = np.random.random()[0] * (2.0 * np.pi)
+        ph0 = np.random.random(1)[0] * (2.0 * np.pi)
     else:
-        phase0 = 0.0
+        ph0 = 0.0
 
     prog_increment(prog_step)
     if kh < 1.0e-6 or kh > k_max:
@@ -291,11 +291,6 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
             w_phase_vals = np.zeros_like(z_vals)
             w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
             w_phase_vals[src_index + 1: prop_ht_index] = np.array([simps(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, min(len(z_vals), prop_ht_index))])
-
-            if random_phase:
-                ph0 = np.random.random(1)[0] * (2.0 * np.pi)
-            else:
-                ph0 = 0.0
 
             w_spec[:prop_ht_index] = w0 * d0_m_ratios[:prop_ht_index] * (np.cos(ph0 + w_phase_vals[:prop_ht_index]) - 1.0j * np.sin(ph0 + w_phase_vals[:prop_ht_index]))
             w_spec[:prop_ht_index] = w_spec[:prop_ht_index] * np.exp(-w_losses[:prop_ht_index])
@@ -372,7 +367,7 @@ def single_fourier_component_wrapper(args):
     return single_fourier_component(*args)
 
 
-def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N_om=5, ref_lat=40.0, random_phase=False, z_src=20.0, m_star=2.0*np.pi/2.5, figure_out=None, pool=None):
+def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N_om=5, ref_lat=40.0, random_phase=False, z_src=20.0, m_star=(2.0*np.pi)/2.5, figure_out=None, pool=None):
     """
         Loop over Fourier components :math:`\left(k, l, \omega \right)` and compute the spectral components for :math:`\hat{u} \left(k, l, \omega, z \right)`, 
         :math:`\hat{v}\left(k, l, \omega, z \right)`, and :math:`\hat{w} \left(k, l, \omega, z \right)`.  Once computed, apply inverse Fourier transforms to 
@@ -435,8 +430,8 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
     om_min = 2.0 * 7.292e-5 * np.sin(np.radians(ref_lat))
     om_max = np.max(BV_freq(sc_ht(z))) / np.sqrt(5)
 
-    k_vals = np.fft.fftfreq(Nk, d=(2.0 * np.pi) / dx)
-    l_vals = np.fft.fftfreq(Nk, d=(2.0 * np.pi) / dx)
+    k_vals = np.fft.fftfreq(Nk, d=1.0 / dx)
+    l_vals = np.fft.fftfreq(Nk, d=1.0 / dx)
     intr_om_vals = np.linspace(om_min, om_max, N_om)
 
     # Define spectral information for each Fourier component
@@ -488,8 +483,8 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
 
     print('\t' + "Running inverse Fourier transforms to obtain space and time domain solutions.")
 
-    # dk = Nk / (2.0 * dx)
-    dk = (2.0 * np.pi) / dx 
+    dk = Nk / dx
+    # dk = 1.0 / dx 
 
     du_vals = np.fft.ifft(u_spec, axis=0) * dk 
     du_vals = np.fft.ifft(du_vals, axis=1) * dk
@@ -536,7 +531,7 @@ def _perturb_header_txt(prof_path, t0, dx, Nk, N_om, random_phase, z_src, m_star
 
     return result
 
-def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0, dz=0.2, Nk=128, N_om=5, random_phase=False, z_src=20.0, m_star=2.0*np.pi/2.5, env_below=True, cpu_cnt=None, fig_out=None):
+def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0, dz=0.2, Nk=128, N_om=5, random_phase=False, z_src=20.0, m_star=(2.0*np.pi)/2.5, env_below=True, cpu_cnt=None, fig_out=None):
     """
         Use gravity waves to perturb a specified profile using the methods in Drob et al. (2013)
 
@@ -578,10 +573,13 @@ def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0,
     p0_vals = np.copy(ref_atmo[:, 5])
 
     ref_lat = 40.0
-    temp = open(atmo_spec, 'r')
-    for line in temp:
-        if "Location" in line:
-            ref_lat = float(line.split(' ')[-4][:-1])
+    try:
+        temp = open(atmo_spec, 'r')
+        for line in temp:
+            if "Location" in line:
+                ref_lat = float(line.split(' ')[-4][:-1])
+    except:
+        ref_lat = 40.0
 
     if cpu_cnt:
         pl = Pool(cpu_cnt)
@@ -620,8 +618,8 @@ def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0,
 
         u_vals = u0_vals + du_interp(z0_vals) * 1000.0
         v_vals = v0_vals + dv_interp(z0_vals) * 1000.0
-        T_vals = T0_vals + dT_vals * eta_interp(z0_vals)
-        p_vals = p0_vals + dp_vals * eta_interp(z0_vals)
+        T_vals = T0_vals # + dT_vals * eta_interp(z0_vals)
+        p_vals = p0_vals # + dp_vals * eta_interp(z0_vals)
 
         np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z0_vals, T_vals, u_vals, v_vals, d0_vals, p_vals)).T, 
             header=_perturb_header_txt(atmo_spec, t0, dx, Nk, N_om, random_phase, z_src, m_star, m, sample_cnt, [n1_vals[m], n2_vals[m]]), comments='')

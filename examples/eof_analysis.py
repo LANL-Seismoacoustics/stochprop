@@ -10,9 +10,6 @@ import os
 import subprocess
 import numpy as np
 
-import pathos.multiprocessing as mp
-from multiprocessing import cpu_count
-
 from stochprop import eofs
 
 eof_dirs = ["coeffs", "eofs", "samples"]
@@ -56,8 +53,6 @@ if __name__ == '__main__':
         if not os.path.isdir("samples/" + season):
             subprocess.call("mkdir samples/" + season, shell=True)
 
-    pl = mp.ProcessingPool(int(cpu_count() - 1))
-
     # ######################### #
     #  Build atmosphere matrix  #
     #   for EOF construction    #
@@ -73,7 +68,7 @@ if __name__ == '__main__':
     print('\n' + "Computing EOF coefficients for each month...")
     for m in range(12):
         Am, zm = eofs.build_atmo_matrix("profs/", "*.dat", months = ['%02d' % (m + 1)])
-        coeffs = eofs.compute_coeffs(Am, zm, "eofs/" + run_id, "coeffs/" + run_id + "_{:02d}".format(m + 1), eof_cnt=eof_cnt, pool=pl)
+        coeffs = eofs.compute_coeffs(Am, zm, "eofs/" + run_id, "coeffs/" + run_id + "_{:02d}".format(m + 1), eof_cnt=eof_cnt)
 
     coeffs = [0] * 12
     for m in range(12):
@@ -91,11 +86,9 @@ if __name__ == '__main__':
         print('\n' + "Building EOF for " + season_labels[nS])
         A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", months=season_months[nS])
         eofs.compute_eofs(A, z0, "eofs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt)
-        coeffs = eofs.compute_coeffs(A, z0, "eofs/" + run_id+ "_" + season_labels[nS], "coeffs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt, pool=pl)
+        coeffs = eofs.compute_coeffs(A, z0, "eofs/" + run_id+ "_" + season_labels[nS], "coeffs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt)
 
         print('\n' + "Sampling atmospheric state for " + season_labels[nS])
         eofs.sample_atmo(coeffs, "eofs/" + run_id + "_" + season_labels[nS], "samples/" + season_labels[nS] + "/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, prof_cnt=smpl_cnt, coeff_label=season_labels[nS], output_mean=True)
         eofs.maximum_likelihood_profile(coeffs, "eofs/" + run_id+ "_" + season_labels[nS], "samples/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, coeff_label=season_labels[nS])
 
-    pl.close()
-    pl.terminate()

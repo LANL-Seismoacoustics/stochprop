@@ -212,7 +212,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <h2>EOF methods in stochprop<a class="headerlink" href="#eof-methods-in-stochprop" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Empirical Orthogonal Function analysis methods can be accessed by importing <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs</span></code></p></li>
-<li><p>Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  This pre-analysis set up can be completed manually or by running:</p></li>
+<li><p>Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  It is often the case that the transitions from summer to winter and winter to summer are overly similar and can be grouped together so that only 3 season definitions are needed.  This pre-analysis set up can be completed manually or by running:</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
@@ -222,7 +222,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
         <span class="n">eof_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;eofs&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">]</span>
-        <span class="n">season_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;winter&quot;</span><span class="p">,</span> <span class="s2">&quot;spring&quot;</span><span class="p">,</span> <span class="s2">&quot;summer&quot;</span><span class="p">,</span> <span class="s2">&quot;fall&quot;</span><span class="p">]</span>
+        <span class="n">season_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;winter&quot;</span><span class="p">,</span> <span class="s2">&quot;spring&quot;</span><span class="p">,</span> <span class="s2">&quot;summer&quot;</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">eof_dirs</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
@@ -242,19 +242,18 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <li><p>The atmosphere matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span> can be constructed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.build_atmo_matrix</span></code> which accepts the path where specifications are located and a pattern to identify which files to ingest.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>For seasonal analysis, it is useful to initially separate atmospheric specifications by month.  Assuming subdirectories labeled “01”, “02”, “03”, … “12” contain profiles for January through December (see the subdirectories in the examples directory of the package), atmospheres can be ingested and combined using <code class="code docutils literal notranslate"><span class="pre">numpy.vstack</span></code></p></li>
-<li><p>The optional argument, ref_alts, should be used to ensure a common vertical sampling if multiple directories are being ingested in this manner.</p></li>
+<li><p>All specification in a directory can be ingested for analysis by simpy using,</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/01/&quot;</span><span class="p">,</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">)</span>
-<span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
-        <span class="n">A_temp</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/</span><span class="si">{:02d}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="n">z0</span><span class="p">)</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">A</span><span class="p">,</span> <span class="n">A_temp</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;*.dat&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
-<li><p>Alternately, if all profiles are contained within a common directory, ingestion can be completed using a single call,</p></li>
+<li><p>Alternately, specific months, weeks of the year, years, or hours can be defined to limit what information is included in the atmospheric matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span>,</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;g2stxt_*&quot;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;11&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">,</span> <span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;02&#39;</span><span class="p">,</span> <span class="s1">&#39;03&#39;</span><span class="p">])</span>
+<span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="s1">&#39;02&#39;</span><span class="p">])</span>
+<span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">years</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;2010&#39;</span><span class="p">])</span>
+<span class="n">A</span><span class="p">,</span> <span class="n">z0</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;18&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -264,7 +263,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <section id="computing-eofs">
 <h3>Computing EOFs<a class="headerlink" href="#computing-eofs" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>Once the atmosphere matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span> has been ingested, EOF analysis can be completed using:</p></li>
+<li><p>Once the atmosphere matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span>, has been ingested, EOF analysis can be completed using:</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">eofs</span><span class="o">.</span><span class="n">compute_eofs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">z0</span><span class="p">,</span> <span class="s2">&quot;eofs/examples&quot;</span><span class="p">)</span>
 </pre></div>
@@ -322,9 +321,9 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <li><p>For identification of seasonality by month, the coefficient sets are first computed for each individual month using:</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">12</span>
-<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">):</span>
-    <span class="n">Am</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/</span><span class="si">{:02d}</span><span class="s2">/&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">g2stxt_</span><span class="o">*</span><span class="s2">&quot;)</span>
-    <span class="n">coeffs</span><span class="p">[</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">compute_coeffs</span><span class="p">(</span><span class="n">Am</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="s2">&quot;eofs/example&quot;</span><span class="p">,</span> <span class="s2">&quot;coeffs/example_</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">),</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="n">eof_cnt</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>
+    <span class="n">Am</span><span class="p">,</span> <span class="n">zm</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">build_atmo_matrix</span><span class="p">(</span><span class="s2">&quot;profs/&quot;</span><span class="p">,</span> <span class="o">*.</span><span class="n">dat</span><span class="s2">&quot;, months = [&#39;</span><span class="si">%02d</span><span class="s2">&#39; % (m + 1)])</span>
+    <span class="n">coeffs</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">eofs</span><span class="o">.</span><span class="n">compute_coeffs</span><span class="p">(</span><span class="n">Am</span><span class="p">,</span> <span class="n">zm</span><span class="p">,</span> <span class="s2">&quot;eofs/&quot;</span> <span class="o">+</span> <span class="n">run_id</span><span class="p">,</span> <span class="s2">&quot;coeffs/&quot;</span> <span class="o">+</span> <span class="n">run_id</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">{:02d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="n">eof_cnt</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -347,21 +346,24 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <section id="command-line-interface">
 <h3>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h3>
 <ul>
-<li><p>A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">build-eofs</span> <span class="pre">--help</span></code>:</p>
+<li><p>A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">eof-construct</span> <span class="pre">--help</span></code>:</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop build-eofs [OPTIONS]</span>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop eof-construct [OPTIONS]</span>
 
-<span class="go">Gravity wave perturbation methods based on Drob et al. (2013) method.</span>
+<span class="go">Use a SVD to construct Empirical Orthogonal Functions (EOFs) from a suite of atmospheric specifications</span>
 
-<span class="go">--------------------</span>
-
-<span class="go">EOF construction methods...</span>
+<span class="go">Example Usage:</span>
+<span class="go">        stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example</span>
+<span class="go">        stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection &#39;[10, 11, 12, 01, 02, 03]&#39;</span>
 
 <span class="go">Options:</span>
 <span class="go">  --atmo-dir TEXT          Directory of atmspheric specifications (required)</span>
 <span class="go">  --eofs-path TEXT         EOF output path and prefix (required)</span>
 <span class="go">  --atmo-pattern TEXT      Specification file pattern (default: &#39;*.met&#39;)</span>
-<span class="go">  --atmo-format TEXT       Specification format (default: &#39;zTuvdp&#39;</span>
+<span class="go">  --atmo-format TEXT       Specification format (default: &#39;zTuvdp&#39;)</span>
+<span class="go">  --month-selection TEXT   Limit analysis to specific month(s) (default=None)</span>
+<span class="go">  --week-selection TEXT    Limit analysis to specific week(s) (default=None)</span>
+<span class="go">  --year-selection TEXT    Limit analysis to specific year(s) (default=None)</span>
 <span class="go">  --save-datetime BOOLEAN  Save date time info (default: False)</span>
 <span class="go">  --eof-cnt INTEGER        Number of EOFs to store (default: 100)</span>
 <span class="go">  -h, --help               Show this message and exit.</span>
@@ -369,11 +371,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </div>
 </div></blockquote>
 </li>
-<li><p>An example CLI usage is:</p></li>
 </ul>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>stochprop build-eofs --atmo-dir profs/01/ --atmo-pattern g2stxt_* --eofs-path eofs/examples
-</pre></div>
-</div>
 </section>
 </section>
 </section>

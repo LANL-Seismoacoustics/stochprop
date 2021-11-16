@@ -262,6 +262,35 @@
 </figcaption>
 </figure>
 </section>
+<section id="command-line-interface">
+<h2>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<ul>
+<li><p>Command line methods are included to access the perturbation methods more efficiently.  Usage info for the EOF perturbation methods can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">eof-perturb</span> <span class="pre">--help</span></code>:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop eof-perturb [OPTIONS]</span>
+
+<span class="go">Use a set of EOFs to perturb a reference atmospheric specification with a defined standard deviation.</span>
+
+<span class="go">Example Usage:</span>
+<span class="go">        stochprop eof-perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test</span>
+
+<span class="go">Options:</span>
+<span class="go">  --atmo-file TEXT               Reference atmspheric specification (required)</span>
+<span class="go">  --eofs-path TEXT               EOF output path and prefix (required)</span>
+<span class="go">  --out TEXT                     Output prefix (required)</span>
+<span class="go">  --std-dev Float                Standard deviation (default: 10 m/s)</span>
+<span class="go">  --eof-max INTEGER              Maximum EOF coefficient to use (default: 100)</span>
+<span class="go">  --eof-cnt INTEGER              Number of EOFs to use (default: 50)</span>
+<span class="go">  --sample-cnt INTEGER           Number of perturbed samples (default: 25)</span>
+<span class="go">  --alt-weight FLOAT             Altitude weighting power (default: 2.0)</span>
+<span class="go">  --singular-value-weight FLOAT  Sing. value weighting power (default: 0.25)</span>
+<span class="go">  -h, --help                     Show this message and exit.</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+</section>
 </section>
 
 

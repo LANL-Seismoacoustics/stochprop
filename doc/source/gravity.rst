@@ -145,7 +145,7 @@ Gravity Wave implementation in stochprop
   
     #. Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.
 
-    #. Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in :code:`stochprop` compute each Fourier component independently and use available :code:`multiprocessing` tools to run the calculations in parallel.  For :math:`N_k = 128` and :math:`dx=4`, the gravity wave perturbations can be computed using 10 CPUs in approximatley 5 minutes.
+    #. Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in :code:`stochprop` compute each Fourier component independently and use available :code:`multiprocessing` tools to run the calculations in parallel.  For :math:`N_k = 128` and :math:`dx=4`, the gravity wave perturbations can be computed using 10 CPUs in approximatley 20 - 30 minutes.
 
   * The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using :code:`numpy.fft.ifft` on the appropriate axes and the :math:`\omega` integration is simplified by setting :math:`t=0` in the solution which reduces the time/frequency domain inversion to a simple integration,
 
@@ -173,22 +173,23 @@ Gravity Wave implementation in stochprop
 
 		Usage: stochprop gravity-waves [OPTIONS]
 
-		Gravity wave perturbation methods based on Drob et al. (2013) method.
+		Gravity wave perturbation calculation based on Drob et al. (2013) method.
 
-  		More info...
+		Example Usage:
+       		stochprop gravity-waves --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw
 
 		Options:
   		  --atmo-file TEXT        Reference atmspheric specification (required)
 		  --out TEXT              Output prefix (required)
 		  --sample-cnt INTEGER    Number of perturbated samples (default: 25)
 		  --t0 FLOAT              Propagation time from source [hr] (default: 8)
-		  --dx FLOAT              Horizontal wavenumber scale [km] (default: 2.0)
-		  --dz FLOAT              Altitude resolution for integration [km] (default: 0.2)
-		  --Nk INTEGER            Horizontal wavenumber resolution (default: 128)
-		  --Nom INTEGER           Frequency resolution (default: 5)
+		  --dx FLOAT              Horizontal wavenumber scale [km] (default: 4.0)
+		  --dz FLOAT              Altitude resolution [km] (default: 0.2)
+		  --nk INTEGER            Horizontal wavenumber resolution (default: 128)
+		  --nom INTEGER           Frequency resolution (default: 5)
 		  --random-phase BOOLEAN  Randomize phase at source [bool] (default: False)
 		  --z-src FLOAT           Gravity wave source altitude [km] (default: 20.0)
-		  --m-star FLOAT          Gravity wave source spectrum peak [km] (default: 2.5 / (2 pi))
+		  --m-star FLOAT          Gravity wave source spectrum peak [1/km] (default: (2 pi) / 2.5)
 		  --cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)
 		  -h, --help              Show this message and exit.
 
@@ -206,5 +207,4 @@ Gravity Wave implementation in stochprop
     :alt: alternate text
     :figclass: align-center
     
-    Atmospheric perturbations using the :code:`stochprop gravity-waves` methods.
-
+* Note: Although perturbations to the ambient temperature are included in the Drob et al. (2013) discussion, they are not included here and modifications to the :math:`N_k`, :math:`dx`, and :math:`N_\omega` values often cause issues with the calculation of gravity waves.  Work is ongoing to debug and improve the efficiency of the methods here and will be added in a future update of :code:`stochprop`.

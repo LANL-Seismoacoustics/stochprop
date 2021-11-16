@@ -4,6 +4,11 @@
 \ifdefined\pdfpxdimen
    \let\sphinxpxdimen\pdfpxdimen\else\newdimen\sphinxpxdimen
 \fi \sphinxpxdimen=.75bp\relax
+\ifdefined\pdfimageresolution
+    \pdfimageresolution= \numexpr \dimexpr1in\relax/\sphinxpxdimen\relax
+\fi
+%% let collapsible pdf bookmarks panel have high depth per default
+\PassOptionsToPackage{bookmarksdepth=5}{hyperref}
 
 \PassOptionsToPackage{warn}{textcomp}
 \usepackage[utf8]{inputenc}
@@ -28,35 +33,18 @@
 
 
 
-\usepackage{times}
-\expandafter\ifx\csname T@LGR\endcsname\relax
-\else
-% LGR was declared as font encoding
-  \substitutefont{LGR}{\rmdefault}{cmr}
-  \substitutefont{LGR}{\sfdefault}{cmss}
-  \substitutefont{LGR}{\ttdefault}{cmtt}
-\fi
-\expandafter\ifx\csname T@X2\endcsname\relax
-  \expandafter\ifx\csname T@T2A\endcsname\relax
-  \else
-  % T2A was declared as font encoding
-    \substitutefont{T2A}{\rmdefault}{cmr}
-    \substitutefont{T2A}{\sfdefault}{cmss}
-    \substitutefont{T2A}{\ttdefault}{cmtt}
-  \fi
-\else
-% X2 was declared as font encoding
-  \substitutefont{X2}{\rmdefault}{cmr}
-  \substitutefont{X2}{\sfdefault}{cmss}
-  \substitutefont{X2}{\ttdefault}{cmtt}
-\fi
+\usepackage{tgtermes}
+\usepackage{tgheros}
+\renewcommand{\ttdefault}{txtt}
+
 
 
 \usepackage[Bjarne]{fncychap}
 \usepackage{sphinx}
 
-\fvset{fontsize=\small}
+\fvset{fontsize=auto}
 \usepackage{geometry}
+
 
 % Include hyperref last.
 \usepackage{hyperref}
@@ -65,13 +53,14 @@
 % Set up styles of URL: it should be placed after hyperref.
 \urlstyle{same}
 
+
 \usepackage{sphinxmessages}
 \setcounter{tocdepth}{2}
 
 
 
 \title{stochprop Documentation}
-\date{Oct 28, 2021}
+\date{Nov 15, 2021}
 \release{1.0}
 \author{P. Blom}
 \newcommand{\sphinxlogo}{\vbox{}}
@@ -87,19 +76,23 @@
 \phantomsection\label{\detokenize{index::doc}}
 
 
+\sphinxAtStartPar
 Simulations of infrasonic propagation in the atmosphere typically utilize a single atmospheric specification describing the acoustic sound speed, ambient winds, and density as a function of altitude.  Due to the dynamic and sparsely sampled nature of the atmosphere, there is a notable amount of uncertainty in the atmospheric state at a given location and time so that a more robust analysis of infrasonic propagation requires inclusion of this uncertainty.  This Python library, stochprop, has been implemented using methods developed jointly by infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi’s National Center for Physical Acoustics (NCPA).  This software library includes methods to quantify variability in the atmospheric state, identify typical seasonal variability in the atmospheric state and generate suites of representative atmospheric states during a given season, as well as perform uncertainty analysis on a specified atmospheric state given some level of uncertainty.  These methods have been designed to interface between propagation modeling capabilities such as InfraGA/GeoAc and NCPAprop and signal analysis methods in the LANL InfraPy tool.
 
 
 \chapter{Contents}
-\label{\detokenize{index:module-stochprop}}\label{\detokenize{index:contents}}\index{stochprop (module)@\spxentry{stochprop}\spxextra{module}}
+\label{\detokenize{index:module-stochprop}}\label{\detokenize{index:contents}}\index{module@\spxentry{module}!stochprop@\spxentry{stochprop}}\index{stochprop@\spxentry{stochprop}!module@\spxentry{module}}
 
 \section{Authorship \& License Info}
 \label{\detokenize{authorship:authorship-license-info}}\label{\detokenize{authorship:authorship}}\label{\detokenize{authorship::doc}}
+\sphinxAtStartPar
 Authors: Philip Blom
 
+\sphinxAtStartPar
 © 2020 Triad National Security, LLC. All rights reserved.
 
-Notice: These data were produced by Triad National Security, LLC under Contract No. 89233218CNA000001 with the Department of Energy/National Nuclear Security Administration. For five (5) years from September 21,2020, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this data to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this data to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE/NNSA. Neither the United States nor the United States Department of Energy/National Nuclear Security Administration, nor any of their employees, makes any warranty, express or implied, or assumes any legal liability or responsibility for the accuracy, completeness, or usefulness of any data, apparatus, product, or process disclosed, or represents that its use would not infringe privately owned rights.
+\sphinxAtStartPar
+Notice: These data were produced by Triad National Security, LLC under Contract No. 89233218CNA000001 with the Department of Energy/National Nuclear Security Administration. For five (5) years from September 21,2020, the Government is granted for itself and others acting on its behalf a nonexclusive, paid\sphinxhyphen{}up, irrevocable worldwide license in this data to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid\sphinxhyphen{}up, irrevocable worldwide license in this data to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE/NNSA. Neither the United States nor the United States Department of Energy/National Nuclear Security Administration, nor any of their employees, makes any warranty, express or implied, or assumes any legal liability or responsibility for the accuracy, completeness, or usefulness of any data, apparatus, product, or process disclosed, or represents that its use would not infringe privately owned rights.
 
 
 \section{Installation}
@@ -107,6 +100,7 @@ Notice: These data were produced by Triad National Security, LLC under Contract 
 
 \subsection{Anaconda}
 \label{\detokenize{installation:anaconda}}
+\sphinxAtStartPar
 The installation of stochprop is ideally completed using pip through Anaconda to resolve and download the correct python libraries. If you don’t currently have anaconda installed
 on your system, please do that first.  Anaconda can be downloaded from \sphinxurl{https://www.anaconda.com/distribution/}.
 
@@ -116,13 +110,16 @@ on your system, please do that first.  Anaconda can be downloaded from \sphinxur
 
 \subsubsection{Propagation Modeling Methods}
 \label{\detokenize{installation:propagation-modeling-methods}}
+\sphinxAtStartPar
 A subset of the stochprop methods require access to the  LANL InfraGA/GeoAc ray tracing methods as well as the NCPAprop normal mode methods.  Many of the
 empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 InfraGA/GeoAc: \sphinxurl{https://github.com/LANL-Seismoacoustics/infraGA}
 
 \item {} 
+\sphinxAtStartPar
 NCPAprop: \sphinxurl{https://github.com/chetzer-ncpa/ncpaprop}
 
 \end{itemize}
@@ -130,13 +127,15 @@ NCPAprop: \sphinxurl{https://github.com/chetzer-ncpa/ncpaprop}
 
 \subsubsection{InfraPy Signal Analysis Methods}
 \label{\detokenize{installation:infrapy-signal-analysis-methods}}
+\sphinxAtStartPar
 The propagation models constructed in stochprop are intended for use in the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE)
-methods in the LANL InfraPy signal analysis software suite.  As with the InfraGA/GeoAc and NCPAprop linkages, many of the EOF-based atmospheric statistics methods
+methods in the LANL InfraPy signal analysis software suite.  As with the InfraGA/GeoAc and NCPAprop linkages, many of the EOF\sphinxhyphen{}based atmospheric statistics methods
 can be utilized without InfraPy, but full usage will require installation of InfraPy (\sphinxurl{https://github.com/LANL-Seismoacoustics/infrapy}).
 
 
 \subsection{Installing stochprop}
 \label{\detokenize{installation:installing-stochprop}}
+\sphinxAtStartPar
 Once Anaconda is installed, you can install stochprop using pip by navigating to the base directory of the package (there will be a file there
 named setup.py).  Assuming InfraPy has been installed within a conda environment called infrapy\_env, it is recommended to install stochprop in the same environment using:
 
@@ -145,20 +144,24 @@ named setup.py).  Assuming InfraPy has been installed within a conda environment
 \PYGZgt{}\PYGZgt{} pip install \PYGZhy{}e .
 \end{sphinxVerbatim}
 
+\sphinxAtStartPar
 Otherwise, a new conda environment should be created with the underlying dependencies and pip should be used to install there (work on this later):
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYGZgt{}\PYGZgt{} conda env create \PYGZhy{}f stochprop\PYGZus{}env.yml
 \end{sphinxVerbatim}
 
+\sphinxAtStartPar
 If this command executes correctly and finishes without errors, it should print out instructions on how to activate and deactivate the new environment:
 
+\sphinxAtStartPar
 To activate the environment, use:
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYGZgt{}\PYGZgt{} conda activate stochprop\PYGZus{}env
 \end{sphinxVerbatim}
 
+\sphinxAtStartPar
 To deactivate an active environment, use
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
@@ -168,6 +171,7 @@ To deactivate an active environment, use
 
 \subsection{Testing stochprop}
 \label{\detokenize{installation:testing-stochprop}}
+\sphinxAtStartPar
 Once the installation is complete, you can test the methods by navigating to the /examples directory located in the base directory, and running:
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
@@ -175,6 +179,7 @@ Once the installation is complete, you can test the methods by navigating to the
 \PYGZgt{}\PYGZgt{} python atmo\PYGZus{}analysis.py
 \end{sphinxVerbatim}
 
+\sphinxAtStartPar
 A set of propagation analyses are included, but require installation of infraGA/GeoAc and NCPAprop.  These analysis can be run to ensure linkages are
 working between stochprop and the propagation libraries, but note that the simulation of propagation through even the example suite of atmosphere
 takes a significant amount of time.
@@ -183,12 +188,15 @@ takes a significant amount of time.
 \section{Stochastic Propagation Analysis}
 \label{\detokenize{analysis:stochastic-propagation-analysis}}\label{\detokenize{analysis:analysis}}\label{\detokenize{analysis::doc}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The atmospheric state at a given time and location is uncertain due to its dynamic and sparsely sampled nature
 
 \item {} 
+\sphinxAtStartPar
 Propagation effects for infrasonic signals must account for this uncertainty in order to properly quantify uncertainty in analysis results
 
 \item {} 
+\sphinxAtStartPar
 A methodology of constructing propagation statistics has been developed that identifies a suite of atmospheric states that characterize the possible space of scenarios, runs propagation simulations through each possible state, and builds statistical distributions for propagation effects
 
 \end{itemize}
@@ -201,6 +209,7 @@ A methodology of constructing propagation statistics has been developed that ide
 \caption{Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects}\label{\detokenize{analysis:id1}}\end{figure}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The tools included here provide a framework for constructing such models as well as perform a number of analyses related to atmospheric variability and uncertainty
 
 \end{itemize}
@@ -209,9 +218,11 @@ The tools included here provide a framework for constructing such models as well
 \subsection{Empirical Orthogonal Function Analysis}
 \label{\detokenize{analysis:eofs}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Empirical Orthogonal Functions (EOFs) provide a mathematical means of measuring variations in the atmospheric state
 
 \item {} 
+\sphinxAtStartPar
 Methods measure EOF statistics to reduce the number of atmospheric samples necessary to characterize the atmosphere at a given location during a specified time period
 
 \end{itemize}
@@ -220,12 +231,15 @@ Methods measure EOF statistics to reduce the number of atmospheric samples neces
 \subsection{Atmospheric Fitting, Sampling, and Perturbation}
 \label{\detokenize{analysis:sampling}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 EOFs can be used to fit a specified atmosphere by computing coefficients for each EOF
 
 \item {} 
+\sphinxAtStartPar
 Statistics of the coefficients for a suite of atmospheric states can be used to generate a set of characteristics samples
 
 \item {} 
+\sphinxAtStartPar
 Randomly generated EOF coefficients can be used to generate perturbations to an initial atmospheric specification and construct a suite of atmospheric states that fall within expected uncertainty
 
 \end{itemize}
@@ -234,9 +248,11 @@ Randomly generated EOF coefficients can be used to generate perturbations to an 
 \subsection{Propagation Statistics}
 \label{\detokenize{analysis:propagation}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 InfraGA/GeoAc ray tracing analysis can be applied to a suite of atmospheric states to predict geometric propagation characteristics such as arrival location, travel time, and direction of arrival needed to estimate the source location
 
 \item {} 
+\sphinxAtStartPar
 NCPAprop modal simulations can be applied to a suite of atmospheric states to predict finite frequency transmission loss needed to characterize the infrasonic source
 
 \end{itemize}
@@ -245,9 +261,11 @@ NCPAprop modal simulations can be applied to a suite of atmospheric states to pr
 \subsection{Gravity Wave Perturbations}
 \label{\detokenize{analysis:gravity}}\begin{itemize}
 \item {} 
-Gravity wave perturbations are spatially and temporally sub-grid scale structures that aren’t typically captured in atmospheric specifications
+\sphinxAtStartPar
+Gravity wave perturbations are spatially and temporally sub\sphinxhyphen{}grid scale structures that aren’t typically captured in atmospheric specifications
 
 \item {} 
+\sphinxAtStartPar
 The methods included here are based on the vertical ray tracing calculation discussed by Drob et al. (2013) and also investigated by Lalande \& Waxler (2016)
 \begin{quote}
 
@@ -255,9 +273,11 @@ The methods included here are based on the vertical ray tracing calculation disc
 \subsubsection{Empirical Orthogonal Function Analysis}
 \label{\detokenize{eofs:empirical-orthogonal-function-analysis}}\label{\detokenize{eofs:eofs}}\label{\detokenize{eofs::doc}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Empirical orthogonal functions (EOFs) are a mathematical tool useful for characterizing a suite of vectors or functions via construction of basis vectors or functions.
 
 \item {} 
+\sphinxAtStartPar
 Consider \(N\) fields, \(a_n (\vec{z})\), sampled at \(M\) points, \(z_m\) that define a matrix,
 
 \end{itemize}
@@ -271,6 +291,7 @@ a_1 \left( z_M \right) & a_2 \left( z_M \right)     & \cdots        & a_N \left(
 \end{pmatrix}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Analysis of this \(N \times M\) matrix to compute EOFs entails first extracting the mean set of values and then applying a singular value decomposition (SVD) to define singular values and orthogonal functions,
 
 \end{itemize}
@@ -280,6 +301,7 @@ Analysis of this \(N \times M\) matrix to compute EOFs entails first extracting 
 \bar{a} \left( z_m \right), \mathcal{S}_n^{(a)}, \mathcal{E}_n^{(A)} \left( z_m \right)\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The resulting EOF information can be used to reproduce any other other field sampled on the same set of points,
 
 \end{itemize}
@@ -288,9 +310,11 @@ The resulting EOF information can be used to reproduce any other other field sam
 \mathcal{C}_n^{(b)} = \sum_m{\mathcal{E}_n^{(A)} \left( z_m \right) \left( b \left( z_m \right) - \bar{a} \left( z_m \right) \right)},\\
 \end{aligned}\end{align*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Note that the coefficients, \(\mathcal{C}_n^{(b)}\), are defined by the projection of the new function onto each EOF (accounting for the mean, \(\bar{a}\))
 
 \item {} 
+\sphinxAtStartPar
 Consider a second matrix, \(B\left( \vec{z} \right)\) defined by a set of \(K\) fields, \(b_k \left( \vec{z} \right)\).  Each of these columns produces a set of coefficients that can be used to define a distribution via a kernel density estimate (KDE),
 
 \end{itemize}
@@ -300,6 +324,7 @@ Consider a second matrix, \(B\left( \vec{z} \right)\) defined by a set of \(K\) 
     \mathcal{P}_n^{(B)} \left( \mathcal{C} \right).\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Comparison of the distributions for various matrices, \(B_1, B_2, B_3, \ldots\), allows one to define the relative similarity between differen sets by computing the overlap and weighting each term by the EOF singular values,
 
 \end{itemize}
@@ -307,6 +332,7 @@ Comparison of the distributions for various matrices, \(B_1, B_2, B_3, \ldots\),
 \begin{split}\Gamma_{j,k}  =  \sum_n{ \mathcal{S}_n^{(\text{all})} \int{\mathcal{P}_n^{(B_j)} \left( \mathcal{C} \right) \mathcal{P}_n^{(B_k)} \left( \mathcal{C} \right) d \mathcal{C} }}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 In the case of EOF analysis for atmospheric seasonality and variability, each \(a_m(\vec{z})\) is an atmospheric specification sampled at a set of altitudes, \(\vec{z}\), and the set of atmospheric states in \(A\) includes all possible states for the entire year (and potentially multiple years).  The sets of atmospheres in each matrix, \(B_j\), is a subset of \(A\) corresponding to a specific month or other interval.  The coefficient overlap can be computed for all combinations to identify seasonality and determine the grouping of intervals for which propagation effects will be similar.
 
 \end{itemize}
@@ -315,71 +341,76 @@ In the case of EOF analysis for atmospheric seasonality and variability, each \(
 \paragraph{EOF methods in stochprop}
 \label{\detokenize{eofs:eof-methods-in-stochprop}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Empirical Orthogonal Function analysis methods can be accessed by importing \sphinxcode{\sphinxupquote{stochprop.eofs}}
 
 \item {} 
-Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  This pre-analysis set up can be completed manually or by running:
+\sphinxAtStartPar
+Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  It is often the case that the transitions from summer to winter and winter to summer are overly similar and can be grouped together so that only 3 season definitions are needed.  This pre\sphinxhyphen{}analysis set up can be completed manually or by running:
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{k+kn}{import} \PYG{n+nn}{os}
 \PYG{k+kn}{import} \PYG{n+nn}{subprocess}
-\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k+kn}{as} \PYG{n+nn}{np}
+\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k}{as} \PYG{n+nn}{np}
 
 \PYG{k+kn}{from} \PYG{n+nn}{stochprop} \PYG{k+kn}{import} \PYG{n}{eofs}
 
 \PYG{k}{if} \PYG{n+nv+vm}{\PYGZus{}\PYGZus{}name\PYGZus{}\PYGZus{}} \PYG{o}{==} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{\PYGZus{}\PYGZus{}main\PYGZus{}\PYGZus{}}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{:}
         \PYG{n}{eof\PYGZus{}dirs} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{eofs}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{coeffs}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{samples}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
-        \PYG{n}{season\PYGZus{}labels} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{winter}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{spring}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{summer}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{fall}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
+        \PYG{n}{season\PYGZus{}labels} \PYG{o}{=} \PYG{p}{[}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{winter}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{spring}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{summer}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{]}
 
         \PYG{k}{for} \PYG{n+nb}{dir} \PYG{o+ow}{in} \PYG{n}{eof\PYGZus{}dirs}\PYG{p}{:}
                 \PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{isdir}\PYG{p}{(}\PYG{n+nb}{dir}\PYG{p}{)}\PYG{p}{:}
-                        \PYG{n}{subprocess}\PYG{o}{.}\PYG{n}{call}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{mkdir }\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n+nb}{dir}\PYG{p}{,} \PYG{n}{shell}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+                        \PYG{n}{subprocess}\PYG{o}{.}\PYG{n}{call}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{mkdir }\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n+nb}{dir}\PYG{p}{,} \PYG{n}{shell}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
 
         \PYG{k}{for} \PYG{n}{season} \PYG{o+ow}{in} \PYG{n}{season\PYGZus{}labels}\PYG{p}{:}
                 \PYG{k}{if} \PYG{o+ow}{not} \PYG{n}{os}\PYG{o}{.}\PYG{n}{path}\PYG{o}{.}\PYG{n}{isdir}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{samples/}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n}{season}\PYG{p}{)}\PYG{p}{:}
-                        \PYG{n}{subprocess}\PYG{o}{.}\PYG{n}{call}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{mkdir samples/}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n}{season}\PYG{p}{,} \PYG{n}{shell}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{)}
+                        \PYG{n}{subprocess}\PYG{o}{.}\PYG{n}{call}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{mkdir samples/}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n}{season}\PYG{p}{,} \PYG{n}{shell}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
 \end{sphinxVerbatim}
 
 
 \subparagraph{Load Atmosphere Specifications}
 \label{\detokenize{eofs:load-atmosphere-specifications}}\begin{itemize}
 \item {} 
-Atmospheric specifications are available through a number of repositories including the Ground-to-Space (G2S) system, the European Centre for Medium-Range Weather Forecasts (ECMWF), and other sources
+\sphinxAtStartPar
+Atmospheric specifications are available through a number of repositories including the Ground\sphinxhyphen{}to\sphinxhyphen{}Space (G2S) system, the European Centre for Medium\sphinxhyphen{}Range Weather Forecasts (ECMWF), and other sources
 
 \item {} 
+\sphinxAtStartPar
 A convenient source for G2S specifications is the University of Mississippi’s National Center for Physical Acoustics (NCPA) G2S server at \sphinxurl{http://g2s.ncpa.olemiss.edu}
 
 \item {} 
+\sphinxAtStartPar
 The current implementation of EOF methods in stochprop assumes the ingested specifications are formatted such that the columns contain altitude, temperature, zonal winds, meridional winds, density, pressure (that is, \sphinxcode{\sphinxupquote{zTuvdp}} in the infraGA/GeoAc profile options), which is the default output format of the G2S server at NCPA.  Note: a script is included in the infraGA/GeoAc methods to extract profiles in this format from ECMWF netCDF files.
 
 \item {} 
+\sphinxAtStartPar
 The atmosphere matrix, \(A(\vec{z})\) can be constructed using \sphinxcode{\sphinxupquote{stochprop.eofs.build\_atmo\_matrix}} which accepts the path where specifications are located and a pattern to identify which files to ingest.
 \begin{quote}
 \begin{itemize}
 \item {} 
-For seasonal analysis, it is useful to initially separate atmospheric specifications by month.  Assuming subdirectories labeled “01”, “02”, “03”, … “12” contain profiles for January through December (see the subdirectories in the examples directory of the package), atmospheres can be ingested and combined using \sphinxcode{\sphinxupquote{numpy.vstack}}
-
-\item {} 
-The optional argument, ref\_alts, should be used to ensure a common vertical sampling if multiple directories are being ingested in this manner.
+\sphinxAtStartPar
+All specification in a directory can be ingested for analysis by simpy using,
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/01/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{g2stxt\PYGZus{}*}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
-\PYG{k}{for} \PYG{n}{n} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{13}\PYG{p}{)}\PYG{p}{:}
-        \PYG{n}{A\PYGZus{}temp}\PYG{p}{,} \PYG{n}{\PYGZus{}} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/\PYGZob{}:02d\PYGZcb{}/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{n}\PYG{p}{)}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{g2stxt\PYGZus{}*}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{ref\PYGZus{}alts}\PYG{o}{=}\PYG{n}{z0}\PYG{p}{)}
-        \PYG{n}{A} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{vstack}\PYG{p}{(}\PYG{p}{(}\PYG{n}{A}\PYG{p}{,} \PYG{n}{A\PYGZus{}temp}\PYG{p}{)}\PYG{p}{)}
+\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{*.dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
-Alternately, if all profiles are contained within a common directory, ingestion can be completed using a single call,
+\sphinxAtStartPar
+Alternately, specific months, weeks of the year, years, or hours can be defined to limit what information is included in the atmospheric matrix, \(A(\vec{z})\),
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{g2stxt\PYGZus{}*}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{*.dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{months}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{10}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{11}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{12}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{01}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{02}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{03}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{*.dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{weeks}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{01}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{02}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{*.dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{years}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{2010}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
+\PYG{n}{A}\PYG{p}{,} \PYG{n}{z0} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{*.dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{hours}\PYG{o}{=}\PYG{p}{[}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{18}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{]}\PYG{p}{)}
 \end{sphinxVerbatim}
 \end{quote}
 
@@ -389,7 +420,8 @@ Alternately, if all profiles are contained within a common directory, ingestion 
 \subparagraph{Computing EOFs}
 \label{\detokenize{eofs:computing-eofs}}\begin{itemize}
 \item {} 
-Once the atmosphere matrix, \(A(\vec{z})\) has been ingested, EOF analysis can be completed using:
+\sphinxAtStartPar
+Once the atmosphere matrix, \(A(\vec{z})\), has been ingested, EOF analysis can be completed using:
 
 \end{itemize}
 
@@ -398,6 +430,7 @@ Once the atmosphere matrix, \(A(\vec{z})\) has been ingested, EOF analysis can b
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The analysis results are written into files with prefix specified in the function call (“eofs/examples” in this case).  The contents of the files are summarized is the below table.
 
 \end{itemize}
@@ -408,38 +441,52 @@ The analysis results are written into files with prefix specified in the functio
 \begin{tabulary}{\linewidth}[t]{|T|T|}
 \hline
 \sphinxstyletheadfamily 
+\sphinxAtStartPar
 EOF Output File
 &\sphinxstyletheadfamily 
+\sphinxAtStartPar
 Description
 \\
 \hline
-eofs/example-mean\_atmo.dat
+\sphinxAtStartPar
+eofs/example\sphinxhyphen{}mean\_atmo.dat
 &
+\sphinxAtStartPar
 Mean values, \(\bar{a} \left( \vec{z} \right)\) in the above discussion
 \\
 \hline
-eofs/example-singular\_values.dat
+\sphinxAtStartPar
+eofs/example\sphinxhyphen{}singular\_values.dat
 &
+\sphinxAtStartPar
 Singular values corresponding each EOF index
 \\
 \hline
-eofs/example-adiabatic\_snd\_spd.eofs
+\sphinxAtStartPar
+eofs/example\sphinxhyphen{}adiabatic\_snd\_spd.eofs
 &
+\sphinxAtStartPar
 EOFs for the adiabatic sound speed, \(c_\text{ad} = \sqrt{ \gamma \frac{p}{\rho}}\)
 \\
 \hline
-eofs/example-ideal\_gas\_snd\_spd.eofs
+\sphinxAtStartPar
+eofs/example\sphinxhyphen{}ideal\_gas\_snd\_spd.eofs
 &
+\sphinxAtStartPar
 EOFs for the ideal gas sound speed, \(c_\text{ad} = \sqrt{ \gamma R T}\)
 \\
 \hline
-eofs/example-merid\_winds.eofs
+\sphinxAtStartPar
+eofs/example\sphinxhyphen{}merid\_winds.eofs
 &
+\sphinxAtStartPar
 EOFs for the meridional (north/south) winds
 \\
 \hline
-eofs/example-zonal\_winds.eofs
+\sphinxAtStartPar
+eofs/example\sphinxhyphen{}zonal\_winds.eofs
 &
+\sphinxAtStartPar
 EOFs for the zonal (east/west) winds
 \\
 \hline
@@ -448,12 +495,15 @@ EOFs for the zonal (east/west) winds
 \sphinxattableend\end{savenotes}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The EOF file formats is such that the first column contains the altitude points, \(\vec{z}\), and each subsequent column contains the \(n^{th}\) EOF, \(\mathcal{E}_n^{(A)} \left( \vec{z} \right)\)
 
 \item {} 
+\sphinxAtStartPar
 As discussed in Waxler et al. (2020), the EOFs are computed using stacked wind and sound speed values to conserve coupling between the different atmospheric parameters and maintain consistent units (velocity) in the EOF coefficients
 
 \item {} 
+\sphinxAtStartPar
 The resulting EOFs can be used for a number of analyses including atmospheric updating, seasonal studies, perturbation analysis, and similar analyses
 
 \end{itemize}
@@ -469,21 +519,24 @@ The resulting EOFs can be used for a number of analyses including atmospheric up
 \subparagraph{Compute Coefficients and Determine Seasonality}
 \label{\detokenize{eofs:compute-coefficients-and-determine-seasonality}}\begin{itemize}
 \item {} 
-Using the EOFs for the entire calendar year, coefficient sets can be defined for individual months (or other sub-intervals) using the \sphinxcode{\sphinxupquote{stochprop.eofs.compute\_coeffs}} function.
+\sphinxAtStartPar
+Using the EOFs for the entire calendar year, coefficient sets can be defined for individual months (or other sub\sphinxhyphen{}intervals) using the \sphinxcode{\sphinxupquote{stochprop.eofs.compute\_coeffs}} function.
 
 \item {} 
+\sphinxAtStartPar
 For identification of seasonality by month, the coefficient sets are first computed for each individual month using:
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
 \PYG{n}{coeffs} \PYG{o}{=} \PYG{p}{[}\PYG{l+m+mi}{0}\PYG{p}{]} \PYG{o}{*} \PYG{l+m+mi}{12}
-\PYG{k}{for} \PYG{n}{m} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{l+m+mi}{13}\PYG{p}{)}\PYG{p}{:}
-    \PYG{n}{Am}\PYG{p}{,} \PYG{n}{zm} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/\PYGZob{}:02d\PYGZcb{}/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{m}\PYG{p}{)}\PYG{p}{,} \PYG{n}{g2stxt\PYGZus{}}\PYG{o}{*}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{)}
-    \PYG{n}{coeffs}\PYG{p}{[}\PYG{n}{m} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{]} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{compute\PYGZus{}coeffs}\PYG{p}{(}\PYG{n}{Am}\PYG{p}{,} \PYG{n}{zm}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{eofs/example}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{coeffs/example\PYGZus{}\PYGZob{}:02d\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{m}\PYG{p}{)}\PYG{p}{,} \PYG{n}{eof\PYGZus{}cnt}\PYG{o}{=}\PYG{n}{eof\PYGZus{}cnt}\PYG{p}{)}
+\PYG{k}{for} \PYG{n}{m} \PYG{o+ow}{in} \PYG{n+nb}{range}\PYG{p}{(}\PYG{l+m+mi}{12}\PYG{p}{)}\PYG{p}{:}
+    \PYG{n}{Am}\PYG{p}{,} \PYG{n}{zm} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{build\PYGZus{}atmo\PYGZus{}matrix}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{profs/}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{o}{*}\PYG{o}{.}\PYG{n}{dat}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{, months = [}\PYG{l+s+s2}{\PYGZsq{}}\PYG{l+s+si}{\PYGZpc{}02d}\PYG{l+s+s2}{\PYGZsq{}}\PYG{l+s+s2}{ }\PYG{l+s+s2}{\PYGZpc{}}\PYG{l+s+s2}{ (m + 1)])}
+    \PYG{n}{coeffs}\PYG{p}{[}\PYG{n}{m}\PYG{p}{]} \PYG{o}{=} \PYG{n}{eofs}\PYG{o}{.}\PYG{n}{compute\PYGZus{}coeffs}\PYG{p}{(}\PYG{n}{Am}\PYG{p}{,} \PYG{n}{zm}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{eofs/}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n}{run\PYGZus{}id}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{coeffs/}\PYG{l+s+s2}{\PYGZdq{}} \PYG{o}{+} \PYG{n}{run\PYGZus{}id} \PYG{o}{+} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{\PYGZus{}}\PYG{l+s+si}{\PYGZob{}:02d\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{o}{.}\PYG{n}{format}\PYG{p}{(}\PYG{n}{m} \PYG{o}{+} \PYG{l+m+mi}{1}\PYG{p}{)}\PYG{p}{,} \PYG{n}{eof\PYGZus{}cnt}\PYG{o}{=}\PYG{n}{eof\PYGZus{}cnt}\PYG{p}{)}
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The resulting coefficient sets are analyzed using \sphinxcode{\sphinxupquote{stochprop.eofs.compute\_overlap}} to identify how similar various month pairs are:
 
 \end{itemize}
@@ -494,7 +547,8 @@ The resulting coefficient sets are analyzed using \sphinxcode{\sphinxupquote{sto
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
-The output of this analysis is a dendrogram identifying those months that are most similar.  In the below result, May - August is identified as a consistent “summer” season, October - March as “winter”, and September and April as “spring/fall” transition between the two dominant seasons
+\sphinxAtStartPar
+The output of this analysis is a dendrogram identifying those months that are most similar.  In the below result, May \sphinxhyphen{} August is identified as a consistent “summer” season, October \sphinxhyphen{} March as “winter”, and September and April as “spring/fall” transition between the two dominant seasons
 
 \end{itemize}
 
@@ -506,12 +560,47 @@ The output of this analysis is a dendrogram identifying those months that are mo
 \caption{Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure}\label{\detokenize{eofs:id2}}\end{figure}
 
 
+\subparagraph{Command Line interface}
+\label{\detokenize{eofs:command-line-interface}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running \sphinxcode{\sphinxupquote{stochprop eof\sphinxhyphen{}construct \sphinxhyphen{}\sphinxhyphen{}help}}:
+\begin{quote}
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{g+go}{Usage: stochprop eof\PYGZhy{}construct [OPTIONS]}
+
+\PYG{g+go}{Use a SVD to construct Empirical Orthogonal Functions (EOFs) from a suite of atmospheric specifications}
+
+\PYG{g+go}{Example Usage:}
+\PYG{g+go}{        stochprop eof\PYGZhy{}construct \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}dir profs/ \PYGZhy{}\PYGZhy{}eofs\PYGZhy{}path eofs/example}
+\PYG{g+go}{        stochprop eof\PYGZhy{}construct \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}dir profs/ \PYGZhy{}\PYGZhy{}eofs\PYGZhy{}path eofs/example\PYGZus{}winter \PYGZhy{}\PYGZhy{}month\PYGZhy{}selection \PYGZsq{}[10, 11, 12, 01, 02, 03]\PYGZsq{}}
+
+\PYG{g+go}{Options:}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}dir TEXT          Directory of atmspheric specifications (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}eofs\PYGZhy{}path TEXT         EOF output path and prefix (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}pattern TEXT      Specification file pattern (default: \PYGZsq{}*.met\PYGZsq{})}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}format TEXT       Specification format (default: \PYGZsq{}zTuvdp\PYGZsq{})}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}month\PYGZhy{}selection TEXT   Limit analysis to specific month(s) (default=None)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}week\PYGZhy{}selection TEXT    Limit analysis to specific week(s) (default=None)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}year\PYGZhy{}selection TEXT    Limit analysis to specific year(s) (default=None)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}save\PYGZhy{}datetime BOOLEAN  Save date time info (default: False)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}eof\PYGZhy{}cnt INTEGER        Number of EOFs to store (default: 100)}
+\PYG{g+go}{  \PYGZhy{}h, \PYGZhy{}\PYGZhy{}help               Show this message and exit.}
+\end{sphinxVerbatim}
+\end{quote}
+
+\end{itemize}
+
+
 \subsubsection{Atmospheric Fitting, Sampling, and Perturbation}
 \label{\detokenize{sampling:atmospheric-fitting-sampling-and-perturbation}}\label{\detokenize{sampling:sampling}}\label{\detokenize{sampling::doc}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The Empirical Orthogonal Functions (EOFs) constructed using a suite of atmospheric specifications can be utilized in a number of different analyses of the atmospheric state
 
 \item {} 
+\sphinxAtStartPar
 In general, an atmospheric state can be constructed by defining a reference atmosphere, \(b_0 \left( z_m \right)\), and a set of coefficients, \(\mathcal{C}_n\),
 
 \end{itemize}
@@ -522,6 +611,7 @@ In general, an atmospheric state can be constructed by defining a reference atmo
 \paragraph{Fitting an Atmospheric Specification using EOFs}
 \label{\detokenize{sampling:fitting-an-atmospheric-specification-using-eofs}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 In the case that a specific state, \(b \left(z_m \right)\), is known, it can be approximated using the EOF set by using the mean state pulled from the original SVD analysis and coefficients defined by projecting the atmospheric state difference from this mean onto each EOF,
 
 \end{itemize}
@@ -529,6 +619,7 @@ In the case that a specific state, \(b \left(z_m \right)\), is known, it can be 
 \begin{split}b_0 \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n^{(b)} = \sum_m{\mathcal{E}_n \left( z_m \right) \left( b \left( z_m \right) - \bar{a} \left( z_m \right) \right)},\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 These coefficient calculations and construction of a new atmospheric specification can be completed using \sphinxcode{\sphinxupquote{stochprop.eofs.fit\_atmo}} with the path to specific atmospheric state, a set of EOFs, and a specified number of coefficients to compute,
 
 \end{itemize}
@@ -541,7 +632,8 @@ These coefficient calculations and construction of a new atmospheric specificati
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
-This analysis is useful to determine how many coefficients are needed to accurately reproduce an atmospheric state from a set of EOFs.  Such an analysis is shown below for varying number of coefficients and convergence is found at 50 - 60 terms.
+\sphinxAtStartPar
+This analysis is useful to determine how many coefficients are needed to accurately reproduce an atmospheric state from a set of EOFs.  Such an analysis is shown below for varying number of coefficients and convergence is found at 50 \sphinxhyphen{} 60 terms.
 
 \end{itemize}
 
@@ -550,15 +642,17 @@ This analysis is useful to determine how many coefficients are needed to accurat
 \capstart
 
 \noindent\sphinxincludegraphics[width=700\sphinxpxdimen]{{US_NE-fits}.png}
-\caption{Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 - 60 terms in the summation}\label{\detokenize{sampling:id1}}\end{figure}
+\caption{Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 \sphinxhyphen{} 60 terms in the summation}\label{\detokenize{sampling:id1}}\end{figure}
 
 
 \paragraph{Sampling Specifications using EOF Coefficient Distributions}
 \label{\detokenize{sampling:sampling-specifications-using-eof-coefficient-distributions}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Samples can be generated that are representative of a given coefficient distributions as constructed using \sphinxcode{\sphinxupquote{stochprop.eofs.compute\_coeffs}} or a combination of them.
 
 \item {} 
+\sphinxAtStartPar
 In such a case, the reference atmosphere is again the mean state from the SVD analysis and the coefficients are randomly generated from the distributions defined by kernel density estimates (KDE’s) of the coefficient results
 
 \end{itemize}
@@ -566,6 +660,7 @@ In such a case, the reference atmosphere is again the mean state from the SVD an
 \begin{split}b_0^{(B)} \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n \longleftarrow \mathcal{P}_n^{(B)} \left( \mathcal{C} \right)\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 In addition to sampling the coefficient distributions, the maximum likelihood atmospheric state can be defined by defining each coefficient to be the maximum of the distribution,
 
 \end{itemize}
@@ -573,6 +668,7 @@ In addition to sampling the coefficient distributions, the maximum likelihood at
 \begin{split}b_0^{(B)} \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n = \text{argmax} \left[ \mathcal{P}_n^{(B)} \left( \mathcal{C} \right) \right]\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 This sampling and maximum likelihood calculation can be run by loading coefficient results and running,
 
 \end{itemize}
@@ -588,6 +684,7 @@ This sampling and maximum likelihood calculation can be run by loading coefficie
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 This analysis can be completed for each identified season to generate a suite of atmospheric specifications representative of the season as shown in the figure below.  This can often provide a significant amount of data reduction for propagation studies as multiple years of specifications (numbering in the 100’s or 1,000’s) can be used to construct a representative set of 10’s of atmospheres that characterize the time period of interest as in the figure below.
 
 \end{itemize}
@@ -603,12 +700,15 @@ This analysis can be completed for each identified season to generate a suite of
 \paragraph{Perturbing Specifications to Account for Uncertainty}
 \label{\detokenize{sampling:perturbing-specifications-to-account-for-uncertainty}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 In most infrasonic analysis, propagation analysis through a specification for the approximate time and location of an event doesn’t produce the exact arrivals observed due to the dynamic and sparsely sampled nature of the atmosphere
 
 \item {} 
+\sphinxAtStartPar
 Because of this, it is useful to apply random perturbations to the estimated atmospheric state covering some confidence level and consider propagation through the entire suite of “possible” states
 
 \item {} 
+\sphinxAtStartPar
 In such a case, the reference atmosphere, \(c_0 \left( z_m \right)\) defines the initial states, coefficients are randomly generated from a normal distribution, and weighting is applied based on the singular values and mean altitudes of the EOFs,
 
 \end{itemize}
@@ -616,13 +716,16 @@ In such a case, the reference atmosphere, \(c_0 \left( z_m \right)\) defines the
 \begin{split}b_0 \left( z_m \right) = c_0 \left( z_m \right), \quad \quad \mathcal{C}_n \longleftarrow \mathcal{N} \left(0, \sigma^* \right), \quad \quad w_n = \mathcal{S}_n^{\gamma} \; \bar{z}_n^{\eta}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The set of perturbations is scaled to match the specified standard deviation after summing over coefficients and averaged over the entire set of altitudes
 
 \item {} 
+\sphinxAtStartPar
 Unlike the above methods, in this analysis a weighting is defined by the singular value of the associated EOF and the mean altitude of the EOF, \(\bar{z}_n = \sum_m{z_m \mathcal{E}_n \left( z_m \right)}\) in order to avoid rapidly oscillating EOFs from contributing too much noise and to focus perturbations at higher altitudes where uncertainties are larger, respectively.  The exponential coefficients have default values of \(\gamma = 0.25\) and \(\eta=2\), but can be modified in the function call.
 
 \item {} 
-This perturbation analysis can be completed using \sphinxcode{\sphinxupquote{stochprop.eofs.perturb\_atmo}} with a specified starting atmosphere, set of EOFs, output path, uncertainty measure in meters-per-second, and number of samples needed,
+\sphinxAtStartPar
+This perturbation analysis can be completed using \sphinxcode{\sphinxupquote{stochprop.eofs.perturb\_atmo}} with a specified starting atmosphere, set of EOFs, output path, uncertainty measure in meters\sphinxhyphen{}per\sphinxhyphen{}second, and number of samples needed,
 
 \end{itemize}
 
@@ -631,7 +734,8 @@ This perturbation analysis can be completed using \sphinxcode{\sphinxupquote{sto
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
-The below figure shows a sampling of results using uncertainties of 5.0, 10.0, and 15.0 meters-per-second.  The black curve is input as the estimated atmospheric state and the red curves are generated by the perturbations.
+\sphinxAtStartPar
+The below figure shows a sampling of results using uncertainties of 5.0, 10.0, and 15.0 meters\sphinxhyphen{}per\sphinxhyphen{}second.  The black curve is input as the estimated atmospheric state and the red curves are generated by the perturbations.
 
 \end{itemize}
 
@@ -643,13 +747,47 @@ The below figure shows a sampling of results using uncertainties of 5.0, 10.0, a
 \caption{Perturbations to a reference atmospheric state can be computed using randomly generated coefficients for a suite of EOFs with specified standard deviation}\label{\detokenize{sampling:id3}}\end{figure}
 
 
+\paragraph{Command Line interface}
+\label{\detokenize{sampling:command-line-interface}}\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+Command line methods are included to access the perturbation methods more efficiently.  Usage info for the EOF perturbation methods can be displayed by running \sphinxcode{\sphinxupquote{stochprop eof\sphinxhyphen{}perturb \sphinxhyphen{}\sphinxhyphen{}help}}:
+\begin{quote}
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{g+go}{Usage: stochprop eof\PYGZhy{}perturb [OPTIONS]}
+
+\PYG{g+go}{Use a set of EOFs to perturb a reference atmospheric specification with a defined standard deviation.}
+
+\PYG{g+go}{Example Usage:}
+\PYG{g+go}{        stochprop eof\PYGZhy{}perturb \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file profs/g2stxt\PYGZus{}2010010118\PYGZus{}39.7393\PYGZus{}\PYGZhy{}104.9900.dat \PYGZhy{}\PYGZhy{}eofs\PYGZhy{}path eofs/example \PYGZhy{}\PYGZhy{}out test}
+
+\PYG{g+go}{Options:}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file TEXT               Reference atmspheric specification (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}eofs\PYGZhy{}path TEXT               EOF output path and prefix (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}out TEXT                     Output prefix (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}std\PYGZhy{}dev Float                Standard deviation (default: 10 m/s)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}eof\PYGZhy{}max INTEGER              Maximum EOF coefficient to use (default: 100)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}eof\PYGZhy{}cnt INTEGER              Number of EOFs to use (default: 50)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}sample\PYGZhy{}cnt INTEGER           Number of perturbed samples (default: 25)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}alt\PYGZhy{}weight FLOAT             Altitude weighting power (default: 2.0)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}singular\PYGZhy{}value\PYGZhy{}weight FLOAT  Sing. value weighting power (default: 0.25)}
+\PYG{g+go}{  \PYGZhy{}h, \PYGZhy{}\PYGZhy{}help                     Show this message and exit.}
+\end{sphinxVerbatim}
+\end{quote}
+
+\end{itemize}
+
+
 \subsubsection{Propagation Statistics}
 \label{\detokenize{propagation:propagation-statistics}}\label{\detokenize{propagation:propagation}}\label{\detokenize{propagation::doc}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Propagation statistics for path geometry (e.g., arrival location, travel time, direction of arrival) and transmission loss can be computed for use in improving localization and yield estimation analyses, respectively.
 
 \item {} 
-In the case of localization, a general celerity (horizontal group velocity) model is available in InfraPy constructed as a three-component Gaussian-mixture-model (GMM).  This model contains peaks corresponding to the tropospheric, stratospheric, and thermospheric waveguides and has been defined by fitting the parameterized GMM to a kernel density estimate of a full year of ray tracing analyses.
+\sphinxAtStartPar
+In the case of localization, a general celerity (horizontal group velocity) model is available in InfraPy constructed as a three\sphinxhyphen{}component Gaussian\sphinxhyphen{}mixture\sphinxhyphen{}model (GMM).  This model contains peaks corresponding to the tropospheric, stratospheric, and thermospheric waveguides and has been defined by fitting the parameterized GMM to a kernel density estimate of a full year of ray tracing analyses.
 
 \end{itemize}
 
@@ -661,6 +799,7 @@ In the case of localization, a general celerity (horizontal group velocity) mode
 \caption{A general travel time model includes three components corresponding to the tropospheric, stratospheric, and thermospheric waveguides.}\label{\detokenize{propagation:id1}}\end{figure}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 More specific models can be constructed from a limite suite of atmospheric states describing a location and seasonal trend (e.g., winter in the western US) or using an atmospheric state for a specific event with some perturbation analysis.  In either case, propagation simulations are run using the suite of atmospheric states and a statistical model is defined using the outputs to quantify the probability of a given arrival characteristic.
 
 \end{itemize}
@@ -676,12 +815,15 @@ More specific models can be constructed from a limite suite of atmospheric state
 \paragraph{Path Geometry Models (PGMs)}
 \label{\detokenize{propagation:path-geometry-models-pgms}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Path geometry models describing the arrival location, travel time, direction of arrival (back azimuth, inclination angle) can be computed using geometric modeling simulations such as those in the InfraGA/GeoAc package.
 
 \item {} 
+\sphinxAtStartPar
 Ray tracing simulations can be run for all atmospheric specification files in a given directory using the \sphinxcode{\sphinxupquote{stochprop.propagation.run\_infraga}} method by specifying the directory, output file, geometry (3D Cartesian or spherical), CPU count (if the infraGA/GeoAc OpenMPI methods are installed), azimuth and inclination angle ranges, and source location
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Note: the source location is primarily used in the spherical coordinate option to specify the latitude and longitude of the source, but should also contain the ground elevation for the simulation runs as the third element (e.g., for a source at 30 degrees latitude, 100 degrees longitude, and a ground elevation of 1 km, specify \sphinxcode{\sphinxupquote{src\_loc=(0.0, 0.0, 1.0)}} or \sphinxcode{\sphinxupquote{src\_loc=(30.0, 100.0, 1.0)}} for the \sphinxcode{\sphinxupquote{geom="3d"}} or \sphinxcode{\sphinxupquote{geom="sph"}} options, respectively).
 
 \end{itemize}
@@ -695,6 +837,7 @@ Note: the source location is primarily used in the spherical coordinate option t
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The resulting infraGA/GeoAc arrival files are concatenated into a single arrivals file and can be ingested to build a path geometry model by once again specifying the geometry and source location.
 
 \end{itemize}
@@ -705,6 +848,7 @@ The resulting infraGA/GeoAc arrival files are concatenated into a single arrival
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The path geometry model can later be loaded into a \sphinxcode{\sphinxupquote{stochprop.propagation.PathGeometryModel}} instance and visualized to investigate the propagation statistics.
 
 \end{itemize}
@@ -719,15 +863,16 @@ The path geometry model can later be loaded into a \sphinxcode{\sphinxupquote{st
 \capstart
 
 \noindent\sphinxincludegraphics[width=850\sphinxpxdimen]{{winter-PGMs}.jpg}
-\caption{Stochastic propagation-based path geometry model examples for a winter shows the expected stratospheric waveguide for propagation to the east and azimuth deviations to the north and south due to the strong stratospheric cross winds.}\label{\detokenize{propagation:id3}}\end{figure}
+\caption{Stochastic propagation\sphinxhyphen{}based path geometry model examples for a winter shows the expected stratospheric waveguide for propagation to the east and azimuth deviations to the north and south due to the strong stratospheric cross winds.}\label{\detokenize{propagation:id3}}\end{figure}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The path geometry models constructed here can be utilized in the InfraPy Bayesian Infrasonic Source Localization (BISL) analysis by specifying them as the \sphinxcode{\sphinxupquote{path\_geo\_model}} for that analysis.
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{infrapy.location} \PYG{k+kn}{import} \PYG{n}{bisl}
+\PYG{k+kn}{from} \PYG{n+nn}{infrapy}\PYG{n+nn}{.}\PYG{n+nn}{location} \PYG{k+kn}{import} \PYG{n}{bisl}
 
 \PYG{n}{det\PYGZus{}list} \PYG{o}{=} \PYG{n}{lklhds}\PYG{o}{.}\PYG{n}{json\PYGZus{}to\PYGZus{}detection\PYGZus{}list}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{data/detection\PYGZus{}set2.json}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
 \PYG{n}{result}\PYG{p}{,} \PYG{n}{pdf} \PYG{o}{=} \PYG{n}{bisl}\PYG{o}{.}\PYG{n}{run}\PYG{p}{(}\PYG{n}{det\PYGZus{}list}\PYG{p}{,} \PYG{n}{path\PYGZus{}geo\PYGZus{}model}\PYG{o}{=}\PYG{n}{pgm}\PYG{p}{)}
@@ -737,12 +882,15 @@ The path geometry models constructed here can be utilized in the InfraPy Bayesia
 \paragraph{Transmission Loss Models (TLMs)}
 \label{\detokenize{propagation:transmission-loss-models-tlms}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Analysis of source characteristics includes estimation of the power of the acoustic signal at some reference distance from the (typically) complex source mechanism
 
 \item {} 
+\sphinxAtStartPar
 Such analysis using regional signals requires a propagation model that relates the energy losses along the path, termed the transmission loss and in the case of infrasonic analysis, several methods are available in the NCPAprop software suite from the University of Mississippi
 
 \item {} 
+\sphinxAtStartPar
 The NCPAprop modal analysis using the effective sound speed, \sphinxcode{\sphinxupquote{modess}}, can be accessed from \sphinxcode{\sphinxupquote{stochprop.propagation.run\_modess}} to compute transmission loss predictions for all atmospheric specifications in a directory in a similar fashion to the methods above for infraGA/GeoAc.
 
 \end{itemize}
@@ -754,13 +902,15 @@ The NCPAprop modal analysis using the effective sound speed, \sphinxcode{\sphinx
 \PYG{n}{f\PYGZus{}vals} \PYG{o}{=} \PYG{n}{np}\PYG{o}{.}\PYG{n}{logspace}\PYG{p}{(}\PYG{n}{np}\PYG{o}{.}\PYG{n}{log10}\PYG{p}{(}\PYG{n}{f\PYGZus{}min}\PYG{p}{)}\PYG{p}{,} \PYG{n}{np}\PYG{o}{.}\PYG{n}{log10}\PYG{p}{(}\PYG{n}{f\PYGZus{}max}\PYG{p}{)}\PYG{p}{,} \PYG{n}{f\PYGZus{}cnt}\PYG{p}{)}
 
 \PYG{k}{for} \PYG{n}{fn} \PYG{o+ow}{in} \PYG{n}{f\PYGZus{}vals}\PYG{p}{:}
-    \PYG{n}{propagation}\PYG{o}{.}\PYG{n}{run\PYGZus{}modess}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{samples/winter/example\PYGZhy{}winter}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{prop/winter/example\PYGZhy{}winter}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{azimuths}\PYG{o}{=}\PYG{n}{azimuths}\PYG{p}{,} \PYG{n}{freq}\PYG{o}{=}\PYG{n}{fn}\PYG{p}{,} \PYG{n}{clean\PYGZus{}up}\PYG{o}{=}\PYG{n+nb+bp}{True}\PYG{p}{,} \PYG{n}{cpu\PYGZus{}cnt}\PYG{o}{=}\PYG{n}{cpu\PYGZus{}cnt}\PYG{p}{)}
+    \PYG{n}{propagation}\PYG{o}{.}\PYG{n}{run\PYGZus{}modess}\PYG{p}{(}\PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{samples/winter/example\PYGZhy{}winter}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{prop/winter/example\PYGZhy{}winter}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{azimuths}\PYG{o}{=}\PYG{n}{azimuths}\PYG{p}{,} \PYG{n}{freq}\PYG{o}{=}\PYG{n}{fn}\PYG{p}{,} \PYG{n}{clean\PYGZus{}up}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{,} \PYG{n}{cpu\PYGZus{}cnt}\PYG{o}{=}\PYG{n}{cpu\PYGZus{}cnt}\PYG{p}{)}
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
-Each run of this method produces a pair of output files, \sphinxcode{\sphinxupquote{prop/winter/example-winter\_0.100Hz.nm}} and \sphinxcode{\sphinxupquote{prop/winter/example-winter\_0.100Hz.lossless.nm}} that contain the predicted transmission loss with and without thermo-viscous absorption losses.
+\sphinxAtStartPar
+Each run of this method produces a pair of output files, \sphinxcode{\sphinxupquote{prop/winter/example\sphinxhyphen{}winter\_0.100Hz.nm}} and \sphinxcode{\sphinxupquote{prop/winter/example\sphinxhyphen{}winter\_0.100Hz.lossless.nm}} that contain the predicted transmission loss with and without thermo\sphinxhyphen{}viscous absorption losses.
 
 \item {} 
+\sphinxAtStartPar
 The transmission loss predictions are loaded in frequency by frequency and statistics for transmission as a function of propagation range and azimuth are constructed and written into specified files,
 
 \end{itemize}
@@ -772,6 +922,7 @@ The transmission loss predictions are loaded in frequency by frequency and stati
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The transmission loss model can later be loaded into a \sphinxcode{\sphinxupquote{stochprop.propagation.TLossModel}} instance and visualized to investigate the propagation statistics similarly to the path geometry models.
 
 \end{itemize}
@@ -789,12 +940,13 @@ The transmission loss model can later be loaded into a \sphinxcode{\sphinxupquot
 \caption{Transmission loss statistics used for source characterization can be constructed using analysis of NCPAprop normal mode algorithm output.}\label{\detokenize{propagation:id4}}\end{figure}
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The transmission loss models constructed in \sphinxcode{\sphinxupquote{stochprop}} can be utilized in the InfraPy Spectral Yield Estimation (SpYE) algorithm by specifying a set of models and their associated frequencies (see InfraPy example for detection and waveform data setup),
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{from} \PYG{n+nn}{infrapy.characterization} \PYG{k+kn}{import} \PYG{n}{spye}
+\PYG{k+kn}{from} \PYG{n+nn}{infrapy}\PYG{n+nn}{.}\PYG{n+nn}{characterization} \PYG{k+kn}{import} \PYG{n}{spye}
 
 \PYG{c+c1}{\PYGZsh{} Define detection list, signal\PYGZhy{}minus\PYGZhy{}signal spectra,}
 \PYG{c+c1}{\PYGZsh{} source location, and analysis frequency band}
@@ -814,10 +966,12 @@ The transmission loss models constructed in \sphinxcode{\sphinxupquote{stochprop
 \subsubsection{Gravity Wave Perturbations}
 \label{\detokenize{gravity:gravity-wave-perturbations}}\label{\detokenize{gravity:gravity}}\label{\detokenize{gravity::doc}}\begin{itemize}
 \item {} 
-Atmospheric specifications (e.g., G2S) available for a given location and time are averaged over some spatial and temporal scale so that sub-grid scale fluctuations can be estimated stochastically and applied in order to construct a suite of possible atmospheric states and the primary source of sub-grid fluctuations in the atmosphere is that of bouyancy or gravity waves.
+\sphinxAtStartPar
+Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub\sphinxhyphen{}grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub\sphinxhyphen{}grid fluctuations in the atmosphere is that of bouyancy or gravity waves.
 
 \item {} 
-The methods available in \sphinxcode{\sphinxupquote{stochprop}} are based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.
+\sphinxAtStartPar
+Stochastic gravity wave perturbation methods are included in \sphinxcode{\sphinxupquote{stochprop}} using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.
 
 \end{itemize}
 
@@ -825,28 +979,32 @@ The methods available in \sphinxcode{\sphinxupquote{stochprop}} are based on the
 \paragraph{Freely Propagation and Trapped Gravity Waves}
 \label{\detokenize{gravity:freely-propagation-and-trapped-gravity-waves}}\begin{itemize}
 \item {} 
-The gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber can be expressed as,
+\sphinxAtStartPar
+Gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber, \(m\), can be expressed as,
 
 \end{itemize}
 \begin{equation*}
 \begin{split}m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
-In this relation \(k\) and \(l\) are the zonal and meridional wave numbers, \(k_h^2 = \sqrt{k^2 + l^2}\) is the combined horizontal wavenumber, \(H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\) is the density scale height, \(N^2 = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}\) is the atmospheric bouyancy frequency, and \(\hat{\omega}\) is the intrinsic angular frequency (relative to the moving air) that is defined relative to the absolute angular frequency (relative to the ground), \(\omega\),
+\sphinxAtStartPar
+In this relation \(k\) and \(l\) are the zonal and meridional wave numbers, \(k_h^2 = \sqrt{k^2 + l^2}\) is the combined horizontal wavenumber, \(H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\) is the density scale height, \(\rho_0 \left( z \right)\) is the ambient atmospheric density, \(N = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}\) is the atmospheric bouyancy frequency, and \(\hat{\omega}\) is the intrinsic angular frequency (relative to the moving air) that is defined from to the absolute angular frequency (relative to the ground), \(\omega\), horizontal wavenumbers, and winds,
 
 \end{itemize}
 \begin{equation*}
-\begin{split}\hat{\omega} = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)\end{split}
+\begin{split}\hat{\omega} \left( k, l, \omega, z \right) = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
-This dispersion relation can alternately be solved for \(\hat{\omega}\) and used to define the vertical group velocity,
+\sphinxAtStartPar
+This dispersion relation can be solved for \(\hat{\omega}\) and used to define the vertical group velocity,
 
 \end{itemize}
 \begin{equation*}
 \begin{split}\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad
-c_g \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}}\end{split}
+c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The conservation of wave action leads to a condition on the vertical velocity perturbation spectrum that can be used to define a freely propagating solution,
 
 \end{itemize}
@@ -855,12 +1013,14 @@ The conservation of wave action leads to a condition on the vertical velocity pe
 \hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The above relation is valid in the case that \(m \left( k, l, \omega, z \right)\) remains real through the integration upward in the exponential.  In the case that an altitude exists for which the vertical wavenumber becomes imaginary, the gravity wave energy reflects from this turning height and the above relation is not valid.  Instead, the solution is expressed in the form,
 \begin{quote}
 \begin{equation*}
 \begin{split}\hat{w} \left( k, l, \omega, z \right) = 2 i \sqrt{\pi} \hat{w}_0 \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai} \left( r \right) e^{-i \frac{\pi}{4}} S_n\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The Airy function argument in the above is defined uniquely above and below the turning height \(z_t\),
 
 \end{itemize}
@@ -868,6 +1028,7 @@ The Airy function argument in the above is defined uniquely above and below the 
 \begin{split}r = \left\{ \begin{matrix} - \left( \frac{3}{2} \int_z^{z_t} \left| m \left( z^\prime \right) \right| dz^\prime \right)^\frac{2}{3} & z < z_t \\ \left( \frac{3}{2} \int_{z_t}^z \left| m \left( z^\prime \right) \right| dz^\prime \right)^\frac{2}{3} & z > z_t \end{matrix} \right.\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The reflection phase factor, \(S_n\), accounts for the caustic phase shifts from the \(n\) reflections from the turning height,
 
 \end{itemize}
@@ -876,6 +1037,7 @@ The reflection phase factor, \(S_n\), accounts for the caustic phase shifts from
 \end{equation*}\end{quote}
 
 \item {} 
+\sphinxAtStartPar
 The vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios through derivatives of the vertical velocity spectrum,
 
 \end{itemize}
@@ -887,6 +1049,7 @@ The vertical velocity spectra defined here can be related to the horizontal velo
 \hat{v}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{l}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Finally, once computed for the entire atmosphere, the spatial and temporal domain forms can be computed by an inverse Fourier transform,
 
 \end{itemize}
@@ -897,12 +1060,14 @@ Finally, once computed for the entire atmosphere, the spatial and temporal domai
 \paragraph{Damping, Source and Saturation Spectra, and Critical Layers}
 \label{\detokenize{gravity:damping-source-and-saturation-spectra-and-critical-layers}}\begin{itemize}
 \item {} 
-At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, \(m \rightarrow m + m_i\), where,
+\sphinxAtStartPar
+At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, \(m \rightarrow m + m_i,\) where,
 \begin{quote}
 \begin{equation*}
 \begin{split}m_i \left(k, l, \omega, z \right) = -\nu \frac{m^3}{\hat{\omega}}, \quad \nu = 3.563 \times 10^{-7} \frac{T_0^{\, 0.69}}{\rho_0}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 This produces a damping factor for the freely propagating solution that is integrated upward along with the phase,
 
 \end{itemize}
@@ -910,6 +1075,7 @@ This produces a damping factor for the freely propagating solution that is integ
 \begin{split}\hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}} e^{-\int_{z_0}^{z}{m_i \left( z^\prime \right) dz^\prime}}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 In the trapped solution, the reflection phase shift includes losses for each pass up to the turning height and back,
 
 \end{itemize}
@@ -917,18 +1083,21 @@ In the trapped solution, the reflection phase shift includes losses for each pas
 \begin{split}S_n = e^{-2 n \Psi} \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime, \quad \Psi = \int_0^{z_t} m_i \left( z^\prime \right) d z^\prime,\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
-Note that in both of these forms if \(z_t\) is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.
+\sphinxAtStartPar
+Note that if \(z_t\) is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.
 
 \end{itemize}
 \end{quote}
 
 \item {} 
+\sphinxAtStartPar
 The source spectra defined by Warner \& McIntyre (1996) specifies the wave energy density for a source at 20 km altitude (note: \(\hat{\omega}\) exponential corrected in publication errata),
 \begin{quote}
 \begin{equation*}
 \begin{split}\mathcal{E}_\text{src} \left(m, \hat{\omega} \right) = 1.35 \times 10^{-2} \frac{m}{m_*^4 + m^4} \frac{N^2}{\hat{\omega}^\frac{5}{3}} \Omega, \quad \Omega = \frac{\hat{\omega}_\text{min}^\frac{2}{3}}{1 - \left( \frac{\hat{\omega}_\text{min}}{N} \right)^\frac{2}{3}}, \quad m_* = \frac{2 \pi}{2.5 \text{km}}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The wave energy density can be expressed in terms of spectral coordiantes using \(\mathcal{E} \left( k, l, \omega \right) = \mathcal{E} \left( m, \hat{\omega} \right) \frac{m}{k_h^2}\) which can then be related to the vertical velocity spectrum producing the initial condition for starting the calculation,
 
 \end{itemize}
@@ -937,12 +1106,14 @@ The wave energy density can be expressed in terms of spectral coordiantes using 
 \end{equation*}\end{quote}
 
 \item {} 
+\sphinxAtStartPar
 Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner \& McIntyre (1996) where the spectral coordinate saturation spectrum is (note: the exponential for \(\hat{\omega}\) is again corrected in publication errata),
 \begin{quote}
 \begin{equation*}
 \begin{split}\mathcal{E}_\text{sat} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{N^2}{\hat{\omega}^\frac{5}{3} m^3}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Again using the relation between wave energy density and vertical velocity spectrum, this produces,
 
 \end{itemize}
@@ -951,7 +1122,8 @@ Again using the relation between wave energy density and vertical velocity spect
 \end{equation*}\end{quote}
 
 \item {} 
-Lastly, from the above definition for the vertical group velocity, \(c_g\), it is possible to have altitudes for which \(\hat{\omega} \rightarrow 0\) and \(c_g\) similarly goes to zero.  In such a location the wave eenrgy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
+\sphinxAtStartPar
+Lastly, from the above definition for the vertical group velocity, \(c_{g,z}\), it is possible to have altitudes for which \(\hat{\omega} \rightarrow 0\) and \(c_{g,z}\) similarly goes to zero.  In such a location the wave energy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a “critical layer” because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
 
 \end{itemize}
 
@@ -959,75 +1131,97 @@ Lastly, from the above definition for the vertical group velocity, \(c_g\), it i
 \paragraph{Gravity Wave implementation in stochprop}
 \label{\detokenize{gravity:gravity-wave-implementation-in-stochprop}}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is sumamrized here
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Atmospheric information is constructed from a provided atmospheric specification:
-\begin{itemize}
+\begin{enumerate}
+\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
 \item {} 
-Interpolations of the ambient horizontal winds, \(u_0 \left( z \right)\) and \(v_0 \left( z \right)\), density, \(\rho_0 \left( Z \right)\), and temperature, \(T_0 \left( z \right)\) are defined.
+\sphinxAtStartPar
+Interpolations of the ambient horizontal winds, \(u_0 \left( z \right)\) and \(v_0 \left( z \right)\), density, \(\rho_0 \left( z \right)\), and temperature, \(T_0 \left( z \right)\) are defined.
 
 \item {} 
-The density scale height, \(H \left( z \right) = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}\), is computed using finite differences of the ambient density.
+\sphinxAtStartPar
+The density scale height, \(H \left( z \right)\), is computed using finite differences of the ambient density.
 
 \item {} 
-Atmospheric fields are then re-sampled on a set of altitudes with \(dz = 200\) meters.
+\sphinxAtStartPar
+Atmospheric fields are re\sphinxhyphen{}sampled on a higher resolution set of altitudes with \(dz = 200\) meters.
 
-\end{itemize}
+\end{enumerate}
 
 \item {} 
+\sphinxAtStartPar
 A grid of \(k\), \(l\), and \(\omega\) values are defined:
-\begin{itemize}
+\begin{enumerate}
+\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
 \item {} 
+\sphinxAtStartPar
 The horizontal resolution, \(dx\), is set to 4 meters following Drob et al. (2013) with \(N_k = 128\) (both of these quantities can be modified by the user, but default to the values from Drob et al.)
 
 \item {} 
-Five frequency values are defined for analysis covering a frequency band from \(\omega_\text{min} = 2 f_\text{Cor}\) to \(\omega_\text{max} = \frac{N}{\sqrt{5}}\) where \(f_\text{Cor}\) is the Coriolis frequency,
+\sphinxAtStartPar
+Five frequency values are defined for analysis covering a frequency band from \(\omega_\text{min} = 2 f_\text{Cor}\) to \(\omega_\text{max} = \frac{N_\text{max}}{\sqrt{5}}\) where \(f_\text{Cor}\) is the Coriolis frequency, \(f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \theta \right),\) where \(\theta\) is the latitude at which the atmosphere sample was calculated.
 
-\end{itemize}
+\item {} 
+\sphinxAtStartPar
+Because sampling is done over intrinsic frequency, a phase shift is introduced in the Fourier transform needed to invert the solution,
 \begin{quote}
 \begin{equation*}
-\begin{split}f_\text{Cor} = 7.292 \times 10^{-5} \frac{\text{rad}}{\text{s}} \times \sin \left( \text{latitude} \right)\end{split}
+\begin{split}w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}\end{split}
 \end{equation*}\end{quote}
 
-\item {} 
-Unlike the implementation by Drob et al. (2013), the implementation in \sphinxcode{\sphinxupquote{stochprop.gravity\_waves}} integrates each Fourier component individually and distributes calculations via \sphinxcode{\sphinxupquote{multiprocessing}}.  In preliminary evaluations, the implementation has able to compute the full gravity wave field in less than 2 minutes when using 10 CPUs.
+\end{enumerate}
 
 \item {} 
-For each Fourier component combination, \(k, l, \omega\), several checks are made and pre-analysis completed:
-\begin{itemize}
+\sphinxAtStartPar
+For each Fourier component combination, \(k, l, \omega\), several checks are made and pre\sphinxhyphen{}analysis completed:
+\begin{enumerate}
+\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
 \item {} 
-Those Fourier components for which \(k_h > k_\text{max}\) are masked out of the calculation as well as those for which \(C = \frac{N}{m} > 90 \frac{\text{m}}{\text{s}}\)
+\sphinxAtStartPar
+Those Fourier components for which \(k_h > k_\text{max}\) are masked out of the calculation as well as those for which \(C = \frac{N}{m} > 90 \frac{\text{m}}{\text{s}}\) and those for which \(c_{g,z} \left( z_\text{src} \right) < 0.5 \frac{\text{m}}{\text{s}}\).
 
 \item {} 
-Critical layers at which \(\hat{\omega} \rightarrow 0\) are identified
-
-\item {} 
+\sphinxAtStartPar
 Turning heights at which \(m^2 \left( z_t \right) \rightarrow 0\) are identified and for each such Fourier combination the propagation time, phase shift, and attenuation factors are computed.
 
-\end{itemize}
+\end{enumerate}
 
 \item {} 
+\sphinxAtStartPar
 The relations above for \(\hat{w} \left( k, l, \omega, z \right)\) are used to define the solution below the source height and to integrate the solution from the source height to the upper limit of the atmosphere using either the free or trapped form depending on whether a turning point exists
-\begin{itemize}
+\begin{enumerate}
+\sphinxsetlistlabels{\arabic}{enumi}{enumii}{}{.}%
 \item {} 
-At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 4 hours to determine whether energy has reached that altitude.
+\sphinxAtStartPar
+At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 8 hours to determine whether energy has reached that altitude.
 
 \item {} 
+\sphinxAtStartPar
 Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.
 
-\end{itemize}
+\item {} 
+\sphinxAtStartPar
+Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in \sphinxcode{\sphinxupquote{stochprop}} compute each Fourier component independently and use available \sphinxcode{\sphinxupquote{multiprocessing}} tools to run the calculations in parallel.  For \(N_k = 128\) and \(dx=4\), the gravity wave perturbations can be computed using 10 CPUs in approximatley 20 \sphinxhyphen{} 30 minutes.
+
+\end{enumerate}
 
 \item {} 
-The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using \sphinxcode{\sphinxupquote{numpy.fft.ifft}} on the appropriate axes and the \(\omega\) integration is simplified by taking (t=0) in the solution which convert this Fourier inversion to a simple integration.
+\sphinxAtStartPar
+The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using \sphinxcode{\sphinxupquote{numpy.fft.ifft}} on the appropriate axes and the \(\omega\) integration is simplified by setting \(t=0\) in the solution which reduces the time/frequency domain inversion to a simple integration,
 
 \end{itemize}
 
 \end{itemize}
 \begin{equation*}
-\begin{split}w \left( x, y, z, 0 \right) = \int{\left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}\end{split}
+\begin{split}w \left( x, y, z, 0 \right) =  \iint{ \left(\int{\hat{w} \left( k, l, \hat{\omega}, z \right) d \hat{\omega}} \right) e^{-i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl}\end{split}
 \end{equation*}\begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Use of the methods is summarized in the below example:
 
 \end{itemize}
@@ -1040,20 +1234,62 @@ Use of the methods is summarized in the below example:
         \PYG{n}{output\PYGZus{}path} \PYG{o}{=} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{gw\PYGZus{}perturb}\PYG{l+s+s2}{\PYGZdq{}}
 
         \PYG{n}{t0} \PYG{o}{=} \PYG{l+m+mf}{6.0} \PYG{o}{*} \PYG{l+m+mf}{3600.0}
-        \PYG{n}{dx}\PYG{p}{,} \PYG{n}{Nk} \PYG{o}{=} \PYG{l+m+mf}{2.0}\PYG{p}{,} \PYG{l+m+mi}{128}
 
         \PYG{c+c1}{\PYGZsh{} Run gravity wave calculation}
-        \PYG{n}{gravity\PYGZus{}waves}\PYG{o}{.}\PYG{n}{perturb\PYGZus{}atmo}\PYG{p}{(}\PYG{n}{atmo\PYGZus{}spec}\PYG{p}{,} \PYG{l+s+s2}{\PYGZdq{}}\PYG{l+s+s2}{gw\PYGZus{}perturb}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{,} \PYG{n}{t0}\PYG{o}{=}\PYG{n}{t0}\PYG{p}{,} \PYG{n}{dx}\PYG{o}{=}\PYG{n}{dx}\PYG{p}{,} \PYG{n}{Nk}\PYG{o}{=}\PYG{n}{Nk}\PYG{p}{)}
+        \PYG{n}{gravity\PYGZus{}waves}\PYG{o}{.}\PYG{n}{perturb\PYGZus{}atmo}\PYG{p}{(}\PYG{n}{atmo\PYGZus{}spec}\PYG{p}{,} \PYG{n}{output\PYGZus{}path}\PYG{p}{,} \PYG{n}{t0}\PYG{o}{=}\PYG{n}{t0}\PYG{p}{,} \PYG{n}{cpu\PYGZus{}cnt}\PYG{o}{=}\PYG{l+m+mi}{10}\PYG{p}{)}
 \end{sphinxVerbatim}
 \begin{itemize}
 \item {} 
-Command line interface (CLI) options are also included for generating perturbed atmospheric specifications,
+\sphinxAtStartPar
+A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running \sphinxcode{\sphinxupquote{stochprop gravity\sphinxhyphen{}waves \sphinxhyphen{}\sphinxhyphen{}help}}:
+\begin{quote}
+
+\begin{sphinxVerbatim}[commandchars=\\\{\}]
+\PYG{g+go}{Usage: stochprop gravity\PYGZhy{}waves [OPTIONS]}
+
+\PYG{g+go}{Gravity wave perturbation calculation based on Drob et al. (2013) method.}
+
+\PYG{g+go}{Example Usage:}
+\PYG{g+go}{stochprop gravity\PYGZhy{}waves \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file profs/g2stxt\PYGZus{}2010010118\PYGZus{}39.7393\PYGZus{}\PYGZhy{}104.9900.dat \PYGZhy{}\PYGZhy{}out test\PYGZus{}gw}
+
+\PYG{g+go}{Options:}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file TEXT        Reference atmspheric specification (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}out TEXT              Output prefix (required)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}sample\PYGZhy{}cnt INTEGER    Number of perturbated samples (default: 25)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}t0 FLOAT              Propagation time from source [hr] (default: 8)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}dx FLOAT              Horizontal wavenumber scale [km] (default: 4.0)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}dz FLOAT              Altitude resolution [km] (default: 0.2)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}nk INTEGER            Horizontal wavenumber resolution (default: 128)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}nom INTEGER           Frequency resolution (default: 5)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}random\PYGZhy{}phase BOOLEAN  Randomize phase at source [bool] (default: False)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}z\PYGZhy{}src FLOAT           Gravity wave source altitude [km] (default: 20.0)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}m\PYGZhy{}star FLOAT          Gravity wave source spectrum peak [1/km] (default: (2 pi) / 2.5)}
+\PYG{g+go}{  \PYGZhy{}\PYGZhy{}cpu\PYGZhy{}cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)}
+\PYG{g+go}{  \PYGZhy{}h, \PYGZhy{}\PYGZhy{}help              Show this message and exit.}
+\end{sphinxVerbatim}
+\end{quote}
+
+\item {} 
+\sphinxAtStartPar
+An example CLI usage is:
 
 \end{itemize}
 
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-stochprop gravity\PYGZhy{}waves \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file profs/01/g2stxt\PYGZus{}2010010100\PYGZus{}39.7393\PYGZus{}\PYGZhy{}104.9900.dat \PYGZhy{}\PYGZhy{}out gw\PYGZus{}perturb \PYGZhy{}\PYGZhy{}dx \PYG{l+m}{2}.0 \PYGZhy{}\PYGZhy{}nk \PYG{l+m}{128} \PYGZhy{}\PYGZhy{}cpu\PYGZhy{}cnt \PYG{l+m}{8}
+stochprop gravity\PYGZhy{}waves \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file profs/01/g2stxt\PYGZus{}2010010100\PYGZus{}39.7393\PYGZus{}\PYGZhy{}104.9900.dat \PYGZhy{}\PYGZhy{}out gw\PYGZus{}perturb \PYGZhy{}\PYGZhy{}cpu\PYGZhy{}cnt \PYG{l+m}{10}
 \end{sphinxVerbatim}
+\begin{itemize}
+\item {} 
+\sphinxAtStartPar
+An example set of perturbations is shown below.
+
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+
+\noindent\sphinxincludegraphics[width=300\sphinxpxdimen]{{gw_example}.png}
+\end{figure}
 \end{quote}
 
 \end{itemize}
@@ -1063,42 +1299,52 @@ stochprop gravity\PYGZhy{}waves \PYGZhy{}\PYGZhy{}atmo\PYGZhy{}file profs/01/g2s
 \label{\detokenize{stochprop:api}}\label{\detokenize{stochprop:id1}}\label{\detokenize{stochprop::doc}}
 
 \subsection{Empirical Orthogonal Function Analysis}
-\label{\detokenize{stochprop.eofs:module-stochprop.eofs}}\label{\detokenize{stochprop.eofs:empirical-orthogonal-function-analysis}}\label{\detokenize{stochprop.eofs::doc}}\index{stochprop.eofs (module)@\spxentry{stochprop.eofs}\spxextra{module}}\index{build\_atmo\_matrix() (in module stochprop.eofs)@\spxentry{build\_atmo\_matrix()}\spxextra{in module stochprop.eofs}}
+\label{\detokenize{stochprop.eofs:module-stochprop.eofs}}\label{\detokenize{stochprop.eofs:empirical-orthogonal-function-analysis}}\label{\detokenize{stochprop.eofs::doc}}\index{module@\spxentry{module}!stochprop.eofs@\spxentry{stochprop.eofs}}\index{stochprop.eofs@\spxentry{stochprop.eofs}!module@\spxentry{module}}\index{build\_atmo\_matrix() (in module stochprop.eofs)@\spxentry{build\_atmo\_matrix()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.build_atmo_matrix}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{build\_atmo\_matrix}}}{\emph{path}, \emph{pattern='*.met'}, \emph{skiprows=0}, \emph{ref\_alts=None}, \emph{prof\_format='zTuvdp'}, \emph{latlon0=None}, \emph{return\_datetime=False}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.build_atmo_matrix}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{build\_atmo\_matrix}}}{\emph{\DUrole{n}{path}}, \emph{\DUrole{n}{pattern}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}*.dat\textquotesingle{}}}, \emph{\DUrole{n}{years}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{months}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{weeks}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{hours}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{skiprows}\DUrole{o}{=}\DUrole{default_value}{0}}, \emph{\DUrole{n}{ref\_alts}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{prof\_format}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}zTuvdp\textquotesingle{}}}, \emph{\DUrole{n}{latlon0}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{return\_datetime}\DUrole{o}{=}\DUrole{default_value}{False}}}{}
+\sphinxAtStartPar
 Read in a list of atmosphere files from the path location
 matching a specified pattern for continued analysis.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the profiles to be loaded
 
 \item[{\sphinxstylestrong{pattern: string}}] \leavevmode
+\sphinxAtStartPar
 Pattern defining the list of profiles in the path
 
 \item[{\sphinxstylestrong{skiprows: int}}] \leavevmode
+\sphinxAtStartPar
 Number of header rows in the profiles
 
 \item[{\sphinxstylestrong{ref\_alts: 1darray}}] \leavevmode
+\sphinxAtStartPar
 Reference altitudes if comparison is needed
 
 \item[{\sphinxstylestrong{prof\_format: string}}] \leavevmode
+\sphinxAtStartPar
 Profile format is either ‘ECMWF’ or column specifications (e.g., ‘zTuvdp’)
 
 \item[{\sphinxstylestrong{return\_datetime: bool}}] \leavevmode
+\sphinxAtStartPar
 Option to return the datetime info of ingested atmosphere files for future reference
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{A: 2darray}] \leavevmode
+\sphinxAtStartPar
 Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes
 
 \item[{z: 1darray}] \leavevmode
+\sphinxAtStartPar
 Altitude reference values {[}km{]}
 
 \item[{datetime: 1darray}] \leavevmode
+\sphinxAtStartPar
 List of dates and times for each specification in the matrix (optional output, see Parameters)
 
 \end{description}
@@ -1110,23 +1356,28 @@ List of dates and times for each specification in the matrix (optional output, s
 \index{build\_cdf() (in module stochprop.eofs)@\spxentry{build\_cdf()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.build_cdf}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{build\_cdf}}}{\emph{pdf}, \emph{lims}, \emph{pnts=250}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.build_cdf}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{build\_cdf}}}{\emph{\DUrole{n}{pdf}}, \emph{\DUrole{n}{lims}}, \emph{\DUrole{n}{pnts}\DUrole{o}{=}\DUrole{default_value}{250}}}{}
+\sphinxAtStartPar
 Compute the cumulative distribution of a pdf within specified limits
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{pdf: function}}] \leavevmode
+\sphinxAtStartPar
 Probability distribution function (PDF) for a single variable
 
 \item[{\sphinxstylestrong{lims: 1darray}}] \leavevmode
+\sphinxAtStartPar
 Iterable containing lower and upper bound for integration
 
 \item[{\sphinxstylestrong{pnts: int}}] \leavevmode
+\sphinxAtStartPar
 Number of points to consider in defining the cumulative distribution
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{cfd: interp1d}] \leavevmode
+\sphinxAtStartPar
 Interpolated results for the cdf
 
 \end{description}
@@ -1138,33 +1389,41 @@ Interpolated results for the cdf
 \index{compute\_coeffs() (in module stochprop.eofs)@\spxentry{compute\_coeffs()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_coeffs}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_coeffs}}}{\emph{A}, \emph{alts}, \emph{eofs\_path}, \emph{output\_path}, \emph{eof\_cnt=100}, \emph{pool=None}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_coeffs}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_coeffs}}}{\emph{\DUrole{n}{A}}, \emph{\DUrole{n}{alts}}, \emph{\DUrole{n}{eofs\_path}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}, \emph{\DUrole{n}{pool}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 Compute the EOF coefficients for a suite of atmospheres
 and store the coefficient values.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{A: 2darray}}] \leavevmode
+\sphinxAtStartPar
 Suite of atmosphere specifications from build\_atmo\_matrix
 
 \item[{\sphinxstylestrong{alts: 1darray}}] \leavevmode
+\sphinxAtStartPar
 Altitudes at which the atmosphere is sampled from build\_atmo\_matrix
 
 \item[{\sphinxstylestrong{eofs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the .eof results from compute\_eofs
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path where output will be stored
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of EOFs to consider in computing coefficients
 
 \item[{\sphinxstylestrong{pool: pathos.multiprocessing.ProcessingPool}}] \leavevmode
+\sphinxAtStartPar
 Multiprocessing pool for accelerating calculations
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{coeffs: 2darray}] \leavevmode
+\sphinxAtStartPar
 Array containing coefficient values of size prof\_cnt by eof\_cnt.  Result is also written to file.
 
 \end{description}
@@ -1176,7 +1435,8 @@ Array containing coefficient values of size prof\_cnt by eof\_cnt.  Result is al
 \index{compute\_eofs() (in module stochprop.eofs)@\spxentry{compute\_eofs()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_eofs}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_eofs}}}{\emph{A}, \emph{alts}, \emph{output\_path}, \emph{eof\_cnt=100}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_eofs}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_eofs}}}{\emph{\DUrole{n}{A}}, \emph{\DUrole{n}{alts}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}}{}
+\sphinxAtStartPar
 Computes the singular value decomposition (SVD)
 of an atmosphere set read into an array by
 stochprop.eofs.build\_atmo\_matrix() and saves
@@ -1185,15 +1445,19 @@ functions) and singular values to file
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{A: 2darray}}] \leavevmode
+\sphinxAtStartPar
 Suite of atmosphere specifications from build\_atmo\_matrix
 
 \item[{\sphinxstylestrong{alts: 1darray}}] \leavevmode
+\sphinxAtStartPar
 Altitudes at which the atmosphere is sampled from build\_atmo\_matrix
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to output the SVD results
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of basic functions to save
 
 \end{description}
@@ -1205,29 +1469,35 @@ Number of basic functions to save
 \index{compute\_overlap() (in module stochprop.eofs)@\spxentry{compute\_overlap()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_overlap}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_overlap}}}{\emph{coeffs}, \emph{eofs\_path}, \emph{eof\_cnt=100}, \emph{method='mean'}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_overlap}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_overlap}}}{\emph{\DUrole{n}{coeffs}}, \emph{\DUrole{n}{eofs\_path}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}, \emph{\DUrole{n}{method}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}mean\textquotesingle{}}}}{}
+\sphinxAtStartPar
 Compute the overlap of EOF coefficient distributions
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{coeffs: list of 2darrays}}] \leavevmode\begin{description}
 \item[{List of 2darrays containing coefficients to consider}] \leavevmode
+\sphinxAtStartPar
 overlap in PDF of values
 
 \end{description}
 
 \item[{\sphinxstylestrong{eofs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the .eof results from compute\_eofs
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of EOFs to compute
 
 \item[{\sphinxstylestrong{method}}] \leavevmode{[}string{]}
+\sphinxAtStartPar
 Option to decide which overlap to use (“kde” or “mean”)
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{overlap: 3darray}] \leavevmode
+\sphinxAtStartPar
 Array containing overlap values of size coeff\_cnt by coeff\_cnt by eof\_cnt
 
 \end{description}
@@ -1239,14 +1509,17 @@ Array containing overlap values of size coeff\_cnt by coeff\_cnt by eof\_cnt
 \index{compute\_seasonality() (in module stochprop.eofs)@\spxentry{compute\_seasonality()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_seasonality}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_seasonality}}}{\emph{overlap\_file}, \emph{file\_id=None}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.compute_seasonality}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{compute\_seasonality}}}{\emph{\DUrole{n}{overlap\_file}}, \emph{\DUrole{n}{file\_id}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 Compute the overlap of EOF coefficients to identify seasonality
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{overlap\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path and name of file containing results of stochprop.eofs.compute\_overlap
 
 \item[{\sphinxstylestrong{file\_id: string}}] \leavevmode
+\sphinxAtStartPar
 Path and ID to save the dendrogram result of the overlap analysis
 
 \end{description}
@@ -1258,17 +1531,20 @@ Path and ID to save the dendrogram result of the overlap analysis
 \index{define\_coeff\_limits() (in module stochprop.eofs)@\spxentry{define\_coeff\_limits()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.define_coeff_limits}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{define\_coeff\_limits}}}{\emph{coeff\_vals}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.define_coeff_limits}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{define\_coeff\_limits}}}{\emph{\DUrole{n}{coeff\_vals}}}{}
+\sphinxAtStartPar
 Compute upper and lower bounds for coefficient values
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{coeff\_vals: 2darrays}}] \leavevmode
+\sphinxAtStartPar
 Coefficients computed with stochprop.eofs.compute\_coeffs
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{lims: 1darray}] \leavevmode
+\sphinxAtStartPar
 Lower and upper bounds of coefficient value distribution
 
 \end{description}
@@ -1280,17 +1556,20 @@ Lower and upper bounds of coefficient value distribution
 \index{density() (in module stochprop.eofs)@\spxentry{density()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.density}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{density}}}{\emph{z}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.density}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{density}}}{\emph{\DUrole{n}{z}}}{}
+\sphinxAtStartPar
 Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{z: float}}] \leavevmode
+\sphinxAtStartPar
 Altitude above sea level {[}km{]}
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{density: float}] \leavevmode
+\sphinxAtStartPar
 Density of the atmosphere at altitude z {[}g/cm\textasciicircum{}3{]}
 
 \end{description}
@@ -1302,27 +1581,33 @@ Density of the atmosphere at altitude z {[}g/cm\textasciicircum{}3{]}
 \index{draw\_from\_pdf() (in module stochprop.eofs)@\spxentry{draw\_from\_pdf()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.draw_from_pdf}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{draw\_from\_pdf}}}{\emph{pdf}, \emph{lims}, \emph{cdf=None}, \emph{size=1}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.draw_from_pdf}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{draw\_from\_pdf}}}{\emph{\DUrole{n}{pdf}}, \emph{\DUrole{n}{lims}}, \emph{\DUrole{n}{cdf}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{size}\DUrole{o}{=}\DUrole{default_value}{1}}}{}
+\sphinxAtStartPar
 Sample a number of values from a probability distribution
 function (pdf) with specified limits
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{pdf: function}}] \leavevmode
+\sphinxAtStartPar
 Probability distribution function (PDF) for a single variable
 
 \item[{\sphinxstylestrong{lims: 1darray}}] \leavevmode
+\sphinxAtStartPar
 Iterable containing lower and upper bound for integration
 
 \item[{\sphinxstylestrong{cdf: function}}] \leavevmode
+\sphinxAtStartPar
 Cumulative distribution function (CDF) from stochprop.eofs.build\_cfd
 
 \item[{\sphinxstylestrong{size: int}}] \leavevmode
+\sphinxAtStartPar
 Number of samples to generate
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{samples: 1darray}] \leavevmode
+\sphinxAtStartPar
 Sampled values from the PDF
 
 \end{description}
@@ -1334,7 +1619,8 @@ Sampled values from the PDF
 \index{fit\_atmo() (in module stochprop.eofs)@\spxentry{fit\_atmo()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.fit_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{fit\_atmo}}}{\emph{prof\_path}, \emph{eofs\_path}, \emph{output\_path}, \emph{eof\_cnt=100}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.fit_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{fit\_atmo}}}{\emph{\DUrole{n}{prof\_path}}, \emph{\DUrole{n}{eofs\_path}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}}{}
+\sphinxAtStartPar
 Compute a given number of EOF coefficients to fit a given
 atmophere specification using the basic functions.  Write
 the resulting approximated atmospheric specification to
@@ -1342,15 +1628,19 @@ file.
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{prof\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path and name of the specification to be fit
 
 \item[{\sphinxstylestrong{eofs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the .eof results from compute\_eofs
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path where output will be stored
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of EOFs to use in building approximate specification
 
 \end{description}
@@ -1362,21 +1652,26 @@ Number of EOFs to use in building approximate specification
 \index{maximum\_likelihood\_profile() (in module stochprop.eofs)@\spxentry{maximum\_likelihood\_profile()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.maximum_likelihood_profile}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{maximum\_likelihood\_profile}}}{\emph{coeffs}, \emph{eofs\_path}, \emph{output\_path}, \emph{eof\_cnt=100}, \emph{coeff\_label='None'}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.maximum_likelihood_profile}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{maximum\_likelihood\_profile}}}{\emph{\DUrole{n}{coeffs}}, \emph{\DUrole{n}{eofs\_path}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}, \emph{\DUrole{n}{coeff\_label}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}None\textquotesingle{}}}}{}
+\sphinxAtStartPar
 Use coefficient distributions for a set of empirical orthogonal
 basis functions to compute the maximum likelihood specification
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{coeffs: 2darrays}}] \leavevmode
+\sphinxAtStartPar
 Coefficients computed with stochprop.eofs.compute\_coeffs
 
 \item[{\sphinxstylestrong{eofs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the .eof results from compute\_eofs
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path where output will be stored
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of EOFs to use in building sampled specifications
 
 \end{description}
@@ -1388,35 +1683,45 @@ Number of EOFs to use in building sampled specifications
 \index{perturb\_atmo() (in module stochprop.eofs)@\spxentry{perturb\_atmo()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.perturb_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{perturb\_atmo}}}{\emph{prof\_path}, \emph{eofs\_path}, \emph{output\_path}, \emph{stdev=10.0}, \emph{eof\_max=100}, \emph{eof\_cnt=50}, \emph{sample\_cnt=1}, \emph{alt\_wt\_pow=2.0}, \emph{sing\_val\_wt\_pow=0.25}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.perturb_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{perturb\_atmo}}}{\emph{\DUrole{n}{prof\_path}}, \emph{\DUrole{n}{eofs\_path}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{stdev}\DUrole{o}{=}\DUrole{default_value}{10.0}}, \emph{\DUrole{n}{eof\_max}\DUrole{o}{=}\DUrole{default_value}{100}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{50}}, \emph{\DUrole{n}{sample\_cnt}\DUrole{o}{=}\DUrole{default_value}{1}}, \emph{\DUrole{n}{alt\_wt\_pow}\DUrole{o}{=}\DUrole{default_value}{2.0}}, \emph{\DUrole{n}{sing\_val\_wt\_pow}\DUrole{o}{=}\DUrole{default_value}{0.25}}}{}
+\sphinxAtStartPar
 Use EOFs to perturb a specified profile using a given scale
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{prof\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path and name of the specification to be fit
 
 \item[{\sphinxstylestrong{eofs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the .eof results from compute\_eofs
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path where output will be stored
 
 \item[{\sphinxstylestrong{stdev: float}}] \leavevmode
+\sphinxAtStartPar
 Standard deviation of wind speed used to scale perturbation
 
 \item[{\sphinxstylestrong{eof\_max: int}}] \leavevmode
+\sphinxAtStartPar
 Higher numbered EOF to sample
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of EOFs to sample in the perturbation (can be less than eof\_max)
 
 \item[{\sphinxstylestrong{sample\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of perturbed atmospheric samples to generate
 
 \item[{\sphinxstylestrong{alt\_wt\_pow: float}}] \leavevmode
+\sphinxAtStartPar
 Power raising relative mean altitude value in weighting
 
 \item[{\sphinxstylestrong{sing\_val\_wt\_pow: float}}] \leavevmode
+\sphinxAtStartPar
 Power raising relative singular value in weighting
 
 \end{description}
@@ -1428,17 +1733,20 @@ Power raising relative singular value in weighting
 \index{pressure() (in module stochprop.eofs)@\spxentry{pressure()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.pressure}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{pressure}}}{\emph{z}, \emph{T}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.pressure}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{pressure}}}{\emph{\DUrole{n}{z}}, \emph{\DUrole{n}{T}}}{}
+\sphinxAtStartPar
 Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{z: float}}] \leavevmode
+\sphinxAtStartPar
 Altitude above sea level {[}km{]}
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{pressure: float}] \leavevmode
+\sphinxAtStartPar
 Pressure of the atmosphere at altitude \(z\) {[}mbar{]} and temperature \(T\) {[}K{]}
 
 \end{description}
@@ -1450,7 +1758,8 @@ Pressure of the atmosphere at altitude \(z\) {[}mbar{]} and temperature \(T\) {[
 \index{profiles\_qc() (in module stochprop.eofs)@\spxentry{profiles\_qc()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.profiles_qc}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{profiles\_qc}}}{\emph{path}, \emph{pattern='*.met'}, \emph{skiprows=0}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.profiles_qc}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{profiles\_qc}}}{\emph{\DUrole{n}{path}}, \emph{\DUrole{n}{pattern}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}*.dat\textquotesingle{}}}, \emph{\DUrole{n}{skiprows}\DUrole{o}{=}\DUrole{default_value}{0}}}{}
+\sphinxAtStartPar
 Runs a quality control (QC) check on profiles in the path
 matching the pattern.  It can optionally plot the bad
 profiles.  If it finds any, it makes a new direcotry
@@ -1459,12 +1768,15 @@ profiles into the directory for you to check
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the profiles to be QC’d
 
 \item[{\sphinxstylestrong{pattern: string}}] \leavevmode
+\sphinxAtStartPar
 Pattern defining the list of profiles in the path
 
 \item[{\sphinxstylestrong{skiprows: int}}] \leavevmode
+\sphinxAtStartPar
 Number of header rows in the profiles
 
 \end{description}
@@ -1476,27 +1788,34 @@ Number of header rows in the profiles
 \index{sample\_atmo() (in module stochprop.eofs)@\spxentry{sample\_atmo()}\spxextra{in module stochprop.eofs}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.sample_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{sample\_atmo}}}{\emph{coeffs}, \emph{eofs\_path}, \emph{output\_path}, \emph{eof\_cnt=100}, \emph{prof\_cnt=250}, \emph{output\_mean=False}, \emph{coeff\_label='None'}}{}
+\phantomsection\label{\detokenize{stochprop.eofs:stochprop.eofs.sample_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.eofs.}}\sphinxbfcode{\sphinxupquote{sample\_atmo}}}{\emph{\DUrole{n}{coeffs}}, \emph{\DUrole{n}{eofs\_path}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{eof\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}, \emph{\DUrole{n}{prof\_cnt}\DUrole{o}{=}\DUrole{default_value}{250}}, \emph{\DUrole{n}{output\_mean}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{coeff\_label}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}None\textquotesingle{}}}}{}
+\sphinxAtStartPar
 Generate atmosphere states using coefficient distributions for
 a set of empirical orthogonal basis functions
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{coeffs: 2darrays}}] \leavevmode
+\sphinxAtStartPar
 Coefficients computed with stochprop.eofs.compute\_coeffs
 
 \item[{\sphinxstylestrong{eofs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to the .eof results from compute\_eofs
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path where output will be stored
 
 \item[{\sphinxstylestrong{eof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of EOFs to use in building sampled specifications
 
 \item[{\sphinxstylestrong{prof\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of atmospheric specification samples to generate
 
 \item[{\sphinxstylestrong{output\_mean: bool}}] \leavevmode
+\sphinxAtStartPar
 Flag to output the mean profile from the samples generated
 
 \end{description}
@@ -1508,14 +1827,16 @@ Flag to output the mean profile from the samples generated
 
 
 \subsection{Propagation Statistics}
-\label{\detokenize{stochprop.propagation:module-stochprop.propagation}}\label{\detokenize{stochprop.propagation:propagation-statistics}}\label{\detokenize{stochprop.propagation::doc}}\index{stochprop.propagation (module)@\spxentry{stochprop.propagation}\spxextra{module}}\index{PathGeometryModel (class in stochprop.propagation)@\spxentry{PathGeometryModel}\spxextra{class in stochprop.propagation}}
+\label{\detokenize{stochprop.propagation:module-stochprop.propagation}}\label{\detokenize{stochprop.propagation:propagation-statistics}}\label{\detokenize{stochprop.propagation::doc}}\index{module@\spxentry{module}!stochprop.propagation@\spxentry{stochprop.propagation}}\index{stochprop.propagation@\spxentry{stochprop.propagation}!module@\spxentry{module}}\index{PathGeometryModel (class in stochprop.propagation)@\spxentry{PathGeometryModel}\spxextra{class in stochprop.propagation}}
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{PathGeometryModel}}}
+\sphinxAtStartPar
 Bases: \sphinxcode{\sphinxupquote{object}}
 
+\sphinxAtStartPar
 Propagation path geometry statistics computed using ray tracing
-analysis on a suite of specifications includes celerity-range and
+analysis on a suite of specifications includes celerity\sphinxhyphen{}range and
 azimuth deviation/scatter statistics
 \subsubsection*{Methods}
 
@@ -1526,44 +1847,56 @@ azimuth deviation/scatter statistics
 \endfirsthead
 
 \multicolumn{2}{c}%
-{\makebox[0pt]{\sphinxtablecontinued{\tablename\ \thetable{} -- continued from previous page}}}\\
+{\makebox[0pt]{\sphinxtablecontinued{\tablename\ \thetable{} \textendash{} continued from previous page}}}\\
 \hline
 
 \endhead
 
 \hline
-\multicolumn{2}{r}{\makebox[0pt][r]{\sphinxtablecontinued{Continued on next page}}}\\
+\multicolumn{2}{r}{\makebox[0pt][r]{\sphinxtablecontinued{continues on next page}}}\\
 \endfoot
 
 \endlastfoot
 
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.build}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{build}}}}}(self, arrivals\_file, output\_file{[}, …{]})
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.build}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{build}}}}}(arrivals\_file, output\_file{[}, ...{]})
 &
+\sphinxAtStartPar
 Construct propagation statistics from a ray tracing arrival file (concatenated from multiple runs most likely) and output a path geometry model
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.display}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{display}}}}}(self{[}, file\_id, subtitle, show\_colorbar{]})
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.display}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{display}}}}}({[}file\_id, subtitle, show\_colorbar{]})
 &
+\sphinxAtStartPar
 Display the propagation geometry statistics
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_mn}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval\_az\_dev\_mn}}}}}(self, rng, az)
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_mn}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval\_az\_dev\_mn}}}}}(rng, az)
 &
+\sphinxAtStartPar
 Evaluate the mean back azimuth deviation at a given range and propagation azimuth
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_std}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval\_az\_dev\_std}}}}}(self, rng, az)
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_std}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval\_az\_dev\_std}}}}}(rng, az)
 &
+\sphinxAtStartPar
 Evaluate the standard deviation of the back azimuth at a given range and propagation azimuth
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_rcel_gmm}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval\_rcel\_gmm}}}}}(self, rng, rcel, az)
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_rcel_gmm}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval\_rcel\_gmm}}}}}(rng, rcel, az)
 &
+\sphinxAtStartPar
 Evaluate reciprocal celerity Gaussian Mixture Model (GMM) at specified range, reciprocal celerity, and azimuth
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.load}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{load}}}}}(self, model\_file{[}, smooth{]})
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.load}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{load}}}}}(model\_file{[}, smooth{]})
 &
+\sphinxAtStartPar
 Load a path geometry model file for use
 \\
 \hline
@@ -1571,39 +1904,50 @@ Load a path geometry model file for use
 \index{build() (stochprop.propagation.PathGeometryModel method)@\spxentry{build()}\spxextra{stochprop.propagation.PathGeometryModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.build}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{build}}}{\emph{self, arrivals\_file, output\_file, show\_fits=False, rng\_width=50.0, rng\_spacing=10.0, geom='3d', src\_loc={[}0.0, 0.0, 0.0{]}, min\_turning\_ht=0.0, az\_bin\_cnt=16, az\_bin\_wdth=30.0}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.build}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{build}}}{\emph{\DUrole{n}{arrivals\_file}}, \emph{\DUrole{n}{output\_file}}, \emph{\DUrole{n}{show\_fits}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{rng\_width}\DUrole{o}{=}\DUrole{default_value}{50.0}}, \emph{\DUrole{n}{rng\_spacing}\DUrole{o}{=}\DUrole{default_value}{10.0}}, \emph{\DUrole{n}{geom}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}3d\textquotesingle{}}}, \emph{\DUrole{n}{src\_loc}\DUrole{o}{=}\DUrole{default_value}{{[}0.0, 0.0, 0.0{]}}}, \emph{\DUrole{n}{min\_turning\_ht}\DUrole{o}{=}\DUrole{default_value}{0.0}}, \emph{\DUrole{n}{az\_bin\_cnt}\DUrole{o}{=}\DUrole{default_value}{16}}, \emph{\DUrole{n}{az\_bin\_wdth}\DUrole{o}{=}\DUrole{default_value}{30.0}}}{}
+\sphinxAtStartPar
 Construct propagation statistics from a ray tracing arrival file (concatenated from
 multiple runs most likely) and output a path geometry model
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{arrivals\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path to file containing infraGA/GeoAc arrival information
 
 \item[{\sphinxstylestrong{output\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path to file where results will be saved
 
 \item[{\sphinxstylestrong{show\_fits: boolean}}] \leavevmode
+\sphinxAtStartPar
 Option ot visualize model construction (for QC purposes)
 
 \item[{\sphinxstylestrong{rng\_width: float}}] \leavevmode
+\sphinxAtStartPar
 Range bin width in kilometers
 
 \item[{\sphinxstylestrong{rng\_spacing: float}}] \leavevmode
+\sphinxAtStartPar
 Spacing between range bins in kilometers
 
 \item[{\sphinxstylestrong{geom: string}}] \leavevmode
+\sphinxAtStartPar
 Geometry used in infraGA/GeoAc simulation.  Options are “3d” and “sph”
 
 \item[{\sphinxstylestrong{src\_loc: iterable}}] \leavevmode
+\sphinxAtStartPar
 {[}x, y, z{]} or {[}lat, lon, elev{]} location of the source used in infraGA/GeoAc simulations.  Note: ‘3d’ simulations assume source at origin.
 
 \item[{\sphinxstylestrong{min\_turning\_ht: float}}] \leavevmode
+\sphinxAtStartPar
 Minimum turning height used to filter out boundary layer paths if not of interest
 
 \item[{\sphinxstylestrong{az\_bin\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of azimuth bins to use in analysis
 
 \item[{\sphinxstylestrong{az\_bin\_width: float}}] \leavevmode
+\sphinxAtStartPar
 Azimuth bin width in degrees for analysis
 
 \end{description}
@@ -1615,14 +1959,17 @@ Azimuth bin width in degrees for analysis
 \index{display() (stochprop.propagation.PathGeometryModel method)@\spxentry{display()}\spxextra{stochprop.propagation.PathGeometryModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.display}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{display}}}{\emph{self}, \emph{file\_id=None}, \emph{subtitle=None}, \emph{show\_colorbar=True}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.display}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{display}}}{\emph{\DUrole{n}{file\_id}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{subtitle}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{show\_colorbar}\DUrole{o}{=}\DUrole{default_value}{True}}}{}
+\sphinxAtStartPar
 Display the propagation geometry statistics
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{file\_id: string}}] \leavevmode
+\sphinxAtStartPar
 File prefix to save visualization
 
 \item[{\sphinxstylestrong{subtitle: string}}] \leavevmode
+\sphinxAtStartPar
 Subtitle used in figures
 
 \end{description}
@@ -1634,21 +1981,25 @@ Subtitle used in figures
 \index{eval\_az\_dev\_mn() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_az\_dev\_mn()}\spxextra{stochprop.propagation.PathGeometryModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_mn}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_az\_dev\_mn}}}{\emph{self}, \emph{rng}, \emph{az}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_mn}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_az\_dev\_mn}}}{\emph{\DUrole{n}{rng}}, \emph{\DUrole{n}{az}}}{}
+\sphinxAtStartPar
 Evaluate the mean back azimuth deviation at a given range
 and propagation azimuth
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{rng: float}}] \leavevmode
+\sphinxAtStartPar
 Range from source
 
 \item[{\sphinxstylestrong{az: float}}] \leavevmode
+\sphinxAtStartPar
 Propagation azimuth (relative to North)
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{bias: float}] \leavevmode
+\sphinxAtStartPar
 Predicted bias in the arrival back azimuth at specified arrival range and azimuth
 
 \end{description}
@@ -1660,21 +2011,25 @@ Predicted bias in the arrival back azimuth at specified arrival range and azimut
 \index{eval\_az\_dev\_std() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_az\_dev\_std()}\spxextra{stochprop.propagation.PathGeometryModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_std}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_az\_dev\_std}}}{\emph{self}, \emph{rng}, \emph{az}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_az_dev_std}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_az\_dev\_std}}}{\emph{\DUrole{n}{rng}}, \emph{\DUrole{n}{az}}}{}
+\sphinxAtStartPar
 Evaluate the standard deviation of the back azimuth at a given range
 and propagation azimuth
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{rng: float}}] \leavevmode
+\sphinxAtStartPar
 Range from source
 
 \item[{\sphinxstylestrong{az: float}}] \leavevmode
+\sphinxAtStartPar
 Propagation azimuth (relative to North)
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{stdev: float}] \leavevmode
+\sphinxAtStartPar
 Standard deviation of arrival back azimuths at specified range and azimuth
 
 \end{description}
@@ -1686,24 +2041,29 @@ Standard deviation of arrival back azimuths at specified range and azimuth
 \index{eval\_rcel\_gmm() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_rcel\_gmm()}\spxextra{stochprop.propagation.PathGeometryModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_rcel_gmm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_rcel\_gmm}}}{\emph{self}, \emph{rng}, \emph{rcel}, \emph{az}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.eval_rcel_gmm}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval\_rcel\_gmm}}}{\emph{\DUrole{n}{rng}}, \emph{\DUrole{n}{rcel}}, \emph{\DUrole{n}{az}}}{}
+\sphinxAtStartPar
 Evaluate reciprocal celerity Gaussian Mixture Model (GMM)
 at specified range, reciprocal celerity, and azimuth
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{rng: float}}] \leavevmode
+\sphinxAtStartPar
 Range from source
 
 \item[{\sphinxstylestrong{rcel: float}}] \leavevmode
+\sphinxAtStartPar
 Reciprocal celerity (travel time divided by propagation range)
 
 \item[{\sphinxstylestrong{az: float}}] \leavevmode
+\sphinxAtStartPar
 Propagation azimuth (relative to North)
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{pdf: float}] \leavevmode
+\sphinxAtStartPar
 Probability of observing an infrasonic arrival with specified celerity at specified range and azimuth
 
 \end{description}
@@ -1715,14 +2075,17 @@ Probability of observing an infrasonic arrival with specified celerity at specif
 \index{load() (stochprop.propagation.PathGeometryModel method)@\spxentry{load()}\spxextra{stochprop.propagation.PathGeometryModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.load}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load}}}{\emph{self}, \emph{model\_file}, \emph{smooth=False}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.PathGeometryModel.load}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load}}}{\emph{\DUrole{n}{model\_file}}, \emph{\DUrole{n}{smooth}\DUrole{o}{=}\DUrole{default_value}{False}}}{}
+\sphinxAtStartPar
 Load a path geometry model file for use
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{model\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path to PGM file constructed using stochprop.propagation.PathGeometryModel.build()
 
 \item[{\sphinxstylestrong{smooth: boolean}}] \leavevmode
+\sphinxAtStartPar
 Option to use scipy.signal.savgol\_filter to smooth discrete GMM parameters along range
 
 \end{description}
@@ -1738,6 +2101,7 @@ Option to use scipy.signal.savgol\_filter to smooth discrete GMM parameters alon
 
 \begin{fulllineitems}
 \phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel}}\pysigline{\sphinxbfcode{\sphinxupquote{class }}\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{TLossModel}}}
+\sphinxAtStartPar
 Bases: \sphinxcode{\sphinxupquote{object}}
 \subsubsection*{Methods}
 
@@ -1748,34 +2112,42 @@ Bases: \sphinxcode{\sphinxupquote{object}}
 \endfirsthead
 
 \multicolumn{2}{c}%
-{\makebox[0pt]{\sphinxtablecontinued{\tablename\ \thetable{} -- continued from previous page}}}\\
+{\makebox[0pt]{\sphinxtablecontinued{\tablename\ \thetable{} \textendash{} continued from previous page}}}\\
 \hline
 
 \endhead
 
 \hline
-\multicolumn{2}{r}{\makebox[0pt][r]{\sphinxtablecontinued{Continued on next page}}}\\
+\multicolumn{2}{r}{\makebox[0pt][r]{\sphinxtablecontinued{continues on next page}}}\\
 \endfoot
 
 \endlastfoot
 
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.build}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{build}}}}}(self, tloss\_file, output\_file{[}, …{]})
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.build}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{build}}}}}(tloss\_file, output\_file{[}, show\_fits, ...{]})
 &
+\sphinxAtStartPar
 Construct propagation statistics from a NCPAprop modess or pape file (concatenated from multiple runs most likely) and output a transmission loss model
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.display}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{display}}}}}(self{[}, file\_id, title, show\_colorbar{]})
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.display}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{display}}}}}({[}file\_id, title, show\_colorbar{]})
 &
+\sphinxAtStartPar
 Display the transmission loss statistics
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.eval}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval}}}}}(self, rng, tloss, az)
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.eval}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{eval}}}}}(rng, tloss, az)
 &
+\sphinxAtStartPar
 Evaluate TLoss model at specified range, transmission loss, and azimuth
 \\
 \hline
-{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.load}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{load}}}}}(self, model\_file)
+\sphinxAtStartPar
+{\hyperref[\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.load}]{\sphinxcrossref{\sphinxcode{\sphinxupquote{load}}}}}(model\_file)
 &
+\sphinxAtStartPar
 Load a transmission loss file for use
 \\
 \hline
@@ -1783,27 +2155,34 @@ Load a transmission loss file for use
 \index{build() (stochprop.propagation.TLossModel method)@\spxentry{build()}\spxextra{stochprop.propagation.TLossModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.build}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{build}}}{\emph{self, tloss\_file, output\_file, show\_fits=False, use\_coh=False, az\_bin\_cnt=16, az\_bin\_wdth=30.0, rng\_lims={[}1.0, 1000.0{]}, rng\_cnt=100, rng\_smpls='linear'}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.build}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{build}}}{\emph{\DUrole{n}{tloss\_file}}, \emph{\DUrole{n}{output\_file}}, \emph{\DUrole{n}{show\_fits}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{use\_coh}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{az\_bin\_cnt}\DUrole{o}{=}\DUrole{default_value}{16}}, \emph{\DUrole{n}{az\_bin\_wdth}\DUrole{o}{=}\DUrole{default_value}{30.0}}, \emph{\DUrole{n}{rng\_lims}\DUrole{o}{=}\DUrole{default_value}{{[}1.0, 1000.0{]}}}, \emph{\DUrole{n}{rng\_cnt}\DUrole{o}{=}\DUrole{default_value}{100}}, \emph{\DUrole{n}{rng\_smpls}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}linear\textquotesingle{}}}}{}
+\sphinxAtStartPar
 Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
 multiple runs most likely) and output a transmission loss model
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{tloss\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path to file containing NCPAprop transmission loss information
 
 \item[{\sphinxstylestrong{output\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path to file where results will be saved
 
 \item[{\sphinxstylestrong{show\_fits: boolean}}] \leavevmode
+\sphinxAtStartPar
 Option ot visualize model construction (for QC purposes)
 
 \item[{\sphinxstylestrong{use\_coh: boolean}}] \leavevmode
+\sphinxAtStartPar
 Option to use coherent transmission loss
 
 \item[{\sphinxstylestrong{az\_bin\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of azimuth bins to use in analysis
 
 \item[{\sphinxstylestrong{az\_bin\_width: float}}] \leavevmode
+\sphinxAtStartPar
 Azimuth bin width in degrees for analysis
 
 \end{description}
@@ -1815,14 +2194,17 @@ Azimuth bin width in degrees for analysis
 \index{display() (stochprop.propagation.TLossModel method)@\spxentry{display()}\spxextra{stochprop.propagation.TLossModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.display}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{display}}}{\emph{self}, \emph{file\_id=None}, \emph{title='Transmission Loss Statistics'}, \emph{show\_colorbar=True}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.display}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{display}}}{\emph{\DUrole{n}{file\_id}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{title}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}Transmission Loss Statistics\textquotesingle{}}}, \emph{\DUrole{n}{show\_colorbar}\DUrole{o}{=}\DUrole{default_value}{True}}}{}
+\sphinxAtStartPar
 Display the transmission loss statistics
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{file\_id: string}}] \leavevmode
+\sphinxAtStartPar
 File prefix to save visualization
 
 \item[{\sphinxstylestrong{subtitle: string}}] \leavevmode
+\sphinxAtStartPar
 Subtitle used in figures
 
 \end{description}
@@ -1834,23 +2216,28 @@ Subtitle used in figures
 \index{eval() (stochprop.propagation.TLossModel method)@\spxentry{eval()}\spxextra{stochprop.propagation.TLossModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.eval}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval}}}{\emph{self}, \emph{rng}, \emph{tloss}, \emph{az}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.eval}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{eval}}}{\emph{\DUrole{n}{rng}}, \emph{\DUrole{n}{tloss}}, \emph{\DUrole{n}{az}}}{}
+\sphinxAtStartPar
 Evaluate TLoss model at specified range, transmission loss, and azimuth
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{rng: float}}] \leavevmode
+\sphinxAtStartPar
 Range from source
 
 \item[{\sphinxstylestrong{tloss: float}}] \leavevmode
+\sphinxAtStartPar
 Transmission loss
 
 \item[{\sphinxstylestrong{az: float}}] \leavevmode
+\sphinxAtStartPar
 Propagation azimuth (relative to North)
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{pdf: float}] \leavevmode
+\sphinxAtStartPar
 Probability of observing an infrasonic arrival with specified transmission loss at specified range and azimuth
 
 \end{description}
@@ -1862,11 +2249,13 @@ Probability of observing an infrasonic arrival with specified transmission loss 
 \index{load() (stochprop.propagation.TLossModel method)@\spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.load}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load}}}{\emph{self}, \emph{model\_file}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.TLossModel.load}}\pysiglinewithargsret{\sphinxbfcode{\sphinxupquote{load}}}{\emph{\DUrole{n}{model\_file}}}{}
+\sphinxAtStartPar
 Load a transmission loss file for use
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{model\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path to TLoss file constructed using stochprop.propagation.TLossModel.build()
 
 \end{description}
@@ -1881,20 +2270,24 @@ Path to TLoss file constructed using stochprop.propagation.TLossModel.build()
 \index{find\_azimuth\_bin() (in module stochprop.propagation)@\spxentry{find\_azimuth\_bin()}\spxextra{in module stochprop.propagation}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.find_azimuth_bin}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{find\_azimuth\_bin}}}{\emph{az}, \emph{bin\_cnt=16}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.find_azimuth_bin}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{find\_azimuth\_bin}}}{\emph{\DUrole{n}{az}}, \emph{\DUrole{n}{bin\_cnt}\DUrole{o}{=}\DUrole{default_value}{16}}}{}
+\sphinxAtStartPar
 Identify the azimuth bin index given some specified number of bins
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{az: float}}] \leavevmode
+\sphinxAtStartPar
 Azimuth in degrees
 
 \item[{\sphinxstylestrong{bin\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of bins used in analysis
 
 \end{description}
 
 \item[{Returns}] \leavevmode\begin{description}
 \item[{index: int}] \leavevmode
+\sphinxAtStartPar
 Index of azimuth bin
 
 \end{description}
@@ -1906,52 +2299,67 @@ Index of azimuth bin
 \index{run\_infraga() (in module stochprop.propagation)@\spxentry{run\_infraga()}\spxextra{in module stochprop.propagation}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.run_infraga}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{run\_infraga}}}{\emph{profs\_path, results\_file, pattern='*.met', cpu\_cnt=None, geom='3d', bounces=25, inclinations={[}1.0, 60.0, 1.0{]}, azimuths={[}-180.0, 180.0, 3.0{]}, freq=0.1, z\_grnd=0.0, rng\_max=1000.0, src\_loc={[}0.0, 0.0, 0.0{]}, infraga\_path='', clean\_up=False}}{}
-Run the infraga -prop algorithm to compute path geometry
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.run_infraga}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{run\_infraga}}}{\emph{\DUrole{n}{profs\_path}}, \emph{\DUrole{n}{results\_file}}, \emph{\DUrole{n}{pattern}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}*.met\textquotesingle{}}}, \emph{\DUrole{n}{cpu\_cnt}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{geom}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}3d\textquotesingle{}}}, \emph{\DUrole{n}{bounces}\DUrole{o}{=}\DUrole{default_value}{25}}, \emph{\DUrole{n}{inclinations}\DUrole{o}{=}\DUrole{default_value}{{[}1.0, 60.0, 1.0{]}}}, \emph{\DUrole{n}{azimuths}\DUrole{o}{=}\DUrole{default_value}{{[}\sphinxhyphen{} 180.0, 180.0, 3.0{]}}}, \emph{\DUrole{n}{freq}\DUrole{o}{=}\DUrole{default_value}{0.1}}, \emph{\DUrole{n}{z\_grnd}\DUrole{o}{=}\DUrole{default_value}{0.0}}, \emph{\DUrole{n}{rng\_max}\DUrole{o}{=}\DUrole{default_value}{1000.0}}, \emph{\DUrole{n}{src\_loc}\DUrole{o}{=}\DUrole{default_value}{{[}0.0, 0.0, 0.0{]}}}, \emph{\DUrole{n}{infraga\_path}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}\textquotesingle{}}}, \emph{\DUrole{n}{clean\_up}\DUrole{o}{=}\DUrole{default_value}{False}}}{}
+\sphinxAtStartPar
+Run the infraga \sphinxhyphen{}prop algorithm to compute path geometry
 statistics for BISL using a suite of specifications
 and combining results into single file
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{profs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to atmospheric specification files
 
 \item[{\sphinxstylestrong{results\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path and name of file where results will be written
 
 \item[{\sphinxstylestrong{pattern: string}}] \leavevmode
+\sphinxAtStartPar
 Pattern identifying atmospheric specification within profs\_path location
 
 \item[{\sphinxstylestrong{cpu\_cnt: int}}] \leavevmode
-Number of threads to use in OpenMPI implementation.  None runs non-OpenMPI version of infraga
+\sphinxAtStartPar
+Number of threads to use in OpenMPI implementation.  None runs non\sphinxhyphen{}OpenMPI version of infraga
 
 \item[{\sphinxstylestrong{geom: string}}] \leavevmode
+\sphinxAtStartPar
 Defines geometry of the infraga simulations (3d” or “sph”)
 
 \item[{\sphinxstylestrong{bounces: int}}] \leavevmode
+\sphinxAtStartPar
 Maximum number of ground reflections to consider in ray tracing
 
 \item[{\sphinxstylestrong{inclinations: iterable object}}] \leavevmode
+\sphinxAtStartPar
 Iterable of starting, ending, and step for ray launch inclination
 
 \item[{\sphinxstylestrong{azimuths: iterable object}}] \leavevmode
+\sphinxAtStartPar
 Iterable of starting, ending, and step for ray launch azimuths
 
 \item[{\sphinxstylestrong{freq: float}}] \leavevmode
+\sphinxAtStartPar
 Frequency to use for Sutherland Bass absorption calculation
 
 \item[{\sphinxstylestrong{z\_grnd: float}}] \leavevmode
+\sphinxAtStartPar
 Elevation of the ground surface relative to sea level
 
 \item[{\sphinxstylestrong{rng\_max: float}}] \leavevmode
+\sphinxAtStartPar
 Maximum propagation range for propagation paths
 
 \item[{\sphinxstylestrong{src\_loc: iterable object}}] \leavevmode
+\sphinxAtStartPar
 The horizontal (latitude and longitude) and altitude of the source
 
 \item[{\sphinxstylestrong{infraga\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Location of infraGA executables
 
 \item[{\sphinxstylestrong{clean\_up: boolean}}] \leavevmode
+\sphinxAtStartPar
 Flag to remove individual {[}..{]}.arrival.dat files after combining
 
 \end{description}
@@ -1963,44 +2371,56 @@ Flag to remove individual {[}..{]}.arrival.dat files after combining
 \index{run\_modess() (in module stochprop.propagation)@\spxentry{run\_modess()}\spxextra{in module stochprop.propagation}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.run_modess}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{run\_modess}}}{\emph{profs\_path, results\_path, pattern='*.met', azimuths={[}-180.0, 180.0, 3.0{]}, freq=0.1, z\_grnd=0.0, rng\_max=1000.0, ncpaprop\_path='', clean\_up=False, keep\_lossless=False, cpu\_cnt=1}}{}
+\phantomsection\label{\detokenize{stochprop.propagation:stochprop.propagation.run_modess}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.propagation.}}\sphinxbfcode{\sphinxupquote{run\_modess}}}{\emph{\DUrole{n}{profs\_path}}, \emph{\DUrole{n}{results\_path}}, \emph{\DUrole{n}{pattern}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}*.met\textquotesingle{}}}, \emph{\DUrole{n}{azimuths}\DUrole{o}{=}\DUrole{default_value}{{[}\sphinxhyphen{} 180.0, 180.0, 3.0{]}}}, \emph{\DUrole{n}{freq}\DUrole{o}{=}\DUrole{default_value}{0.1}}, \emph{\DUrole{n}{z\_grnd}\DUrole{o}{=}\DUrole{default_value}{0.0}}, \emph{\DUrole{n}{rng\_max}\DUrole{o}{=}\DUrole{default_value}{1000.0}}, \emph{\DUrole{n}{ncpaprop\_path}\DUrole{o}{=}\DUrole{default_value}{\textquotesingle{}\textquotesingle{}}}, \emph{\DUrole{n}{clean\_up}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{keep\_lossless}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{cpu\_cnt}\DUrole{o}{=}\DUrole{default_value}{1}}}{}
+\sphinxAtStartPar
 Run the NCPAprop normal mode methods to compute transmission
 loss values for a suite of atmospheric specifications at
 a set of frequency values
 
+\sphinxAtStartPar
 Note: the methods here use the ncpaprop\_v2 version that includes an option
 for \textendash{}filetag that writes output into a specific location and enables
 simultaneous calculations via subprocess.popen()
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{profs\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path to atmospheric specification files
 
 \item[{\sphinxstylestrong{results\_file: string}}] \leavevmode
+\sphinxAtStartPar
 Path and name of file where results will be written
 
 \item[{\sphinxstylestrong{pattern: string}}] \leavevmode
+\sphinxAtStartPar
 Pattern identifying atmospheric specification within profs\_path location
 
 \item[{\sphinxstylestrong{azimuths: iterable object}}] \leavevmode
+\sphinxAtStartPar
 Iterable of starting, ending, and step for propagation azimuths
 
 \item[{\sphinxstylestrong{freq: float}}] \leavevmode
+\sphinxAtStartPar
 Frequency for simulation
 
 \item[{\sphinxstylestrong{z\_grnd: float}}] \leavevmode
+\sphinxAtStartPar
 Elevation of the ground surface relative to sea level
 
 \item[{\sphinxstylestrong{rng\_max: float}}] \leavevmode
+\sphinxAtStartPar
 Maximum propagation range for propagation paths
 
 \item[{\sphinxstylestrong{clean\_up: boolean}}] \leavevmode
+\sphinxAtStartPar
 Flag to remove individual .nm files after combining
 
 \item[{\sphinxstylestrong{keep\_lossless: boolean}}] \leavevmode
+\sphinxAtStartPar
 Flag to keep the lossless (no absorption) results
 
 \item[{\sphinxstylestrong{cpu\_cnt}}] \leavevmode{[}integer{]}
+\sphinxAtStartPar
 Number of CPUs to use in subprocess.popen loop for simultaneous calculations
 
 \end{description}
@@ -2012,39 +2432,45 @@ Number of CPUs to use in subprocess.popen loop for simultaneous calculations
 
 
 \subsection{Gravity Wave Perturbation Analysis}
-\label{\detokenize{stochprop.gravity:module-stochprop.gravity_waves}}\label{\detokenize{stochprop.gravity:gravity-wave-perturbation-analysis}}\label{\detokenize{stochprop.gravity::doc}}\index{stochprop.gravity\_waves (module)@\spxentry{stochprop.gravity\_waves}\spxextra{module}}\index{BV\_freq() (in module stochprop.gravity\_waves)@\spxentry{BV\_freq()}\spxextra{in module stochprop.gravity\_waves}}
+\label{\detokenize{stochprop.gravity:module-stochprop.gravity_waves}}\label{\detokenize{stochprop.gravity:gravity-wave-perturbation-analysis}}\label{\detokenize{stochprop.gravity::doc}}\index{module@\spxentry{module}!stochprop.gravity\_waves@\spxentry{stochprop.gravity\_waves}}\index{stochprop.gravity\_waves@\spxentry{stochprop.gravity\_waves}!module@\spxentry{module}}\index{BV\_freq() (in module stochprop.gravity\_waves)@\spxentry{BV\_freq()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.BV_freq}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{BV\_freq}}}{\emph{H}}{}~\begin{quote}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.BV_freq}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{BV\_freq}}}{\emph{\DUrole{n}{H}}}{}~\begin{quote}
 
-Compute the Brunt-Vaisala frequency defined as :math:{\color{red}\bfseries{}{}`}N = sqrt\{
+\sphinxAtStartPar
+Compute the Brunt\sphinxhyphen{}Vaisala frequency defined as :math:{\color{red}\bfseries{}\textasciigrave{}}N = sqrt\{
 \end{quote}
 \begin{description}
-\item[{rac\{g\}\{H\}\}{}` where }] \leavevmode
-:math:{\color{red}\bfseries{}{}`}H =
+\item[{rac\{g\}\{H\}\}\textasciigrave{} where }] \leavevmode
+\sphinxAtStartPar
+:math:{\color{red}\bfseries{}\textasciigrave{}}H =
 
 \end{description}
 
+\sphinxAtStartPar
 rac\{rho0\}\{
 rac\{partial 
-ho\_0\}\{partial z\}{}` is the density scale height
+ho\_0\}\{partial z\}\textasciigrave{} is the density scale height
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{H: float}}] \leavevmode
-Scale height, :math:{\color{red}\bfseries{}{}`}H =
+\sphinxAtStartPar
+Scale height, :math:{\color{red}\bfseries{}\textasciigrave{}}H =
 
 \item[{\sphinxstylestrong{ho\_0    imes left(}}] \leavevmode
 \item[{\sphinxstylestrong{rac\{partial}}] \leavevmode
 \item[{\sphinxstylestrong{ho\_0\}\{partial z\}}}] \leavevmode
-\item[{\sphinxstylestrong{ight)\textasciicircum{}\{-1\}{}`}}] \leavevmode
+\item[{\sphinxstylestrong{ight)\textasciicircum{}\{\sphinxhyphen{}1\}\textasciigrave{}}}] \leavevmode
+\sphinxAtStartPar
 Returns:
 f\_BV: float
 \begin{quote}
 
-Brunt-Vaisalla (bouyancy) frequency, :math:{\color{red}\bfseries{}{}`}f\_BV = sqrt\{
+\sphinxAtStartPar
+Brunt\sphinxhyphen{}Vaisalla (bouyancy) frequency, :math:{\color{red}\bfseries{}\textasciigrave{}}f\_BV = sqrt\{
 \end{quote}
 
-\item[{\sphinxstylestrong{rac\{g\}\{H\}\}{}`}}] \leavevmode
+\item[{\sphinxstylestrong{rac\{g\}\{H\}\}\textasciigrave{}}}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
@@ -2054,43 +2480,51 @@ Brunt-Vaisalla (bouyancy) frequency, :math:{\color{red}\bfseries{}{}`}f\_BV = sq
 \index{cg() (in module stochprop.gravity\_waves)@\spxentry{cg()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.cg}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{cg}}}{\emph{k}, \emph{l}, \emph{om\_intr}, \emph{H}}{}~\begin{quote}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.cg}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{cg}}}{\emph{\DUrole{n}{k}}, \emph{\DUrole{n}{l}}, \emph{\DUrole{n}{om\_intr}}, \emph{\DUrole{n}{H}}}{}~\begin{quote}
 
+\sphinxAtStartPar
 Compute the vertical group velocity for gravity wave propagation 
-as :math:{\color{red}\bfseries{}{}`}cg =
+as :math:{\color{red}\bfseries{}\textasciigrave{}}cg =
 \end{quote}
 
+\sphinxAtStartPar
 rac\{partial hat\{omega\}\}\{partial m\} = 
 rac\{m k\_h N\}\{ left(k\_h\textasciicircum{}2 + m\textasciicircum{}2 + 
 rac\{1\}\{4H\textasciicircum{}2 
 ight)\textasciicircum{}\{
-rac\{3\}\{2\}\}\}{}`
+rac\{3\}\{2\}\}\}\textasciigrave{}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{k: float}}] \leavevmode\begin{quote}
 
-Zonal wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Zonal wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 \end{quote}
 \begin{description}
 \item[{l: float}] \leavevmode
-Meridional wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Meridional wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 
 \item[{om\_intr: float}] \leavevmode
+\sphinxAtStartPar
 Intrinsic frequency (relative to winds), defined as \(\hat{\omega} = \omega - k u_0 - l v_0\)
 
 \item[{H: float}] \leavevmode
-Scale height, :math:{\color{red}\bfseries{}{}`}H =
+\sphinxAtStartPar
+Scale height, :math:{\color{red}\bfseries{}\textasciigrave{}}H =
 
 \end{description}
 
 \item[{\sphinxstylestrong{ho\_0    imes left(}}] \leavevmode
 \item[{\sphinxstylestrong{rac\{partial}}] \leavevmode
 \item[{\sphinxstylestrong{ho\_0\}\{partial z\}}}] \leavevmode
-\item[{\sphinxstylestrong{ight)\textasciicircum{}\{-1\}{}`}}] \leavevmode
+\item[{\sphinxstylestrong{ight)\textasciicircum{}\{\sphinxhyphen{}1\}\textasciigrave{}}}] \leavevmode
+\sphinxAtStartPar
 Returns:
 c\_g: float
 \begin{quote}
 
+\sphinxAtStartPar
 Vertical group velocity of gravity waves
 \end{quote}
 
@@ -2103,61 +2537,74 @@ Vertical group velocity of gravity waves
 \index{m\_imag() (in module stochprop.gravity\_waves)@\spxentry{m\_imag()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.m_imag}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{m\_imag}}}{\emph{k}, \emph{l}, \emph{om\_intr}, \emph{z}, \emph{H}, \emph{T0}, \emph{d0}}{}~\begin{quote}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.m_imag}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{m\_imag}}}{\emph{\DUrole{n}{k}}, \emph{\DUrole{n}{l}}, \emph{\DUrole{n}{om\_intr}}, \emph{\DUrole{n}{z}}, \emph{\DUrole{n}{H}}, \emph{\DUrole{n}{T0}}, \emph{\DUrole{n}{d0}}}{}~\begin{quote}
 
+\sphinxAtStartPar
 Compute the imaginary wave number component to add attenuation effects
-The imaginary component is defined as :math:{\color{red}\bfseries{}{}`}{\color{red}\bfseries{}m\_} ext\{im\} = -
+The imaginary component is defined as :math:{\color{red}\bfseries{}\textasciigrave{}}{\color{red}\bfseries{}m\_} ext\{im\} = \sphinxhyphen{}
 \end{quote}
 
+\sphinxAtStartPar
 u 
-rac\{m\textasciicircum{}3\}\{hat\{omega\}\}{}`
+rac\{m\textasciicircum{}3\}\{hat\{omega\}\}\textasciigrave{}
 \begin{quote}
 
-where the viscosity is :math:{\color{red}\bfseries{}{}`}
+\sphinxAtStartPar
+where the viscosity is :math:{\color{red}\bfseries{}\textasciigrave{}}
 \end{quote}
 
-u = 3.563       imes 10\textasciicircum{}\{-7\} 
+\sphinxAtStartPar
+u = 3.563       imes 10\textasciicircum{}\{\sphinxhyphen{}7\} 
 rac\{T\_0 left( z 
 ight)\}\{
 ho\_0 left( z 
-ight)\}{}`
+ight)\}\textasciigrave{}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{k: float}}] \leavevmode\begin{quote}
 
-Zonal wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Zonal wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 \end{quote}
 \begin{description}
 \item[{l: float}] \leavevmode
-Meridional wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Meridional wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 
 \item[{om\_intr: float}] \leavevmode
+\sphinxAtStartPar
 Intrinsic frequency (relative to winds), defined as \(\hat{\omega} = \omega - k u_0 - l v_0\)
 
 \item[{z: float}] \leavevmode
+\sphinxAtStartPar
 Absolute height (used for turning attenuation “off” below 100 km)
 
 \item[{H: float}] \leavevmode
-Scale height, :math:{\color{red}\bfseries{}{}`}H =
+\sphinxAtStartPar
+Scale height, :math:{\color{red}\bfseries{}\textasciigrave{}}H =
 
 \end{description}
 
 \item[{\sphinxstylestrong{ho\_0    imes left(}}] \leavevmode
 \item[{\sphinxstylestrong{rac\{partial}}] \leavevmode
 \item[{\sphinxstylestrong{ho\_0\}\{partial z\}}}] \leavevmode
-\item[{\sphinxstylestrong{ight)\textasciicircum{}\{-1\}{}`}}] \leavevmode\begin{description}
+\item[{\sphinxstylestrong{ight)\textasciicircum{}\{\sphinxhyphen{}1\}\textasciigrave{}}}] \leavevmode\begin{description}
 \item[{T0: float}] \leavevmode
+\sphinxAtStartPar
 Ambient temperature in the atmosphere
 
 \item[{d0: float}] \leavevmode
+\sphinxAtStartPar
 Ambient density in the atmosphere
 
 \end{description}
 
+\sphinxAtStartPar
 Returns:
 m\_i: float
 \begin{quote}
 
+\sphinxAtStartPar
 Imaginary component of the wavenumber used for damping above 100 km (note: 100 km limit is applied elsewhere)
 \end{quote}
 
@@ -2170,47 +2617,55 @@ Imaginary component of the wavenumber used for damping above 100 km (note: 100 k
 \index{m\_sqr() (in module stochprop.gravity\_waves)@\spxentry{m\_sqr()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.m_sqr}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{m\_sqr}}}{\emph{k}, \emph{l}, \emph{om\_intr}, \emph{H}}{}~\begin{quote}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.m_sqr}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{m\_sqr}}}{\emph{\DUrole{n}{k}}, \emph{\DUrole{n}{l}}, \emph{\DUrole{n}{om\_intr}}, \emph{\DUrole{n}{H}}}{}~\begin{quote}
 
+\sphinxAtStartPar
 Compute the vertical wavenumber dispersion relation for gravity wave propagation
-defined as :math:{\color{red}\bfseries{}{}`}m\textasciicircum{}2 =
+defined as :math:{\color{red}\bfseries{}\textasciigrave{}}m\textasciicircum{}2 =
 \end{quote}
 
-rac\{k\_h\textasciicircum{}2\}\{hat\{omega\}\textasciicircum{}2\} left( N\textasciicircum{}2 - hat\{omega\}\textasciicircum{}2 
+\sphinxAtStartPar
+rac\{k\_h\textasciicircum{}2\}\{hat\{omega\}\textasciicircum{}2\} left( N\textasciicircum{}2 \sphinxhyphen{} hat\{omega\}\textasciicircum{}2 
 ight) + 
-rac\{1\}\{4 H\textasciicircum{}2\}{}`
+rac\{1\}\{4 H\textasciicircum{}2\}\textasciigrave{}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{k: float}}] \leavevmode\begin{quote}
 
-Zonal wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Zonal wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 \end{quote}
 \begin{description}
 \item[{l: float}] \leavevmode
-Meridional wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Meridional wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 
 \item[{om\_intr: float}] \leavevmode
+\sphinxAtStartPar
 Intrinsic frequency (relative to winds), defined as \(\hat{\omega} = \omega - k u_0 - l v_0\)
 
 \item[{H: float}] \leavevmode
-Scale height, :math:{\color{red}\bfseries{}{}`}H =
+\sphinxAtStartPar
+Scale height, :math:{\color{red}\bfseries{}\textasciigrave{}}H =
 
 \end{description}
 
 \item[{\sphinxstylestrong{ho\_0    imes left(}}] \leavevmode
 \item[{\sphinxstylestrong{rac\{partial}}] \leavevmode
 \item[{\sphinxstylestrong{ho\_0\}\{partial z\}}}] \leavevmode
-\item[{\sphinxstylestrong{ight)\textasciicircum{}\{-1\}{}`}}] \leavevmode
+\item[{\sphinxstylestrong{ight)\textasciicircum{}\{\sphinxhyphen{}1\}\textasciigrave{}}}] \leavevmode
+\sphinxAtStartPar
 Returns:
 m\_sqr: float
 \begin{quote}
 
-Vertical wave number squared, :math:{\color{red}\bfseries{}{}`}m\textasciicircum{}2 =
+\sphinxAtStartPar
+Vertical wave number squared, :math:{\color{red}\bfseries{}\textasciigrave{}}m\textasciicircum{}2 =
 \end{quote}
 
-\item[{\sphinxstylestrong{rac\{k\_h\textasciicircum{}2\}\{hat\{omega\}\textasciicircum{}2 left( N\textasciicircum{}2 - hat\{omega\}\textasciicircum{}2}}] \leavevmode
+\item[{\sphinxstylestrong{rac\{k\_h\textasciicircum{}2\}\{hat\{omega\}\textasciicircum{}2 left( N\textasciicircum{}2 \sphinxhyphen{} hat\{omega\}\textasciicircum{}2}}] \leavevmode
 \item[{\sphinxstylestrong{ight) +}}] \leavevmode
-\item[{\sphinxstylestrong{rac\{1\}\{4 H\textasciicircum{}2\}\}{}`}}] \leavevmode
+\item[{\sphinxstylestrong{rac\{1\}\{4 H\textasciicircum{}2\}\}\textasciigrave{}}}] \leavevmode
 \end{description}
 
 \end{description}\end{quote}
@@ -2220,44 +2675,57 @@ Vertical wave number squared, :math:{\color{red}\bfseries{}{}`}m\textasciicircum
 \index{perturb\_atmo() (in module stochprop.gravity\_waves)@\spxentry{perturb\_atmo()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.perturb_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{perturb\_atmo}}}{\emph{atmo\_spec}, \emph{output\_path}, \emph{sample\_cnt=50}, \emph{t0=28800.0}, \emph{dx=4.0}, \emph{dz=0.2}, \emph{Nk=128}, \emph{N\_om=5}, \emph{random\_phase=False}, \emph{z\_src=20.0}, \emph{m\_star=2.5132741228718345}, \emph{env\_below=True}, \emph{cpu\_cnt=None}}{}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.perturb_atmo}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{perturb\_atmo}}}{\emph{\DUrole{n}{atmo\_spec}}, \emph{\DUrole{n}{output\_path}}, \emph{\DUrole{n}{sample\_cnt}\DUrole{o}{=}\DUrole{default_value}{50}}, \emph{\DUrole{n}{t0}\DUrole{o}{=}\DUrole{default_value}{28800.0}}, \emph{\DUrole{n}{dx}\DUrole{o}{=}\DUrole{default_value}{4.0}}, \emph{\DUrole{n}{dz}\DUrole{o}{=}\DUrole{default_value}{0.2}}, \emph{\DUrole{n}{Nk}\DUrole{o}{=}\DUrole{default_value}{128}}, \emph{\DUrole{n}{N\_om}\DUrole{o}{=}\DUrole{default_value}{5}}, \emph{\DUrole{n}{random\_phase}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{z\_src}\DUrole{o}{=}\DUrole{default_value}{20.0}}, \emph{\DUrole{n}{m\_star}\DUrole{o}{=}\DUrole{default_value}{2.5132741228718345}}, \emph{\DUrole{n}{env\_below}\DUrole{o}{=}\DUrole{default_value}{True}}, \emph{\DUrole{n}{cpu\_cnt}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{fig\_out}\DUrole{o}{=}\DUrole{default_value}{None}}}{}
+\sphinxAtStartPar
 Use gravity waves to perturb a specified profile using the methods in Drob et al. (2013)
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{atmo\_spec: string}}] \leavevmode
+\sphinxAtStartPar
 Path and name of the specification to be used as the reference
 
 \item[{\sphinxstylestrong{output\_path: string}}] \leavevmode
+\sphinxAtStartPar
 Path where output will be stored
 
 \item[{\sphinxstylestrong{sample\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of perturbed atmospheric samples to generate
 
 \item[{\sphinxstylestrong{t0: float}}] \leavevmode
-Reference time for gravity wave propagation (typically 4 - 6 hours)
+\sphinxAtStartPar
+Reference time for gravity wave propagation (typically 4 \sphinxhyphen{} 6 hours)
 
 \item[{\sphinxstylestrong{dx: float}}] \leavevmode
+\sphinxAtStartPar
 Horizontal wavenumber resolution {[}km{]}
 
 \item[{\sphinxstylestrong{dz: float}}] \leavevmode
+\sphinxAtStartPar
 Vertical resolution for integration steps {[}km{]}
 
 \item[{\sphinxstylestrong{Nk: int}}] \leavevmode
+\sphinxAtStartPar
 Horizontal wavenumber grid dimensions (Nk x Nk)
 
 \item[{\sphinxstylestrong{N\_om: int}}] \leavevmode
+\sphinxAtStartPar
 Frequency resolution (typically 5)
 
 \item[{\sphinxstylestrong{ref\_lat: float}}] \leavevmode
+\sphinxAtStartPar
 Reference latitude used to define the Coriolis frequency used as the minimum frequency
 
 \item[{\sphinxstylestrong{random\_phase: boolean}}] \leavevmode
+\sphinxAtStartPar
 Controls inclusion of random initial phase shifts
 
 \item[{\sphinxstylestrong{env\_below: boolean}}] \leavevmode
+\sphinxAtStartPar
 Controls whether perturbations below the source height are included
 
 \item[{\sphinxstylestrong{cpu\_cnt: int}}] \leavevmode
+\sphinxAtStartPar
 Number of CPUs to use for parallel computation of Fourier components (defaults to None)
 
 \end{description}
@@ -2269,56 +2737,71 @@ Number of CPUs to use for parallel computation of Fourier components (defaults t
 \index{perturbations() (in module stochprop.gravity\_waves)@\spxentry{perturbations()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.perturbations}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{perturbations}}}{\emph{atmo\_specification}, \emph{t0=14400.0}, \emph{dx=2.0}, \emph{dz=0.2}, \emph{Nk=128}, \emph{N\_om=5}, \emph{ref\_lat=40.0}, \emph{random\_phase=False}, \emph{z\_src=20.0}, \emph{m\_star=2.5132741228718345}, \emph{figure\_out=None}, \emph{pool=None}}{}~\begin{quote}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.perturbations}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{perturbations}}}{\emph{\DUrole{n}{atmo\_specification}}, \emph{\DUrole{n}{t0}\DUrole{o}{=}\DUrole{default_value}{14400.0}}, \emph{\DUrole{n}{dx}\DUrole{o}{=}\DUrole{default_value}{2.0}}, \emph{\DUrole{n}{dz}\DUrole{o}{=}\DUrole{default_value}{0.2}}, \emph{\DUrole{n}{Nk}\DUrole{o}{=}\DUrole{default_value}{128}}, \emph{\DUrole{n}{N\_om}\DUrole{o}{=}\DUrole{default_value}{5}}, \emph{\DUrole{n}{ref\_lat}\DUrole{o}{=}\DUrole{default_value}{40.0}}, \emph{\DUrole{n}{random\_phase}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{z\_src}\DUrole{o}{=}\DUrole{default_value}{20.0}}, \emph{\DUrole{n}{m\_star}\DUrole{o}{=}\DUrole{default_value}{2.5132741228718345}}, \emph{\DUrole{n}{figure\_out}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{pool}\DUrole{o}{=}\DUrole{default_value}{None}}}{}~\begin{quote}
 
-Loop over Fourier components :math:{\color{red}\bfseries{}{}`}left(k, l, omega
+\sphinxAtStartPar
+Loop over Fourier components :math:{\color{red}\bfseries{}\textasciigrave{}}left(k, l, omega
 \end{quote}
 
-ight){}` and compute the spectral components for \(\hat{u} \left(k, l, \omega, z 
+\sphinxAtStartPar
+ight)\textasciigrave{} and compute the spectral components for \(\hat{u} \left(k, l, \omega, z 
 ight)\),
 \begin{quote}
 
-:math:{\color{red}\bfseries{}{}`}hat\{v\}left(k, l, omega, z
+\sphinxAtStartPar
+:math:{\color{red}\bfseries{}\textasciigrave{}}hat\{v\}left(k, l, omega, z
 \end{quote}
 
-ight){}`, and \(\hat{w} \left(k, l, \omega, z 
+\sphinxAtStartPar
+ight)\textasciigrave{}, and \(\hat{w} \left(k, l, \omega, z 
 ight)\).  Once computed, apply inverse Fourier transforms to
 \begin{quote}
 
+\sphinxAtStartPar
 obtain the space and time domain forms.
 \end{quote}
 \begin{quote}\begin{description}
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{atmo\_specification: string}}] \leavevmode\begin{quote}
 
+\sphinxAtStartPar
 Atmospheric specification file path
 \end{quote}
 \begin{description}
 \item[{t0: float}] \leavevmode
-Reference time for gravity wave propagation (typically 4 - 6 hours)
+\sphinxAtStartPar
+Reference time for gravity wave propagation (typically 4 \sphinxhyphen{} 6 hours)
 
 \item[{dx: float}] \leavevmode
+\sphinxAtStartPar
 Horizontal wavenumber resolution {[}km{]}
 
 \item[{dz: float}] \leavevmode
+\sphinxAtStartPar
 Vertical resolution for integration steps {[}km{]}
 
 \item[{Nk: int}] \leavevmode
+\sphinxAtStartPar
 Horizontal wavenumber grid dimensions (Nk x Nk)
 
 \item[{N\_om: int}] \leavevmode
+\sphinxAtStartPar
 Frequency resolution (typically 5)
 
 \item[{ref\_lat: float}] \leavevmode
+\sphinxAtStartPar
 Reference latitude used to define the Coriolis frequency used as the minimum frequency
 
 \item[{random\_phase: boolean}] \leavevmode
+\sphinxAtStartPar
 Controls inclusion of random initial phase shifts
 
 \item[{figure\_out: string}] \leavevmode
+\sphinxAtStartPar
 Option to output a figure with each component’s structure (slows down calculations notably, useful for debugging)
 
 \item[{pool: multiprocessing.Pool}] \leavevmode
+\sphinxAtStartPar
 Multprocessing option for parallel computation of Fourier components
 
 \end{description}
@@ -2328,16 +2811,20 @@ Multprocessing option for parallel computation of Fourier components
 \item[{Returns}] \leavevmode\begin{description}
 \item[{z\_vals: 1darray}] \leavevmode\begin{quote}
 
+\sphinxAtStartPar
 Altitudes of output
 \end{quote}
 \begin{description}
 \item[{du\_vals: 3darray}] \leavevmode
+\sphinxAtStartPar
 Zonal (E/W) wind perturbations, du(x, y, z, t0)
 
 \item[{dv\_vals: 3darray}] \leavevmode
+\sphinxAtStartPar
 Meridional (N/S) wind perturbations, dv(x, y, z, t0)
 
 \item[{dw\_vals: 3darray}] \leavevmode
+\sphinxAtStartPar
 Vertical wind perturbations, dw(x, y, z, t0)
 
 \end{description}
@@ -2357,30 +2844,32 @@ Vertical wind perturbations, dw(x, y, z, t0)
 \index{prog\_increment() (in module stochprop.gravity\_waves)@\spxentry{prog\_increment()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.prog_increment}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{prog\_increment}}}{\emph{n=1}}{}~
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.prog_increment}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{prog\_increment}}}{\emph{\DUrole{n}{n}\DUrole{o}{=}\DUrole{default_value}{1}}}{}~
 \end{fulllineitems}
 
 \index{prog\_prep() (in module stochprop.gravity\_waves)@\spxentry{prog\_prep()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.prog_prep}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{prog\_prep}}}{\emph{bar\_length}}{}~
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.prog_prep}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{prog\_prep}}}{\emph{\DUrole{n}{bar\_length}}}{}~
 \end{fulllineitems}
 
 \index{prog\_set\_step() (in module stochprop.gravity\_waves)@\spxentry{prog\_set\_step()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.prog_set_step}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{prog\_set\_step}}}{\emph{n}, \emph{N}, \emph{bar\_length}}{}~
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.prog_set_step}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{prog\_set\_step}}}{\emph{\DUrole{n}{n}}, \emph{\DUrole{n}{N}}, \emph{\DUrole{n}{bar\_length}}}{}~
 \end{fulllineitems}
 
 \index{single\_fourier\_component() (in module stochprop.gravity\_waves)@\spxentry{single\_fourier\_component()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.single_fourier_component}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{single\_fourier\_component}}}{\emph{k}, \emph{l}, \emph{om}, \emph{atmo\_info}, \emph{t0}, \emph{src\_index}, \emph{m\_star}, \emph{om\_min}, \emph{k\_max}, \emph{figure\_out=None}, \emph{prog\_step=0}}{}~\begin{quote}
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.single_fourier_component}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{single\_fourier\_component}}}{\emph{\DUrole{n}{k}}, \emph{\DUrole{n}{l}}, \emph{\DUrole{n}{om\_intr}}, \emph{\DUrole{n}{atmo\_info}}, \emph{\DUrole{n}{t0}}, \emph{\DUrole{n}{src\_index}}, \emph{\DUrole{n}{m\_star}}, \emph{\DUrole{n}{om\_min}}, \emph{\DUrole{n}{k\_max}}, \emph{\DUrole{n}{random\_phase}\DUrole{o}{=}\DUrole{default_value}{False}}, \emph{\DUrole{n}{figure\_out}\DUrole{o}{=}\DUrole{default_value}{None}}, \emph{\DUrole{n}{prog\_step}\DUrole{o}{=}\DUrole{default_value}{0}}}{}~\begin{quote}
 
-Compute the vertical structure of a specific Fourier component, :math:{\color{red}\bfseries{}{}`}hat\{w\} left( k, l, omega, z
+\sphinxAtStartPar
+Compute the vertical structure of a specific Fourier component, :math:{\color{red}\bfseries{}\textasciigrave{}}hat\{w\} left( k, l, omega, z
 \end{quote}
 \begin{description}
 \item[{ight), }] \leavevmode
+\sphinxAtStartPar
 by first identifying critical layers and turning heights then using the appropriate solution form (free or 
 trapped solution) to evalute the component.
 
@@ -2389,35 +2878,56 @@ trapped solution) to evalute the component.
 \item[{Parameters}] \leavevmode\begin{description}
 \item[{\sphinxstylestrong{k: float}}] \leavevmode\begin{quote}
 
-Zonal wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Zonal wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 \end{quote}
 \begin{description}
 \item[{l: float}] \leavevmode
-Meridional wave number {[}km\textasciicircum{}\{-1\}{]}
+\sphinxAtStartPar
+Meridional wave number {[}km\textasciicircum{}\{\sphinxhyphen{}1\}{]}
 
 \item[{om: float}] \leavevmode
+\sphinxAtStartPar
 Absolute frequency (relative to the ground) {[}Hz{]}
 
 \item[{atmo\_specification: string}] \leavevmode
+\sphinxAtStartPar
 Atmospheric specification file path
 
 \item[{t0: float}] \leavevmode
-Reference time for gravity wave propagation (typically 4 - 6 hours)
+\sphinxAtStartPar
+Reference time for gravity wave propagation (typically 4 \sphinxhyphen{} 6 hours)
 
 \item[{src\_index: int}] \leavevmode
+\sphinxAtStartPar
 Index of the source height within the atmo\_info z values
 
 \item[{m\_star: float}] \leavevmode
-Source parameter m\_* (default value, :math:{\color{red}\bfseries{}{}`}
+\sphinxAtStartPar
+Source parameter m\_* (default value, :math:{\color{red}\bfseries{}\textasciigrave{}}
 
 \end{description}
 
-\item[{\sphinxstylestrong{rac\{2 pi\}\{2.5\}        ext\{ km\}\textasciicircum{}\{-1\}{}` is for 20 km altitude source)}}] \leavevmode\begin{description}
+\item[{\sphinxstylestrong{rac\{2 pi\}\{2.5\}        ext\{ km\}\textasciicircum{}\{\sphinxhyphen{}1\}\textasciigrave{} is for 20 km altitude source)}}] \leavevmode\begin{description}
 \item[{om\_min: float}] \leavevmode
+\sphinxAtStartPar
 Minimum absolute frequency used in analysis
 
 \item[{k\_max: float}] \leavevmode
+\sphinxAtStartPar
 Maximum horzintal wavenumber value used in 1 grid dimension
+
+\item[{random\_phase: bool}] \leavevmode
+\sphinxAtStartPar
+Flag to randomize initial phase of freely propagating solution
+
+\item[{figure\_out: string}] \leavevmode
+\sphinxAtStartPar
+Path to output figure showing component charcterisitcs
+
+\item[{prop\_step: int}] \leavevmode
+\sphinxAtStartPar
+Progress bar increment
 
 \end{description}
 
@@ -2426,14 +2936,21 @@ Maximum horzintal wavenumber value used in 1 grid dimension
 \item[{Returns}] \leavevmode\begin{description}
 \item[{u\_spec: 1darray}] \leavevmode\begin{quote}
 
+\sphinxAtStartPar
 Zonal wind perturbation spectrum, hat\{u\}(k, l, z, omega)
 \end{quote}
 \begin{description}
 \item[{v\_spec: 1darray}] \leavevmode
+\sphinxAtStartPar
 Meridional wind perturbation spectrum, hat\{v\}(k, l, z, omega)
 
 \item[{w\_spec: 1darray}] \leavevmode
+\sphinxAtStartPar
 Vertical wind perturbation spectrum, hat\{w\}(k, l, z, omega)
+
+\item[{eta\_spec: 1darray}] \leavevmode
+\sphinxAtStartPar
+Displacement spectrum used to compute temperature and pressure perturbations
 
 \end{description}
 
@@ -2446,43 +2963,53 @@ Vertical wind perturbation spectrum, hat\{w\}(k, l, z, omega)
 \index{single\_fourier\_component\_wrapper() (in module stochprop.gravity\_waves)@\spxentry{single\_fourier\_component\_wrapper()}\spxextra{in module stochprop.gravity\_waves}}
 
 \begin{fulllineitems}
-\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.single_fourier_component_wrapper}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{single\_fourier\_component\_wrapper}}}{\emph{args}}{}~
+\phantomsection\label{\detokenize{stochprop.gravity:stochprop.gravity_waves.single_fourier_component_wrapper}}\pysiglinewithargsret{\sphinxcode{\sphinxupquote{stochprop.gravity\_waves.}}\sphinxbfcode{\sphinxupquote{single\_fourier\_component\_wrapper}}}{\emph{\DUrole{n}{args}}}{}~
 \end{fulllineitems}
 
 
 
 \section{References and Citing Usage}
 \label{\detokenize{references:references-and-citing-usage}}\label{\detokenize{references:references}}\label{\detokenize{references::doc}}
+\sphinxAtStartPar
 The Empirical Orthogonal Function (EOF) analyses available in \sphinxcode{\sphinxupquote{stochprop}} are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi’s National Center for Physical Acoustics (NCPA) and will be summarizing in an upcoming publication:
 \begin{itemize}
 \item {} 
+\sphinxAtStartPar
 Waxler, R., Blom, P., \& Frazier, W. G., On the generation of statistical models for infrasound propagation from statistical models for the atmosphere: identifying seasonal and regional trends.  \sphinxstyleemphasis{Geophysical Journal International}, In Preparation
 
 \end{itemize}
 
-Stochastic, propagation-based models for infrasonic signal analysis were initially introduced in analysis of the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE) framworks so that usage of path geometry and transmission loss models should be cited using:
+\sphinxAtStartPar
+Stochastic, propagation\sphinxhyphen{}based models for infrasonic signal analysis were initially introduced in analysis of the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE) framworks so that usage of path geometry and transmission loss models should be cited using:
 \begin{itemize}
 \item {} 
-Blom, P. S., Marcillo, O., \& Arrowsmith, S. J. (2015). Improved Bayesian infrasonic source localization for regional infrasound. \sphinxstyleemphasis{Geophysical Journal International}, 203(3), 1682-1693.
+\sphinxAtStartPar
+Blom, P. S., Marcillo, O., \& Arrowsmith, S. J. (2015). Improved Bayesian infrasonic source localization for regional infrasound. \sphinxstyleemphasis{Geophysical Journal International}, 203(3), 1682\sphinxhyphen{}1693.
 
 \item {} 
-Blom, P. S., Dannemann, F. K., \& Marcillo, O. E. (2018). Bayesian characterization of explosive sources using infrasonic signals. \sphinxstyleemphasis{Geophysical Journal International}, 215(1), 240-251.
+\sphinxAtStartPar
+Blom, P. S., Dannemann, F. K., \& Marcillo, O. E. (2018). Bayesian characterization of explosive sources using infrasonic signals. \sphinxstyleemphasis{Geophysical Journal International}, 215(1), 240\sphinxhyphen{}251.
 
 \end{itemize}
 
+\sphinxAtStartPar
 Gravity wave perturbation methods available here are leveraged from work by Drob et al. (2013) and Lalande \& Waxler (2016) as well as supporting work referenced in those manuscripts:
 \begin{itemize}
 \item {} 
-Drob, D. P., Broutman, D., Hedlin, M. A., Winslow, N. W., \& Gibson, R. G. (2013). A method for specifying atmospheric gravity wavefields for long‐range infrasound propagation calculations. \sphinxstyleemphasis{Journal of Geophysical Research: Atmospheres}, 118(10), 3933-3943.
+\sphinxAtStartPar
+Drob, D. P., Broutman, D., Hedlin, M. A., Winslow, N. W., \& Gibson, R. G. (2013). A method for specifying atmospheric gravity wavefields for long‐range infrasound propagation calculations. \sphinxstyleemphasis{Journal of Geophysical Research: Atmospheres}, 118(10), 3933\sphinxhyphen{}3943.
 
 \item {} 
-Lalande, J. M., \& Waxler, R. (2016). The interaction between infrasonic waves and gravity wave perturbations: Application to observations using UTTR rocket motor fuel elimination events. \sphinxstyleemphasis{Journal of Geophysical Research: Atmospheres}, 121(10), 5585-5600.
+\sphinxAtStartPar
+Lalande, J. M., \& Waxler, R. (2016). The interaction between infrasonic waves and gravity wave perturbations: Application to observations using UTTR rocket motor fuel elimination events. \sphinxstyleemphasis{Journal of Geophysical Research: Atmospheres}, 121(10), 5585\sphinxhyphen{}5600.
 
 \item {} 
-Warner, C. D., \& McIntyre, M. E. (1996). On the propagation and dissipation of gravity wave spectra through a realistic middle atmosphere. \sphinxstyleemphasis{Journal of Atmospheric Sciences}, 53(22), 3213-3235.
+\sphinxAtStartPar
+Warner, C. D., \& McIntyre, M. E. (1996). On the propagation and dissipation of gravity wave spectra through a realistic middle atmosphere. \sphinxstyleemphasis{Journal of Atmospheric Sciences}, 53(22), 3213\sphinxhyphen{}3235.
 
 \end{itemize}
 
+\sphinxAtStartPar
 See the documentation for the supporting packages (InfraGA/GeoAc, NCPAprop, InfraPy) for guidance on citing usage of those methods.
 
 

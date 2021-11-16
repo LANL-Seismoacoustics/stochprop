@@ -310,7 +310,7 @@ c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m}
 <ol class="arabic simple">
 <li><p>At each altitude, the propagation time to that point is computed and compared with a user specified propagation time that defaults to 8 hours to determine whether energy has reached that altitude.</p></li>
 <li><p>Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.</p></li>
-<li><p>Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> compute each Fourier component independently and use available <code class="code docutils literal notranslate"><span class="pre">multiprocessing</span></code> tools to run the calculations in parallel.  For <span class="math notranslate nohighlight">\(N_k = 128\)</span> and <span class="math notranslate nohighlight">\(dx=4\)</span>, the gravity wave perturbations can be computed using 10 CPUs in approximatley 5 minutes.</p></li>
+<li><p>Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> compute each Fourier component independently and use available <code class="code docutils literal notranslate"><span class="pre">multiprocessing</span></code> tools to run the calculations in parallel.  For <span class="math notranslate nohighlight">\(N_k = 128\)</span> and <span class="math notranslate nohighlight">\(dx=4\)</span>, the gravity wave perturbations can be computed using 10 CPUs in approximatley 20 - 30 minutes.</p></li>
 </ol>
 </li>
 <li><p>The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using <code class="code docutils literal notranslate"><span class="pre">numpy.fft.ifft</span></code> on the appropriate axes and the <span class="math notranslate nohighlight">\(\omega\)</span> integration is simplified by setting <span class="math notranslate nohighlight">\(t=0\)</span> in the solution which reduces the time/frequency domain inversion to a simple integration,</p></li>
@@ -339,22 +339,23 @@ c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m}
 <blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop gravity-waves [OPTIONS]</span>
 
-<span class="go">Gravity wave perturbation methods based on Drob et al. (2013) method.</span>
+<span class="go">Gravity wave perturbation calculation based on Drob et al. (2013) method.</span>
 
-<span class="go">More info...</span>
+<span class="go">Example Usage:</span>
+<span class="go">stochprop gravity-waves --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw</span>
 
 <span class="go">Options:</span>
 <span class="go">  --atmo-file TEXT        Reference atmspheric specification (required)</span>
 <span class="go">  --out TEXT              Output prefix (required)</span>
 <span class="go">  --sample-cnt INTEGER    Number of perturbated samples (default: 25)</span>
 <span class="go">  --t0 FLOAT              Propagation time from source [hr] (default: 8)</span>
-<span class="go">  --dx FLOAT              Horizontal wavenumber scale [km] (default: 2.0)</span>
-<span class="go">  --dz FLOAT              Altitude resolution for integration [km] (default: 0.2)</span>
-<span class="go">  --Nk INTEGER            Horizontal wavenumber resolution (default: 128)</span>
-<span class="go">  --Nom INTEGER           Frequency resolution (default: 5)</span>
+<span class="go">  --dx FLOAT              Horizontal wavenumber scale [km] (default: 4.0)</span>
+<span class="go">  --dz FLOAT              Altitude resolution [km] (default: 0.2)</span>
+<span class="go">  --nk INTEGER            Horizontal wavenumber resolution (default: 128)</span>
+<span class="go">  --nom INTEGER           Frequency resolution (default: 5)</span>
 <span class="go">  --random-phase BOOLEAN  Randomize phase at source [bool] (default: False)</span>
 <span class="go">  --z-src FLOAT           Gravity wave source altitude [km] (default: 20.0)</span>
-<span class="go">  --m-star FLOAT          Gravity wave source spectrum peak [km] (default: 2.5 / (2 pi))</span>
+<span class="go">  --m-star FLOAT          Gravity wave source spectrum peak [1/km] (default: (2 pi) / 2.5)</span>
 <span class="go">  --cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)</span>
 <span class="go">  -h, --help              Show this message and exit.</span>
 </pre></div>
@@ -369,12 +370,12 @@ c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m}
 <ul class="simple">
 <li><p>An example set of perturbations is shown below.</p></li>
 </ul>
-<figure class="align-center" id="id1">
+<figure class="align-center">
 <a class="reference internal image-reference" href="_images/gw_example.png"><img alt="alternate text" src="_images/gw_example.png" style="width: 300px;" /></a>
-<figcaption>
-<p><span class="caption-text">Atmospheric perturbations using the <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">gravity-waves</span></code> methods.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</figcaption>
 </figure>
+<ul class="simple">
+<li><p>Note: Although perturbations to the ambient temperature are included in the Drob et al. (2013) discussion, they are not included here and modifications to the <span class="math notranslate nohighlight">\(N_k\)</span>, <span class="math notranslate nohighlight">\(dx\)</span>, and <span class="math notranslate nohighlight">\(N_\omega\)</span> values often cause issues with the calculation of gravity waves.  Work is ongoing to debug and improve the efficiency of the methods here and will be added in a future update of <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code>.</p></li>
+</ul>
 </section>
 </section>
 

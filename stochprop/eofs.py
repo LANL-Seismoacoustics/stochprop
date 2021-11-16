@@ -81,7 +81,7 @@ def pressure(z, T):
     return density(z) * gasR * T * 10.0
     
 
-def profiles_qc(path, pattern="*.met", skiprows=0):
+def profiles_qc(path, pattern="*.dat", skiprows=0):
     """
         Runs a quality control (QC) check on profiles in the path
         matching the pattern.  It can optionally plot the bad
@@ -129,7 +129,7 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 
 
 
-def build_atmo_matrix(path, pattern="*", years=None, months=None, weeks=None, hours=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
+def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
