@@ -51,7 +51,7 @@ Empirical Orthogonal Function Analysis
 EOF methods in stochprop
 ************************
 * Empirical Orthogonal Function analysis methods can be accessed by importing :code:`stochprop.eofs`
-* Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  This pre-analysis set up can be completed manually or by running:
+* Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  It is often the case that the transitions from summer to winter and winter to summer are overly similar and can be grouped together so that only 3 season definitions are needed.  This pre-analysis set up can be completed manually or by running:
 
 
 .. code-block:: python
@@ -64,7 +64,7 @@ EOF methods in stochprop
 
 	if __name__ == '__main__':
 		eof_dirs = ["eofs", "coeffs", "samples"]
-		season_labels = ["winter", "spring", "summer", "fall"]
+		season_labels = ["winter", "spring", "summer"]
 
 		for dir in eof_dirs:
 			if not os.path.isdir(dir):
@@ -83,27 +83,28 @@ Load Atmosphere Specifications
 * The current implementation of EOF methods in stochprop assumes the ingested specifications are formatted such that the columns contain altitude, temperature, zonal winds, meridional winds, density, pressure (that is, :code:`zTuvdp` in the infraGA/GeoAc profile options), which is the default output format of the G2S server at NCPA.  Note: a script is included in the infraGA/GeoAc methods to extract profiles in this format from ECMWF netCDF files.
 * The atmosphere matrix, :math:`A(\vec{z})` can be constructed using :code:`stochprop.eofs.build_atmo_matrix` which accepts the path where specifications are located and a pattern to identify which files to ingest.
 
-	- For seasonal analysis, it is useful to initially separate atmospheric specifications by month.  Assuming subdirectories labeled "01", "02", "03", ... "12" contain profiles for January through December (see the subdirectories in the examples directory of the package), atmospheres can be ingested and combined using :code:`numpy.vstack`
-	- The optional argument, ref_alts, should be used to ensure a common vertical sampling if multiple directories are being ingested in this manner.
-
-	.. code-block:: python
-	
-		A, z0 = eofs.build_atmo_matrix("profs/01/", "g2stxt_*")
-		for n in range(2, 13):
-			A_temp, _ = eofs.build_atmo_matrix("profs/{:02d}/".format(n), "g2stxt_*", ref_alts=z0)
-			A = np.vstack((A, A_temp))
-
-	- Alternately, if all profiles are contained within a common directory, ingestion can be completed using a single call,
+	- All specification in a directory can be ingested for analysis by simpy using,
 
 	.. code-block:: python
 
-		A, z0 = eofs.build_atmo_matrix("profs/", "g2stxt_*")
+		A, z0 = eofs.build_atmo_matrix("profs/", "*.dat")
+
+	- Alternately, specific months, weeks of the year, years, or hours can be defined to limit what information is included in the atmospheric matrix, :math:`A(\vec{z})`,
+
+	.. code-block:: python
+
+		A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", months=['10', '11', '12', '01', '02', '03'])
+		A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", weeks=['01', '02'])
+		A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", years=['2010'])
+		A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", hours=['18'])
+
+
 
 --------------
 Computing EOFs
 --------------
 
-* Once the atmosphere matrix, :math:`A(\vec{z})` has been ingested, EOF analysis can be completed using:
+* Once the atmosphere matrix, :math:`A(\vec{z})`, has been ingested, EOF analysis can be completed using:
 
 .. code-block:: python
 
@@ -152,9 +153,9 @@ Compute Coefficients and Determine Seasonality
 .. code-block:: python
 
     coeffs = [0] * 12
-    for m in range(1, 13):
-        Am, zm = eofs.build_atmo_matrix("profs/{:02d}/".format(m), g2stxt_*")
-        coeffs[m - 1] = eofs.compute_coeffs(Am, zm, "eofs/example", "coeffs/example_{:02d}".format(m), eof_cnt=eof_cnt)
+    for m in range(12):
+        Am, zm = eofs.build_atmo_matrix("profs/", *.dat", months = ['%02d' % (m + 1)])
+        coeffs[m] = eofs.compute_coeffs(Am, zm, "eofs/" + run_id, "coeffs/" + run_id + "_{:02d}".format(m + 1), eof_cnt=eof_cnt)
 
 * The resulting coefficient sets are analyzed using :code:`stochprop.eofs.compute_overlap` to identify how similar various month pairs are:
 
@@ -173,5 +174,30 @@ Compute Coefficients and Determine Seasonality
     
     Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure
 
+----------------------
+Command Line interface
+----------------------
 
+* A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running :code:`stochprop eof-construct --help`:
 
+	.. code-block:: console
+
+		Usage: stochprop eof-construct [OPTIONS]
+
+		Use a SVD to construct Empirical Orthogonal Functions (EOFs) from a suite of atmospheric specifications
+
+		Example Usage:
+			stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example
+			stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]'
+
+		Options:
+		  --atmo-dir TEXT          Directory of atmspheric specifications (required)
+		  --eofs-path TEXT         EOF output path and prefix (required)
+		  --atmo-pattern TEXT      Specification file pattern (default: '*.met')
+		  --atmo-format TEXT       Specification format (default: 'zTuvdp')
+		  --month-selection TEXT   Limit analysis to specific month(s) (default=None)
+		  --week-selection TEXT    Limit analysis to specific week(s) (default=None)
+		  --year-selection TEXT    Limit analysis to specific year(s) (default=None)
+		  --save-datetime BOOLEAN  Save date time info (default: False)
+		  --eof-cnt INTEGER        Number of EOFs to store (default: 100)
+		  -h, --help               Show this message and exit.

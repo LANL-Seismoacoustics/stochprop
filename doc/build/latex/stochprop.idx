@@ -1,34 +1,50 @@
 \indexentry{module@\spxentry{module}!stochprop@\spxentry{stochprop}|hyperpage}{3}
 \indexentry{stochprop@\spxentry{stochprop}!module@\spxentry{module}|hyperpage}{3}
-\indexentry{module@\spxentry{module}!stochprop.eofs@\spxentry{stochprop.eofs}|hyperpage}{19}
-\indexentry{stochprop.eofs@\spxentry{stochprop.eofs}!module@\spxentry{module}|hyperpage}{19}
-\indexentry{build\_atmo\_matrix() (in module stochprop.eofs)@\spxentry{build\_atmo\_matrix()}\spxextra{in module stochprop.eofs}|hyperpage}{19}
-\indexentry{build\_cdf() (in module stochprop.eofs)@\spxentry{build\_cdf()}\spxextra{in module stochprop.eofs}|hyperpage}{19}
-\indexentry{compute\_coeffs() (in module stochprop.eofs)@\spxentry{compute\_coeffs()}\spxextra{in module stochprop.eofs}|hyperpage}{19}
-\indexentry{compute\_eofs() (in module stochprop.eofs)@\spxentry{compute\_eofs()}\spxextra{in module stochprop.eofs}|hyperpage}{20}
-\indexentry{compute\_overlap() (in module stochprop.eofs)@\spxentry{compute\_overlap()}\spxextra{in module stochprop.eofs}|hyperpage}{20}
-\indexentry{compute\_seasonality() (in module stochprop.eofs)@\spxentry{compute\_seasonality()}\spxextra{in module stochprop.eofs}|hyperpage}{20}
-\indexentry{define\_coeff\_limits() (in module stochprop.eofs)@\spxentry{define\_coeff\_limits()}\spxextra{in module stochprop.eofs}|hyperpage}{20}
-\indexentry{draw\_from\_pdf() (in module stochprop.eofs)@\spxentry{draw\_from\_pdf()}\spxextra{in module stochprop.eofs}|hyperpage}{20}
-\indexentry{fit\_atmo() (in module stochprop.eofs)@\spxentry{fit\_atmo()}\spxextra{in module stochprop.eofs}|hyperpage}{21}
-\indexentry{maximum\_likelihood\_profile() (in module stochprop.eofs)@\spxentry{maximum\_likelihood\_profile()}\spxextra{in module stochprop.eofs}|hyperpage}{21}
-\indexentry{perturb\_atmo() (in module stochprop.eofs)@\spxentry{perturb\_atmo()}\spxextra{in module stochprop.eofs}|hyperpage}{21}
-\indexentry{profiles\_qc() (in module stochprop.eofs)@\spxentry{profiles\_qc()}\spxextra{in module stochprop.eofs}|hyperpage}{21}
-\indexentry{sample\_atmo() (in module stochprop.eofs)@\spxentry{sample\_atmo()}\spxextra{in module stochprop.eofs}|hyperpage}{22}
-\indexentry{module@\spxentry{module}!stochprop.propagation@\spxentry{stochprop.propagation}|hyperpage}{22}
-\indexentry{stochprop.propagation@\spxentry{stochprop.propagation}!module@\spxentry{module}|hyperpage}{22}
-\indexentry{PathGeometryModel (class in stochprop.propagation)@\spxentry{PathGeometryModel}\spxextra{class in stochprop.propagation}|hyperpage}{22}
-\indexentry{build() (stochprop.propagation.PathGeometryModel method)@\spxentry{build()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{22}
-\indexentry{display() (stochprop.propagation.PathGeometryModel method)@\spxentry{display()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{23}
-\indexentry{eval\_az\_dev\_mn() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_az\_dev\_mn()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{23}
-\indexentry{eval\_az\_dev\_std() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_az\_dev\_std()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{23}
-\indexentry{eval\_rcel\_gmm() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_rcel\_gmm()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{23}
-\indexentry{load() (stochprop.propagation.PathGeometryModel method)@\spxentry{load()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{23}
-\indexentry{TLossModel (class in stochprop.propagation)@\spxentry{TLossModel}\spxextra{class in stochprop.propagation}|hyperpage}{24}
-\indexentry{build() (stochprop.propagation.TLossModel method)@\spxentry{build()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
-\indexentry{display() (stochprop.propagation.TLossModel method)@\spxentry{display()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
-\indexentry{eval() (stochprop.propagation.TLossModel method)@\spxentry{eval()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{24}
-\indexentry{load() (stochprop.propagation.TLossModel method)@\spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{25}
-\indexentry{find\_azimuth\_bin() (in module stochprop.propagation)@\spxentry{find\_azimuth\_bin()}\spxextra{in module stochprop.propagation}|hyperpage}{25}
-\indexentry{run\_infraga() (in module stochprop.propagation)@\spxentry{run\_infraga()}\spxextra{in module stochprop.propagation}|hyperpage}{25}
-\indexentry{run\_modess() (in module stochprop.propagation)@\spxentry{run\_modess()}\spxextra{in module stochprop.propagation}|hyperpage}{25}
+\indexentry{module@\spxentry{module}!stochprop.eofs@\spxentry{stochprop.eofs}|hyperpage}{26}
+\indexentry{stochprop.eofs@\spxentry{stochprop.eofs}!module@\spxentry{module}|hyperpage}{26}
+\indexentry{build\_atmo\_matrix() (in module stochprop.eofs)@\spxentry{build\_atmo\_matrix()}\spxextra{in module stochprop.eofs}|hyperpage}{26}
+\indexentry{build\_cdf() (in module stochprop.eofs)@\spxentry{build\_cdf()}\spxextra{in module stochprop.eofs}|hyperpage}{27}
+\indexentry{compute\_coeffs() (in module stochprop.eofs)@\spxentry{compute\_coeffs()}\spxextra{in module stochprop.eofs}|hyperpage}{27}
+\indexentry{compute\_eofs() (in module stochprop.eofs)@\spxentry{compute\_eofs()}\spxextra{in module stochprop.eofs}|hyperpage}{27}
+\indexentry{compute\_overlap() (in module stochprop.eofs)@\spxentry{compute\_overlap()}\spxextra{in module stochprop.eofs}|hyperpage}{27}
+\indexentry{compute\_seasonality() (in module stochprop.eofs)@\spxentry{compute\_seasonality()}\spxextra{in module stochprop.eofs}|hyperpage}{28}
+\indexentry{define\_coeff\_limits() (in module stochprop.eofs)@\spxentry{define\_coeff\_limits()}\spxextra{in module stochprop.eofs}|hyperpage}{28}
+\indexentry{density() (in module stochprop.eofs)@\spxentry{density()}\spxextra{in module stochprop.eofs}|hyperpage}{28}
+\indexentry{draw\_from\_pdf() (in module stochprop.eofs)@\spxentry{draw\_from\_pdf()}\spxextra{in module stochprop.eofs}|hyperpage}{28}
+\indexentry{fit\_atmo() (in module stochprop.eofs)@\spxentry{fit\_atmo()}\spxextra{in module stochprop.eofs}|hyperpage}{28}
+\indexentry{maximum\_likelihood\_profile() (in module stochprop.eofs)@\spxentry{maximum\_likelihood\_profile()}\spxextra{in module stochprop.eofs}|hyperpage}{28}
+\indexentry{perturb\_atmo() (in module stochprop.eofs)@\spxentry{perturb\_atmo()}\spxextra{in module stochprop.eofs}|hyperpage}{29}
+\indexentry{pressure() (in module stochprop.eofs)@\spxentry{pressure()}\spxextra{in module stochprop.eofs}|hyperpage}{29}
+\indexentry{profiles\_qc() (in module stochprop.eofs)@\spxentry{profiles\_qc()}\spxextra{in module stochprop.eofs}|hyperpage}{29}
+\indexentry{sample\_atmo() (in module stochprop.eofs)@\spxentry{sample\_atmo()}\spxextra{in module stochprop.eofs}|hyperpage}{29}
+\indexentry{module@\spxentry{module}!stochprop.propagation@\spxentry{stochprop.propagation}|hyperpage}{30}
+\indexentry{stochprop.propagation@\spxentry{stochprop.propagation}!module@\spxentry{module}|hyperpage}{30}
+\indexentry{PathGeometryModel (class in stochprop.propagation)@\spxentry{PathGeometryModel}\spxextra{class in stochprop.propagation}|hyperpage}{30}
+\indexentry{build() (stochprop.propagation.PathGeometryModel method)@\spxentry{build()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{30}
+\indexentry{display() (stochprop.propagation.PathGeometryModel method)@\spxentry{display()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{31}
+\indexentry{eval\_az\_dev\_mn() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_az\_dev\_mn()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{31}
+\indexentry{eval\_az\_dev\_std() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_az\_dev\_std()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{31}
+\indexentry{eval\_rcel\_gmm() (stochprop.propagation.PathGeometryModel method)@\spxentry{eval\_rcel\_gmm()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{31}
+\indexentry{load() (stochprop.propagation.PathGeometryModel method)@\spxentry{load()}\spxextra{stochprop.propagation.PathGeometryModel method}|hyperpage}{31}
+\indexentry{TLossModel (class in stochprop.propagation)@\spxentry{TLossModel}\spxextra{class in stochprop.propagation}|hyperpage}{32}
+\indexentry{build() (stochprop.propagation.TLossModel method)@\spxentry{build()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{32}
+\indexentry{display() (stochprop.propagation.TLossModel method)@\spxentry{display()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{32}
+\indexentry{eval() (stochprop.propagation.TLossModel method)@\spxentry{eval()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{32}
+\indexentry{load() (stochprop.propagation.TLossModel method)@\spxentry{load()}\spxextra{stochprop.propagation.TLossModel method}|hyperpage}{32}
+\indexentry{find\_azimuth\_bin() (in module stochprop.propagation)@\spxentry{find\_azimuth\_bin()}\spxextra{in module stochprop.propagation}|hyperpage}{33}
+\indexentry{run\_infraga() (in module stochprop.propagation)@\spxentry{run\_infraga()}\spxextra{in module stochprop.propagation}|hyperpage}{33}
+\indexentry{run\_modess() (in module stochprop.propagation)@\spxentry{run\_modess()}\spxextra{in module stochprop.propagation}|hyperpage}{33}
+\indexentry{module@\spxentry{module}!stochprop.gravity\_waves@\spxentry{stochprop.gravity\_waves}|hyperpage}{34}
+\indexentry{stochprop.gravity\_waves@\spxentry{stochprop.gravity\_waves}!module@\spxentry{module}|hyperpage}{34}
+\indexentry{BV\_freq() (in module stochprop.gravity\_waves)@\spxentry{BV\_freq()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{34}
+\indexentry{cg() (in module stochprop.gravity\_waves)@\spxentry{cg()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{34}
+\indexentry{m\_imag() (in module stochprop.gravity\_waves)@\spxentry{m\_imag()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{35}
+\indexentry{m\_sqr() (in module stochprop.gravity\_waves)@\spxentry{m\_sqr()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{35}
+\indexentry{perturb\_atmo() (in module stochprop.gravity\_waves)@\spxentry{perturb\_atmo()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{36}
+\indexentry{perturbations() (in module stochprop.gravity\_waves)@\spxentry{perturbations()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{36}
+\indexentry{prog\_close() (in module stochprop.gravity\_waves)@\spxentry{prog\_close()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{37}
+\indexentry{prog\_increment() (in module stochprop.gravity\_waves)@\spxentry{prog\_increment()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{37}
+\indexentry{prog\_prep() (in module stochprop.gravity\_waves)@\spxentry{prog\_prep()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{37}
+\indexentry{prog\_set\_step() (in module stochprop.gravity\_waves)@\spxentry{prog\_set\_step()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{37}
+\indexentry{single\_fourier\_component() (in module stochprop.gravity\_waves)@\spxentry{single\_fourier\_component()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{37}
+\indexentry{single\_fourier\_component\_wrapper() (in module stochprop.gravity\_waves)@\spxentry{single\_fourier\_component\_wrapper()}\spxextra{in module stochprop.gravity\_waves}|hyperpage}{38}

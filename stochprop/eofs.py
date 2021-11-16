@@ -43,17 +43,16 @@ coeffs_B = np.array([-4.9244637e-3,  -1.2984142e-6, -1.5701595e-6, 1.5535974e-8,
 
 def density(z):
     """
-        Computes the atmospheric density according to 
-            the US standard atmosphere model using a 
-            polynomial fit
+        Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit
 
         Parameters
         ----------
-        z : float
+        z: float
             Altitude above sea level [km]
 
-        Returns:
-        density : float
+        Returns
+        -------
+        density: float
             Density of the atmosphere at altitude z [g/cm^3] 
     """
 
@@ -66,24 +65,23 @@ def density(z):
 
 def pressure(z, T):
     """
-        Computes the atmospheric pressure according to 
-            the US standard atmosphere model using a 
-            polynomial fit assuming an ideal gas
+        Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas
 
         Parameters
         ----------
-        z : float
+        z: float
             Altitude above sea level [km]
 
-        Returns:
-        pressure : float
-            Pressure of the atmosphere at altitude z [mbar] 
+        Returns
+        -------
+        pressure: float
+            Pressure of the atmosphere at altitude :math:`z` [mbar] and temperature :math:`T` [K]
     """
      
     return density(z) * gasR * T * 10.0
     
 
-def profiles_qc(path, pattern="*.met", skiprows=0):
+def profiles_qc(path, pattern="*.dat", skiprows=0):
     """
         Runs a quality control (QC) check on profiles in the path
         matching the pattern.  It can optionally plot the bad
@@ -99,6 +97,10 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
             Pattern defining the list of profiles in the path
         skiprows: int
             Number of header rows in the profiles
+
+        Returns
+        -------
+
     """
 
     print("Running QC on profiles in " + path + " matching pattern " + pattern + "...")
@@ -127,7 +129,7 @@ def profiles_qc(path, pattern="*.met", skiprows=0):
 
 
 
-def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
+def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
@@ -151,15 +153,71 @@ def build_atmo_matrix(path, pattern="*.met", skiprows=0, ref_alts=None, prof_for
         -------
         A: 2darray
             Atmosphere array of size M x (5 * N) for M atmospheres where each atmosphere samples N altitudes
+        z: 1darray
+            Altitude reference values [km]
+        datetime: 1darray
+            List of dates and times for each specification in the matrix (optional output, see Parameters)
     """
 
     print('\t' + "Loading profiles from " + path + " with pattern: " + pattern)
+    if years is not None:
+        print('\t\t' + "Years filter:", years)
+    if months is not None:
+        print('\t\t' + "Months filter:", months)
+    if weeks is not None:
+        print('\t\t' + "Weeks filter:", weeks)
+    if hours is not None:
+        print('\t\t' + "Hours filter:", hours)
 
     file_list = []
     dir_files = os.listdir(path)
-    for file in dir_files:
+    for file in np.sort(dir_files):
         if fnmatch.fnmatch(file, pattern):
-            file_list += [file]
+            date_check = False
+
+            file_test = open(path + file)
+            for line in file_test:
+                if "# Model Time" in line:
+                    year = line[15:19]
+                    month = line[20:22]
+                    day = line[23:25]
+                    hour = line[26:28]
+
+                    date_check = True
+                    file_test.close()
+                    break
+
+            if not date_check:
+                date_parse = re.search(r'\d{10}', file)
+
+                if len(date_parse > 0):
+                    year = date_parse[0][:4]
+                    month = date_parse[0][4:6]
+                    day = date_parse[0][6:8]
+                    hour = date_parse[0][8:10]
+                    date_check = True 
+
+            week = "%02d" % datetime.date(int(year), int(month), int(day)).isocalendar()[1]
+
+            include_check = True 
+            if years is not None:
+                if year not in years:
+                    include_check = False 
+
+            if months is not None:
+                if month not in months:
+                    include_check = False
+            
+            if weeks is not None:
+                if week not in weeks:
+                    include_check = False
+
+            if hours is not None:
+                if hour not in hours:
+                    include_check = False
+            
+            if include_check:
+                file_list += [file]
 
     if len(file_list) > 0:
         file_list = np.sort(file_list)
@@ -461,8 +519,10 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     # cycle through profiles in A to define coefficients
     coeffs = np.empty((A.shape[0], eof_cnt))
     for n, An in enumerate(A):
-        if n % 10 == 0:
-            print('\t\t' + "Current on profile " + str(n) + " out of " + str(len(A)) + "...")
+        if A.shape[0] <= 20 :
+            print('\t\t' + "Currently on profile " + str(n + 1) + " of " + str(len(A)) + "...")
+        elif (n + 1) % 10 == 0:
+            print('\t\t' + "Currently on profile " + str(n + 1) + " of " + str(len(A)) + "...")
 
         # interpolate the profile
         T_interp = interp1d(A_alts, An[file_len * 0:file_len * 1][A_mask], kind='cubic')
@@ -610,7 +670,7 @@ def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Coefficient KDE Sampling"
     result = result + '\n' + "# Coeff Label = " + coeff_label
-    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
     result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
@@ -630,7 +690,7 @@ def _coeff_smpl_mean_header_txt(coeff_label, eofs_path, eof_cnt):
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Coefficient KDE Sampling"
     result = result + '\n' + "# Coeff Label = " + coeff_label
-    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Sample: mean"
     result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
@@ -651,7 +711,7 @@ def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Coefficient KDE Sampling"
     result = result + '\n' + "# Coeff Label = " + coeff_label
-    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Sample: max likelihood"
     result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
@@ -671,7 +731,7 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Fitting"
     result = result + '\n' + "# Reference Specification = " + prof_path
-    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
@@ -688,9 +748,9 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
 def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
     result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: Perturbation"
+    result = result + '\n' + "# Method: EOF Perturbation"
     result = result + '\n' + "# Reference Specification = " + prof_path
-    result = result + '\n' + "# EOF Set = " + eofs_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Perturbation St Dev (winds) = " + str(stdev) + " m/s"
     result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)

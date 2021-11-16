@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Gravity Wave Perturbation Analysis &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="References and Citing Usage" href="references.html" />
+    <link rel="prev" title="Propagation Statistics" href="stochprop.propagation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="stochprop.html">API</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html">Empirical Orthogonal Function Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html">Propagation Statistics</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Gravity Wave Perturbation Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References and Citing Usage</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">stochprop</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="stochprop.html">API</a> &raquo;</li>
+        
+      <li>Gravity Wave Perturbation Analysis</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/stochprop.gravity.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="module-stochprop.gravity_waves">
+<span id="gravity-wave-perturbation-analysis"></span><h1>Gravity Wave Perturbation Analysis<a class="headerlink" href="#module-stochprop.gravity_waves" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.BV_freq">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">BV_freq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#BV_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.BV_freq" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Compute the Brunt-Vaisala frequency defined as :math:<a href="#id1"><span class="problematic" id="id2">`</span></a>N = sqrt{</p>
+</div></blockquote>
+<dl class="simple">
+<dt>rac{g}{H}}` where </dt><dd><p>:math:<a href="#id3"><span class="problematic" id="id4">`</span></a>H =</p>
+</dd>
+</dl>
+<p>rac{rho0}{
+rac{partial 
+ho_0}{partial z}` is the density scale height</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>H: float</strong></dt><dd><p>Scale height, :math:<a href="#id5"><span class="problematic" id="id6">`</span></a>H =</p>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><p>Returns:
+f_BV: float</p>
+<blockquote>
+<div><p>Brunt-Vaisalla (bouyancy) frequency, :math:<a href="#id7"><span class="problematic" id="id8">`</span></a>f_BV = sqrt{</p>
+</div></blockquote>
+</dd>
+<dt><strong>rac{g}{H}}`</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.cg">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">cg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">om_intr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#cg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.cg" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Compute the vertical group velocity for gravity wave propagation 
+as :math:<a href="#id9"><span class="problematic" id="id10">`</span></a>cg =</p>
+</div></blockquote>
+<p>rac{partial hat{omega}}{partial m} = 
+rac{m k_h N}{ left(k_h^2 + m^2 + 
+rac{1}{4H^2 
+ight)^{
+rac{3}{2}}}`</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om_intr: float</dt><dd><p>Intrinsic frequency (relative to winds), defined as <span class="math notranslate nohighlight">\(\hat{\omega} = \omega - k u_0 - l v_0\)</span></p>
+</dd>
+<dt>H: float</dt><dd><p>Scale height, :math:<a href="#id11"><span class="problematic" id="id12">`</span></a>H =</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><p>Returns:
+c_g: float</p>
+<blockquote>
+<div><p>Vertical group velocity of gravity waves</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.m_imag">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">m_imag</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">om_intr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#m_imag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.m_imag" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Compute the imaginary wave number component to add attenuation effects
+The imaginary component is defined as :math:<a href="#id13"><span class="problematic" id="id14">`</span></a><a href="#id33"><span class="problematic" id="id34">m_</span></a> ext{im} = -</p>
+</div></blockquote>
+<p>u 
+rac{m^3}{hat{omega}}`</p>
+<blockquote>
+<div><p>where the viscosity is :math:<a href="#id15"><span class="problematic" id="id16">`</span></a></p>
+</div></blockquote>
+<p>u = 3.563       imes 10^{-7} 
+rac{T_0 left( z 
+ight)}{
+ho_0 left( z 
+ight)}`</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om_intr: float</dt><dd><p>Intrinsic frequency (relative to winds), defined as <span class="math notranslate nohighlight">\(\hat{\omega} = \omega - k u_0 - l v_0\)</span></p>
+</dd>
+<dt>z: float</dt><dd><p>Absolute height (used for turning attenuation “off” below 100 km)</p>
+</dd>
+<dt>H: float</dt><dd><p>Scale height, :math:<a href="#id17"><span class="problematic" id="id18">`</span></a>H =</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><dl class="simple">
+<dt>T0: float</dt><dd><p>Ambient temperature in the atmosphere</p>
+</dd>
+<dt>d0: float</dt><dd><p>Ambient density in the atmosphere</p>
+</dd>
+</dl>
+<p>Returns:
+m_i: float</p>
+<blockquote>
+<div><p>Imaginary component of the wavenumber used for damping above 100 km (note: 100 km limit is applied elsewhere)</p>
+</div></blockquote>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.m_sqr">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">m_sqr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">om_intr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#m_sqr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.m_sqr" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Compute the vertical wavenumber dispersion relation for gravity wave propagation
+defined as :math:<a href="#id19"><span class="problematic" id="id20">`</span></a>m^2 =</p>
+</div></blockquote>
+<p>rac{k_h^2}{hat{omega}^2} left( N^2 - hat{omega}^2 
+ight) + 
+rac{1}{4 H^2}`</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om_intr: float</dt><dd><p>Intrinsic frequency (relative to winds), defined as <span class="math notranslate nohighlight">\(\hat{\omega} = \omega - k u_0 - l v_0\)</span></p>
+</dd>
+<dt>H: float</dt><dd><p>Scale height, :math:<a href="#id21"><span class="problematic" id="id22">`</span></a>H =</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ho_0    imes left(</strong></dt><dd></dd>
+<dt><strong>rac{partial</strong></dt><dd></dd>
+<dt><strong>ho_0}{partial z}</strong></dt><dd></dd>
+<dt><strong>ight)^{-1}`</strong></dt><dd><p>Returns:
+m_sqr: float</p>
+<blockquote>
+<div><p>Vertical wave number squared, :math:<a href="#id23"><span class="problematic" id="id24">`</span></a>m^2 =</p>
+</div></blockquote>
+</dd>
+<dt><strong>rac{k_h^2}{hat{omega}^2 left( N^2 - hat{omega}^2</strong></dt><dd></dd>
+<dt><strong>ight) +</strong></dt><dd></dd>
+<dt><strong>rac{1}{4 H^2}}`</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.perturb_atmo">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">perturb_atmo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmo_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">28800.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_om</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_star</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5132741228718345</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_below</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#perturb_atmo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.perturb_atmo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use gravity waves to perturb a specified profile using the methods in Drob et al. (2013)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>atmo_spec: string</strong></dt><dd><p>Path and name of the specification to be used as the reference</p>
+</dd>
+<dt><strong>output_path: string</strong></dt><dd><p>Path where output will be stored</p>
+</dd>
+<dt><strong>sample_cnt: int</strong></dt><dd><p>Number of perturbed atmospheric samples to generate</p>
+</dd>
+<dt><strong>t0: float</strong></dt><dd><p>Reference time for gravity wave propagation (typically 4 - 6 hours)</p>
+</dd>
+<dt><strong>dx: float</strong></dt><dd><p>Horizontal wavenumber resolution [km]</p>
+</dd>
+<dt><strong>dz: float</strong></dt><dd><p>Vertical resolution for integration steps [km]</p>
+</dd>
+<dt><strong>Nk: int</strong></dt><dd><p>Horizontal wavenumber grid dimensions (Nk x Nk)</p>
+</dd>
+<dt><strong>N_om: int</strong></dt><dd><p>Frequency resolution (typically 5)</p>
+</dd>
+<dt><strong>ref_lat: float</strong></dt><dd><p>Reference latitude used to define the Coriolis frequency used as the minimum frequency</p>
+</dd>
+<dt><strong>random_phase: boolean</strong></dt><dd><p>Controls inclusion of random initial phase shifts</p>
+</dd>
+<dt><strong>env_below: boolean</strong></dt><dd><p>Controls whether perturbations below the source height are included</p>
+</dd>
+<dt><strong>cpu_cnt: int</strong></dt><dd><p>Number of CPUs to use for parallel computation of Fourier components (defaults to None)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.perturbations">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">perturbations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmo_specification</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">14400.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_om</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_lat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_star</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5132741228718345</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pool</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#perturbations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.perturbations" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Loop over Fourier components :math:<a href="#id25"><span class="problematic" id="id26">`</span></a>left(k, l, omega</p>
+</div></blockquote>
+<p>ight)` and compute the spectral components for <span class="math notranslate nohighlight">\(\hat{u} \left(k, l, \omega, z 
+ight)\)</span>,</p>
+<blockquote>
+<div><p>:math:<a href="#id27"><span class="problematic" id="id28">`</span></a>hat{v}left(k, l, omega, z</p>
+</div></blockquote>
+<p>ight)`, and <span class="math notranslate nohighlight">\(\hat{w} \left(k, l, \omega, z 
+ight)\)</span>.  Once computed, apply inverse Fourier transforms to</p>
+<blockquote>
+<div><p>obtain the space and time domain forms.</p>
+</div></blockquote>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>atmo_specification: string</strong></dt><dd><blockquote>
+<div><p>Atmospheric specification file path</p>
+</div></blockquote>
+<dl class="simple">
+<dt>t0: float</dt><dd><p>Reference time for gravity wave propagation (typically 4 - 6 hours)</p>
+</dd>
+<dt>dx: float</dt><dd><p>Horizontal wavenumber resolution [km]</p>
+</dd>
+<dt>dz: float</dt><dd><p>Vertical resolution for integration steps [km]</p>
+</dd>
+<dt>Nk: int</dt><dd><p>Horizontal wavenumber grid dimensions (Nk x Nk)</p>
+</dd>
+<dt>N_om: int</dt><dd><p>Frequency resolution (typically 5)</p>
+</dd>
+<dt>ref_lat: float</dt><dd><p>Reference latitude used to define the Coriolis frequency used as the minimum frequency</p>
+</dd>
+<dt>random_phase: boolean</dt><dd><p>Controls inclusion of random initial phase shifts</p>
+</dd>
+<dt>figure_out: string</dt><dd><p>Option to output a figure with each component’s structure (slows down calculations notably, useful for debugging)</p>
+</dd>
+<dt>pool: multiprocessing.Pool</dt><dd><p>Multprocessing option for parallel computation of Fourier components</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt>z_vals: 1darray</dt><dd><blockquote>
+<div><p>Altitudes of output</p>
+</div></blockquote>
+<dl class="simple">
+<dt>du_vals: 3darray</dt><dd><p>Zonal (E/W) wind perturbations, du(x, y, z, t0)</p>
+</dd>
+<dt>dv_vals: 3darray</dt><dd><p>Meridional (N/S) wind perturbations, dv(x, y, z, t0)</p>
+</dd>
+<dt>dw_vals: 3darray</dt><dd><p>Vertical wind perturbations, dw(x, y, z, t0)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.prog_close">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">prog_close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prog_close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.prog_close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.prog_increment">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">prog_increment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prog_increment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.prog_increment" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.prog_prep">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">prog_prep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bar_length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prog_prep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.prog_prep" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.prog_set_step">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">prog_set_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bar_length</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#prog_set_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.prog_set_step" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.single_fourier_component">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">single_fourier_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">om_intr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atmo_info</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_star</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">om_min</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">figure_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prog_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#single_fourier_component"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.single_fourier_component" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Compute the vertical structure of a specific Fourier component, :math:<a href="#id29"><span class="problematic" id="id30">`</span></a>hat{w} left( k, l, omega, z</p>
+</div></blockquote>
+<dl class="simple">
+<dt>ight), </dt><dd><p>by first identifying critical layers and turning heights then using the appropriate solution form (free or 
+trapped solution) to evalute the component.</p>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>k: float</strong></dt><dd><blockquote>
+<div><p>Zonal wave number [km^{-1}]</p>
+</div></blockquote>
+<dl class="simple">
+<dt>l: float</dt><dd><p>Meridional wave number [km^{-1}]</p>
+</dd>
+<dt>om: float</dt><dd><p>Absolute frequency (relative to the ground) [Hz]</p>
+</dd>
+<dt>atmo_specification: string</dt><dd><p>Atmospheric specification file path</p>
+</dd>
+<dt>t0: float</dt><dd><p>Reference time for gravity wave propagation (typically 4 - 6 hours)</p>
+</dd>
+<dt>src_index: int</dt><dd><p>Index of the source height within the atmo_info z values</p>
+</dd>
+<dt>m_star: float</dt><dd><p>Source parameter m_* (default value, :math:<a href="#id31"><span class="problematic" id="id32">`</span></a></p>
+</dd>
+</dl>
+</dd>
+<dt><strong>rac{2 pi}{2.5}        ext{ km}^{-1}` is for 20 km altitude source)</strong></dt><dd><dl class="simple">
+<dt>om_min: float</dt><dd><p>Minimum absolute frequency used in analysis</p>
+</dd>
+<dt>k_max: float</dt><dd><p>Maximum horzintal wavenumber value used in 1 grid dimension</p>
+</dd>
+<dt>random_phase: bool</dt><dd><p>Flag to randomize initial phase of freely propagating solution</p>
+</dd>
+<dt>figure_out: string</dt><dd><p>Path to output figure showing component charcterisitcs</p>
+</dd>
+<dt>prop_step: int</dt><dd><p>Progress bar increment</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl>
+<dt>u_spec: 1darray</dt><dd><blockquote>
+<div><p>Zonal wind perturbation spectrum, hat{u}(k, l, z, omega)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>v_spec: 1darray</dt><dd><p>Meridional wind perturbation spectrum, hat{v}(k, l, z, omega)</p>
+</dd>
+<dt>w_spec: 1darray</dt><dd><p>Vertical wind perturbation spectrum, hat{w}(k, l, z, omega)</p>
+</dd>
+<dt>eta_spec: 1darray</dt><dd><p>Displacement spectrum used to compute temperature and pressure perturbations</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="stochprop.gravity_waves.single_fourier_component_wrapper">
+<span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">single_fourier_component_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#single_fourier_component_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.single_fourier_component_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="references.html" class="btn btn-neutral float-right" title="References and Citing Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="stochprop.propagation.html" class="btn btn-neutral float-left" title="Propagation Statistics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Philip Blom
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

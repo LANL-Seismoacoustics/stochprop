@@ -114,6 +114,31 @@ Perturbing Specifications to Account for Uncertainty
 
 
 
+**********************
+Command Line interface
+**********************
 
+* Command line methods are included to access the perturbation methods more efficiently.  Usage info for the EOF perturbation methods can be displayed by running :code:`stochprop eof-perturb --help`:
+
+	.. code-block:: console
+
+		Usage: stochprop eof-perturb [OPTIONS]
+
+		Use a set of EOFs to perturb a reference atmospheric specification with a defined standard deviation.
+
+		Example Usage:
+			stochprop eof-perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test
+
+		Options:
+		  --atmo-file TEXT               Reference atmspheric specification (required)
+		  --eofs-path TEXT               EOF output path and prefix (required)
+		  --out TEXT                     Output prefix (required)
+		  --std-dev Float                Standard deviation (default: 10 m/s)
+		  --eof-max INTEGER              Maximum EOF coefficient to use (default: 100)
+		  --eof-cnt INTEGER              Number of EOFs to use (default: 50)
+		  --sample-cnt INTEGER           Number of perturbed samples (default: 25)
+		  --alt-weight FLOAT             Altitude weighting power (default: 2.0)
+		  --singular-value-weight FLOAT  Sing. value weighting power (default: 0.25)
+		  -h, --help                     Show this message and exit.
 
 
