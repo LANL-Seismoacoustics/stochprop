@@ -3,6 +3,7 @@
 *.a
 *.nm
 .DS_Store
+.vscode
 ._*
 *~
 *.grd
