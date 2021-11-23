@@ -175,27 +175,26 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
         if fnmatch.fnmatch(file, pattern):
             date_check = False
 
-            file_test = open(path + file)
-            for line in file_test:
-                if "# Model Time" in line:
-                    year = line[15:19]
-                    month = line[20:22]
-                    day = line[23:25]
-                    hour = line[26:28]
-
-                    date_check = True
-                    file_test.close()
-                    break
+            date_parse = re.search(r'\d{10}', file)
+            if len(date_parse > 0):
+                year = date_parse[0][:4]
+                month = date_parse[0][4:6]
+                day = date_parse[0][6:8]
+                hour = date_parse[0][8:10]
+                date_check = True
 
             if not date_check:
-                date_parse = re.search(r'\d{10}', file)
+                file_test = open(path + file)
+                for line in file_test:
+                    if "# Model Time" in line:
+                        year = line[15:19]
+                        month = line[20:22]
+                        day = line[23:25]
+                        hour = line[26:28]
 
-                if len(date_parse > 0):
-                    year = date_parse[0][:4]
-                    month = date_parse[0][4:6]
-                    day = date_parse[0][6:8]
-                    hour = date_parse[0][8:10]
-                    date_check = True 
+                        date_check = True
+                        file_test.close()
+                        break
 
             week = "%02d" % datetime.date(int(year), int(month), int(day)).isocalendar()[1]
 
