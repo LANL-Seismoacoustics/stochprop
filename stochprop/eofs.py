@@ -176,7 +176,7 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
             date_check = False
 
             date_parse = re.search(r'\d{10}', file)
-            if len(date_parse > 0):
+            if len(date_parse) > 0:
                 year = date_parse[0][:4]
                 month = date_parse[0][4:6]
                 day = date_parse[0][6:8]
