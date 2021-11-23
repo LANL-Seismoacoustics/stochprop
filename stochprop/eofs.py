@@ -175,12 +175,13 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
         if fnmatch.fnmatch(file, pattern):
             date_check = False
 
-            date_parse = re.search(r'\d{10}', file)
+            date_parse = re.search(r'\d{10}', file)[0]
+
             if len(date_parse) > 0:
-                year = date_parse[0][:4]
-                month = date_parse[0][4:6]
-                day = date_parse[0][6:8]
-                hour = date_parse[0][8:10]
+                year = date_parse[:4]
+                month = date_parse[4:6]
+                day = date_parse[6:8]
+                hour = date_parse[8:10]
                 date_check = True
 
             if not date_check:
@@ -241,8 +242,8 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
             # Load ECMWF file and identify indices of nearest node for specified loccation
             if return_datetime:
-                dt_parse = re.search(r'\d{10}', file_list[0])
-                dt_list = [np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]
+                dt_parse = re.search(r'\d{10}', file_list[0])[0]
+                dt_list = [np.datetime64(dt_parse[0:4] + "-" + dt_parse[4:6] + "-" + dt_parse[6:8] + "T" + dt_parse[8:10] + ":00:00")]
 
             ecmwf = Dataset(path + file_list[0])
 
@@ -268,8 +269,8 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
             for file in file_list[1:]:
                 if return_datetime:
-                    dt_parse = re.search(r'\d{10}', file)
-                    dt_list = dt_list + [[np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]]
+                    dt_parse = re.search(r'\d{10}', file)[0]
+                    dt_list = dt_list + [[np.datetime64(dt_parse[0:4] + "-" + dt_parse[4:6] + "-" + dt_parse[6:8] + "T" + dt_parse[8:10] + ":00:00")]]
                 ecmwf = Dataset(path + file)
                 
                 lat0, dlat = float(ecmwf.variables['ylat0'][:].data), float(ecmwf.variables['dy'][:].data)
@@ -296,8 +297,8 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
             return A, z0
         else:
             if return_datetime:
-                dt_parse = re.search(r'\d{10}', file_list[0])
-                dt_list = [np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]
+                dt_parse = re.search(r'\d{10}', file_list[0])[0]
+                dt_list = [np.datetime64(dt_parse[0:4] + "-" + dt_parse[4:6] + "-" + dt_parse[6:8] + "T" + dt_parse[8:10] + ":00:00")]
 
             # add parser to determine indices of fields of interest (T or p, u, v, d)
             atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
@@ -322,8 +323,8 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
             for file in file_list[1:]:
                 if return_datetime:
-                    dt_parse = re.search(r'\d{10}', file)
-                    dt_list = dt_list + [np.datetime64(dt_parse[0][0:4] + "-" + dt_parse[0][4:6] + "-" + dt_parse[0][6:8] + "T" + dt_parse[0][8:10] + ":00:00")]
+                    dt_parse = re.search(r'\d{10}', file)[0]
+                    dt_list = dt_list + [np.datetime64(dt_parse[0:4] + "-" + dt_parse[4:6] + "-" + dt_parse[6:8] + "T" + dt_parse[8:10] + ":00:00")]
 
                 atmo = np.loadtxt(path + file, skiprows=skiprows)
                 if np.allclose(z0, atmo[:, 0]):
