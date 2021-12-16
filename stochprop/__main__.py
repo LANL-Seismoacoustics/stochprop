@@ -47,12 +47,13 @@ def main():
 @click.option("--eofs-path", help="EOF output path and prefix (required)", prompt="Output path: ")
 @click.option("--atmo-pattern", help="Specification file pattern (default: '*.dat')", default='*.dat')
 @click.option("--atmo-format", help="Specification format (default: 'zTuvdp'", default='zTuvdp')
-@click.option("--month-selection", help="Limit analysis to specific month(s) (default=None)", default=None)
-@click.option("--week-selection", help="Limit analysis to specific week(s) (default=None)", default=None)
-@click.option("--year-selection", help="Limit analysis to specific year(s) (default=None)", default=None)
+@click.option("--month-selection", help="Limit analysis to specific month(s) (default: None)", default=None)
+@click.option("--week-selection", help="Limit analysis to specific week(s) (default: None)", default=None)
+@click.option("--year-selection", help="Limit analysis to specific year(s) (default: None)", default=None)
 @click.option("--save-datetime", help="Save date time info (default: False)", default=False)
+@click.option("--max-alt", help="Maximum altitude for trimming data (default: None)", default=None)
 @click.option("--eof-cnt", help="Number of EOFs to store (default: 100)", default=100)
-def eof_construct(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selection, week_selection, year_selection, save_datetime, eof_cnt):
+def eof_construct(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selection, week_selection, year_selection, save_datetime, max_alt, eof_cnt):
     '''
     \b
     stochprop eof-construct
@@ -60,6 +61,7 @@ def eof_construct(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selectio
     \b
     Example Usage:
     \t stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example
+    \t stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 75.0
     \t stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]'
     
     '''
@@ -86,7 +88,10 @@ def eof_construct(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selectio
     if weeks_list is not None:
         click.echo("  Limited weeks: " + str(weeks_list))
     if years_list is not None:
-        click.echo("  Limited years:: " + str(years_list))
+        click.echo("  Limited years: " + str(years_list))
+    if max_alt is not None:
+        click.echo("  max_alt: " + str(max_alt))
+        max_alt = float(max_alt)
 
     click.echo("  EOF count: " + str(eof_cnt))
     click.echo("  Output path: " + str(eofs_path))
@@ -94,7 +99,7 @@ def eof_construct(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selectio
         click.echo("  Saving date time info")
     click.echo("")
     
-    A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True)
+    A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True, max_alt=max_alt)
     if save_datetime:
         np.save(eofs_path + ".datetimes", datetimes)
     eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt)

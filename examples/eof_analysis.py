@@ -31,8 +31,8 @@ if __name__ == '__main__':
 
     # update season labels with clustering results for actual analysis
     season_months = [["10", "11", "12", "01", "02", "03"],
-                     ["04", "05", "09"],
-                     ["06", "07", "08"]]
+                     ["04", "09"],
+                     ["05", "06", "07", "08"]]
 
     # ######################### #
     #     Remove results and    #
@@ -58,8 +58,8 @@ if __name__ == '__main__':
     #   for EOF construction    #
     # ######################### #
     print("Building atmosphere matrix for all profiles...")
-    A, z0 = eofs.build_atmo_matrix("profs/", "*.dat")
-    eofs.compute_eofs(A, z0, "eofs/" + run_id, eof_cnt=eof_cnt)
+    A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", max_alt=80.0)
+    eofs.compute_eofs(A, z0, "eofs/" + run_id + "_low_alt", eof_cnt=eof_cnt)
 
     # #################################### #
     #  Compute EOFs coefficients for each  #
@@ -68,15 +68,15 @@ if __name__ == '__main__':
     print('\n' + "Computing EOF coefficients for each month...")
     for m in range(12):
         Am, zm = eofs.build_atmo_matrix("profs/", "*.dat", months = ['%02d' % (m + 1)])
-        coeffs = eofs.compute_coeffs(Am, zm, "eofs/" + run_id, "coeffs/" + run_id + "_{:02d}".format(m + 1), eof_cnt=eof_cnt)
+        coeffs = eofs.compute_coeffs(Am, zm, "eofs/" + run_id + "_low_alt", "coeffs/" + run_id + "_low_alt" + "_{:02d}".format(m + 1), eof_cnt=eof_cnt)
 
     coeffs = [0] * 12
     for m in range(12):
-        coeffs[m] = np.load("coeffs/" + run_id + "_{:02d}-coeffs.npy".format(m + 1))
+        coeffs[m] = np.load("coeffs/" + run_id + "_low_alt" + "_{:02d}-coeffs.npy".format(m + 1))
 
-    overlap = eofs.compute_overlap(coeffs, "eofs/" + run_id, eof_cnt=eof_cnt, method="kde") 
-    np.save("coeffs/" + run_id + "-overlap_kde", overlap)
-    eofs.compute_seasonality("coeffs/" + run_id + "-overlap_kde.npy", "coeffs/" + run_id + "_kde")
+    overlap = eofs.compute_overlap(coeffs, "eofs/" + run_id + "_low_alt", eof_cnt=eof_cnt, method="kde") 
+    np.save("coeffs/" + run_id + "_low_alt" + "-overlap_kde", overlap)
+    eofs.compute_seasonality("coeffs/" + run_id + "_low_alt" + "-overlap_kde.npy", "coeffs/" + run_id + "_kde")
 
     # ################################ #
     #  Load coefficients and generate  #

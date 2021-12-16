@@ -129,7 +129,7 @@ def profiles_qc(path, pattern="*.dat", skiprows=0):
 
 
 
-def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
+def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, max_alt=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
@@ -140,6 +140,16 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
             Path to the profiles to be loaded
         pattern: string
             Pattern defining the list of profiles in the path
+        years: iterable
+            Iterable of years to include in analysis (e.g., ['2010', '2011', '2012'])
+        months: iterable
+            Iterable of months to include in analysis (e.g., ['11', '12', '01', '02'])
+        weeks: iterable
+            Iterable of weeks to include in analysis (e.g., ['01', '02', '03'])
+        hours: iterable
+            Iterable of hours to include in analysis (e.g., ['00', '06', '18'])
+        max_alt: float
+            Altitude maximum to trim specifications
         skiprows: int
             Number of header rows in the profiles
         ref_alts: 1darray
@@ -255,17 +265,14 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
             n_lat = np.argmin(abs(lat_vals - latlon0[0]))
             n_lon = np.argmin(abs(lon_vals - latlon0[1]))
-
             z_gl = etopo_interp(lon_vals[n_lon], lat_vals[n_lat])[0]
-
-            print("Extracting profile at " + str(lat_vals[n_lat]) + ", " + str(lon_vals[n_lon]) + " with ground elevation " + str(z_gl))    
 
             z0 = ecmwf.variables['height'][:].data / 1000.0 + z_gl    
             T = ecmwf.variables['T'][:, n_lat, n_lon].data   
             u = ecmwf.variables['U'][:, n_lat, n_lon].data   
             v = ecmwf.variables['V'][:, n_lat, n_lon].data   
             d = density(z0)
-            p = pressure(z0, ecmwf.variables['T'][:, n_lat, n_lon].data)
+            p = pressure(z0, T)
 
             for file in file_list[1:]:
                 if return_datetime:
@@ -307,19 +314,25 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
             else:
                 z0 = ref_alts
 
+            if max_alt is not None:
+                alt_mask = tuple([z0 <= max_alt])
+                print('\t\t' + "Trimming above maximum altitude:", max_alt)
+            else:
+                alt_mask = np.ones_like(z0, dtype=bool)
+            
             if np.allclose(z0, atmo[:, 0]):
-                T = atmo[:, 1]
-                u = atmo[:, 2]
-                v = atmo[:, 3]
-                d = atmo[:, 4]
-                p = atmo[:, 5]
+                T = atmo[:, 1][alt_mask]
+                u = atmo[:, 2][alt_mask]
+                v = atmo[:, 3][alt_mask]
+                d = atmo[:, 4][alt_mask]
+                p = atmo[:, 5][alt_mask]
             else:
                 print("WARNING!!  Altitudes in " + path + file_list[0] + " don't match expected values.  Interpolating to resolve...")
-                T = interp1d(atmo[:, 0], atmo[:, 1])(z0)
-                u = interp1d(atmo[:, 0], atmo[:, 2])(z0)
-                v = interp1d(atmo[:, 0], atmo[:, 3])(z0)
-                d = interp1d(atmo[:, 0], atmo[:, 4])(z0)
-                p = interp1d(atmo[:, 0], atmo[:, 5])(z0)
+                T = interp1d(atmo[:, 0], atmo[:, 1])(z0)[alt_mask]
+                u = interp1d(atmo[:, 0], atmo[:, 2])(z0)[alt_mask]
+                v = interp1d(atmo[:, 0], atmo[:, 3])(z0)[alt_mask]
+                d = interp1d(atmo[:, 0], atmo[:, 4])(z0)[alt_mask]
+                p = interp1d(atmo[:, 0], atmo[:, 5])(z0)[alt_mask]
 
             for file in file_list[1:]:
                 if return_datetime:
@@ -328,18 +341,18 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
                 atmo = np.loadtxt(path + file, skiprows=skiprows)
                 if np.allclose(z0, atmo[:, 0]):
-                    T = np.vstack((T, atmo[:, 1]))
-                    u = np.vstack((u, atmo[:, 2]))
-                    v = np.vstack((v, atmo[:, 3]))
-                    d = np.vstack((d, atmo[:, 4]))
-                    p = np.vstack((p, atmo[:, 5]))
+                    T = np.vstack((T, atmo[:, 1][alt_mask]))
+                    u = np.vstack((u, atmo[:, 2][alt_mask]))
+                    v = np.vstack((v, atmo[:, 3][alt_mask]))
+                    d = np.vstack((d, atmo[:, 4][alt_mask]))
+                    p = np.vstack((p, atmo[:, 5][alt_mask]))
                 else:
                     print("WARNING!!  Altitudes in " + path + file + " don't match expected values.  Interpolating to resolve...")
-                    T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)))
-                    u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)))
-                    v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)))
-                    d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)))
-                    p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)))
+                    T = np.vstack((T, interp1d(atmo[:, 0], atmo[:, 1])(z0)[alt_mask]))
+                    u = np.vstack((u, interp1d(atmo[:, 0], atmo[:, 2])(z0)[alt_mask]))
+                    v = np.vstack((v, interp1d(atmo[:, 0], atmo[:, 3])(z0)[alt_mask]))
+                    d = np.vstack((d, interp1d(atmo[:, 0], atmo[:, 4])(z0)[alt_mask]))
+                    p = np.vstack((p, interp1d(atmo[:, 0], atmo[:, 5])(z0)[alt_mask]))
 
             A = np.hstack((T, u))
             A = np.hstack((A, v))
@@ -348,9 +361,9 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
         A = np.atleast_2d(A)
         if return_datetime:
-            return A, z0, np.array(dt_list)
+            return A, z0[alt_mask], np.array(dt_list)
         else:
-            return A, z0
+            return A, z0[alt_mask]
     else:
         return None, None
 
