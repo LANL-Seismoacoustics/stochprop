@@ -663,7 +663,10 @@ def compute_seasonality(overlap_file, file_id=None):
     links = hierarchy.linkage(squareform(dist_mat), 'weighted')
 
     f, (ax1) = plt.subplots(1, 1)
-    den = hierarchy.dendrogram(links, orientation="right", ax=ax1, labels=[calendar.month_abbr[n] for n in range(1, 13)])
+    if len(dist_mat == 12):
+        hierarchy.dendrogram(links, orientation="right", ax=ax1, labels=[calendar.month_abbr[n] for n in range(1, 13)])
+    else:
+        hierarchy.dendrogram(links, orientation="right", ax=ax1)
     plt.title(file_id.rpartition('/')[-1])
 
     if file_id:

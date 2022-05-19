@@ -5,6 +5,22 @@
 # of seasonal atmosphere samples
 #
 # Philip Blom (pblom@lanl.gov)
+#
+#
+# Note: these steps can all be run via the CLI
+# --------------------------------------------
+# stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
+# stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt_01 --month-selection '01' --eof-cnt 50
+# stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt_02 --month-selection '02' --eof-cnt 50
+# ... (repeat for each month)
+#
+# stochprop eof seasonality --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt --eof-cnt 50
+#
+# stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
+# stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
+# stochprop eof sample --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50 --eof-cnt 50
+# 
+# ... (repeat for spring and summer with modified --month-selection definitions)
 
 import os
 import subprocess
@@ -75,8 +91,8 @@ if __name__ == '__main__':
         coeffs[m] = np.load("coeffs/" + run_id + "_low_alt" + "_{:02d}-coeffs.npy".format(m + 1))
 
     overlap = eofs.compute_overlap(coeffs, "eofs/" + run_id + "_low_alt", eof_cnt=eof_cnt, method="kde") 
-    np.save("coeffs/" + run_id + "_low_alt" + "-overlap_kde", overlap)
-    eofs.compute_seasonality("coeffs/" + run_id + "_low_alt" + "-overlap_kde.npy", "coeffs/" + run_id + "_kde")
+    np.save("coeffs/" + run_id + "_low_alt" + "-overlap", overlap)
+    eofs.compute_seasonality("coeffs/" + run_id + "_low_alt" + "-overlap_kde.npy", "coeffs/" + run_id)
 
     # ################################ #
     #  Load coefficients and generate  #
