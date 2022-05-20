@@ -1,15 +1,16 @@
-# run_stochprop_eofs.py
+# eof_analysis.py
 #
-# Cosntruct the EOF coefficient statistics
+# Construct the EOF coefficient statistics
 # for a set of profiles and generate a set
 # of seasonal atmosphere samples
 #
 # Philip Blom (pblom@lanl.gov)
 #
 #
-# Note: these steps can all be run via the CLI
-# --------------------------------------------
+# Note: this analysis can be run via the stochprop CLI using the following steps:
+# -------------------------------------------------------------------------------
 # stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
+# 
 # stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt_01 --month-selection '01' --eof-cnt 50
 # stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt_02 --month-selection '02' --eof-cnt 50
 # ... (repeat for each month)
@@ -43,7 +44,7 @@ if __name__ == '__main__':
     run_id = "example"
 
     eof_cnt = 50
-    smpl_cnt = 25
+    smpl_cnt = 5
 
     # update season labels with clustering results for actual analysis
     season_months = [["10", "11", "12", "01", "02", "03"],
@@ -92,7 +93,7 @@ if __name__ == '__main__':
 
     overlap = eofs.compute_overlap(coeffs, "eofs/" + run_id + "_low_alt", eof_cnt=eof_cnt, method="kde") 
     np.save("coeffs/" + run_id + "_low_alt" + "-overlap", overlap)
-    eofs.compute_seasonality("coeffs/" + run_id + "_low_alt" + "-overlap_kde.npy", "coeffs/" + run_id)
+    eofs.compute_seasonality("coeffs/" + run_id + "_low_alt" + "-overlap.npy", "coeffs/" + run_id)
 
     # ################################ #
     #  Load coefficients and generate  #
@@ -105,6 +106,6 @@ if __name__ == '__main__':
         coeffs = eofs.compute_coeffs(A, z0, "eofs/" + run_id+ "_" + season_labels[nS], "coeffs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt)
 
         print('\n' + "Sampling atmospheric state for " + season_labels[nS])
-        eofs.sample_atmo(coeffs, "eofs/" + run_id + "_" + season_labels[nS], "samples/" + season_labels[nS] + "/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, prof_cnt=smpl_cnt, coeff_label=season_labels[nS], output_mean=True)
+        eofs.sample_atmo(coeffs, "eofs/" + run_id + "_" + season_labels[nS], "samples/" + season_labels[nS] + "/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, prof_cnt=smpl_cnt, coeff_label=season_labels[nS])
         eofs.maximum_likelihood_profile(coeffs, "eofs/" + run_id+ "_" + season_labels[nS], "samples/" + run_id + "-" + season_labels[nS], eof_cnt=eof_cnt, coeff_label=season_labels[nS])
 

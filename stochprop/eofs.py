@@ -867,7 +867,7 @@ def draw_from_pdf(pdf, lims, cdf=None, size=1):
     return samples
 
 
-def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, output_mean=False, coeff_label="None"):
+def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff_label="None"):
     """
         Generate atmosphere states using coefficient distributions for
         a set of empirical orthogonal basis functions
@@ -884,8 +884,6 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, outpu
             Number of EOFs to use in building sampled specifications
         prof_cnt: int
             Number of atmospheric specification samples to generate
-        output_mean: bool
-            Flag to output the mean profile from the samples generated
     """
 
     print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
@@ -931,9 +929,6 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, outpu
     print('\t' + "Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
         np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn], header=_coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, pn, prof_cnt), comments='')
-
-    if output_mean:
-        np.savetxt(output_path + "-mean.met", np.average(sampled_profs, axis=0), header=_coeff_smpl_mean_header_txt(coeff_label, eofs_path, eof_cnt), comments='')
 
 
 def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coeff_label="None"):

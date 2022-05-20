@@ -5,6 +5,18 @@
 # statistics for use in BISL and SpYE.
 #
 # Philip Blom (pblom@lanl.gov)
+#
+# Note: this analysis can be run via the stochprop CLI using the following steps:
+# -------------------------------------------------------------------------------
+#
+# stochprop prop build-pgm --atmos-dir samples/winter --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 6
+# stochprop prop plot --model-file prop/winter/winter.pgm
+# 
+# stochprop prop build-tlm --atmos-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 6
+# stochprop prop plot --model-file prop/winter/winter_0.100Hz.tlm
+
+# ... (repeat tlm for other frequencies and all models for other seasons)
+
 
 import os 
 
@@ -26,9 +38,9 @@ if __name__ == '__main__':
 
     sample_dirs = "samples"
     results_dir = "prop"
-    season_labels = ["spring", "summer", "fall"]
+    season_labels = ["winter", "spring", "summer"]
 
-    freqs = [0.1, 1.0, 5]
+    freqs = [0.1, 0.2, 0.5, 1.0]
     inclinations = [2.5, 45.0, 2.5]
     azimuths = [0.0, 360.0, 6.0]
     src_loc = [30.0, -120, 0.0]
@@ -56,7 +68,7 @@ if __name__ == '__main__':
         pgm.load(results_id + ".pgm", smooth=True)
         pgm.display(file_id=(results_id), subtitle=season)
 
-        for fn in np.logspace(np.log10(freqs[0]), np.log10(freqs[1]), freqs[2]):
+        for fn in freqs:
             propagation.run_modess(sample_dirs + "/" + season, results_id + "_%.3f" % fn + "Hz", azimuths=azimuths, freq=fn, clean_up=True, cpu_cnt=cpu_cnt)
 
             tlm = propagation.TLossModel()

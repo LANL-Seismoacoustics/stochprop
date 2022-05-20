@@ -103,16 +103,14 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                         command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
                         command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" + " > /dev/null"
 
-                        print(command)
                         subprocess.call(command, shell=True)
 
             command = "cat " + profs_path + "/*.arrivals.dat > " + results_file
-            print(command)
             subprocess.call(command, shell=True)
-            
+            print("")
+
             if clean_up:
                 command = "rm "  + profs_path + "/*.dat"
-                print(command)
                 subprocess.call(command, shell=True)
 
 
@@ -154,8 +152,7 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
     if os.path.isfile(results_path + ".nm"):
         print(results_path + ".nm already exists  --->  Skipping NCPAprop modess runs...")
     else:
-        print("Running NCPAprop modess for atmospheric specifications in " + profs_path + "...")
-        print('\t' + "Building command list to run all NCPAprop modess simulations...")
+        print("Running NCPAprop modess for atmospheric specifications in " + profs_path)
         command_list = []
         for file_name in dir_files:
             if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
@@ -163,6 +160,7 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
                 command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
                 command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz" % freq + " > /dev/null"
                 command_list = command_list + [command]
+
 
         for j in range(0, len(command_list), cpu_cnt):              
             if cpu_cnt==1 or j + 1 == len(command_list):
@@ -667,7 +665,7 @@ class PathGeometryModel(object):
 
         print("Loading path geometry model from " + model_file)
         print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
-        print('\t' + "Maximum range: " + str(self._rng_max) + '\n')
+        print('\t' + "Maximum range: " + str(self._rng_max))
 
         self.az_dev_mns = [0] * self._az_bin_cnt
         self.az_dev_std = [0] * self._az_bin_cnt
@@ -682,7 +680,6 @@ class PathGeometryModel(object):
             self._rcel_wts[n_az] = [0] * 3
 
         if smooth:
-            print('\t' + "Loading data into GMM with smoothing...")
             for n_az in range(self._az_bin_cnt):
                 self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 5, 3), kind='cubic')
                 self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 5, 3), kind='cubic')
@@ -696,7 +693,6 @@ class PathGeometryModel(object):
                     self._rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
                     self._rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
         else:
-            print('\t' + "Loading data into GMM without smoothing...")
             for n_az in range(self._az_bin_cnt):
                 self.az_dev_mns[n_az] = interp1d(fit_params[0], fit_params[1][n_az], kind='cubic')
                 self.az_dev_std[n_az] = interp1d(fit_params[0], fit_params[2][n_az], kind='cubic')
@@ -710,7 +706,7 @@ class PathGeometryModel(object):
                     self._rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
                     self._rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
 
-    def display(self, file_id=None, subtitle=None, show_colorbar=True):
+    def display(self, file_id=None, subtitle=None, show_colorbar=True, hold_fig=False):
         """
         Display the propagation geometry statistics
 
@@ -843,6 +839,8 @@ class PathGeometryModel(object):
         if file_id:
             plt.savefig(file_id + "_cel-rng.png", bbox_inches='tight', dpi=200)
 
+        if hold_fig:
+            plt.show()
 
 class TLossModel(object):
     _az_bin_cnt = 16
@@ -929,7 +927,7 @@ class TLossModel(object):
                     ax1.plot(rngs[az_mask][::11], tloss[az_mask][::11], 'ko', markersize=1)
                     plt.pause(0.001)
 
-                print('\t' + "Propagation direction (" + str(center) + ")...")
+                print('\t' + "Building statistics for azimuth bin centered at " + str(center))
 
                 norm_mask = np.logical_and(az_mask, rngs == min(rngs))
                 if use_coh:
@@ -1032,7 +1030,7 @@ class TLossModel(object):
 
         return result
 
-    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True):
+    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, hold_fig=False):
         """
         Display the transmission loss statistics
 
@@ -1104,4 +1102,5 @@ class TLossModel(object):
         if file_id:
             plt.savefig(file_id + "_tloss.png", bbox_inches='tight', dpi=200)
 
-        plt.close('all')
+        if hold_fig:
+            plt.show()
