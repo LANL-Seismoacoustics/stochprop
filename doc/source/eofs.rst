@@ -178,26 +178,57 @@ Compute Coefficients and Determine Seasonality
 Command Line interface
 ----------------------
 
-* A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  Usage info for the EOF construction methods can be displayed by running :code:`stochprop eof-construct --help`:
+* A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  The various methods available can be summarized as :code:`stochprop eof`:
 
 	.. code-block:: console
 
-		Usage: stochprop eof-construct [OPTIONS]
+		Usage: stochprop eof [OPTIONS] COMMAND [ARGS]...
 
-		Use a SVD to construct Empirical Orthogonal Functions (EOFs) from a suite of atmospheric specifications
-
-		Example Usage:
-			stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example
-			stochprop eof-construct --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]'
+		stochprop eof - Analysis methods using Empirical Orthogonal Function (EOFs)
+		to identify seasonal trends and sample the atmospheric variability
 
 		Options:
-		  --atmo-dir TEXT          Directory of atmspheric specifications (required)
-		  --eofs-path TEXT         EOF output path and prefix (required)
-		  --atmo-pattern TEXT      Specification file pattern (default: '*.met')
-		  --atmo-format TEXT       Specification format (default: 'zTuvdp')
-		  --month-selection TEXT   Limit analysis to specific month(s) (default=None)
-		  --week-selection TEXT    Limit analysis to specific week(s) (default=None)
-		  --year-selection TEXT    Limit analysis to specific year(s) (default=None)
-		  --save-datetime BOOLEAN  Save date time info (default: False)
-		  --eof-cnt INTEGER        Number of EOFs to store (default: 100)
-		  -h, --help               Show this message and exit.
+		-h, --help  Show this message and exit.
+
+		Commands:
+		build        Build EOF info through SVD
+		coeffs       Compute EOF coefficients
+		sample       Sample EOF coefficient KDEs to generate atmosphere realizations
+		seasonality  Compute EOF coefficient overlap and seasonal relations
+
+* Usage info for the EOF construction methods can be displayed by running the help option (e.g., :code:`stochprop eof build --help`):
+
+	.. code-block:: console 
+
+		Usage: stochprop eof build [OPTIONS]
+
+		stochprop eof build
+		-----------------------
+		
+		Example Usage:
+			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example
+			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
+			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]'
+
+		Options:
+		--atmo-dir TEXT          Directory of atmospheric specifications (required)
+		--eofs-path TEXT         EOF output path and prefix (required)
+		--atmo-pattern TEXT      Specification file pattern (default: '*.dat')
+		--atmo-format TEXT       Specification format (default: 'zTuvdp')
+		--month-selection TEXT   Limit analysis to specific month(s) (default: None)
+		--week-selection TEXT    Limit analysis to specific week(s) (default: None)
+		--year-selection TEXT    Limit analysis to specific year(s) (default: None)
+		--save-datetime BOOLEAN  Save date time info (default: False)
+		--max-alt TEXT           Maximum altitude for trimming data (default: None)
+		--eof-cnt INTEGER        Number of EOFs to store (default: 100)
+		-h, --help               Show this message and exit.
+
+* As an example, construction of winter atmospheric samples can be computed via construction of the seasonal EOFs, computation of the coefficient values, and sampling of the coefficient information,
+
+	.. code-block:: console
+
+		>> stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
+		>> stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
+		>> stochprop eof sample --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50 --eof-cnt 50
+		
+* More stuff...

@@ -141,5 +141,36 @@ Transmission Loss Models (TLMs)
     yld_vals, yld_pdf, conf_bnds = spye.run(det_list, smn_specs, src_loc, freq_band, tlms)
 
 
+**********************
+Command Line interface
+**********************
+
+* Command line methods are included to access the propagation model construction and visualization.  Usage info for the propagation model methods can be displayed by running :code:`stochprop prop --help`:
+
+    .. code-block:: console
+
+        Usage: stochprop prop [OPTIONS] COMMAND [ARGS]...
+
+        stochprop prop - Construct and interact with stochastic propagation models
+
+        Options:
+        -h, --help  Show this message and exit.
+
+        Commands:
+        build-pgm  Build a path geometry model (PGM)
+        build-tlm  Build a transmission loss model (TLM)
+        plot       Visualize a PGM or TLM        
+
+
+
+* The model construction above and be completed from the command line by specifying the directory containing the atmospheric specifications, output path, and any run parameters,
+
+    .. code-block:: console
+
+        >> stochprop prop build-pgm --atmos-dir samples/winter --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 6
+        >> stochprop prop plot --model-file prop/winter/winter.pgm
+
+        >> stochprop prop build-tlm --atmos-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 6
+        >> stochprop prop plot --model-file prop/winter/winter_0.100Hz.tlm
 
 

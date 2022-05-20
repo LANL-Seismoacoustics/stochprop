@@ -167,16 +167,16 @@ Gravity Wave implementation in stochprop
 		# Run gravity wave calculation
 		gravity_waves.perturb_atmo(atmo_spec, output_path, t0=t0, cpu_cnt=10)
 
-* A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running :code:`stochprop gravity-waves --help`:
+* A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running :code:`stochprop perturb gravity-waves --help`:
 
 	.. code-block:: console
 
-		Usage: stochprop gravity-waves [OPTIONS]
+		Usage: stochprop perturb gravity-waves [OPTIONS]
 
 		Gravity wave perturbation calculation based on Drob et al. (2013) method.
 
 		Example Usage:
-       		stochprop gravity-waves --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw
+       		stochprop perturb gravity-waves --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw
 
 		Options:
   		  --atmo-file TEXT        Reference atmspheric specification (required)
@@ -192,12 +192,6 @@ Gravity Wave implementation in stochprop
 		  --m-star FLOAT          Gravity wave source spectrum peak [1/km] (default: (2 pi) / 2.5)
 		  --cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)
 		  -h, --help              Show this message and exit.
-
-* An example CLI usage is:
-
-.. code-block:: bash
-
-	stochprop gravity-waves --atmo-file profs/01/g2stxt_2010010100_39.7393_-104.9900.dat --out gw_perturb --cpu-cnt 10
 
 * An example set of perturbations is shown below.
 
