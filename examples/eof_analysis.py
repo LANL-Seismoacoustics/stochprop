@@ -10,12 +10,8 @@
 # Note: this analysis can be run via the stochprop CLI using the following steps:
 # -------------------------------------------------------------------------------
 # stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
-# 
-# stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt_01 --month-selection '01' --eof-cnt 50
-# stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt_02 --month-selection '02' --eof-cnt 50
-# ... (repeat for each month)
-#
-# stochprop eof seasonality --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt --eof-cnt 50
+# stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_low_alt --run-all-weeks True --coeff-path coeffs/example_low_alt --eof-cnt 50
+# stochprop eof seasonality --eofs-path eofs/example_low_alt --coeff-path coeffs/example_low_alt.month --eof-cnt 50
 #
 # stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
 # stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50

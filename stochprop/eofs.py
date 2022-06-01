@@ -601,16 +601,16 @@ def compute_overlap(coeffs, eofs_path, eof_cnt=100, method="mean"):
 
     print("-" * 50 + '\n' + "Computing coefficient overlap...")
 
-    overlap = np.ones((12, 12))
+    overlap = np.ones((len(coeffs), len(coeffs)))
     
     eof_weights = np.loadtxt(eofs_path + "-singular_values.dat")[:, 1][:eof_cnt]**2
     eof_weights /= np.sum(eof_weights)  
 
     if method == "mean":
-        for m1 in range(12):
+        for m1 in range(len(coeffs)):
             m1_C_means = np.mean(coeffs[m1], axis=0)          
             norm1 = np.dot(m1_C_means, m1_C_means)
-            for m2 in range(m1 + 1, 12):
+            for m2 in range(m1 + 1, len(coeffs)):
                 m2_C_means = np.mean(coeffs[m2], axis=0)
                 norm2 = np.dot(m2_C_means, m2_C_means)
 
@@ -618,13 +618,13 @@ def compute_overlap(coeffs, eofs_path, eof_cnt=100, method="mean"):
                 overlap[m2][m1] = overlap[m1][m2]
 
     else: 
-        overlap_temp = np.ones((eof_cnt, 12, 12))
+        overlap_temp = np.ones((eof_cnt, len(coeffs), len(coeffs)))
         for eof_id in range(eof_cnt):
             print('\t' + "Computing overlap values for EOF " + str(eof_id) + " using KDE...")
-            for m1 in range(12):
+            for m1 in range(len(coeffs)):
                 kernel1 = gaussian_kde(coeffs[m1][:, eof_id])
 
-                for m2 in range(m1 + 1, 12):
+                for m2 in range(m1 + 1, len(coeffs)):
                     kernel2 = gaussian_kde(coeffs[m2][:, eof_id])
 
                     # define coefficient value limits
@@ -658,12 +658,12 @@ def compute_seasonality(overlap_file, file_id=None):
 
     print("Generating seasonality plot...")
 
-    dist_mat = -np.log(np.load(overlap_file))
+    dist_mat = -np.log(np.load(overlap_file))   
     np.fill_diagonal(dist_mat, 0.0)   
     links = hierarchy.linkage(squareform(dist_mat), 'weighted')
 
     f, (ax1) = plt.subplots(1, 1)
-    if len(dist_mat == 12):
+    if len(dist_mat) == 12:
         hierarchy.dendrogram(links, orientation="right", ax=ax1, labels=[calendar.month_abbr[n] for n in range(1, 13)])
     else:
         hierarchy.dendrogram(links, orientation="right", ax=ax1)
