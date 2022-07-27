@@ -19,12 +19,12 @@ if __name__ == '__main__':
     # ######################### #
 
     prof_path = "profs/g2stxt_2010010118_39.7393_-104.9900.dat"
-    eofs_path = "eofs/example"
+    eofs_path = "eofs/example_winter"
     sample_dirs = ["fits", "perturb"]
 
     fit_eof_cnts = [1, 10, 25, 50]
 
-    stdev = 10.0
+    stdev = 5.0
     eof_cnt, eof_max = 50, 50
     smpl_cnt = 25
 

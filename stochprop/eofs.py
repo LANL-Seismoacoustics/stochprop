@@ -30,11 +30,17 @@ from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
 
+
+################################
+#   Define methods to compute  #
+#    a reference atmosphere    #
+################################
+
+
 gam = 1.4
-gamR = gam * 287.06
-
-
 gasR = 287.0
+gamR = gam * gasR
+
 den0 = 0.001225
 coeffs_A = np.array([-3.9082017e-2, -1.1526465e-3, 3.2891937e-5, -2.0494958e-7,
                         -4.7087295e-2, 1.2506387e-3, -1.5194498e-5, 6.581877e-8])
@@ -126,8 +132,169 @@ def profiles_qc(path, pattern="*.dat", skiprows=0):
     else:
         print("WARNING!! No profiles matching specified pattern in path.")
 
+###############################
+#   File Output Header Info   #
+###############################
+def _eof_mean_header_txt(build_info):
+    result = "# Mean Atmosphere from EOF Constrution"
+    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
+    if 'month_selection' in build_info.keys():
+        if build_info['month_selection'] is not None:
+            result = result + '\n' + "# Months: " + build_info['month_selection']
+    if 'year_selection' in build_info.keys():
+        if build_info['year_selection'] is not None:
+            result = result + '\n' + "# Years: " + build_info['year_selection']
+    if 'week_selection' in build_info.keys():
+        if build_info['week_selection'] is not None:
+            result = result + '\n' + "# Weeks: " + build_info['week_selection']
+    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+
+    return result
+
+def _eof_c_header_txt(build_info):
+    result = "# Sound Speed EOFs"
+    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
+    if 'month_selection' in build_info.keys():
+        if build_info['month_selection'] is not None:
+            result = result + '\n' + "# Months: " + build_info['month_selection']
+    if 'year_selection' in build_info.keys():
+        if build_info['year_selection'] is not None:
+            result = result + '\n' + "# Years: " + build_info['year_selection']
+    if 'week_selection' in build_info.keys():
+        if build_info['week_selection'] is not None:
+            result = result + '\n' + "# Weeks: " + build_info['week_selection']
+    result = result + '\n' + "# Fields = [ Z(km), dc_1(m/s), dc_2(m/s), ... dc_j(m/s)]"
+
+    return result
+
+def _eof_u_header_txt(build_info):
+    result = "# Zonal Wind EOFs"
+    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
+    if 'month_selection' in build_info.keys():
+        if build_info['month_selection'] is not None:
+            result = result + '\n' + "# Months: " + build_info['month_selection']
+    if 'year_selection' in build_info.keys():
+        if build_info['year_selection'] is not None:
+            result = result + '\n' + "# Years: " + build_info['year_selection']
+    if 'week_selection' in build_info.keys():
+        if build_info['week_selection'] is not None:
+            result = result + '\n' + "# Weeks: " + build_info['week_selection']
+    result = result + '\n' + "# Fields = [ Z(km), du_1(m/s), du_2(m/s), ... du_j(m/s)]"
+
+    return result
+
+def _eof_v_header_txt(build_info):
+    result = "# Meridional Wind EOFs"
+    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
+    if 'month_selection' in build_info.keys():
+        if build_info['month_selection'] is not None:
+            result = result + '\n' + "# Months: " + build_info['month_selection']
+    if 'year_selection' in build_info.keys():
+        if build_info['year_selection'] is not None:
+            result = result + '\n' + "# Years: " + build_info['year_selection']
+    if 'week_selection' in build_info.keys():
+        if build_info['week_selection'] is not None:
+            result = result + '\n' + "# Weeks: " + build_info['week_selection']
+    result = result + '\n' + "# Fields = [ Z(km), dv_1(m/s), dv_2(m/s), ... dv_j(m/s)]"
+
+    return result
 
 
+def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Coefficient KDE Sampling"
+    result = result + '\n' + "# Coeff Label = " + coeff_label
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
+    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+
+    return result    
+
+def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Coefficient KDE Sampling"
+    result = result + '\n' + "# Coeff Label = " + coeff_label
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Sample: max likelihood"
+    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+
+    return result
+
+def _fit_header_txt(prof_path, eofs_path, eof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: Fitting"
+    result = result + '\n' + "# Reference Specification = " + prof_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+
+    return result
+
+def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
+    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
+    result = result + '\n' + "# Method: EOF Perturbation"
+    result = result + '\n' + "# Reference Specification = " + prof_path
+    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
+    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
+    result = result + '\n' + "# Perturbation St Dev (winds) = " + str(stdev) + " m/s"
+    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
+    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+    result = result + '\n' + "#% 0, Z0, km, 0.0"
+    result = result + '\n' + "#% 1, Z, km"
+    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 3, U, m/s"
+    result = result + '\n' + "#% 4, V, m/s"
+    result = result + '\n' + "#% 5, RHO, g/cm3"
+
+    return result
+
+
+################################
+#   EOF Construction Methods   #
+################################
 
 def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, max_alt=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
     """
@@ -368,7 +535,7 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
         return None, None
 
 
-def compute_eofs(A, alts, output_path, eof_cnt=100):
+def compute_eofs(A, alts, output_path, eof_cnt=100, build_info=None):
     """
         Computes the singular value decomposition (SVD)
         of an atmosphere set read into an array by
@@ -386,6 +553,8 @@ def compute_eofs(A, alts, output_path, eof_cnt=100):
             Path to output the SVD results
         eof_cnt: int
             Number of basic functions to save
+        build_info: dict
+            Dictionary containing construction info for output file headers
     """
 
     print('\t' + "Building EOFs using SVD...")
@@ -402,81 +571,69 @@ def compute_eofs(A, alts, output_path, eof_cnt=100):
         raise ValueError(msg)
 
     # compute the differences to fit with EOFs
-    T_vals = A[:, file_len * 0:file_len * 1]
     u_vals = A[:, file_len * 1:file_len * 2]
     v_vals = A[:, file_len * 2:file_len * 3]
+
     d_vals = A[:, file_len * 3:file_len * 4]
     p_vals = A[:, file_len * 4:file_len * 5]
+    c_vals = np.sqrt((gam / 10.0) * p_vals / d_vals)
 
-    T_mean = np.mean(T_vals, axis=0)
+    c_mean = np.mean(c_vals, axis=0)
     u_mean = np.mean(u_vals, axis=0)
     v_mean = np.mean(v_vals, axis=0)
     d_mean = np.mean(d_vals, axis=0)
-    p_mean = np.mean(p_vals, axis=0)
 
-    cT_vals = np.sqrt(gamR * T_vals)
-    cp_vals = np.sqrt((gam / 10.0) * p_vals / d_vals)
-
+    c_diff = c_vals - np.array([c_mean] * c_vals.shape[0])
     u_diff = u_vals - np.array([u_mean] * u_vals.shape[0])
     v_diff = v_vals - np.array([v_mean] * v_vals.shape[0])
-    cT_diff = cT_vals - np.array([np.mean(cT_vals, axis=0)] * cT_vals.shape[0])
-    cp_diff = cp_vals - np.array([np.mean(cp_vals, axis=0)] * cp_vals.shape[0])
 
     # stack diffs and evaluate SVD
-    diffs = np.hstack((cT_diff, cp_diff))
-    diffs = np.hstack((diffs, u_diff))
+    diffs = np.hstack((c_diff, u_diff))
     diffs = np.hstack((diffs, v_diff))
 
     _, singular_vals, eofs = np.linalg.svd(diffs, full_matrices=False)
 
-    # normalize the eofs by the altitude resolution and separate into cT, cp, u, v
-    cT_eofs = eofs[:, file_len * 0:file_len * 1] / np.sqrt(abs(alts[1] - alts[0]))
-    cp_eofs = eofs[:, file_len * 1:file_len * 2] / np.sqrt(abs(alts[1] - alts[0]))
-    u_eofs = eofs[:, file_len * 2:file_len * 3] / np.sqrt(abs(alts[1] - alts[0]))
-    v_eofs = eofs[:, file_len * 3:file_len * 4] / np.sqrt(abs(alts[1] - alts[0]))
+    # normalize the eofs by the altitude resolution and separate into c, u, v
+    c_eofs = eofs[:, file_len * 0:file_len * 1] / np.sqrt(abs(alts[1] - alts[0]))
+    u_eofs = eofs[:, file_len * 1:file_len * 2] / np.sqrt(abs(alts[1] - alts[0]))
+    v_eofs = eofs[:, file_len * 2:file_len * 3] / np.sqrt(abs(alts[1] - alts[0]))
 
     # Write the mean profiles and desired number of EOFs to file
-    file_out = open(output_path + "-singular_values.dat", 'w')
+    sing_vals_out = open(output_path + "-singular_values.dat", 'w')
     for n in range(len(singular_vals)):
-        print(n, '\t', singular_vals[n], file=file_out)
-    file_out.close()
+        print(n, '\t', singular_vals[n], file=sing_vals_out)
+    sing_vals_out.close()
 
-    file_out = open(output_path + "-mean_atmo.dat", 'w')
-    for n in range(len(alts)):
-        print(alts[n], '\t', T_mean[n], '\t', u_mean[n], '\t', v_mean[n], '\t', d_mean[n], '\t', p_mean[n], file=file_out)
-    file_out.close()
+    mean_out = open(output_path + "-mean_atmo.dat", 'w')
+    c_eofs_out = open(output_path + "-snd_spd.eofs", 'w')
+    u_eofs_out = open(output_path + "-zonal_winds.eofs", 'w')
+    v_eofs_out = open(output_path + "-merid_winds.eofs", 'w')
 
-    file_out = open(output_path + "-ideal_gas_snd_spd.eofs", 'w')
+    if build_info is not None:
+        print(_eof_mean_header_txt(build_info), file=mean_out)
+        print(_eof_c_header_txt(build_info), file=c_eofs_out)
+        print(_eof_u_header_txt(build_info), file=u_eofs_out)
+        print(_eof_v_header_txt(build_info), file=v_eofs_out)
+
     for n in range(len(alts)):
-        print(alts[n], '\t', end=' ', file=file_out)
+        print(alts[n], '\t', c_mean[n], '\t', u_mean[n], '\t', v_mean[n], '\t', d_mean[n], file=mean_out)
+        
+        print(alts[n], '\t', end=' ', file=c_eofs_out)
+        print(alts[n], '\t', end=' ', file=u_eofs_out)
+        print(alts[n], '\t', end=' ', file=v_eofs_out)
         for m in range(eof_cnt):
-            print('\t', cT_eofs[m][n], end=' ', file=file_out)
-        print(' ', file=file_out)
-    file_out.close()
+            print('\t', c_eofs[m][n], end=' ', file=c_eofs_out)
+            print('\t', u_eofs[m][n], end=' ', file=u_eofs_out)
+            print('\t', v_eofs[m][n], end=' ', file=v_eofs_out)
+        print(' ', file=c_eofs_out)
+        print(' ', file=u_eofs_out)
+        print(' ', file=v_eofs_out)
 
-    file_out = open(output_path + "-adiabatic_snd_spd.eofs", 'w')
-    for n in range(len(alts)):
-        print(alts[n], '\t', end=' ', file=file_out)
-        for m in range(eof_cnt):
-            print('\t', cp_eofs[m][n], end=' ', file=file_out)
-        print(' ', file=file_out)
-    file_out.close()
+    mean_out.close()
+    c_eofs_out.close()
+    u_eofs_out.close()
+    v_eofs_out.close()
 
-    file_out = open(output_path + "-zonal_winds.eofs", 'w')
-    for n in range(len(alts)):
-        print(alts[n], '\t', end=' ', file=file_out)
-        for m in range(eof_cnt):
-            print('\t', u_eofs[m][n], end=' ', file=file_out)
-        print(' ', file=file_out)
-    file_out.close()
-
-    file_out = open(output_path + "-merid_winds.eofs", 'w')
-    for n in range(len(alts)):
-        print(alts[n], '\t', end=' ', file=file_out)
-        for m in range(eof_cnt):
-            print('\t', v_eofs[m][n], end=' ', file=file_out)
-        print(' ', file=file_out)
-    file_out.close()
 
 
 def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
@@ -508,8 +665,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     print('\t' + "Computing EOF coefficients for profiles...")
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
-    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
     v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
 
@@ -538,29 +694,20 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
             print('\t\t' + "Currently on profile " + str(n + 1) + " of " + str(len(A)) + "...")
 
         # interpolate the profile
-        T_interp = interp1d(A_alts, An[file_len * 0:file_len * 1][A_mask], kind='cubic')
+        c_interp = interp1d(A_alts, np.sqrt((gam / 10.0) * (An[file_len * 4:file_len * 5] / An[file_len * 3:file_len * 4]))[A_mask], kind='cubic')
         u_interp = interp1d(A_alts, An[file_len * 1:file_len * 2][A_mask], kind='cubic')
         v_interp = interp1d(A_alts, An[file_len * 2:file_len * 3][A_mask], kind='cubic')
-        d_interp = interp1d(A_alts, An[file_len * 3:file_len * 4][A_mask], kind='cubic')
-        p_interp = interp1d(A_alts, An[file_len * 4:file_len * 5][A_mask], kind='cubic')
-
+        
         # evaluate differences at the sampled points of the mean/eofs
-        cT_diff = np.sqrt(gamR * T_interp(eof_alts))
-        cT_diff -= np.sqrt(gamR * means[:, 1][eofs_mask])
-
-        cp_diff = np.sqrt(gam / 10.0 * p_interp(eof_alts) / d_interp(eof_alts))
-        cp_diff -= np.sqrt(gam / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
-
+        c_diff = c_interp(eof_alts) - means[:, 1][eofs_mask]
         u_diff = u_interp(eof_alts) - means[:, 2][eofs_mask]
         v_diff = v_interp(eof_alts) - means[:, 3][eofs_mask]
 
         # define the integration to compute the EOF coefficients
         def calc_coeff(n):
-            result = simps(cT_diff * cT_eofs[:, n + 1][eofs_mask], eof_alts)
-            result += simps(cp_diff * cp_eofs[:, n + 1][eofs_mask], eof_alts)
+            result = simps(c_diff * c_eofs[:, n + 1][eofs_mask], eof_alts)
             result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], eof_alts)
             result += simps(v_diff * v_eofs[:, n + 1][eofs_mask], eof_alts)
-
             return result
 
         # run the integration to define coefficients
@@ -681,107 +828,6 @@ def compute_seasonality(overlap_file, file_id=None):
 #   Define methods to sample   #
 #     the coefficient PDFs     #
 ################################
-def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
-    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: Coefficient KDE Sampling"
-    result = result + '\n' + "# Coeff Label = " + coeff_label
-    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
-    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
-    result = result + '\n' + "#% 0, Z0, km, 0.0"
-    result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, degK"
-    result = result + '\n' + "#% 3, U, m/s"
-    result = result + '\n' + "#% 4, V, m/s"
-    result = result + '\n' + "#% 5, RHO, g/cm3"
-    result = result + '\n' + "#% 6, P, mbar"
-
-    return result
-
-def _coeff_smpl_mean_header_txt(coeff_label, eofs_path, eof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
-    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: Coefficient KDE Sampling"
-    result = result + '\n' + "# Coeff Label = " + coeff_label
-    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Sample: mean"
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
-    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
-    result = result + '\n' + "#% 0, Z0, km, 0.0"
-    result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, degK"
-    result = result + '\n' + "#% 3, U, m/s"
-    result = result + '\n' + "#% 4, V, m/s"
-    result = result + '\n' + "#% 5, RHO, g/cm3"
-    result = result + '\n' + "#% 6, P, mbar"
-
-    return result
-    
-
-def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
-    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: Coefficient KDE Sampling"
-    result = result + '\n' + "# Coeff Label = " + coeff_label
-    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Sample: max likelihood"
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
-    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
-    result = result + '\n' + "#% 0, Z0, km, 0.0"
-    result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, degK"
-    result = result + '\n' + "#% 3, U, m/s"
-    result = result + '\n' + "#% 4, V, m/s"
-    result = result + '\n' + "#% 5, RHO, g/cm3"
-    result = result + '\n' + "#% 6, P, mbar"
-
-    return result
-
-def _fit_header_txt(prof_path, eofs_path, eof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
-    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: Fitting"
-    result = result + '\n' + "# Reference Specification = " + prof_path
-    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
-    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
-    result = result + '\n' + "#% 0, Z0, km, 0.0"
-    result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, degK"
-    result = result + '\n' + "#% 3, U, m/s"
-    result = result + '\n' + "#% 4, V, m/s"
-    result = result + '\n' + "#% 5, RHO, g/cm3"
-    result = result + '\n' + "#% 6, P, mbar"
-
-    return result
-
-def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
-    result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
-    result = result + '\n' + "# Method: EOF Perturbation"
-    result = result + '\n' + "# Reference Specification = " + prof_path
-    result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Perturbation St Dev (winds) = " + str(stdev) + " m/s"
-    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
-    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
-    result = result + '\n' + "#% 0, Z0, km, 0.0"
-    result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, degK"
-    result = result + '\n' + "#% 3, U, m/s"
-    result = result + '\n' + "#% 4, V, m/s"
-    result = result + '\n' + "#% 5, RHO, g/cm3"
-    result = result + '\n' + "#% 6, P, mbar"
-
-    return result
-
 def define_coeff_limits(coeff_vals):
     """
         Compute upper and lower bounds for coefficient values
@@ -889,14 +935,13 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
     print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
     print('\t' + "Loading mean profile info and eofs...")
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
-    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
     v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
 
     # use kernel density estimates to define coefficient pdf's
     # and use the mean and span to define the limits for sampling
-    print('\t' + "Mapping coefficidnts onto PDF's using KDE...")
+    print('\t' + "Mapping coefficients onto PDF's using KDE...")
     kernels, lims = [0] * eof_cnt, np.empty((eof_cnt, 2))
     for eof_id in range(eof_cnt):
         kernels[eof_id] = gaussian_kde(coeffs[:, eof_id])
@@ -904,27 +949,24 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
 
     # Generate prof_cnt random atmosphere samples
     print('\t' + "Generating sample atmosphere profiles...")
-    cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gam / 10.0 * means[:, 5] / means[:, 4])
-
     sampled_profs = np.array([np.copy(means)] * prof_cnt)
-    sampled_cTs = np.array([cT0] * prof_cnt)
-    sampled_cps = np.array([cp0] * prof_cnt)
 
     for eof_id in range(eof_cnt):
         print('\t\t' + "Sampling EOF coefficient for eof_id = " + str(eof_id) + "...")
         sampled_coeffs = draw_from_pdf(kernels[eof_id].pdf, lims[eof_id], size=prof_cnt)
 
         for pn in range(prof_cnt):
-            sampled_cTs[pn] = sampled_cTs[pn] + sampled_coeffs[pn] * cT_eofs[:, eof_id + 1]
-            sampled_cps[pn] = sampled_cps[pn] + sampled_coeffs[pn] * cp_eofs[:, eof_id + 1]
-
+            sampled_profs[pn][:, 1] = sampled_profs[pn][:, 1] + sampled_coeffs[pn] * c_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
 
-    sampled_profs[:, :, 1] = sampled_cTs**2 / gamR
-    sampled_profs[:, :, 5] = sampled_profs[:, :, 4] * sampled_cps**2 / (gam / 10.0)
+            # Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])
+            temp = np.zeros_like(sampled_profs[pn][:, 0])
+            for j in range(1, len(sampled_profs[pn])):
+                temp[j] = simps(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0)
 
+            sampled_profs[pn][:, 4] = sampled_profs[pn][0][4] * (sampled_profs[pn][0][1] / sampled_profs[pn][:, 1])**2 * np.exp(-9.8 * gam * temp)
+    
     # save the individual profiles and the mean profile
     print('\t' + "Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
@@ -952,8 +994,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
     # load mean profile and eofs
     print('\t' + "Loading mean profile info and eofs...")
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
-    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
     v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
 
@@ -964,27 +1005,22 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
     print('\t' + "Determining maximum likelihood coefficient values...")
 
     # Generate the profile fit
-    cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gam / 10.0 * means[:, 5] / means[:, 4])
-
     ml_prof = np.copy(means)
-    cT_ml = np.copy(cT0)
-    cp_ml = np.copy(cp0)
     for n in range(eof_cnt):
         kernel = gaussian_kde(coeffs[:, n])
         lims = define_coeff_limits(coeffs[:, n])
 
-        c_vals = np.linspace(lims[0], lims[1], 5001)
-        coeff_ml = c_vals[np.argmax(kernel.pdf(c_vals))]
+        coeff_vals = np.linspace(lims[0], lims[1], 5001)
+        coeff_ml = coeff_vals[np.argmax(kernel.pdf(coeff_vals))]
 
-        cT_ml = cT_ml + coeff_ml * cT_eofs[:, n + 1]
-        cp_ml = cp_ml + coeff_ml * cp_eofs[:, n + 1]
-
+        ml_prof[:, 1] = ml_prof[:, 1] + coeff_ml * c_eofs[:, n + 1]
         ml_prof[:, 2] = ml_prof[:, 2] + coeff_ml * u_eofs[:, n + 1]
         ml_prof[:, 3] = ml_prof[:, 3] + coeff_ml * v_eofs[:, n + 1]
 
-    ml_prof[:, 1] = cT_ml**2 / gamR
-    ml_prof[:, 5] = ml_prof[:, 4] * cp_ml**2 / (gam / 10.0)
+    temp = np.zeros_like(ml_prof[:, 0])
+    for j in range(1, len(ml_prof)):
+        temp[j] = simps(1.0 / ml_prof[:j, 1]**2, ml_prof[:j, 0] * 1000.0)
+    ml_prof[:, 4] = ml_prof[0][4] * (ml_prof[0][1] / ml_prof[:, 1])**2 * np.exp(-9.8 * gam * temp)
 
     print('\t' + "Writing maximum likelihood atmosphere to file...", '\n')
     np.savetxt(output_path + "-maximum_likelihood.met", ml_prof, header=_coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt), comments='')
@@ -1017,8 +1053,7 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
 
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
-    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
     v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
 
@@ -1034,52 +1069,35 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     prof_mask = np.logical_and(alt_min <= profile[:, 0], profile[:, 0] <= alt_max)
 
     # interpolate the profile and evaluate differences at the sampled points of the mean/eofs
-    T_interp = interp1d(profile[:, 0][prof_mask], profile[:, 1][prof_mask], kind='cubic')
+    c_interp = interp1d(profile[:, 0][prof_mask], np.sqrt((gam / 10.0) * (profile[:, 5] / profile[:, 4]))[prof_mask], kind='cubic')
     u_interp = interp1d(profile[:, 0][prof_mask], profile[:, 2][prof_mask], kind='cubic')
     v_interp = interp1d(profile[:, 0][prof_mask], profile[:, 3][prof_mask], kind='cubic')
-    d_interp = interp1d(profile[:, 0][prof_mask], profile[:, 4][prof_mask], kind='cubic')
-    p_interp = interp1d(profile[:, 0][prof_mask], profile[:, 5][prof_mask], kind='cubic')
 
-    cT_diff = np.sqrt(gamR * T_interp(means[:, 0][eofs_mask]))
-    cT_diff -= np.sqrt(gamR * means[:, 1][eofs_mask])
-
-    cp_diff = np.sqrt(gam / 10.0 * p_interp(means[:, 0][eofs_mask]) / d_interp(means[:, 0][eofs_mask]))
-    cp_diff -= np.sqrt(gam / 10.0 * means[:, 5][eofs_mask] / means[:, 4][eofs_mask])
-
+    c_diff = c_interp(means[:, 0][eofs_mask]) - means[:, 1][eofs_mask]
     u_diff = u_interp(means[:, 0][eofs_mask]) - means[:, 2][eofs_mask]
     v_diff = v_interp(means[:, 0][eofs_mask]) - means[:, 3][eofs_mask]
 
     # define the integration to compute the EOF coefficients
     def calc_coeff(n):
-        result = simps(cT_diff * cT_eofs[:, n + 1][eofs_mask], cT_eofs[:, 0][eofs_mask])
-        result += simps(cp_diff * cp_eofs[:, n + 1][eofs_mask], cp_eofs[:, 0][eofs_mask])
+        result = simps(c_diff * c_eofs[:, n + 1][eofs_mask], c_eofs[:, 0][eofs_mask])
         result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], u_eofs[:, 0][eofs_mask])
         result += simps(v_diff * v_eofs[:, n + 1][eofs_mask], v_eofs[:, 0][eofs_mask])
 
         return result
 
     # run the integration to define coefficients
-    coeffs = np.empty(eof_cnt)
-    for n in range(eof_cnt):
-        coeffs[n] = calc_coeff(n)
-
-    # Generate the profile fit
-    cT0 = np.sqrt(gamR * means[:, 1])
-    cp0 = np.sqrt(gam / 10.0 * means[:, 5] / means[:, 4])
+    coeffs = np.array([calc_coeff(n) for n in range(eof_cnt)])
 
     fit = np.copy(means)
-    cT_fit = np.copy(cT0)
-    cp_fit = np.copy(cp0)
-
     for n in range(eof_cnt):
-        cT_fit = cT_fit + coeffs[n] * cT_eofs[:, n + 1]
-        cp_fit = cp_fit + coeffs[n] * cp_eofs[:, n + 1]
-
+        fit[:, 1] = fit[:, 1] + coeffs[n] * c_eofs[:, n + 1]
         fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
         fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
 
-    fit[:, 1] = cT_fit**2 / gamR
-    fit[:, 5] = fit[:, 4] * cp_fit**2 / (gam / 10.0)
+    temp = np.zeros_like(fit[:, 0])
+    for j in range(1, len(fit)):
+        temp[j] = simps(1.0 / fit[:j, 1]**2, fit[:j, 0] * 1000.0)
+    fit[:, 4] = fit[0][4] * (fit[0][1] / fit[:, 1])**2 * np.exp(-9.8 * gam * temp)
 
     np.savetxt(output_path, fit, header=_fit_header_txt(prof_path, eofs_path, eof_cnt), comments='')
 
@@ -1113,8 +1131,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
     print("Generating EOF perturbations to " + prof_path + "...")
     ref_atmo = np.loadtxt(prof_path)
 
-    cT_eofs = np.loadtxt(eofs_path + "-ideal_gas_snd_spd.eofs")
-    cp_eofs = np.loadtxt(eofs_path + "-adiabatic_snd_spd.eofs")
+    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
     u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
     v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
     sing_vals = np.loadtxt(eofs_path + "-singular_values.dat")
@@ -1129,24 +1146,21 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
     z_vals = np.copy(ref_atmo[:, 0][ref_mask])
 
     # interpolate the eofs and use random coefficients to generate perturbations
-    cT_perturb_all = np.empty((sample_cnt, len(z_vals)))
-    cp_perturb_all = np.empty((sample_cnt, len(z_vals)))
+    c_perturb_all = np.empty((sample_cnt, len(z_vals)))
     u_perturb_all = np.empty((sample_cnt, len(z_vals)))
     v_perturb_all = np.empty((sample_cnt, len(z_vals)))
 
     for m in range(sample_cnt):
         wts = np.empty(eof_cnt)
 
-        cT_perturb = np.zeros((eof_cnt, len(z_vals)))
-        cp_perturb = np.zeros((eof_cnt, len(z_vals)))
+        c_perturb = np.zeros((eof_cnt, len(z_vals)))
         u_perturb = np.zeros((eof_cnt, len(z_vals)))
         v_perturb = np.zeros((eof_cnt, len(z_vals)))
 
         for j, n in enumerate(np.random.choice(range(eof_max), eof_cnt, replace=False)):
             coeff_val = np.random.randn()
 
-            cT_perturb[j] = coeff_val * interp1d(cT_eofs[:, 0][eof_mask], cT_eofs[:, n + 1][eof_mask])(z_vals)
-            cp_perturb[j] = coeff_val * interp1d(cp_eofs[:, 0][eof_mask], cp_eofs[:, n + 1][eof_mask])(z_vals)
+            c_perturb[j] = coeff_val * interp1d(c_eofs[:, 0][eof_mask], c_eofs[:, n + 1][eof_mask])(z_vals)
             u_perturb[j] = coeff_val * interp1d(u_eofs[:, 0][eof_mask], u_eofs[:, n + 1][eof_mask])(z_vals)
             v_perturb[j] = coeff_val * interp1d(v_eofs[:, 0][eof_mask], v_eofs[:, n + 1][eof_mask])(z_vals)
 
@@ -1157,29 +1171,27 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
 
             wts[j] *= (sing_vals[n, 1] / sing_vals[0, 1])**sing_val_wt_pow
 
-        cT_perturb_all[m] = np.average(cT_perturb, axis=0, weights=wts)
-        cp_perturb_all[m] = np.average(cp_perturb, axis=0, weights=wts)
+        c_perturb_all[m] = np.average(c_perturb, axis=0, weights=wts)
         u_perturb_all[m] = np.average(u_perturb, axis=0, weights=wts)
         v_perturb_all[m] = np.average(v_perturb, axis=0, weights=wts)
 
     scaling = stdev / (np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
 
     for m in range(sample_cnt):
-        T_vals = np.copy(ref_atmo[:, 1][ref_mask])
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
         v_vals = np.copy(ref_atmo[:, 3][ref_mask])
+
         d_vals = np.copy(ref_atmo[:, 4][ref_mask])
         p_vals = np.copy(ref_atmo[:, 5][ref_mask])
+        c_vals = np.sqrt((gam / 10.0) * (p_vals / d_vals))
 
-        cT_vals = np.sqrt(gamR * T_vals)
-        cp_vals = np.sqrt(gam / 10.0 * p_vals / d_vals)
-
-        cT_vals = cT_vals + cT_perturb_all[m] * scaling
-        cp_vals = cp_vals + cp_perturb_all[m] * scaling
+        c_vals = c_vals + c_perturb_all[m] * scaling
         u_vals = u_vals + u_perturb_all[m] * scaling
         v_vals = v_vals + v_perturb_all[m] * scaling
 
-        T_vals = cT_vals**2 / gamR
-        p_vals = d_vals * cp_vals**2 / (gam / 10.0)
+        temp = np.zeros_like(c_vals)
+        for j in range(1, len(c_vals)):
+            temp[j] = simps(1.0 / c_vals[:j]**2, ref_atmo[:, 0][ref_mask][:j] * 1000.0)
+        d_vals = d_vals[0] * (c_vals[0] / c_vals)**2 * np.exp(-9.8 * gam * temp)
 
-        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, header=_perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, m, sample_cnt), comments='')
+        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, c_vals, u_vals, v_vals, d_vals)).T, header=_perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, m, sample_cnt), comments='')

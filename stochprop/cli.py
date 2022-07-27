@@ -26,7 +26,8 @@ def parse_option_list(input):
     else:
         if "," in input:
             # remove white space and split by commas
-            return input[1:-1].replace(" ", "").split(",")
+            return input.replace(" ", "").strip(' []()').split(',')
+            # return input[1:-1].replace(" ", "").split(",")
         else:
             return input
 
@@ -92,7 +93,10 @@ def eof_build(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selection, w
     A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True, max_alt=max_alt)
     if save_datetime:
         np.save(eofs_path + ".datetimes", datetimes)
-    eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt)
+
+    build_info = {'atmo_dir': atmo_dir, 'month_selection' : month_selection,
+                    'year_selection' : year_selection, 'week_selection' : week_selection}
+    eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt, build_info=build_info)
     
 
 @click.command('coeffs', short_help="Compute EOF coefficients")
