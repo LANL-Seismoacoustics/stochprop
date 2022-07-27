@@ -35,7 +35,7 @@ plt.rcParams.update({'font.size': 18})
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zcuvd"):
     """
         Run the infraga -prop algorithm to compute path geometry
         statistics for BISL using a suite of specifications
@@ -100,7 +100,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                         if geom == "sph":
                             command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
                         command = command + " src_alt=" + str(src_loc[2])
-                        command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
+                        command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
                         command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" + " > /dev/null"
 
                         subprocess.call(command, shell=True)
@@ -221,6 +221,9 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
         if clean_up:
             subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm", shell=True)
             subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.nm", shell=True)
+
+
+
 
 
 # ############################ #
