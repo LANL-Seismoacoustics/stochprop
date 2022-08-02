@@ -946,6 +946,11 @@ class TLossModel(object):
                         kernel = gaussian_kde(masked_tloss)
                         pdf_vals[az_index][nr] = kernel.evaluate(tloss_vals)
 
+                    env_stdev = 1.5
+                    sph_spreading = 10.0 * np.log(rng_val**(-1.0 / 4.0))
+                    envelope = 1.0 / (1.0 + np.exp((tloss_vals - (sph_spreading + 4.0 * env_stdev)) / env_stdev))
+                    pdf_vals[az_index][nr] = pdf_vals[az_index][nr] * envelope
+
                     if show_fits:
                         ax2.scatter([rng_val] * len(tloss_vals), tloss_vals, c=pdf_vals[az_index][nr], cmap=cm.nipy_spectral_r, marker='o', s=[12.5] * len(tloss_vals), alpha=0.5, edgecolor='none')
                         plt.pause(0.001)
