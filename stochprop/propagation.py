@@ -939,11 +939,15 @@ class TLossModel(object):
                 for nr, rng_val in enumerate(output_rngs):
                     nearest_rng = rngs[np.argmin(abs(rngs - rng_val))]
                     masked_tloss = tloss[np.logical_and(az_mask, rngs==nearest_rng)] - tloss_norm
-
+                    
                     if np.std(masked_tloss) < 0.05:
                         pdf_vals[az_index][nr] = norm.pdf(tloss_vals, loc=np.mean(masked_tloss), scale=0.05)
                     else:
-                        kernel = gaussian_kde(masked_tloss)
+                        masked_tloss_mean = np.mean(masked_tloss)
+                        masked_tloss_stdev = np.std(masked_tloss)
+                        outlier_mask = abs(masked_tloss - masked_tloss_mean) < 4.0 * masked_tloss_stdev
+
+                        kernel = gaussian_kde(masked_tloss[outlier_mask])
                         pdf_vals[az_index][nr] = kernel.evaluate(tloss_vals)
 
                     TL1 = 10.0 * np.log(rng_val**(-1.0 / 4.0))
