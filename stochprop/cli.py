@@ -285,8 +285,9 @@ def eof_sample(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
 @click.option("--month-selection", help="Limit analysis to specific month(s) (default: None)", default=None)
 @click.option("--week-selection", help="Limit analysis to specific week(s) (default: None)", default=None)
 @click.option("--year-selection", help="Limit analysis to specific year(s) (default: None)", default=None)
+@click.option("--yday-selection", help="Limit analysis to specific day(s) of the year (default: None)", default=None)
 @click.option("--max-alt", help="Maximum altitude for trimming data (default: None)", default=None)
-def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_selection, week_selection, year_selection, max_alt):
+def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_selection, week_selection, year_selection, yday_selection, max_alt):
     '''
     \b
     stochprop prop ess-ratio
@@ -294,8 +295,8 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
     \b
     Example Usage:
     \t stochprop prop ess-ratio --atmo-dir profs/ --results-path example
-    \t stochprop prop ess-ratio --atmo-dir profs/ --results-path example_01 --month-selection '[01]'
-    
+    \t stochprop prop ess-ratio --atmo-dir profs/ --results-path example_jan --azimuth 90.0 --month-selection '01'
+    \t stochprop prop ess-ratio --atmo-dir profs/ --results-path eaxmple_yday_01 --azimuth 90.0 --yday-selection '[001, 002]'    
     '''
 
     click.echo("")
@@ -311,6 +312,7 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
     months_list = parse_option_list(month_selection)
     weeks_list = parse_option_list(week_selection)
     years_list = parse_option_list(year_selection)
+    yday_list = parse_option_list(yday_selection)
 
     click.echo('\n' + "Run summary:")
     click.echo("  Source directory: " + str(atmo_dir))
@@ -322,6 +324,8 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
         click.echo("  Limited weeks: " + str(weeks_list))
     if years_list is not None:
         click.echo("  Limited years: " + str(years_list))
+    if yday_selection is not None:
+        click.echo("  Limited days: " + str(yday_list))
     if max_alt is not None:
         click.echo("  max_alt: " + str(max_alt))
         max_alt = float(max_alt)
@@ -329,9 +333,9 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
     click.echo("")
 
     click.echo("Building effective sound speed ratio information...")
-    A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True, max_alt=max_alt)
+    A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, ydays=yday_list, return_datetime=True, max_alt=max_alt)
 
-    click.echo('\t' + "Building effective sound speed ratio information...")
+    click.echo('\t' + "Computing effective sound speed ratio and outputing ...")
     eff_sndspd_ratio = np.empty((len(datetimes), len(z0)))
     for n, An in enumerate(A):
         u = An[1 * len(z0):2 * len(z0)]
