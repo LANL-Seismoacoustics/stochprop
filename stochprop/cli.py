@@ -16,6 +16,9 @@ import fnmatch
 
 import numpy as np
 
+import matplotlib.pyplot as plt 
+import matplotlib.cm as cm 
+
 from . import eofs
 from . import propagation
 from . import gravity_waves as grav
@@ -349,6 +352,71 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
     np.save(results_path + ".z_vals", z0)
     np.save(results_path + ".date_info", datetimes)
     np.save(results_path + ".c_eff_ratio", eff_sndspd_ratio)
+
+
+@click.command('ess-season-stats', short_help="Compute seasonal stats from the effective sound speed ratio")
+@click.option("--atmo-dir", help="Directory of atmospheric specifications (required)", prompt="Atmospheric specifications: ")
+@click.option("--results-path", help="Output path and prefix (required)", prompt="Output path: ")
+@click.option("--atmo-pattern", help="Specification file pattern (default: '*.dat')", default='*.dat')
+@click.option("--atmo-format", help="Specification format (default: 'zTuvdp')", default='zTuvdp')
+def season_stats(atmo_dir, results_path, atmo_pattern, atmo_format):
+    '''
+    \b
+    stochprop prop season-stats
+    -----------------------
+    \b
+    Example Usage:
+    \t stochprop prop season-stats --atmo-dir profs/ --results-path example
+    '''
+
+    click.echo("")
+    click.echo("###################################")
+    click.echo("##                               ##")
+    click.echo("##           stochprop           ##")
+    click.echo("##      Propagation Methods      ##")
+    click.echo("##   ESS Ratio Sesonal Analysis  ##")
+    click.echo("##                               ##")
+    click.echo("###################################")
+    click.echo("")  
+
+    click.echo('\n' + "Run summary:")
+    click.echo("  Source directory: " + str(atmo_dir))
+    click.echo("  Specification pattern: " + str(atmo_pattern))
+    click.echo("  Specification format: " + str(atmo_format))
+    click.echo("  Output path: " + str(results_path))
+    click.echo("")
+
+
+    ydays = ["{:03d}".format(m + 1) for m in range(365)]
+    weeks = ["{:02d}".format(m + 1) for m in range(52)]
+    
+    for yday in ydays:
+        A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, ydays=yday, return_datetime=True)
+
+        eff_sndspd_ratio = np.empty((4, len(datetimes), len(z0)))
+        for n, An in enumerate(A):
+            u = An[1 * len(z0):2 * len(z0)]
+            v = An[2 * len(z0):3 * len(z0)]
+            d = An[3 * len(z0):4 * len(z0)]
+            p = An[4 * len(z0):5 * len(z0)]
+
+            c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(180.0)) * u + np.cos(np.radians(180.0)) * v
+            eff_sndspd_ratio[0][n] = c_eff / c_eff[0]
+
+            c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(90.0)) * u + np.cos(np.radians(90.0)) * v
+            eff_sndspd_ratio[1][n] = c_eff / c_eff[0]
+            
+            c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(0.0)) * u + np.cos(np.radians(0.0)) * v
+            eff_sndspd_ratio[2][n] = c_eff / c_eff[0]
+
+            c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(-90.0)) * u + np.cos(np.radians(-90.0)) * v
+            eff_sndspd_ratio[3][n] = c_eff / c_eff[0]
+
+        plt.scatter([float(yday) / 365.0] * len(z0[z0 < 100.0]), z0[z0 < 100.0], c=np.mean(eff_sndspd_ratio[0], axis=0)[z0 < 100.0], cmap=cm.Blues, vmin=1.0, vmax=1.1)
+        plt.scatter([float(yday) / 365.0] * len(z0[z0 < 100.0]), z0[z0 < 100.0], c=np.mean(eff_sndspd_ratio[2], axis=0)[z0 < 100.0], cmap=cm.Reds, vmin=1.0, vmax=1.1)
+    
+    plt.show()
+
 
 
 @click.command('build-pgm', short_help="Build a path geometry model (PGM)")
