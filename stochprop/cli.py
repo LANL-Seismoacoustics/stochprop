@@ -11,6 +11,7 @@
 
 from email.policy import default
 import os
+from xml.etree.ElementInclude import include
 import click
 import fnmatch
 
@@ -30,8 +31,8 @@ def parse_option_list(input):
         return input
     else:
         if "," in input:
-            # remove white space and split by commas
-            return input[1:-1].replace(" ", "").split(",")
+            # remove white space and brackets/parentheses, then split by commas
+            return input.replace(" ", "").strip('([])').split(',')
         else:
             return input
 
@@ -358,11 +359,12 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
 
 @click.command('season-stats', short_help="Compute seasonal stats from the effective sound speed ratio")
 @click.option("--atmo-dir", help="Directory of atmospheric specifications (required)", prompt="Atmospheric specifications: ")
-@click.option("--results-path", help="Output path and prefix (required)", prompt="Output path: ")
+@click.option("--output-path", help="Output path and prefix", default=None)
 @click.option("--atmo-pattern", help="Specification file pattern (default: '*.dat')", default='*.dat')
 @click.option("--atmo-format", help="Specification format (default: 'zTuvdp')", default='zTuvdp')
 @click.option("--year-selection", help="Limit analysis to specific year(s) (default: None)", default=None)
-def season_stats(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection):
+@click.option("--include-NS", help="Option to include north/south analysis", default=False)
+def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selection, include_ns):
     '''
     \b
     stochprop prop season-stats
@@ -388,20 +390,42 @@ def season_stats(atmo_dir, results_path, atmo_pattern, atmo_format, year_selecti
     click.echo("  Source directory: " + str(atmo_dir))
     click.echo("  Specification pattern: " + str(atmo_pattern))
     click.echo("  Specification format: " + str(atmo_format))
-    click.echo("  Output path: " + str(results_path))
+    if output_path is not None:
+        click.echo("  Output path: " + str(output_path))
     if years_list is not None:
         click.echo("  Limited years: " + str(years_list))
+    if include_ns:
+        click.echo("  Include NS: True")
     click.echo("")
 
-    weeks = ["{:02d}".format(m + 1) for m in range(52)]
-    
     A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, years=years_list, return_datetime=True)
 
-    print("Computing effective sound speed ratio for each day-of-year...")
-    for n, yday in enumerate(["{:03d}".format(m + 1) for m in range(365)]):
+    print('\n' + "Computing effective sound speed ratio for each day-of-year...")
+    f1, ax1 = plt.subplots(2, figsize=(12, 6), sharex=True)
+    ax1[0].set_xlim(0, 52)
+    ax1[1].set_ylim(0, 100)
+    ax1[0].set_xticks(range(0, 52, 8))
+    ax1[0].set_ylabel("Peak ESS Ratio")
+    ax1[1].set_xlabel("Week of Year")
+    ax1[1].set_ylabel("Altitude [km]")
+    ax1[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Eastward (blue), Westward (red)")
 
-        yday_mask = [abs(n - dt_n.astype(datetime).timetuple().tm_yday) < 2 for dt_n in datetimes]
-        eff_sndspd_ratio = np.empty((2, len(datetimes[yday_mask]), len(z0)))
+    if include_ns:
+        f2, ax2 = plt.subplots(2, figsize=(12, 6), sharex=True)
+        ax2[0].set_xlim(0, 52)
+        ax2[1].set_ylim(0, 100)
+        ax2[0].set_xticks(range(0, 52, 8))
+        ax2[0].set_ylabel("Peak ESS Ratio")
+        ax2[1].set_xlabel("Week of Year")
+        ax2[1].set_ylabel("Altitude [km]")
+        ax2[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Northward (purple), Southward (orange)")
+
+
+    eff_sndspd_pk = np.empty((4, 365))
+    for j, yday in enumerate(["{:03d}".format(m + 1) for m in range(365)]):
+
+        yday_mask = [abs(j - dt_n.astype(datetime).timetuple().tm_yday) < 3 for dt_n in datetimes]
+        eff_sndspd_ratio = np.empty((4, len(datetimes[yday_mask]), len(z0)))
         for n, An in enumerate(A[yday_mask]):
             u = An[1 * len(z0):2 * len(z0)]
             v = An[2 * len(z0):3 * len(z0)]
@@ -414,17 +438,131 @@ def season_stats(atmo_dir, results_path, atmo_pattern, atmo_format, year_selecti
             c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(-90.0)) * u + np.cos(np.radians(-90.0)) * v
             eff_sndspd_ratio[1][n] = c_eff / c_eff[0]
 
-        plt.xlim(0, 52)
+            if include_ns:
+                c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(0.0)) * u + np.cos(np.radians(0.0)) * v
+                eff_sndspd_ratio[2][n] = c_eff / c_eff[0]
+                
+                c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(180.0)) * u + np.cos(np.radians(180.0)) * v
+                eff_sndspd_ratio[3][n] = c_eff / c_eff[0]
 
         plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[0], axis=0) > 1.0)
         if np.sum(plot_mask) > 1:
-            plt.scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[0], axis=0)[plot_mask], s = 1.0, cmap=cm.bwr_r, vmin=0.9, vmax=1.1)
+            ax1[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[0], axis=0)[plot_mask], s=1.0, cmap=cm.seismic_r, vmin=0.9, vmax=1.1)
 
         plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[1], axis=0) > 1.0)
         if np.sum(plot_mask) > 1:
-            plt.scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[1], axis=0)[plot_mask], s = 1.0, cmap=cm.bwr, vmin=0.9, vmax=1.1)
-    
+            ax1[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[1], axis=0)[plot_mask], s=1.0, cmap=cm.seismic, vmin=0.9, vmax=1.1)
+
+        for k in range(2):
+            eff_sndspd_pk[k][j] = np.max(np.mean(eff_sndspd_ratio[k], axis=0)[np.logical_and(35.0 <= z0, z0 <= 70.0)])    
+
+        if include_ns:
+            plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[2], axis=0) > 1.0)
+            if np.sum(plot_mask) > 1:
+                ax2[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[2], axis=0)[plot_mask], s=1.0, cmap=cm.PuOr, vmin=0.9, vmax=1.1)
+
+            plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[3], axis=0) > 1.0)
+            if np.sum(plot_mask) > 1:
+                ax2[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[3], axis=0)[plot_mask], s=1.0, cmap=cm.PuOr_r, vmin=0.9, vmax=1.1)
+
+            for k in range(2, 4):
+                eff_sndspd_pk[k][j] = np.max(np.mean(eff_sndspd_ratio[k], axis=0)[np.logical_and(35.0 <= z0, z0 <= 70.0)])    
+
+
+
+    # Output summary of ess_ratio unity crossings
+    print('\n' + "Eastward waveguide changes...")
+    for j in range(364):
+        if (eff_sndspd_pk[0][j] - 1.0) * (eff_sndspd_pk[0][j + 1] - 1) <= 0.0:
+            if eff_sndspd_pk[0][j] > eff_sndspd_pk[0][j + 1]:
+                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+            else:
+                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+
+    print('\n' + "Westward waveguide changes...")
+    for j in range(364):
+        if (eff_sndspd_pk[1][j] - 1.0) * (eff_sndspd_pk[1][j + 1] - 1) <= 0.0:
+            if eff_sndspd_pk[1][j] > eff_sndspd_pk[1][j + 1]:
+                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+            else:
+                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+    if include_ns:
+        print('\n' + "Northward waveguide changes...")
+        for j in range(364):
+            if (eff_sndspd_pk[2][j] - 1.0) * (eff_sndspd_pk[2][j + 1] - 1) <= 0.0:
+                if eff_sndspd_pk[2][j] > eff_sndspd_pk[2][j + 1]:
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+                else:
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+
+        print('\n' + "Southward waveguide changes...")
+        for j in range(364):
+            if (eff_sndspd_pk[3][j] - 1.0) * (eff_sndspd_pk[3][j + 1] - 1) <= 0.0:
+                if eff_sndspd_pk[3][j] > eff_sndspd_pk[3][j + 1]:
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+                else:
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")")
+    print('')
+
+    ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[0], '-b', linewidth=2.5)
+    ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[1], '-r', linewidth=2.5)
+    ax1[0].axhline(1.0, color='k', linestyle='dashed')
+
+    if include_ns:
+        ax2[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[2], color='purple', linewidth=2.5)
+        ax2[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[3], color='orange', linewidth=2.5)
+        ax2[0].axhline(1.0, color='k', linestyle='dashed')
+
+    if output_path is not None:
+        output_file = open(output_path + ".summary.txt", 'w')
+        print("Summary of 'stochprop prop season-stats' analysis", file=output_file)
+        print("  Source directory: " + str(atmo_dir), file=output_file)
+        print("  Specification pattern: " + str(atmo_pattern), file=output_file)
+        print("  Specification format: " + str(atmo_format), file=output_file)
+        if years_list is not None:
+            print("  Limited years: " + str(years_list), file=output_file)
+
+        print('\n' + "Eastward waveguide changes...", file=output_file)
+        for j in range(364):
+            if (eff_sndspd_pk[0][j] - 1.0) * (eff_sndspd_pk[0][j + 1] - 1) <= 0.0:
+                if eff_sndspd_pk[0][j] > eff_sndspd_pk[0][j + 1]:
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+                else:
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+
+        print('\n' + "Westward waveguide changes...", file=output_file)
+        for j in range(364):
+            if (eff_sndspd_pk[1][j] - 1.0) * (eff_sndspd_pk[1][j + 1] - 1) <= 0.0:
+                if eff_sndspd_pk[1][j] > eff_sndspd_pk[1][j + 1]:
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+                else:
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+        if include_ns:
+            print('\n' + "Northward waveguide changes...", file=output_file)
+            for j in range(364):
+                if (eff_sndspd_pk[2][j] - 1.0) * (eff_sndspd_pk[2][j + 1] - 1) <= 0.0:
+                    if eff_sndspd_pk[2][j] > eff_sndspd_pk[2][j + 1]:
+                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+                    else:
+                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+
+            print('\n' + "Southward waveguide changes...", file=output_file)
+            for j in range(364):
+                if (eff_sndspd_pk[3][j] - 1.0) * (eff_sndspd_pk[3][j + 1] - 1) <= 0.0:
+                    if eff_sndspd_pk[3][j] > eff_sndspd_pk[3][j + 1]:
+                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+                    else:
+                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ")", file=output_file)
+
+        output_file.close()
+
+        f1.savefig(output_path + ".ess-ratio.png", dpi=300)
+        if include_ns:
+            f2.savefig(output_path + ".ess-ratio.NS.png", dpi=300)
+
     plt.show()
+
+
 
 
 
