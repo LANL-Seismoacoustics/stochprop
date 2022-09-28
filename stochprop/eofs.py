@@ -211,7 +211,6 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
                         file_test.close()
                         break
 
-
             include_check = True 
             if years is not None:
                 if year not in years:

@@ -30,9 +30,22 @@ def parse_option_list(input):
     if input is None:
         return input
     else:
+
         if "," in input:
             # remove white space and brackets/parentheses, then split by commas
-            return input.replace(" ", "").strip('([])').split(',')
+            temp_list = []
+            for item in input.replace(" ", "").strip('([])').split(','):
+                if ':' in item:
+                    str_format = "%0" + str(len(item.strip('([])').split(":")[0])) + "d"
+                    temp_list = temp_list + [str_format % val for val in range(int(item.strip('([])').split(":")[0]),
+                                                                                int(item.strip('([])').split(":")[1]) + 1)]
+                else:
+                    temp_list = temp_list + [item]
+            return temp_list
+        elif ':' in input:
+            str_format = "%0" + str(len(input.strip('([])').split(":")[0])) + "d"
+            return [str_format % val for val in range(int(input.strip('([])').split(":")[0]),
+                                                        int(input.strip('([])').split(":")[1]) + 1)]
         else:
             return input
 
@@ -359,12 +372,12 @@ def ess_ratio(atmo_dir, results_path, azimuth, atmo_pattern, atmo_format, month_
 
 @click.command('season-stats', short_help="Compute seasonal stats from the effective sound speed ratio")
 @click.option("--atmo-dir", help="Directory of atmospheric specifications (required)", prompt="Atmospheric specifications: ")
-@click.option("--output-path", help="Output path and prefix", default=None)
+@click.option("--results-path", help="Output path and prefix", default=None)
 @click.option("--atmo-pattern", help="Specification file pattern (default: '*.dat')", default='*.dat')
 @click.option("--atmo-format", help="Specification format (default: 'zTuvdp')", default='zTuvdp')
 @click.option("--year-selection", help="Limit analysis to specific year(s) (default: None)", default=None)
 @click.option("--include-NS", help="Option to include north/south analysis", default=False)
-def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selection, include_ns):
+def season_stats(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection, include_ns):
     '''
     \b
     stochprop prop season-stats
@@ -390,8 +403,8 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
     click.echo("  Source directory: " + str(atmo_dir))
     click.echo("  Specification pattern: " + str(atmo_pattern))
     click.echo("  Specification format: " + str(atmo_format))
-    if output_path is not None:
-        click.echo("  Output path: " + str(output_path))
+    if results_path is not None:
+        click.echo("  Output path: " + str(results_path))
     if years_list is not None:
         click.echo("  Limited years: " + str(years_list))
     if include_ns:
@@ -399,6 +412,12 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
     click.echo("")
 
     A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, years=years_list, return_datetime=True)
+    for line in open(atmo_dir + [file for file in os.listdir(atmo_dir) if fnmatch.fnmatch(file, atmo_pattern)][0], 'r'):
+        if "Ground Height" in line:
+            grnd_ht = float(line[18:])
+            break
+    grnd_index = np.argmin(abs(z0 - grnd_ht))
+    click.echo('\t\t' + "Extracted ground elevation: " + str(grnd_ht))
 
     print('\n' + "Computing effective sound speed ratio for each day-of-year...")
     f1, ax1 = plt.subplots(2, figsize=(12, 6), sharex=True)
@@ -420,7 +439,6 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
         ax2[1].set_ylabel("Altitude [km]")
         ax2[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Northward (purple), Southward (orange)")
 
-
     eff_sndspd_pk = np.empty((4, 365))
     for j, yday in enumerate(["{:03d}".format(m + 1) for m in range(365)]):
 
@@ -433,17 +451,17 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
             p = An[4 * len(z0):5 * len(z0)]
 
             c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(90.0)) * u + np.cos(np.radians(90.0)) * v
-            eff_sndspd_ratio[0][n] = c_eff / c_eff[0]
+            eff_sndspd_ratio[0][n] = c_eff / c_eff[grnd_index]
             
             c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(-90.0)) * u + np.cos(np.radians(-90.0)) * v
-            eff_sndspd_ratio[1][n] = c_eff / c_eff[0]
+            eff_sndspd_ratio[1][n] = c_eff / c_eff[grnd_index]
 
             if include_ns:
                 c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(0.0)) * u + np.cos(np.radians(0.0)) * v
-                eff_sndspd_ratio[2][n] = c_eff / c_eff[0]
+                eff_sndspd_ratio[2][n] = c_eff / c_eff[grnd_index]
                 
                 c_eff = np.sqrt(0.14 * p / d) + np.sin(np.radians(180.0)) * u + np.cos(np.radians(180.0)) * v
-                eff_sndspd_ratio[3][n] = c_eff / c_eff[0]
+                eff_sndspd_ratio[3][n] = c_eff / c_eff[grnd_index]
 
         plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[0], axis=0) > 1.0)
         if np.sum(plot_mask) > 1:
@@ -513,8 +531,8 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
         ax2[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[3], color='orange', linewidth=2.5)
         ax2[0].axhline(1.0, color='k', linestyle='dashed')
 
-    if output_path is not None:
-        output_file = open(output_path + ".summary.txt", 'w')
+    if results_path is not None:
+        output_file = open(results_path + ".summary.txt", 'w')
         print("Summary of 'stochprop prop season-stats' analysis", file=output_file)
         print("  Source directory: " + str(atmo_dir), file=output_file)
         print("  Specification pattern: " + str(atmo_pattern), file=output_file)
@@ -556,9 +574,9 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
 
         output_file.close()
 
-        f1.savefig(output_path + ".ess-ratio.png", dpi=300)
+        f1.savefig(results_path + ".ess-ratio.png", dpi=300)
         if include_ns:
-            f2.savefig(output_path + ".ess-ratio.NS.png", dpi=300)
+            f2.savefig(results_path + ".ess-ratio.NS.png", dpi=300)
 
     plt.show()
 
@@ -579,7 +597,7 @@ def season_stats(atmo_dir, output_path, atmo_pattern, atmo_format, year_selectio
 @click.option("--freq", help="Frequency for Sutherland-Bass atten. (default: 0.5 Hz)", default=0.5)
 @click.option("--clean-up", help="Remove individual results after merge (default: True)", default=True)
 @click.option("--cpu-cnt", help="Number of CPUs for propagation simulations", default=None)
-@click.option("--rng_window", help="Range window in PGM (default: 50 km)", default=50.0)
+@click.option("--rng-window", help="Range window in PGM (default: 50 km)", default=50.0)
 @click.option("--rng-step", help="Range resolution in PGM (default: 10 km)", default=10.0)
 @click.option("--az-bin-cnt", help="Number of azimuth bins in PGM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in PGM (default: 30 deg)", default=30.0)
@@ -653,7 +671,7 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
 @click.option("--cpu-cnt", help="Number of CPUs for propagation simulations", default=None)
 @click.option("--az-bin-cnt", help="Number of azimuth bins in TLM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in TLM (default: 30 deg)", default=30.0)
-@click.option("--rng_lims", help="Range limits in TLM (default: [1, 1000])", default='[1, 1000.0]')
+@click.option("--rng-lims", help="Range limits in TLM (default: [1, 1000])", default='[1, 1000.0]')
 @click.option("--rng-cnt", help="Range intervals in TLM (default: 100)", default=100)
 @click.option("--rng-spacing", help="Option for range sampling ('linear' or 'log')", default='linear')
 @click.option("--use-coherent-tl", help="Use coherent transmission loss (default: False", default=False)
