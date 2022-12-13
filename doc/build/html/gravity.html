@@ -1,37 +1,75 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gravity Wave Perturbations &mdash; stochprop 1.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <title>Gravity Wave Perturbations &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API" href="stochprop.html" />
     <link rel="prev" title="Propagation Statistics" href="propagation.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
             <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -39,7 +77,17 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -54,39 +102,78 @@
 <li class="toctree-l1"><a class="reference internal" href="references.html">References and Citing Usage</a></li>
 </ul>
 
+            
+          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">stochprop</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="analysis.html">Stochastic Propagation Analysis</a> &raquo;</li>
+        
       <li>Gravity Wave Perturbations</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+            
             <a href="_sources/gravity.rst.txt" rel="nofollow"> View page source</a>
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <section id="gravity-wave-perturbations">
-<span id="gravity"></span><h1>Gravity Wave Perturbations<a class="headerlink" href="#gravity-wave-perturbations" title="Permalink to this headline"></a></h1>
+<span id="gravity"></span><h1>Gravity Wave Perturbations<a class="headerlink" href="#gravity-wave-perturbations" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of bouyancy or gravity waves.</p></li>
 <li><p>Stochastic gravity wave perturbation methods are included in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.</p></li>
 </ul>
 <section id="freely-propagation-and-trapped-gravity-waves">
-<h2>Freely Propagation and Trapped Gravity Waves<a class="headerlink" href="#freely-propagation-and-trapped-gravity-waves" title="Permalink to this headline"></a></h2>
+<h2>Freely Propagation and Trapped Gravity Waves<a class="headerlink" href="#freely-propagation-and-trapped-gravity-waves" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber, <span class="math notranslate nohighlight">\(m\)</span>, can be expressed as,</p></li>
 </ul>
@@ -141,7 +228,7 @@ c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m}
 \[w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}\]</div>
 </section>
 <section id="damping-source-and-saturation-spectra-and-critical-layers">
-<h2>Damping, Source and Saturation Spectra, and Critical Layers<a class="headerlink" href="#damping-source-and-saturation-spectra-and-critical-layers" title="Permalink to this headline"></a></h2>
+<h2>Damping, Source and Saturation Spectra, and Critical Layers<a class="headerlink" href="#damping-source-and-saturation-spectra-and-critical-layers" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, <span class="math notranslate nohighlight">\(m \rightarrow m + m_i,\)</span> where,</p>
 <blockquote>
@@ -188,7 +275,7 @@ c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m}
 </ul>
 </section>
 <section id="gravity-wave-implementation-in-stochprop">
-<h2>Gravity Wave implementation in stochprop<a class="headerlink" href="#gravity-wave-implementation-in-stochprop" title="Permalink to this headline"></a></h2>
+<h2>Gravity Wave implementation in stochprop<a class="headerlink" href="#gravity-wave-implementation-in-stochprop" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is sumamrized here</p>
 <ul>
@@ -288,33 +375,51 @@ c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m}
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="propagation.html" class="btn btn-neutral float-left" title="Propagation Statistics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="stochprop.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="stochprop.html" class="btn btn-neutral float-right" title="API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="propagation.html" class="btn btn-neutral float-left" title="Propagation Statistics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Philip Blom.</p>
-  </div>
+    <p>
+        &copy; Copyright 2020, Philip Blom
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
