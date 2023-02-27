@@ -714,8 +714,7 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
         if pool:
             coeffs[n] = pool.map(calc_coeff, list(range(eof_cnt)))
         else:
-            for m in range(eof_cnt):
-                coeffs[n][m] = calc_coeff(m)
+            coeffs[n] = [calc_coeff(m) for m in range(eof_cnt)]
 
     # store coefficient values as numpy array file
     np.save(output_path + "-coeffs", coeffs)

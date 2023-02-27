@@ -63,6 +63,8 @@ eof.add_command(cli.eof_sample)
 prop.add_command(cli.build_pgm)
 prop.add_command(cli.build_tlm)
 prop.add_command(cli.plot_model)
+prop.add_command(cli.plot_detection_stats)
+prop.add_command(cli.plot_network_performance)
 
 perturb.add_command(cli.eof_perturb)
 perturb.add_command(cli.gravity_waves)
