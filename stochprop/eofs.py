@@ -292,11 +292,7 @@ def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
     return result
 
 
-################################
-#   EOF Construction Methods   #
-################################
-
-def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, max_alt=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
+def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None, hours=None, ydays = None, max_alt=None, skiprows=0, ref_alts=None, prof_format="zTuvdp", latlon0=None, return_datetime=False):
     """
         Read in a list of atmosphere files from the path location
         matching a specified pattern for continued analysis.
@@ -315,6 +311,8 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
             Iterable of weeks to include in analysis (e.g., ['01', '02', '03'])
         hours: iterable
             Iterable of hours to include in analysis (e.g., ['00', '06', '18'])
+        ydays: iterable
+            Iterable of year days to include in analysis (e.g., ['01', '02',])
         max_alt: float
             Altitude maximum to trim specifications
         skiprows: int
@@ -343,6 +341,8 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
         print('\t\t' + "Months filter:", months)
     if weeks is not None:
         print('\t\t' + "Weeks filter:", weeks)
+    if ydays is not None:
+        print('\t\t' + "YDays filter:", ydays)
     if hours is not None:
         print('\t\t' + "Hours filter:", hours)
 
@@ -374,8 +374,6 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
                         file_test.close()
                         break
 
-            week = "%02d" % datetime.date(int(year), int(month), int(day)).isocalendar()[1]
-
             include_check = True 
             if years is not None:
                 if year not in years:
@@ -386,8 +384,14 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
                     include_check = False
             
             if weeks is not None:
+                week = "%02d" % datetime.date(int(year), int(month), int(day)).isocalendar()[1]
                 if week not in weeks:
                     include_check = False
+
+            if ydays is not None:
+                yday = "%03d" % datetime.date(int(year), int(month), int(day)).timetuple().tm_yday
+                if yday not in ydays:
+                    include_check = False 
 
             if hours is not None:
                 if hour not in hours:

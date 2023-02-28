@@ -4,9 +4,11 @@
 Stochastic Propagation Analysis
 =====================================
 
-* The atmospheric state at a given time and location is uncertain due to its dynamic and sparsely sampled nature
-* Propagation effects for infrasonic signals must account for this uncertainty in order to properly quantify uncertainty in analysis results
-* A methodology of constructing propagation statistics has been developed that identifies a suite of atmospheric states that characterize the possible space of scenarios, runs propagation simulations through each possible state, and builds statistical distributions for propagation effects
+* The atmospheric state at a given time and location is uncertain due to its dynamic and sparsely sampled nature.
+
+* Propagation effects for infrasonic signals must account for this uncertainty in order to properly quantify uncertainty in analysis results.
+
+* A methodology of constructing propagation statistics has been developed that identifies a suite of atmospheric states which characterize the possible space of scenarios, runs propagation simulations through each possible state, and builds statistical distributions for propagation effects.
 
 .. figure:: _static/_images/stochprop_fig1.jpg
     :width: 500px
@@ -16,7 +18,7 @@ Stochastic Propagation Analysis
     
     Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects
     
-* The tools included here provide a framework for constructing such models as well as perform a number of analyses related to atmospheric variability and uncertainty
+* The tools included here provide a framework for constructing such models as well as performing a number of analyses related to atmospheric variability and uncertainty
     
 _______________________________________
 :ref:`eofs`

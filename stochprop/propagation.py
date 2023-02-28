@@ -951,12 +951,22 @@ class TLossModel(object):
                 for nr, rng_val in enumerate(output_rngs):
                     nearest_rng = rngs[np.argmin(abs(rngs - rng_val))]
                     masked_tloss = tloss[np.logical_and(az_mask, rngs==nearest_rng)] - tloss_norm
-
+                    
                     if np.std(masked_tloss) < 0.05:
                         pdf_vals[az_index][nr] = norm.pdf(tloss_vals, loc=np.mean(masked_tloss), scale=0.05)
                     else:
-                        kernel = gaussian_kde(masked_tloss)
+                        masked_tloss_mean = np.mean(masked_tloss)
+                        masked_tloss_stdev = np.std(masked_tloss)
+                        outlier_mask = abs(masked_tloss - masked_tloss_mean) < 4.0 * masked_tloss_stdev
+
+                        kernel = gaussian_kde(masked_tloss[outlier_mask])
                         pdf_vals[az_index][nr] = kernel.evaluate(tloss_vals)
+
+                    TL1 = 10.0 * np.log(rng_val**(-1.0 / 4.0))
+                    TL2 = 10.0 * np.log(rng_val**(-1.0 / 2.0))
+                    env_stdev = max(abs(TL1 - TL2) / 10.0, 1.0)
+                    envelope = 1.0 / (1.0 + np.exp((tloss_vals - (TL1 + 2.0 * env_stdev)) / env_stdev))
+                    pdf_vals[az_index][nr] = pdf_vals[az_index][nr] * envelope
 
                     if show_fits:
                         ax2.scatter([rng_val] * len(tloss_vals), tloss_vals, c=pdf_vals[az_index][nr], cmap=cm.nipy_spectral_r, marker='o', s=[12.5] * len(tloss_vals), alpha=0.5, edgecolor='none')
@@ -1043,7 +1053,7 @@ class TLossModel(object):
 
         return result
 
-    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, hold_fig=False):
+    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, hold_fig=False, show_ref_tloss=False):
         """
         Display the transmission loss statistics
 
@@ -1067,7 +1077,7 @@ class TLossModel(object):
         TL = TL.flatten()
 
         palette = cm.nipy_spectral_r
-        f1, ax = plt.subplots(3, 3, figsize=(12, 9))
+        f1, ax = plt.subplots(3, 3, figsize=(14, 9))
 
         for n1, n2 in itertools.product(range(3), repeat=2):
             if n1 != 1 or n2 != 1:
@@ -1092,6 +1102,9 @@ class TLossModel(object):
 
         pdf = self.eval(R, TL, np.array([-45.0] * len(R)))
         tloss_plot = ax[0, 0].scatter(R, TL, c=pdf, cmap=palette, marker='o', s=[12.5] * len(R), alpha=0.5, edgecolor='none', vmin=0.0, vmax=scale_max)
+        if show_ref_tloss:
+            ax[0, 0].plot(rngs[rngs > 0], 10.0 * np.log10(1.0 / np.sqrt(rngs[rngs > 0])), '--k')
+            ax[0, 0].plot(rngs[rngs > 0], 10.0 * np.log10(1.0 / rngs[rngs > 0]), '-k')
 
         if show_colorbar:
             cbar = f1.colorbar(tloss_plot, ax=[ax[0, 2], ax[1, 2], ax[2, 2]], label="Probability", aspect=40)
@@ -1102,6 +1115,9 @@ class TLossModel(object):
         def plot_tloss_stats(axis_id, azimuth):
             pdf = self.eval(R, TL, np.array([azimuth] * len(R)))
             axis_id.scatter(R, TL, c=pdf, cmap=palette, marker='o', s=[12.5] * len(R), alpha=0.5, edgecolor='none', vmin=0.0, vmax=scale_max)
+            if show_ref_tloss:
+                axis_id.plot(rngs[rngs > 0], 10.0 * np.log10(1.0 / np.sqrt(rngs[rngs > 0])), '--k')
+                axis_id.plot(rngs[rngs > 0], 10.0 * np.log10(1.0 / rngs[rngs > 0]), '-k')
             plt.pause(0.01)
 
         plot_tloss_stats(ax[0, 1], 0.0)

@@ -60,6 +60,7 @@ eof.add_command(cli.eof_coeffs)
 eof.add_command(cli.eof_seasonality)
 eof.add_command(cli.eof_sample)
 
+prop.add_command(cli.season_trends)
 prop.add_command(cli.build_pgm)
 prop.add_command(cli.build_tlm)
 prop.add_command(cli.plot_model)

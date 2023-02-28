@@ -71,14 +71,30 @@ To deactivate an active environment, use
 Testing stochprop
 -------------------------------------
 
-Once the installation is complete, you can test the methods by navigating to the /examples directory located in the base directory, and running:
+Once the installation is complete, you can test the methods by running the command line interface help 
 
-.. code-block:: none
+.. code-block:: bash
 
-    >> python eof_analysis.py
-    >> python atmo_analysis.py
+    stochprop --help
 
-A set of propagation analyses are included, but require installation of infraGA/GeoAc and NCPAprop.  These analysis can be run to ensure linkages are
-working between stochprop and the propagation libraries, but note that the simulation of propagation through even the example suite of atmosphere
-takes a significant amount of time.
+This command will show the general usage of the stochprop package:
 
+.. code-block:: bash
+
+    Usage: stochprop [OPTIONS] COMMAND [ARGS]...
+
+      stochprop
+      ---------
+
+      Python-based tools for quantifying infrasonic propagation uncertainty via
+      stochastic analyses
+
+    Options:
+      -h, --help  Show this message and exit.
+
+    Commands:
+      eof      Empirical Orthogonal Function (EOF) methods
+      perturb  Atmospheric specification perturbing methods
+      prop     Propagation model construction methods
+
+Usage of the indivitual packages and sub-commands can be similarly displayed with the :code:`--help` flag (e.g., :code:`stochprop eof build --help`).

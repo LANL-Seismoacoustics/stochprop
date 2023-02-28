@@ -1,37 +1,75 @@
-<!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Atmospheric Fitting, Sampling, and Perturbation &mdash; stochprop 1.0 documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <title>Atmospheric Fitting, Sampling, and Perturbation &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Propagation Statistics" href="propagation.html" />
     <link rel="prev" title="Empirical Orthogonal Function Analysis" href="eofs.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
             <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -39,7 +77,17 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
@@ -54,33 +102,72 @@
 <li class="toctree-l1"><a class="reference internal" href="references.html">References and Citing Usage</a></li>
 </ul>
 
+            
+          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">stochprop</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
           <li><a href="analysis.html">Stochastic Propagation Analysis</a> &raquo;</li>
+        
       <li>Atmospheric Fitting, Sampling, and Perturbation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
+            
             <a href="_sources/sampling.rst.txt" rel="nofollow"> View page source</a>
+          
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <section id="atmospheric-fitting-sampling-and-perturbation">
-<span id="sampling"></span><h1>Atmospheric Fitting, Sampling, and Perturbation<a class="headerlink" href="#atmospheric-fitting-sampling-and-perturbation" title="Permalink to this headline"></a></h1>
+<span id="sampling"></span><h1>Atmospheric Fitting, Sampling, and Perturbation<a class="headerlink" href="#atmospheric-fitting-sampling-and-perturbation" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p>The Empirical Orthogonal Functions (EOFs) constructed using a suite of atmospheric specifications can be utilized in a number of different analyses of the atmospheric state</p></li>
 <li><p>In general, an atmospheric state can be constructed by defining a reference atmosphere, <span class="math notranslate nohighlight">\(b_0 \left( z_m \right)\)</span>, and a set of coefficients, <span class="math notranslate nohighlight">\(\mathcal{C}_n\)</span>,</p></li>
@@ -88,7 +175,7 @@
 <div class="math notranslate nohighlight">
 \[\hat{b} \left( z_m \right) = b_0 \left( z_m \right) + \sum_n{ \mathcal{C}_n \mathcal{E}_n \left( z_m \right)},\]</div>
 <section id="fitting-an-atmospheric-specification-using-eofs">
-<h2>Fitting an Atmospheric Specification using EOFs<a class="headerlink" href="#fitting-an-atmospheric-specification-using-eofs" title="Permalink to this headline"></a></h2>
+<h2>Fitting an Atmospheric Specification using EOFs<a class="headerlink" href="#fitting-an-atmospheric-specification-using-eofs" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>In the case that a specific state, <span class="math notranslate nohighlight">\(b \left(z_m \right)\)</span>, is known, it can be approximated using the EOF set by using the mean state pulled from the original SVD analysis and coefficients defined by projecting the atmospheric state difference from this mean onto each EOF,</p></li>
 </ul>
@@ -109,12 +196,12 @@
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/US_NE-fits.png"><img alt="alternate text" src="_images/US_NE-fits.png" style="width: 700px;" /></a>
 <figcaption>
-<p><span class="caption-text">Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 - 60 terms in the summation</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 - 60 terms in the summation</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="sampling-specifications-using-eof-coefficient-distributions">
-<h2>Sampling Specifications using EOF Coefficient Distributions<a class="headerlink" href="#sampling-specifications-using-eof-coefficient-distributions" title="Permalink to this headline"></a></h2>
+<h2>Sampling Specifications using EOF Coefficient Distributions<a class="headerlink" href="#sampling-specifications-using-eof-coefficient-distributions" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Samples can be generated that are representative of a given coefficient distributions as constructed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_coeffs</span></code> or a combination of them.</p></li>
 <li><p>In such a case, the reference atmosphere is again the mean state from the SVD analysis and the coefficients are randomly generated from the distributions defined by kernel density estimates (KDE’s) of the coefficient results</p></li>
@@ -144,12 +231,12 @@
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="_images/US_RM-samples.png"><img alt="alternate text" src="_images/US_RM-samples.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">Samples for seasonal trends in the western US show the change in directionality of the stratospheric waveguide in summer and winter</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Samples for seasonal trends in the western US show the change in directionality of the stratospheric waveguide in summer and winter</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="perturbing-specifications-to-account-for-uncertainty">
-<h2>Perturbing Specifications to Account for Uncertainty<a class="headerlink" href="#perturbing-specifications-to-account-for-uncertainty" title="Permalink to this headline"></a></h2>
+<h2>Perturbing Specifications to Account for Uncertainty<a class="headerlink" href="#perturbing-specifications-to-account-for-uncertainty" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>In most infrasonic analysis, propagation analysis through a specification for the approximate time and location of an event doesn’t produce the exact arrivals observed due to the dynamic and sparsely sampled nature of the atmosphere</p></li>
 <li><p>Because of this, it is useful to apply random perturbations to the estimated atmospheric state covering some confidence level and consider propagation through the entire suite of “possible” states</p></li>
@@ -171,12 +258,12 @@
 <figure class="align-center" id="id3">
 <a class="reference internal image-reference" href="_images/atmo_perturb.png"><img alt="alternate text" src="_images/atmo_perturb.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">Perturbations to a reference atmospheric state can be computed using randomly generated coefficients for a suite of EOFs with specified standard deviation</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Perturbations to a reference atmospheric state can be computed using randomly generated coefficients for a suite of EOFs with specified standard deviation</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="command-line-interface">
-<h2>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline"></a></h2>
+<h2>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <ul>
 <li><p>Command line methods are included to access the perturbation methods more efficiently.  Usage info for the EOF perturbation methods can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">perturb</span> <span class="pre">eof</span> <span class="pre">--help</span></code>:</p>
 <blockquote>
@@ -208,33 +295,51 @@
 
 
            </div>
+           
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="eofs.html" class="btn btn-neutral float-left" title="Empirical Orthogonal Function Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="propagation.html" class="btn btn-neutral float-right" title="Propagation Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="propagation.html" class="btn btn-neutral float-right" title="Propagation Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="eofs.html" class="btn btn-neutral float-left" title="Empirical Orthogonal Function Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Philip Blom.</p>
-  </div>
+    <p>
+        &copy; Copyright 2020, Philip Blom
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

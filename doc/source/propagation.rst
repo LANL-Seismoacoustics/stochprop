@@ -173,4 +173,12 @@ Command Line interface
         >> stochprop prop build-tlm --atmos-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 6
         >> stochprop prop plot --model-file prop/winter/winter_0.100Hz.tlm
 
+* The resulting models can be used in the InfraPy BISL and SpYE localizationa and yield estimation methods, respectively, as detailed in the InfraPy documentation:
 
+    .. code-block:: bash 
+
+        infrapy run_loc --local-detect-label data/detection_set2.json --local-loc-label data/location2 --pgm-file ../infrapy/propagation/priors/UTTR_models/UTTR_06_1800UTC.pgm
+
+        infrapy run_yield --local-wvfrms '../infrapy-data/hrr-5/*/*.sac' --local-detect-label data/HRR-5.dets.json --src-lat 33.5377 --src-lon -106.333961 --tlm-label "../infrapy/propagation/priors/tloss/2007_08-" --local-yld-label "HRR-5"
+
+    where :code:`UTTR_06_1800UTC.pgm` denotes a path geometry model for the Utah Test and Training Range (UTTR) during June at 18:00 UTC and there are a series of transmission loss models (:code:`2007_08-0.025Hz.tlm`, :code:`2007_08-0.003Hz.pri`, etc.) that contain transmission loss statistics at individual frequencies for the yield estimation analysis.

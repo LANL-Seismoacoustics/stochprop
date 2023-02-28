@@ -119,9 +119,7 @@ Computing EOFs
 +--------------------------------------+-------------------------------------------------------------------------------------------+
 | eofs/example-singular_values.dat     | Singular values corresponding each EOF index                                              |
 +--------------------------------------+-------------------------------------------------------------------------------------------+
-| eofs/example-adiabatic_snd_spd.eofs  | EOFs for the adiabatic sound speed, :math:`c_\text{ad} = \sqrt{ \gamma \frac{p}{\rho}}`   |
-+--------------------------------------+-------------------------------------------------------------------------------------------+
-| eofs/example-ideal_gas_snd_spd.eofs  | EOFs for the ideal gas sound speed, :math:`c_\text{ad} = \sqrt{ \gamma R T}`              |
+| eofs/example-snd_spd.eofs            | EOFs for the sound speed, :math:`c = \sqrt{ \gamma \frac{p}{\rho}}`                       |
 +--------------------------------------+-------------------------------------------------------------------------------------------+
 | eofs/example-merid_winds.eofs        | EOFs for the meridional (north/south) winds                                               |
 +--------------------------------------+-------------------------------------------------------------------------------------------+
@@ -208,7 +206,7 @@ Command Line interface
 		Example Usage:
 			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example
 			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
-			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]'
+			stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '10:12, 01:03'
 
 		Options:
 		--atmo-dir TEXT          Directory of atmospheric specifications (required)
@@ -223,12 +221,62 @@ Command Line interface
 		--eof-cnt INTEGER        Number of EOFs to store (default: 100)
 		-h, --help               Show this message and exit.
 
+* Note that the month election can use individual comma separated values (e.g., '10, 11, 12') or ':' to denote sequential limits (e.g., 10:12) and combinations of sequentials can be defined as in the above to include October through March as '10:12, 01:03')
+
 * As an example, construction of winter atmospheric samples can be computed via construction of the seasonal EOFs, computation of the coefficient values, and sampling of the coefficient information,
 
 	.. code-block:: console
 
-		>> stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
-		>> stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --month-selection '[10, 11, 12, 01, 02, 03]' --eof-cnt 50
+		>> stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '[10:12, 01:03]' --eof-cnt 50
+		>> stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --month-selection '[10:12, 01:03]' --eof-cnt 50
 		>> stochprop eof sample --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50 --eof-cnt 50
 		
-* More stuff...
+* It should be noted that in additiona to the EOF-based method of identifying seasonal trends, it's often useful to consider the effective sound speed ratio in the east and westward directions.  Such analysis can be performed using the :code:`stochprop prop season-trends` methods to ingest a set of atmospheric specifications, averaging across years and computing the altitudes for which the effective sound speed in a given direction exceeds that near the ground.  
+
+	.. code-block:: none
+
+		##########################$#########
+		##                                ##
+		##           stochprop            ##
+		##      Propagation Methods       ##
+		##   ESS Ratio Seasonal Analysis  ##
+		##                                ##
+		####################################
+
+
+		Run summary:
+		Source directory: profs/
+		Specification pattern: *.dat
+		Specification format: zTuvdp
+		Output path: example
+
+			Loading profiles from profs/ with pattern: *.dat
+				Extracted ground elevation: 1.589
+
+		Computing effective sound speed ratio for each day-of-year...
+
+		Eastward waveguide changes...
+			Waveguide dissipates: January 22  (yday: 22, week: 3)
+			Waveguide forms: January 24  (yday: 24, week: 3)
+			Waveguide dissipates: January 25  (yday: 25, week: 4)
+			Waveguide forms: January 26  (yday: 26, week: 4)
+			Waveguide dissipates: January 31  (yday: 31, week: 4)
+			Waveguide forms: February 02  (yday: 33, week: 5)
+			Waveguide dissipates: April 25  (yday: 116, week: 17)
+			Waveguide forms: September 28  (yday: 272, week: 39)
+
+		Westward waveguide changes...
+			Waveguide forms: January 18  (yday: 18, week: 3)
+			Waveguide dissipates: February 02  (yday: 33, week: 5)
+			Waveguide forms: May 12  (yday: 133, week: 19)
+			Waveguide dissipates: August 23  (yday: 236, week: 34)
+			Waveguide forms: August 29  (yday: 242, week: 35)
+			Waveguide dissipates: August 30  (yday: 243, week: 35)
+
+	This analysis also produces a visualization of the effective sound speed trends as shown below
+
+	.. figure:: _static/_images/example.ess-ratio.png
+		:width: 1000px
+		:align: center
+		:alt: alternate text
+		:figclass: align-center
