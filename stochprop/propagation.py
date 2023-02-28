@@ -973,7 +973,7 @@ class TLossModel(object):
             pickle.dump(priors, open(output_file, "wb"))
             print(' ')
 
-    def load(self, model_file):
+    def load(self, model_file, verbose=True):
         """
         Load a transmission loss file for use
 
@@ -990,9 +990,10 @@ class TLossModel(object):
         self.tloss_vals = fit_params[1]
         self._az_bin_cnt = len(fit_params[2])
 
-        print("Loading transmission loss model from " + model_file)
-        print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
-        print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
+        if verbose:
+            print("Loading transmission loss model from " + model_file)
+            print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+            print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
 
         self.pdf_vals = [0] * self._az_bin_cnt
         self.pdf_fits = [0] * self._az_bin_cnt
@@ -1349,7 +1350,7 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
 def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max, lon_min, lon_max, resol, output_path, show_fig):
 
     # Extract network locations and unique TLM/dim info
-    print("Loading network info from " + info_file + "...")
+    print("Loading network info from " + info_file + "..." + '\n')
     sta_locs, dims, model_files = [], [], []
     with open(info_file, 'r') as of:
         for line in of:
@@ -1371,6 +1372,10 @@ def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max,
         print("Warning!  Couldn't extract frequency from TLM file name(s).  Using specified value (" + freq + ")")
         freq = float(freq)
 
+    print("Computing spectral amplitude for source:")
+    print('\t' + "Yield: " + str(W0 * 1.0e-3) + " ton eq. TNT")
+    print('\t' + "Frequency: " + str(freq) + " Hz")
+
     src0 = 10.0 * np.log10(blastwave_spectrum(freq, 2.0 * W0, 1.0))
     P_vals = np.linspace(-50.0, src0 + 10.0, 200)
 
@@ -1381,11 +1386,13 @@ def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max,
     grid_lats = grid_lats.flatten()
     grid_lons = grid_lons.flatten()
 
-    print("Computing individual station detection statistics...")
+    print('\n' + "Evaluating detection statistics for each station...")
     det_stats = []
     for j, model_info in enumerate(model_files):
+        print('\t' + "Loading TLM from '" + model_info + "' for station at (" + str(sta_locs[j][0]) + ", " + str(sta_locs[j][1]) + ")")
+
         tlm = TLossModel()
-        tlm.load(model_info)
+        tlm.load(model_info, verbose=False)
 
         rng_vals = np.linspace(1.0, tlm.rng_vals[-1], 100)
         P_grid, rng_grid = np.meshgrid(P_vals, rng_vals)
@@ -1418,7 +1425,7 @@ def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max,
     det_stats = np.array(det_stats)
 
     # Combine statistics and generate map
-    print("Combining station detection stats to determine network performance...")
+    print('\n' + "Combining station detection stats to determine network performance...")
     print('\t' + "Requiring " + str(det_cnt_min) + " detecting stations.")
     result = 1.0 - np.prod(1.0 - det_stats, axis=0)
     for n in range(1, det_cnt_min):
