@@ -111,7 +111,10 @@ def eof_build(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selection, w
     A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True, max_alt=max_alt)
     if save_datetime:
         np.save(eofs_path + ".datetimes", datetimes)
-    eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt)
+
+    build_info = {'atmo_dir': atmo_dir, 'month_selection' : month_selection,
+                    'year_selection' : year_selection, 'week_selection' : week_selection}
+    eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt, build_info=build_info)
     
 
 @click.command('coeffs', short_help="Compute EOF coefficients")
@@ -679,7 +682,7 @@ def plot_model(model_file):
     click.echo("##                                   ##")
     click.echo("##             stochprop             ##")
     click.echo("##        Propagation Methods        ##")
-    click.echo("##             Visualize             ##")
+    click.echo("##          Visualize Model          ##")
     click.echo("##                                   ##")
     click.echo("########################################")
     click.echo("")  
@@ -694,6 +697,85 @@ def plot_model(model_file):
         model.display(hold_fig=True)
     else:
         click.echo("Error: invalid model file.")
+
+
+@click.command('detection_stats', short_help="Visualize a PGM or TLM")
+@click.option("--tlm-label", help="Label for TLM file(s)")
+@click.option("--yield-vals", help="List of yield values (tons eq. TNT)")
+@click.option("--array-dim", help="Array dimension (number of sensors)", default=1, type=float)
+@click.option("--figure-out", help="Destination for figure", default=None)
+@click.option("--show-figure", help="Print figure to screen", default=True)
+def plot_detection_stats(tlm_label, yield_vals, array_dim, figure_out, show_figure):
+    '''
+    \b
+    stochprop prop detection_stats 
+    ---------------------
+    \b
+    Example Usage:
+    \t stochprop prop detection_stats --model-files prop/winter/winter_0.200Hz.tlm
+
+    '''
+    click.echo("")
+    click.echo("#######################################")
+    click.echo("##                                   ##")
+    click.echo("##             stochprop             ##")
+    click.echo("##        Propagation Methods        ##")
+    click.echo("##       Detection Statistics        ##")
+    click.echo("##                                   ##")
+    click.echo("########################################")
+    click.echo("")  
+
+    # Load TLMs
+    tlm_dir = os.path.dirname(tlm_label)
+    tlm_pattern = tlm_pattern = tlm_label.split("/")[-1]
+    tlm_files = [file_name for file_name in np.sort(os.listdir(tlm_dir)) if fnmatch.fnmatch(file_name, tlm_pattern + "*")]
+
+    models = [0] * 2
+    models[0] = [float(file_name.split("Hz")[0][len(tlm_pattern):]) for file_name in tlm_files]
+    models[1] = [0] * len(tlm_files)
+    for n in range(len(tlm_files)):
+        models[1][n] = propagation.TLossModel()
+        models[1][n].load(tlm_dir + "/" + tlm_files[n])
+
+    # Generate plot
+    yield_vals = [float(val)*1.0e3 for val in yield_vals.strip(' ()[]').split(',')]
+    propagation.plot_detection_stats(models, yield_vals, array_dim=array_dim, show_fig=show_figure, output_path=figure_out)
+
+
+
+@click.command('network-performance', short_help="Visualize detection statistics for a network of stations")
+@click.option("--network-info", help="Text file of network info")
+@click.option("--freq", help="Frequency for analysis", default=None)
+@click.option("--src-yld", help="Explosive yield (kg eq. TNT)", default=10e3, type=float)
+@click.option("--min-det-cnt", help="Minimum detecting stations", default=3, type=int)
+@click.option("--resol", help="Grid resolution", default=100, type=int)
+@click.option("--lat-min", help="Minimum latitude of grid", default=30.0)
+@click.option("--lat-max", help="Maximum latitude of grid", default=40.0)
+@click.option("--lon-min", help="Minimum longitude of grid", default=-110.0)
+@click.option("--lon-max", help="Maximum longitude of grid", default=-105.0)
+@click.option("--figure-out", help="Destination for figure", default=None)
+@click.option("--show-figure", help="Print figure to screen", default=True)
+def plot_network_performance(network_info, freq, src_yld, min_det_cnt, resol, lat_min, lat_max, lon_min, lon_max, figure_out, show_figure):
+    '''
+    \b
+    stochprop prop detection_stats 
+    ---------------------
+    \b
+    Example Usage:
+    \t stochprop prop network-performance --network-info network_test.dat --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
+
+    '''
+    click.echo("")
+    click.echo("#######################################")
+    click.echo("##                                   ##")
+    click.echo("##             stochprop             ##")
+    click.echo("##        Propagation Methods        ##")
+    click.echo("##        Network Performance        ##")
+    click.echo("##                                   ##")
+    click.echo("########################################")
+    click.echo("")  
+
+    propagation.plot_network_performance(network_info, freq, src_yld, min_det_cnt, lat_min, lat_max, lon_min, lon_max, resol, figure_out, show_figure)
 
 
 
@@ -802,7 +884,4 @@ def gravity_waves(atmo_file, out, sample_cnt, t0, dx, dz, nk, nom, random_phase,
 
     grav.perturb_atmo(atmo_file, out, sample_cnt=sample_cnt, t0=t0 * 3600.0, dx=dx, dz=dz, Nk=nk, N_om=nom, random_phase=random_phase, z_src=z_src, m_star=m_star, env_below=False, cpu_cnt=cpu_cnt, fig_out=debug_fig)
 
-
-if __name__ == '__main__':
-    main()
 

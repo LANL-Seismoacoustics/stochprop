@@ -17,25 +17,34 @@ import numpy as np
 
 from pyproj import Geod
 
+from scipy.integrate import simps
 from scipy.interpolate import interp1d, RectBivariateSpline
 from scipy.stats import norm, gaussian_kde
 from scipy.signal import savgol_filter
+from scipy.special import gamma
 
 import matplotlib.cm as cm
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+import cartopy.crs as crs
+import cartopy.feature as cfeature
+from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 sph_proj = Geod(ellps='sphere')
 
-plt.rcParams.update({'font.size': 18})
+map_proj = crs.PlateCarree()
+resol = '100m'  # use data at this scale (not working at the moment)
 
 
 # ############################## #
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zcuvd"):
     """
         Run the infraga -prop algorithm to compute path geometry
         statistics for BISL using a suite of specifications
@@ -100,7 +109,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                         if geom == "sph":
                             command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
                         command = command + " src_alt=" + str(src_loc[2])
-                        command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max)
+                        command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
                         command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" + " > /dev/null"
 
                         subprocess.call(command, shell=True)
@@ -221,6 +230,9 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
         if clean_up:
             subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm", shell=True)
             subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.nm", shell=True)
+
+
+
 
 
 # ############################ #
@@ -971,7 +983,7 @@ class TLossModel(object):
             pickle.dump(priors, open(output_file, "wb"))
             print(' ')
 
-    def load(self, model_file):
+    def load(self, model_file, verbose=True):
         """
         Load a transmission loss file for use
 
@@ -988,9 +1000,10 @@ class TLossModel(object):
         self.tloss_vals = fit_params[1]
         self._az_bin_cnt = len(fit_params[2])
 
-        print("Loading transmission loss model from " + model_file)
-        print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
-        print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
+        if verbose:
+            print("Loading transmission loss model from " + model_file)
+            print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+            print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
 
         self.pdf_vals = [0] * self._az_bin_cnt
         self.pdf_fits = [0] * self._az_bin_cnt
@@ -1120,3 +1133,360 @@ class TLossModel(object):
 
         if hold_fig:
             plt.show()
+
+
+#########################
+##   IMS Noise Model   ## 
+#########################
+def ims_noise_model():
+
+    ims_ns = np.loadtxt(imp.find_module('stochprop')[1] + '/resources/IMSNOISE_MIN_MED_MAX.txt')
+    ns_mean = interp1d(ims_ns[:, 0], 10.0 * ims_ns[:, 2], bounds_error=False, fill_value="extrapolate")
+    ns_sigma = interp1d(ims_ns[:, 0], 10.0 * (ims_ns[:, 3] - ims_ns[:, 1]) / 4.0, bounds_error=False, fill_value="extrapolate")
+
+    def ims_ns_pdf(P, f, duration=10.0, array_dim=4):
+        eff_ns_mean = 0.5 * (ns_mean(f) + 10.0 * np.log10(duration / array_dim))
+        return norm.pdf(P, loc=eff_ns_mean, scale=ns_sigma(f))
+
+    def ims_ns_cdf(P, f, duration=10.0, array_dim=4):
+        eff_ns_mean = 0.5 * (ns_mean(f) + 10.0 * np.log10(duration / array_dim))
+        return norm.cdf(P, loc=eff_ns_mean, scale=ns_sigma(f))
+
+    return ims_ns_pdf, ims_ns_cdf
+
+
+
+#########################
+##   Kinney & Graham   ## 
+##   Blastwave Model   ##
+#########################
+def kg_op(W, r, p_amb=101.325, T_amb=288.15, exp_type="chemical"):
+    """
+        Kinney & Graham scaling law peak overpressure model
+                
+        Parameters
+        ----------
+        W: float
+            Explosive yield of the source [kg eq. TNT]
+        r: float
+            Propagation distance [km]
+        p_amb: float
+            Ambient atmospheric pressure [kPa]
+        T_amb: float
+            Ambient atmospheric temperature [deg K]
+        exp_type: string
+            Type of explosion modeled, options are "chemical" or "nuclear"
+        
+        Returns
+        -------
+        p0: float
+            Peak overpressure [Pa]    
+    """
+    
+    fd = (p_amb / 101.325)**(1.0 / 3.0) * (T_amb / 288.15)**(1.0 / 3.0)
+    sc_rng = fd / W**(1.0 / 3.0) * r * 1000.0
+    
+    if exp_type=="chemical":
+        term1 = 1.0 + (sc_rng / 4.5)**2
+        term2 = np.sqrt(1.0 + (sc_rng / 0.048)**2)
+        term3 = np.sqrt(1.0 + (sc_rng / 0.32)**2)
+        term4 = np.sqrt(1.0 + (sc_rng / 1.35)**2)
+        
+        result = 808.0 * term1 / (term2 * term3 * term4)
+    else:
+        term1 = (1.0 + sc_rng / 800.0)
+        term2 = np.sqrt(1.0 + (sc_rng / 87.0)**2)
+        
+        result = 3.2e6 / sc_rng**3 * term1 * term2
+
+    return p_amb * 1.0e3 * result
+
+
+def kg_ppd(W, r, p_amb=101.325, T_amb=288.15, exp_type="chemical"):
+    """
+        Kinney & Graham scaling law positive phase duration model
+                
+        Parameters
+        ----------
+        W : float
+            Explosive yield of the source [kg eq. TNT]
+        r : float
+            Propagation distance [km]
+        p_amb : float
+            Ambient atmospheric pressure [kPa]
+        T_amb : float
+            Ambient atmospheric temperature [deg K]
+        exp_type : string
+            Type of explosion modeled, options are "chemical" or "nuclear"
+            
+        Returns
+        -------
+        t0 : float
+            Positive phase duration [s]
+    """
+
+    fd = (p_amb / 101.325)**(1.0 / 3.0) * (T_amb / 288.15)**(1.0 / 3.0)
+    sc_rng = fd / W**(1.0 / 3.0) * r * 1000.0
+    
+    if exp_type=="chemical":
+        term1 = 1.0 + (sc_rng / 0.54)**10
+        term2 = 1.0 + (sc_rng / 0.02)**3
+        term3 = 1.0 + (sc_rng / 0.74)**6
+        term4 = np.sqrt(1.0 + (sc_rng / 6.9)**2)
+        
+        result = 980.0 * term1 / (term2 * term3 * term4)
+    else:
+        term1 = np.sqrt(1.0 + (sc_rng / 100.0)**3)
+        term2 = np.sqrt(1.0 + (sc_rng / 40.0))
+        term3 = (1.0 + (sc_rng / 285.0)**5)**(1.0 / 6.0)
+        term4 = (1.0 + (sc_rng / 50000.0))**(1.0 / 6.0)
+        
+        result = 180.0 * term1 / (term2 * term3 * term4)
+
+    return result * W**(1.0 / 3.0) / 1e3
+
+
+def blastwave_spectrum(f, W, r, p_amb=101.325, T_amb=288.15, exp_type="chemical", shaping_param=0.0):
+    """ 
+        Fourier transform amplitude for the acoustic
+            blastwave in sasm.acoustic.blastwave().
+        
+        Note: shaping_param = 0 produces the Friedlander
+        blastwave model.
+        
+        Note: the peak of the spectrum occurs at
+        f_0 = \frac{1}{2 \pi t_0} \frac{1}{\sqrt{\alpha + 1}
+        and t0 corresponding to a given peak frequency is
+        t_0 = \frac{1}{2 \pi f_0} \frac{1}{\sqrt{\alpha + 1}
+        
+        Parameters
+        ----------
+        f: float
+            Frequency [Hz]
+        W: float
+            Explosive yield of the source [kg eq. TNT]
+        r: float
+            Propagation distance [km]
+        p_amb: float
+            Ambient atmospheric pressure [kPa]
+        T_amb: float
+            Ambient atmospheric temperature [deg K]
+        exp_type: string
+            Type of explosion modeled, options are "chemical" or "nuclear"
+        shaping_param: float
+            Shaping parameter for waveform that controls high frequency trend (set to 0 for original Friedlander blastwave)
+        
+        Returns
+        -------
+        P : float
+            Spectral value at frequency f
+    """
+
+    p0 = kg_op(W, r, p_amb, T_amb, exp_type)
+    t0 = kg_ppd(W, r, p_amb, T_amb, exp_type)
+
+    omega = 2.0 * np.pi * f
+    x0 = (1.0 + shaping_param) - np.sqrt(1.0 + shaping_param)
+    norm = x0**shaping_param * (1.0 - x0 / (1.0 + shaping_param)) * np.exp(-x0)
+    
+    return p0 / norm * t0 * gamma(shaping_param + 1.0) * (omega * t0) / (1.0 + (omega**2 * t0**2))**(shaping_param / 2.0 + 1.0)
+
+
+# ############################# #
+#      Detection Capbility      #
+#     & Network Performance     #
+# ############################# #
+def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=True):
+
+    plt.rcParams.update({'font.size': 18})
+    _, ims_ns_cdf = ims_noise_model()
+
+    P_vals = np.linspace(-50.0, max(10.0 * np.log10(blastwave_spectrum(np.array(tlms[0]), 2.0 * max(yld_vals), 1.0))) + 10.0, 200)
+
+    fig, ax = plt.subplots(len(yld_vals), len(tlms[0]), figsize=(3 * len(tlms[0]), 3 * len(yld_vals)), subplot_kw={'projection': 'polar'})
+    for m in range(len(yld_vals)):
+        print('\n' + "Computing detection statistics for surface explosion with yield " + str(yld_vals[m] * 1.0e-3) + " tons eq TNT...")
+        for n in range(len(tlms[0])):
+            print('\t' + "Analyzing TLM at " + str(tlms[0][n]) + " Hz...")
+            tlm_freq = tlms[0][n]
+            tlm = tlms[1][n]
+            src0 = 10.0 * np.log10(blastwave_spectrum(tlm_freq, 2.0 * yld_vals[m], 1.0))
+   
+            rng_vals = np.linspace(5.0, tlm.rng_vals[-1], 100)
+            dr = abs(rng_vals[1] - rng_vals[0])
+
+            P_grid, rng_grid = np.meshgrid(P_vals, rng_vals)
+
+            duration = rng_grid * (0.34 - 0.27) / (0.34 * 0.27)
+            duration[duration < 5.0] = 5.0
+
+            if len(yld_vals) > 1 and len(tlms[0]) > 1:
+                ax_j = ax[m][n]
+            elif len(yld_vals) > 1:
+                ax_j = ax[m]
+            else:
+                ax_j = ax[n]
+
+            ax_j.set_theta_direction(-1)
+            ax_j.set_theta_zero_location("N")
+
+            ax_j.set_xticks(np.linspace(0, 2 * np.pi, 4, endpoint=False))
+            ax_j.set_yticks(np.linspace(0, np.round(tlm.rng_vals[-1], -1), 5))
+
+            if n == 0 and m == 0:
+                ax_j.set_xticklabels(['N', 'E', 'S', 'W'])
+            else:
+                ax_j.set_xticklabels([])
+                ax_j.set_yticklabels([])
+
+            [i.set_color('black') for i in ax_j.get_yticklabels()]
+            if m == 0:
+                ax_j.annotate(str(tlm_freq) + " Hz", (0.075, 0.925), xycoords='axes fraction', horizontalalignment='center')
+            if n == 0:
+                ax_j.annotate(str(yld_vals[m] * 1.0e-3) + " tons", (0.025, 0.075), xycoords='axes fraction', horizontalalignment='center')
+
+            for az_index in range(tlm._az_bin_cnt):
+                center = -180 + 360.0 * (az_index / tlm._az_bin_cnt)
+                arrival = tlm.eval(rng_grid, P_grid - src0, np.ones_like(rng_grid) * center)
+                rng_prob = simps(arrival * ims_ns_cdf(P_grid, tlm_freq, duration=duration, array_dim=array_dim), P_vals)
+
+                ax_j.bar(np.radians(np.array([center] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
+                        
+    print('\n' + "Plotting detection statistics...", '\n')
+    
+    plt.tight_layout()
+
+    if output_path:
+        plt.savefig(output_path + ".det-stats.png", dpi=300) 
+    
+    if show_fig:
+        plt.show()
+
+
+def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max, lon_min, lon_max, resol, output_path, show_fig):
+
+    # Extract network locations and unique TLM/dim info
+    print("Loading network info from " + info_file + "..." + '\n')
+    sta_locs, dims, model_files = [], [], []
+    with open(info_file, 'r') as of:
+        for line in of:
+            temp = line.strip('()[]\n').replace(' ', '').split(',')
+            sta_locs = sta_locs + [[float(item) for item in temp[:2]]]
+            dims = dims + [int(temp[2])]
+            model_files = model_files + [temp[3]]
+
+    sta_locs = np.array(sta_locs)
+    dims = np.array(dims)
+
+    # Loop over unique TLM/dim combinations, build PDF(r, az) interpolation, and evaluate on the grid
+    _, ims_ns_cdf = ims_noise_model()
+
+    # check if frequency value is in TLM file name(s):
+    try:
+        freq = float(model_files[0].split("_")[-1].split("Hz")[0])
+    except:
+        print("Warning!  Couldn't extract frequency from TLM file name(s).  Using specified value (" + freq + ")")
+        freq = float(freq)
+
+    print("Computing spectral amplitude for source:")
+    print('\t' + "Yield: " + str(W0 * 1.0e-3) + " ton eq. TNT")
+    print('\t' + "Frequency: " + str(freq) + " Hz")
+
+    src0 = 10.0 * np.log10(blastwave_spectrum(freq, 2.0 * W0, 1.0))
+    P_vals = np.linspace(-50.0, src0 + 10.0, 200)
+
+    lat_vals = np.linspace(lat_min, lat_max, resol)
+    lon_vals = np.linspace(lon_min, lon_max, resol)
+
+    grid_lats, grid_lons = np.meshgrid(lat_vals, lon_vals)
+    grid_lats = grid_lats.flatten()
+    grid_lons = grid_lons.flatten()
+
+    print('\n' + "Evaluating detection statistics for each station...")
+    det_stats = []
+    for j, model_info in enumerate(model_files):
+        print('\t' + "Loading TLM from '" + model_info + "' for station at (" + str(sta_locs[j][0]) + ", " + str(sta_locs[j][1]) + ")")
+
+        tlm = TLossModel()
+        tlm.load(model_info, verbose=False)
+
+        rng_vals = np.linspace(1.0, tlm.rng_vals[-1], 100)
+        P_grid, rng_grid = np.meshgrid(P_vals, rng_vals)
+
+        duration = rng_grid * (0.34 - 0.27) / (0.34 * 0.27)
+        duration[duration < 2.5] = 2.5
+        
+        det_prob = np.empty((len(rng_vals), tlm._az_bin_cnt))
+        for az_index in range(tlm._az_bin_cnt):
+            center = -180 + 360.0 * (az_index / tlm._az_bin_cnt)
+            arrival = tlm.eval(rng_grid, P_grid - src0, np.ones_like(rng_grid) * center)
+            det_prob[:, az_index] = simps(arrival * ims_ns_cdf(P_grid, freq, duration=duration, array_dim=dims[j]), P_vals, axis=1)
+
+        az_vals = np.array([-180 + 360.0 * (j / tlm._az_bin_cnt) for j in range(tlm._az_bin_cnt)])
+        az_vals = np.append(az_vals, 180.0)
+        det_prob = np.column_stack((det_prob, det_prob[:, 0]))
+
+        interp = RectBivariateSpline(rng_vals, az_vals, det_prob)
+
+        temp = np.array(sph_proj.inv(sta_locs[j][1] * np.ones_like(grid_lons), sta_locs[j][0] * np.ones_like(grid_lats), grid_lons, grid_lats, radians=False))
+        output_azs, output_rngs = np.array(temp[0]) - 180.0, np.array(temp[2]) / 1000.0
+
+        output_azs[output_azs > 180.0] -= 360.0
+        output_azs[output_azs < -180.0] += 360.0
+
+        output_rngs[output_rngs < 5.0] = 5.0
+
+        det_stats = det_stats + [interp.ev(output_rngs, output_azs)]
+   
+    det_stats = np.array(det_stats)
+
+    # Combine statistics and generate map
+    print('\n' + "Combining station detection stats to determine network performance...")
+    print('\t' + "Requiring " + str(det_cnt_min) + " detecting stations.")
+    result = 1.0 - np.prod(1.0 - det_stats, axis=0)
+    for n in range(1, det_cnt_min):
+        for indices in itertools.combinations(list(range(len(sta_locs))), r=n):
+            P1 = np.array([det_stats[j] for j in range(len(det_stats)) if j in indices])
+            P2 = np.array([(1.0 - det_stats[j]) for j in range(len(det_stats)) if j not in indices])
+
+            result = result - np.prod(P1, axis=0) * np.prod(P2, axis=0)
+
+
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1, projection=map_proj)
+
+    ax.set_xlim(lon_min, lon_max)
+    ax.set_ylim(lat_min, lat_max)
+
+    gl = ax.gridlines(crs=map_proj, draw_labels=True, linewidth=0.5, color='gray', alpha=0.5, linestyle='--')
+    gl.top_labels = False
+    gl.right_labels = False
+
+    lat_tick, lon_tick = int((lat_max - lat_min) / 5), int((lon_max - lon_min) / 5)
+    gl.xlocator = mticker.FixedLocator(np.arange(lon_min - np.ceil(lon_tick / 2), lon_max + lon_tick, lon_tick))
+    gl.ylocator = mticker.FixedLocator(np.arange(lat_min - np.ceil(lat_tick / 2), lat_max + lat_tick, lat_tick))
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+
+    # Add features (coast lines, borders)
+    ax.add_feature(cfeature.COASTLINE, linewidth=0.5)
+    ax.add_feature(cfeature.BORDERS, linewidth=0.5)
+    if (lon_max - lon_min) < 20.0:
+        ax.add_feature(cfeature.STATES, linewidth=0.5)
+        ax.add_feature(cfeature.RIVERS, edgecolor='dodgerblue', alpha=0.3)
+        ax.add_feature(cfeature.LAKES, facecolor='dodgerblue', edgecolor='dodgerblue', alpha=0.3)
+
+    sc = ax.scatter(grid_lons, grid_lats, c=result, cmap=cm.YlOrRd, vmin=0.0, vmax=1.0)
+    ax.plot(sta_locs[:, 1], sta_locs[:, 0], "^k")
+
+    divider = make_axes_locatable(ax)
+    ax_cb = divider.new_horizontal(size="5%", pad=0.1, axes_class=plt.Axes)
+    fig.add_axes(ax_cb)
+    cbar = plt.colorbar(sc, cax=ax_cb)
+    cbar.set_label('Detection Probability')
+    
+    if output_path:
+        plt.savefig(output_path + ".network.png", dpi=300) 
+    
+    if show_fig:
+        plt.show()

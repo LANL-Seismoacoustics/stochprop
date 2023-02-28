@@ -12,6 +12,7 @@ dependencies:
   - scipy
   - netcdf4
   - ipython
+  - cartopy
   - pyproj
   - pathos
   - sphinx

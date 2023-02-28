@@ -72,7 +72,7 @@ if __name__ == '__main__':
     # ######################### #
     print("Building atmosphere matrix for all profiles...")
     A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", max_alt=80.0)
-    eofs.compute_eofs(A, z0, "eofs/" + run_id + "_low_alt", eof_cnt=eof_cnt)
+    eofs.compute_eofs(A, z0, "eofs/" + run_id + "_low_alt", eof_cnt=eof_cnt, build_info={'atmo_dir': "profs/"})
 
     # #################################### #
     #  Compute EOFs coefficients for each  #
@@ -98,7 +98,8 @@ if __name__ == '__main__':
     for nS in range(len(season_labels)):
         print('\n' + "Building EOF for " + season_labels[nS])
         A, z0 = eofs.build_atmo_matrix("profs/", "*.dat", months=season_months[nS])
-        eofs.compute_eofs(A, z0, "eofs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt)
+        eofs.compute_eofs(A, z0, "eofs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt, build_info = {'atmo_dir' : "profs/", 'month_selection' : ", ".join(season_months[nS])})
+
         coeffs = eofs.compute_coeffs(A, z0, "eofs/" + run_id+ "_" + season_labels[nS], "coeffs/" + run_id + "_" + season_labels[nS], eof_cnt=eof_cnt)
 
         print('\n' + "Sampling atmospheric state for " + season_labels[nS])
