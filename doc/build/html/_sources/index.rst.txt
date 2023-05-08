@@ -23,6 +23,7 @@ _____________________________________
 
     authorship
     installation
+    quickstart
     analysis
     stochprop
     references

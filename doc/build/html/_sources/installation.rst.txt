@@ -35,8 +35,16 @@ methods in the LANL InfraPy signal analysis software suite.  As with the InfraGA
 can be utilized without InfraPy, but full usage will require installation of InfraPy (https://github.com/LANL-Seismoacoustics/infrapy).
 
 -------------------------------------
-Installing stochprop
+Installing stochprop (stand alone)
 -------------------------------------
+
+Stuff...
+
+-------------------------------------
+Installing stochprop (PyGS)
+-------------------------------------
+
+*Add some explanation of the Python Geophysics Suite (PyGS)*
 
 Once Anaconda is installed, you can install stochprop using pip by navigating to the base directory of the package (there will be a file there
 named setup.py).  Assuming InfraPy has been installed within a conda environment called infrapy_env, it is recommended to install stochprop in the same environment using:
@@ -73,13 +81,13 @@ Testing stochprop
 
 Once the installation is complete, you can test the methods by running the command line interface help 
 
-.. code-block:: bash
+.. code-block:: none
 
     stochprop --help
 
 This command will show the general usage of the stochprop package:
 
-.. code-block:: bash
+.. code-block:: none
 
     Usage: stochprop [OPTIONS] COMMAND [ARGS]...
 
