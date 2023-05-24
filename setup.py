@@ -9,17 +9,21 @@ import glob
 from distutils.core import setup
 
 setup(name = "stochprop",
-    version = '0.1',
-    description = "A set of tools for analyzing atmospheric variability and uncertainty for infrasound propagation studies",
+    version = '1.0.1',
+    description = "A set of tools for analyzing atmospheric variability and uncertainty in infrasound propagation studies",
     author_email = 'pblom at lanl dot gov',
     packages = ['stochprop'],
     scripts=[],
 
     entry_points = {'console_scripts':['stochprop=stochprop.__main__:main']},
 
-    install_requires = ['numpy',
-                        'scipy',
+    install_requires = ['click',
                         'matplotlib',
+                        'numpy',
+                        'scipy',
+                        'netcdf4',
+                        'ipython',
+                        'cartopy',
                         'pyproj',
                         'pathos',
                         'sphinx']
