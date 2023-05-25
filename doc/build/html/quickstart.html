@@ -5,7 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
@@ -25,6 +25,7 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
@@ -88,12 +89,17 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#identifying-seasonal-trends">Identifying Seasonal Trends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#eofs-for-atmosphere-statistics">EOFs for Atmosphere Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constructing-propagation-statistics">Constructing Propagation Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perturbing-atmospheric-structure">Perturbing Atmospheric Structure</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stochprop.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">References and Citing Usage</a></li>
 </ul>
 
             
@@ -159,22 +165,202 @@
            <div itemprop="articleBody">
             
   <section id="quickstart">
-<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
 <p>Quickstart discussion</p>
 <section id="identifying-seasonal-trends">
-<h2>Identifying Seasonal Trends<a class="headerlink" href="#identifying-seasonal-trends" title="Permalink to this headline">¶</a></h2>
+<h2>Identifying Seasonal Trends<a class="headerlink" href="#identifying-seasonal-trends" title="Permalink to this heading">¶</a></h2>
 <p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">Usage: stochprop prop season-trends [OPTIONS]</span>
+
+<span class="go">    stochprop prop season-trends</span>
+<span class="go">    -----------------------</span>
+
+<span class="go">    Example Usage:</span>
+<span class="go">        stochprop prop season-trends --atmo-dir profs/ --results-path example</span>
+
+<span class="go">    Options:</span>
+<span class="go">      --atmo-dir TEXT        Directory of atmospheric specifications (required)</span>
+<span class="go">      --results-path TEXT    Output path and prefix</span>
+<span class="go">      --atmo-pattern TEXT    Specification file pattern (default: &#39;*.dat&#39;)</span>
+<span class="go">      --atmo-format TEXT     Specification format (default: &#39;zTuvdp&#39;)</span>
+<span class="go">      --year-selection TEXT  Limit analysis to specific year(s) (default: None)</span>
+<span class="go">      --include-NS BOOLEAN   Option to include north/south analysis</span>
+<span class="go">      -h, --help             Show this message and exit.</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop season-trends --atmo-dir profs/
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="_images/season-trends.png"><img alt="_images/season-trends.png" src="_images/season-trends.png" style="width: 600px;" /></a>
+</figure>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>##########################$#########
+##                                ##
+##           stochprop            ##
+##      Propagation Methods       ##
+##   ESS Ratio Seasonal Analysis  ##
+##                                ##
+####################################
+
+
+Run summary:
+Source directory: profs/
+Specification pattern: *.dat
+Specification format: zTuvdp
+
+    Loading profiles from profs/ with pattern: *.dat
+        Extracted ground elevation: 0.165
+
+Computing effective sound speed ratio for each day-of-year...
+
+Eastward waveguide changes...
+    Waveguide dissipates: April 10  (yday: 101, week: 14)
+    Waveguide forms: April 11  (yday: 102, week: 15)
+    Waveguide dissipates: April 12  (yday: 103, week: 15)
+    Waveguide forms: September 23  (yday: 267, week: 38)
+
+Westward waveguide changes...
+    Waveguide forms: May 02  (yday: 123, week: 18)
+    Waveguide dissipates: May 04  (yday: 125, week: 18)
+    Waveguide forms: May 11  (yday: 132, week: 19)
+    Waveguide dissipates: August 29  (yday: 242, week: 35)
+</pre></div>
+</div>
+</div></blockquote>
+<p>There is some excess variability that causes multiple instances of the stratospheric waveguide forming and dissipating, but the general result from this analysis is that the eastward waveguide forms in September and lasts until early April (weeks 38 – 15) and the westward waveguide forms in early May and lasts until the end of August (weeks 19 - 35).  These seasonal trends will be utilized in constructing atmospheric statistics.</p>
 </section>
 <section id="eofs-for-atmosphere-statistics">
-<h2>EOFs for Atmosphere Statistics<a class="headerlink" href="#eofs-for-atmosphere-statistics" title="Permalink to this headline">¶</a></h2>
+<h2>EOFs for Atmosphere Statistics<a class="headerlink" href="#eofs-for-atmosphere-statistics" title="Permalink to this heading">¶</a></h2>
+<p><strong>Build EOFs</strong></p>
 <p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: stochprop eof build [OPTIONS]
+
+stochprop eof build
+-----------------------
+
+Example Usage:
+    stochprop eof build --atmo-dir profs/ --eofs-path eofs/example
+    stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
+    stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection &#39;10:12, 01:03&#39;
+
+Options:
+--atmo-dir TEXT          Directory of atmospheric specifications (required)
+--eofs-path TEXT         EOF output path and prefix (required)
+--atmo-pattern TEXT      Specification file pattern (default: &#39;*.dat&#39;)
+--atmo-format TEXT       Specification format (default: &#39;zTuvdp&#39;)
+--month-selection TEXT   Limit analysis to specific month(s) (default: None)
+--week-selection TEXT    Limit analysis to specific week(s) (default: None)
+--year-selection TEXT    Limit analysis to specific year(s) (default: None)
+--save-datetime BOOLEAN  Save date time info (default: False)
+--max-alt TEXT           Maximum altitude for trimming data (default: None)
+--eof-cnt INTEGER        Number of EOFs to store (default: 100)
+-h, --help               Show this message and exit.
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --week-selection &#39;38:52,1:15&#39;
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>##################################
+##                              ##
+##           stochprop          ##
+##          EOF Methods         ##
+##   Build SVD to Define EOFs   ##
+##                              ##
+##################################
+
+
+Run summary:
+  Source directory: profs/
+  Specification pattern: *.dat
+  Specification format: zTuvdp
+  Limited weeks: [&#39;38&#39;, &#39;39&#39;, &#39;40&#39;, &#39;41&#39;, &#39;42&#39;, &#39;43&#39;, &#39;44&#39;, &#39;45&#39;, &#39;46&#39;, &#39;47&#39;, &#39;48&#39;, &#39;49&#39;, &#39;50&#39;, &#39;51&#39;, &#39;52&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;, &#39;9&#39;, &#39;10&#39;, &#39;11&#39;, &#39;12&#39;, &#39;13&#39;, &#39;14&#39;, &#39;15&#39;]
+  EOF count: 100
+  Output path: eofs/example_winter
+
+    Loading profiles from profs/ with pattern: *.dat
+        Weeks filter: [&#39;38&#39;, &#39;39&#39;, &#39;40&#39;, &#39;41&#39;, &#39;42&#39;, &#39;43&#39;, &#39;44&#39;, &#39;45&#39;, &#39;46&#39;, &#39;47&#39;, &#39;48&#39;, &#39;49&#39;, &#39;50&#39;, &#39;51&#39;, &#39;52&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;, &#39;9&#39;, &#39;10&#39;, &#39;11&#39;, &#39;12&#39;, &#39;13&#39;, &#39;14&#39;, &#39;15&#39;]
+    Building EOFs using SVD...
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_summer --week-selection &#39;19:35&#39;
+
+stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_transition --week-selection &#39;16:18,36:37&#39;  --eof-cnt 35
+</pre></div>
+</div>
+</div></blockquote>
+<p>Note that in the spring/fall analysis, there aren’t enough atmospheric specifications in the 5 weeks defining the spring and fall transitions and the methods error out if more EOFs are requested than atmospheric specifications provided.  In more general analysis, sampling these weeks across multiple years provide sufficient atmospheric specification samples to produce a full 100 EOFs, but in this example the EOF count needs to be limited to 35.</p>
+<p><strong>Visualize EOFs</strong></p>
+<p>Discussion…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof plot --eofs-path eofs/example_winter
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="_images/winter_eofs.png"><img alt="_images/winter_eofs.png" src="_images/winter_eofs.png" style="width: 600px;" /></a>
+</figure>
+</div></blockquote>
+<p>Repeat for the summer season and show the first 10 EOFs (click the image to view it in a larger format).</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="_images/summer_eofs.png"><img alt="_images/summer_eofs.png" src="_images/summer_eofs.png" style="width: 800px;" /></a>
+</figure>
+</div></blockquote>
+<p><strong>Sampling the Atmospheric Structure</strong></p>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --week-selection &#39;38:52,1:15&#39;
+</pre></div>
+</div>
+</div></blockquote>
+<p><a href="#id2"><span class="problematic" id="id3">**</span></a>Check Seasonal Trends with EOFs (optional) **</p>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_all --run-all-weeks True --coeff-path coeffs/example_all --eof-cnt 50
+</pre></div>
+</div>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof seasonality --eofs-path eofs/example_all --coeff-path coeffs/example_all --eof-cnt 50
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 <section id="constructing-propagation-statistics">
-<h2>Constructing Propagation Statistics<a class="headerlink" href="#constructing-propagation-statistics" title="Permalink to this headline">¶</a></h2>
+<h2>Constructing Propagation Statistics<a class="headerlink" href="#constructing-propagation-statistics" title="Permalink to this heading">¶</a></h2>
 <p>Stuff…</p>
 </section>
-<section id="perturbing-atmospheric-strucuture">
-<h2>Perturbing Atmospheric Strucuture<a class="headerlink" href="#perturbing-atmospheric-strucuture" title="Permalink to this headline">¶</a></h2>
+<section id="perturbing-atmospheric-structure">
+<h2>Perturbing Atmospheric Structure<a class="headerlink" href="#perturbing-atmospheric-structure" title="Permalink to this heading">¶</a></h2>
 <p>Stuff…</p>
 </section>
 </section>

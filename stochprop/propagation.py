@@ -85,7 +85,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
     if os.path.isfile(results_file):
         print(results_file + " already exists  --->  Skipping infraGA/GeoAc ray tracing runs...")
     else:
-        if not ((geom is "3d") or (geom is "sph")):
+        if not ((geom == "3d") or (geom == "sph")):
             msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
             warnings.warn(msg)
         else:
@@ -445,7 +445,7 @@ class PathGeometryModel(object):
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping path geometry model construction...")
         else:
-            if not ((geom is "3d") or (geom is "sph")):
+            if not ((geom == "3d") or (geom == "sph")):
                 msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
                 warnings.warn(msg)
             else:

@@ -56,6 +56,7 @@ main.add_command(prop)
 main.add_command(perturb)
 
 eof.add_command(cli.eof_build)
+eof.add_command(cli.eof_plot)
 eof.add_command(cli.eof_coeffs)
 eof.add_command(cli.eof_seasonality)
 eof.add_command(cli.eof_sample)

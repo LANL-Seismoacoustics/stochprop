@@ -117,6 +117,24 @@ def eof_build(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selection, w
     eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt, build_info=build_info)
     
 
+
+@click.command('plot', short_help="Plot EOF results")
+@click.option("--eofs-path", help="EOF output path and prefix (required)", prompt="EOF path: ")
+@click.option("--eof-cnt", help="Number of EOFs to visualize (default: 5)", default=5)
+def eof_plot(eofs_path, eof_cnt):
+    '''
+    \b
+    stochprop eof plot
+    -----------------------
+    \b
+    Example Usage:
+    \t stochprop eof plot --eofs-path eofs/example
+    
+    '''
+
+    eofs._plot_eofs(eofs_path, eof_cnt)
+
+
 @click.command('coeffs', short_help="Compute EOF coefficients")
 @click.option("--atmo-dir", help="Directory of atmospheric specifications (required)", prompt="Atmospheric specifications: ")
 @click.option("--eofs-path", help="EOF info path and prefix (required)", prompt="EOFs path: ")

@@ -639,6 +639,67 @@ def compute_eofs(A, alts, output_path, eof_cnt=100, build_info=None):
     v_eofs_out.close()
 
 
+def _plot_eofs(eofs_path, eof_cnt=5):
+
+    print('\t' + "Computing EOF coefficients for profiles...")
+    # load means and eofs
+    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
+    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
+    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
+    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+
+    c_lim = np.max(abs(c_eofs[:, 1:eof_cnt]))
+    u_lim = np.max(abs(u_eofs[:, 1:eof_cnt]))
+    v_lim = np.max(abs(v_eofs[:, 1:eof_cnt]))
+
+    c_lim = np.round(c_lim, 1)
+    u_lim =  np.round(max(u_lim, v_lim), 1)
+
+    fig = plt.figure(figsize=(1.5 * (eof_cnt + 1), 5), layout='constrained')
+    spec = fig.add_gridspec(2, eof_cnt + 1)
+
+    ax0 = fig.add_subplot(spec[0, 0])
+    ax0.grid()
+    ax0.set_ylabel("Altitude [km]")
+    ax0.set_xlabel("Sound Speed [m/s]")
+    ax0.xaxis.set_label_position('top')
+    ax0.xaxis.set_ticks_position('top')
+    ax0.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
+
+    ax0.plot(means[:, 1], means[:,0], '-k', linewidth=3)
+
+    ax1 = fig.add_subplot(spec[1, 0])
+    ax1.grid()
+    ax1.set_ylabel("Altitude [km]")
+    ax1.set_xlabel("Wind Speed [m/s]")
+    ax1.xaxis.set_label_position('bottom')
+    ax1.xaxis.set_ticks_position('bottom')
+    ax1.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
+
+    ax1.plot(means[:, 2], means[:,0], '-b', linewidth=3)
+    ax1.plot(means[:, 3], means[:,0], '-r', linewidth=3)
+
+    for j in range(eof_cnt):
+        ax0n = fig.add_subplot(spec[0, j + 1])
+        ax0n.grid()
+        ax0n.set_xlim(-c_lim, c_lim)
+        ax0n.yaxis.set_ticklabels([])
+        ax0n.xaxis.set_label_position('top')
+        ax0n.xaxis.set_ticks_position('top')
+        ax0n.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
+        ax0n.plot(c_eofs[:, j + 1], c_eofs[:,0], '-k', linewidth=3)
+
+        ax1n = fig.add_subplot(spec[1, j + 1])
+        ax1n.grid()
+        ax1n.set_xlim(-u_lim, u_lim)
+        ax1n.yaxis.set_ticklabels([])
+        ax1n.set_xlabel("EOF " + str(j))
+        ax1n.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
+        ax1n.plot(u_eofs[:, j + 1], u_eofs[:, 0], '-b', linewidth=3)
+        ax1n.plot(v_eofs[:, j + 1], v_eofs[:, 0], '-r', linewidth=3)
+
+    plt.show()
+    
 
 def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     """

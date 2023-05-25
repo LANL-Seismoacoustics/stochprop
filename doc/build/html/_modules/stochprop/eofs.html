@@ -1,33 +1,72 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>stochprop.eofs &mdash; stochprop 1.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <meta charset="utf-8">
   
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stochprop.eofs &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="../../index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
             <img src="../../_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -35,40 +74,85 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authorship.html">Authorship &amp; References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../analysis.html">Stochastic Propagation Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../stochprop.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and Citing Usage</a></li>
 </ul>
 
+            
+          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">stochprop</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
+        
       <li>stochprop.eofs</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <h1>Source code for stochprop.eofs</h1><div class="highlight"><pre>
 <span></span><span class="c1"># eofs.py</span>
 <span class="c1">#</span>
@@ -120,7 +204,7 @@
                         <span class="o">-</span><span class="mf">2.7221769e-2</span><span class="p">,</span> <span class="mf">4.247473e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.9583181e-6</span><span class="p">,</span> <span class="mf">1.7295795e-8</span><span class="p">])</span>
 
 <div class="viewcode-block" id="density"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.density">[docs]</a><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit</span>
 
 <span class="sd">        Parameters</span>
@@ -142,7 +226,7 @@
     <span class="k">return</span> <span class="n">den0</span> <span class="o">*</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">poly_A</span> <span class="o">/</span> <span class="n">poly_B</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="pressure"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.pressure">[docs]</a><span class="k">def</span> <span class="nf">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas</span>
 
 <span class="sd">        Parameters</span>
@@ -160,7 +244,7 @@
     
 
 <div class="viewcode-block" id="profiles_qc"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.profiles_qc">[docs]</a><span class="k">def</span> <span class="nf">profiles_qc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs a quality control (QC) check on profiles in the path</span>
 <span class="sd">        matching the pattern.  It can optionally plot the bad</span>
 <span class="sd">        profiles.  If it finds any, it makes a new direcotry</span>
@@ -365,7 +449,7 @@
 
 
 <div class="viewcode-block" id="build_atmo_matrix"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.build_atmo_matrix">[docs]</a><span class="k">def</span> <span class="nf">build_atmo_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ydays</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_alt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prof_format</span><span class="o">=</span><span class="s2">&quot;zTuvdp&quot;</span><span class="p">,</span> <span class="n">latlon0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_datetime</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read in a list of atmosphere files from the path location</span>
 <span class="sd">        matching a specified pattern for continued analysis.</span>
 
@@ -612,7 +696,7 @@
 
 
 <div class="viewcode-block" id="compute_eofs"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_eofs">[docs]</a><span class="k">def</span> <span class="nf">compute_eofs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">alts</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">build_info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the singular value decomposition (SVD)</span>
 <span class="sd">        of an atmosphere set read into an array by</span>
 <span class="sd">        stochprop.eofs.build_atmo_matrix() and saves</span>
@@ -711,9 +795,70 @@
     <span class="n">v_eofs_out</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
+<span class="k">def</span> <span class="nf">_plot_eofs</span><span class="p">(</span><span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Computing EOF coefficients for profiles...&quot;</span><span class="p">)</span>
+    <span class="c1"># load means and eofs</span>
+    <span class="n">means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-mean_atmo.dat&quot;</span><span class="p">)</span>
+    <span class="n">c_eofs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-snd_spd.eofs&quot;</span><span class="p">)</span>
+    <span class="n">u_eofs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-zonal_winds.eofs&quot;</span><span class="p">)</span>
+    <span class="n">v_eofs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-merid_winds.eofs&quot;</span><span class="p">)</span>
+
+    <span class="n">c_lim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="n">eof_cnt</span><span class="p">]))</span>
+    <span class="n">u_lim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">u_eofs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="n">eof_cnt</span><span class="p">]))</span>
+    <span class="n">v_lim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">v_eofs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:</span><span class="n">eof_cnt</span><span class="p">]))</span>
+
+    <span class="n">c_lim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">c_lim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">u_lim</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">u_lim</span><span class="p">,</span> <span class="n">v_lim</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">eof_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span> <span class="n">layout</span><span class="o">=</span><span class="s1">&#39;constrained&#39;</span><span class="p">)</span>
+    <span class="n">spec</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_gridspec</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">eof_cnt</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">ax0</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Altitude [km]&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Sound Speed [m/s]&quot;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+    <span class="n">ax0</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">ax0</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">means</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">means</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">ax1</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Altitude [km]&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Wind Speed [m/s]&quot;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;bottom&#39;</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">means</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">means</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">means</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">means</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">):</span>
+        <span class="n">ax0n</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">c_lim</span><span class="p">,</span> <span class="n">c_lim</span><span class="p">)</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_label_position</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_ticks_position</span><span class="p">(</span><span class="s1">&#39;top&#39;</span><span class="p">)</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+        <span class="n">ax0n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c_eofs</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+        <span class="n">ax1n</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">spec</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="n">u_lim</span><span class="p">,</span> <span class="n">u_lim</span><span class="p">)</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;EOF &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">v_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    
 
 <div class="viewcode-block" id="compute_coeffs"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_coeffs">[docs]</a><span class="k">def</span> <span class="nf">compute_coeffs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">alts</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the EOF coefficients for a suite of atmospheres</span>
 <span class="sd">        and store the coefficient values.</span>
 
@@ -799,7 +944,7 @@
 
 
 <div class="viewcode-block" id="compute_overlap"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_overlap">[docs]</a><span class="k">def</span> <span class="nf">compute_overlap</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the overlap of EOF coefficient distributions</span>
 
 <span class="sd">        Parameters</span>
@@ -867,7 +1012,7 @@
 
 
 <div class="viewcode-block" id="compute_seasonality"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_seasonality">[docs]</a><span class="k">def</span> <span class="nf">compute_seasonality</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the overlap of EOF coefficients to identify seasonality</span>
 
 <span class="sd">        Parameters</span>
@@ -882,13 +1027,15 @@
 
     <span class="n">dist_mat</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">))</span>   
     <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>   
-    <span class="n">links</span> <span class="o">=</span> <span class="n">hierarchy</span><span class="o">.</span><span class="n">linkage</span><span class="p">(</span><span class="n">squareform</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">),</span> <span class="s1">&#39;weighted&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;generating linkages&quot;</span><span class="p">)</span>
+    <span class="n">links</span> <span class="o">=</span> <span class="n">hierarchy</span><span class="o">.</span><span class="n">linkage</span><span class="p">(</span><span class="n">squareform</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">),</span> <span class="s1">&#39;average&#39;</span><span class="p">)</span>
 
-    <span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dist_mat</span><span class="p">)</span> <span class="o">==</span> <span class="mi">12</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">hierarchy</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">links</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">calendar</span><span class="o">.</span><span class="n">month_abbr</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)])</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">hierarchy</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">links</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">)</span>
+        <span class="n">f</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mf">7.5</span><span class="p">))</span>
+        <span class="n">hierarchy</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">links</span><span class="p">,</span> <span class="n">orientation</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax1</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[(</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">52</span><span class="p">)])</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">file_id</span><span class="o">.</span><span class="n">rpartition</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="k">if</span> <span class="n">file_id</span><span class="p">:</span>
@@ -904,7 +1051,7 @@
 <span class="c1">#     the coefficient PDFs     #</span>
 <span class="c1">################################</span>
 <div class="viewcode-block" id="define_coeff_limits"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.define_coeff_limits">[docs]</a><span class="k">def</span> <span class="nf">define_coeff_limits</span><span class="p">(</span><span class="n">coeff_vals</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute upper and lower bounds for coefficient values</span>
 
 <span class="sd">        Parameters</span>
@@ -924,7 +1071,7 @@
 
 
 <div class="viewcode-block" id="build_cdf"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.build_cdf">[docs]</a><span class="k">def</span> <span class="nf">build_cdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="n">pnts</span><span class="o">=</span><span class="mi">250</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the cumulative distribution of a pdf within specified limits</span>
 
 <span class="sd">        Parameters</span>
@@ -953,7 +1100,7 @@
 
 
 <div class="viewcode-block" id="draw_from_pdf"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.draw_from_pdf">[docs]</a><span class="k">def</span> <span class="nf">draw_from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="n">cdf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sample a number of values from a probability distribution</span>
 <span class="sd">        function (pdf) with specified limits</span>
 
@@ -989,7 +1136,7 @@
 
 
 <div class="viewcode-block" id="sample_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.sample_atmo">[docs]</a><span class="k">def</span> <span class="nf">sample_atmo</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">prof_cnt</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">coeff_label</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate atmosphere states using coefficient distributions for</span>
 <span class="sd">        a set of empirical orthogonal basis functions</span>
 
@@ -1049,7 +1196,7 @@
 
 
 <div class="viewcode-block" id="maximum_likelihood_profile"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.maximum_likelihood_profile">[docs]</a><span class="k">def</span> <span class="nf">maximum_likelihood_profile</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">coeff_label</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use coefficient distributions for a set of empirical orthogonal</span>
 <span class="sd">        basis functions to compute the maximum likelihood specification</span>
 
@@ -1106,7 +1253,7 @@
 <span class="c1">#    perturb specific atmos    #</span>
 <span class="c1"># ############################ #</span>
 <div class="viewcode-block" id="fit_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.fit_atmo">[docs]</a><span class="k">def</span> <span class="nf">fit_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a given number of EOF coefficients to fit a given</span>
 <span class="sd">        atmophere specification using the basic functions.  Write</span>
 <span class="sd">        the resulting approximated atmospheric specification to</span>
@@ -1178,7 +1325,7 @@
 
 
 <div class="viewcode-block" id="perturb_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.perturb_atmo">[docs]</a><span class="k">def</span> <span class="nf">perturb_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">stdev</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">eof_max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">sample_cnt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alt_wt_pow</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">sing_val_wt_pow</span><span class="o">=</span><span class="mf">0.25</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use EOFs to perturb a specified profile using a given scale</span>
 
 <span class="sd">        Parameters</span>
@@ -1273,30 +1420,42 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Philip Blom.</p>
-  </div>
+    <p>
+        &copy; Copyright 2020, Philip Blom
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

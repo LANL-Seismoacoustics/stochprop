@@ -1,33 +1,72 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>stochprop.propagation &mdash; stochprop 1.0 documentation</title>
-      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <meta charset="utf-8">
   
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>stochprop.propagation &mdash; stochprop 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
+
+   
   <div class="wy-grid-for-nav">
+    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
+          
+
+          
             <a href="../../index.html" class="icon icon-home"> stochprop
+          
+
+          
+            
             <img src="../../_static/lanl_logo.png" class="logo" alt="Logo"/>
+          
           </a>
+
+          
+            
+            
+          
+
+          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -35,40 +74,85 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../authorship.html">Authorship &amp; References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../analysis.html">Stochastic Propagation Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../stochprop.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../references.html">References and Citing Usage</a></li>
 </ul>
 
+            
+          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">stochprop</a>
+        
       </nav>
 
+
       <div class="wy-nav-content">
+        
         <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
           <li><a href="../index.html">Module code</a> &raquo;</li>
+        
       <li>stochprop.propagation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+        
       </li>
+    
   </ul>
+
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+            
   <h1>Source code for stochprop.propagation</h1><div class="highlight"><pre>
 <span></span><span class="c1"># propagation.py</span>
 <span class="c1">#</span>
@@ -117,7 +201,7 @@
 <span class="c1">#     with multiple profiles     #</span>
 <span class="c1"># ############################## #</span>
 <div class="viewcode-block" id="run_infraga"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.run_infraga">[docs]</a><span class="k">def</span> <span class="nf">run_infraga</span><span class="p">(</span><span class="n">profs_path</span><span class="p">,</span> <span class="n">results_file</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="n">bounces</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">inclinations</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">azimuths</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">180.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z_grnd</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng_max</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">infraga_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">clean_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prof_format</span><span class="o">=</span><span class="s2">&quot;zcuvd&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the infraga -prop algorithm to compute path geometry</span>
 <span class="sd">        statistics for BISL using a suite of specifications</span>
 <span class="sd">        and combining results into single file</span>
@@ -157,7 +241,7 @@
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">results_file</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">results_file</span> <span class="o">+</span> <span class="s2">&quot; already exists  ---&gt;  Skipping infraGA/GeoAc ray tracing runs...&quot;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">geom</span> <span class="ow">is</span> <span class="s2">&quot;3d&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">geom</span> <span class="ow">is</span> <span class="s2">&quot;sph&quot;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">geom</span> <span class="o">==</span> <span class="s2">&quot;3d&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">geom</span> <span class="o">==</span> <span class="s2">&quot;sph&quot;</span><span class="p">)):</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Incompatible geometry option for infraga: </span><span class="si">{}</span><span class="s2">.  Options are 3d&#39; and &#39;sph&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -196,7 +280,7 @@
 
 
 <div class="viewcode-block" id="run_modess"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.run_modess">[docs]</a><span class="k">def</span> <span class="nf">run_modess</span><span class="p">(</span><span class="n">profs_path</span><span class="p">,</span> <span class="n">results_path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">azimuths</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">180.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z_grnd</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng_max</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">ncpaprop_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">clean_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_lossless</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the NCPAprop normal mode methods to compute transmission</span>
 <span class="sd">        loss values for a suite of atmospheric specifications at</span>
 <span class="sd">        a set of frequency values</span>
@@ -312,7 +396,7 @@
 <span class="c1">#      Propagation Models      #</span>
 <span class="c1"># ############################ #</span>
 <div class="viewcode-block" id="find_azimuth_bin"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.find_azimuth_bin">[docs]</a><span class="k">def</span> <span class="nf">find_azimuth_bin</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">bin_cnt</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Identify the azimuth bin index given some specified number of bins</span>
 
 <span class="sd">        Parameters</span>
@@ -340,7 +424,7 @@
 
 
 <div class="viewcode-block" id="PathGeometryModel"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel">[docs]</a><span class="k">class</span> <span class="nc">PathGeometryModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Propagation path geometry statistics computed using ray tracing</span>
 <span class="sd">        analysis on a suite of specifications includes celerity-range and</span>
 <span class="sd">        azimuth deviation/scatter statistics</span>
@@ -375,7 +459,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">az_dev_std</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="PathGeometryModel.eval_rcel_gmm"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_rcel_gmm">[docs]</a>    <span class="k">def</span> <span class="nf">eval_rcel_gmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">rcel</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate reciprocal celerity Gaussian Mixture Model (GMM)</span>
 <span class="sd">            at specified range, reciprocal celerity, and azimuth</span>
 
@@ -420,7 +504,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.eval_az_dev_mn"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_az_dev_mn">[docs]</a>    <span class="k">def</span> <span class="nf">eval_az_dev_mn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate the mean back azimuth deviation at a given range</span>
 <span class="sd">            and propagation azimuth</span>
 
@@ -452,7 +536,7 @@
             <span class="k">return</span> <span class="n">mn</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.eval_az_dev_std"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_az_dev_std">[docs]</a>    <span class="k">def</span> <span class="nf">eval_az_dev_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate the standard deviation of the back azimuth at a given range</span>
 <span class="sd">            and propagation azimuth</span>
 
@@ -485,7 +569,7 @@
             <span class="k">return</span> <span class="n">vr</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.build"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrivals_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rng_width</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">rng_spacing</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">min_turning_ht</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">az_bin_cnt</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">az_bin_wdth</span><span class="o">=</span><span class="mf">30.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Construct propagation statistics from a ray tracing arrival file (concatenated from</span>
 <span class="sd">            multiple runs most likely) and output a path geometry model</span>
 
@@ -517,7 +601,7 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">output_file</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">output_file</span> <span class="o">+</span> <span class="s2">&quot; already exists  ---&gt;  Skipping path geometry model construction...&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">geom</span> <span class="ow">is</span> <span class="s2">&quot;3d&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">geom</span> <span class="ow">is</span> <span class="s2">&quot;sph&quot;</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">((</span><span class="n">geom</span> <span class="o">==</span> <span class="s2">&quot;3d&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">geom</span> <span class="o">==</span> <span class="s2">&quot;sph&quot;</span><span class="p">)):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Incompatible geometry option for infraga: </span><span class="si">{}</span><span class="s2">.  Options are 3d&#39; and &#39;sph&#39;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span>
                 <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -730,7 +814,7 @@
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">priors</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.load"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_file</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a path geometry model file for use</span>
 
 <span class="sd">        Parameters</span>
@@ -791,7 +875,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_rcel_wts</span><span class="p">[</span><span class="n">n_az</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">fit_params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fit_params</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="n">n_az</span><span class="p">][:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.display"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the propagation geometry statistics</span>
 
 <span class="sd">        Parameters</span>
@@ -934,7 +1018,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tloss_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <div class="viewcode-block" id="TLossModel.build"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tloss_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_coh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">az_bin_cnt</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">az_bin_wdth</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">rng_lims</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">],</span> <span class="n">rng_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">rng_smpls</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Construct propagation statistics from a NCPAprop modess or pape file (concatenated from</span>
 <span class="sd">            multiple runs most likely) and output a transmission loss model</span>
 
@@ -1056,7 +1140,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TLossModel.load"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a transmission loss file for use</span>
 
 <span class="sd">        Parameters</span>
@@ -1085,7 +1169,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pdf_fits</span><span class="p">[</span><span class="n">az_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">RectBivariateSpline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rng_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tloss_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_vals</span><span class="p">[</span><span class="n">az_index</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TLossModel.eval"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate TLoss model at specified range, transmission loss, and azimuth</span>
 
 <span class="sd">            Parameters</span>
@@ -1126,7 +1210,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="TLossModel.display"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Transmission Loss Statistics&quot;</span><span class="p">,</span> <span class="n">show_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_ref_tloss</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the transmission loss statistics</span>
 
 <span class="sd">        Parameters</span>
@@ -1233,7 +1317,7 @@
 <span class="c1">##   Blastwave Model   ##</span>
 <span class="c1">#########################</span>
 <div class="viewcode-block" id="kg_op"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.kg_op">[docs]</a><span class="k">def</span> <span class="nf">kg_op</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p_amb</span><span class="o">=</span><span class="mf">101.325</span><span class="p">,</span> <span class="n">T_amb</span><span class="o">=</span><span class="mf">288.15</span><span class="p">,</span> <span class="n">exp_type</span><span class="o">=</span><span class="s2">&quot;chemical&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kinney &amp; Graham scaling law peak overpressure model</span>
 <span class="sd">                </span>
 <span class="sd">        Parameters</span>
@@ -1275,7 +1359,7 @@
 
 
 <div class="viewcode-block" id="kg_ppd"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.kg_ppd">[docs]</a><span class="k">def</span> <span class="nf">kg_ppd</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p_amb</span><span class="o">=</span><span class="mf">101.325</span><span class="p">,</span> <span class="n">T_amb</span><span class="o">=</span><span class="mf">288.15</span><span class="p">,</span> <span class="n">exp_type</span><span class="o">=</span><span class="s2">&quot;chemical&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kinney &amp; Graham scaling law positive phase duration model</span>
 <span class="sd">                </span>
 <span class="sd">        Parameters</span>
@@ -1319,7 +1403,7 @@
 
 
 <div class="viewcode-block" id="blastwave_spectrum"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.blastwave_spectrum">[docs]</a><span class="k">def</span> <span class="nf">blastwave_spectrum</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p_amb</span><span class="o">=</span><span class="mf">101.325</span><span class="p">,</span> <span class="n">T_amb</span><span class="o">=</span><span class="mf">288.15</span><span class="p">,</span> <span class="n">exp_type</span><span class="o">=</span><span class="s2">&quot;chemical&quot;</span><span class="p">,</span> <span class="n">shaping_param</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Fourier transform amplitude for the acoustic</span>
 <span class="sd">            blastwave in sasm.acoustic.blastwave().</span>
 <span class="sd">        </span>
@@ -1565,30 +1649,42 @@
 </pre></div>
 
            </div>
+           
           </div>
           <footer>
+  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020, Philip Blom.</p>
-  </div>
+    <p>
+        &copy; Copyright 2020, Philip Blom
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
+
         </div>
       </div>
+
     </section>
+
   </div>
-  <script>
+  
+
+
+  <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

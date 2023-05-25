@@ -20,11 +20,13 @@ setup(name = "stochprop",
     install_requires = ['click',
                         'matplotlib',
                         'numpy',
+                        'numpydoc',
                         'scipy',
                         'netcdf4',
                         'ipython',
                         'cartopy',
                         'pyproj',
                         'pathos',
-                        'sphinx']
+                        'sphinx',
+                        'sphinx_rtd_theme']
      )
