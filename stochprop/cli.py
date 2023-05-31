@@ -368,7 +368,7 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
     grnd_index = np.argmin(abs(z0 - grnd_ht))
     click.echo('\t\t' + "Extracted ground elevation: " + str(grnd_ht))
 
-    plt.rcParams.update({'font.size': 14})
+    plt.rcParams.update({'font.size': 16})
 
     print('\n' + "Computing effective sound speed ratio for each day-of-year...")
     f1, ax1 = plt.subplots(2, figsize=(12, 6), sharex=True)
@@ -485,7 +485,7 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
     print('')
 
     ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[0], '-b', linewidth=2.5)
-    ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[1], '-r', linewidth=2.5)
+    ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[1], '--r', linewidth=2.5)
     ax1[0].axhline(1.0, color='k', linestyle='dashed')
 
     if include_ns:
