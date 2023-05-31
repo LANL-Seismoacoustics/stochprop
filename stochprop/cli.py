@@ -11,6 +11,7 @@
 
 from email.policy import default
 import os
+import re
 from xml.etree.ElementInclude import include
 import click
 import fnmatch
@@ -19,6 +20,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt 
 import matplotlib.cm as cm 
+from matplotlib.colorbar import ColorbarBase
 
 from datetime import datetime
 
@@ -323,7 +325,8 @@ def eof_sample(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
 @click.option("--atmo-format", help="Specification format (default: 'zTuvdp')", default='zTuvdp')
 @click.option("--year-selection", help="Limit analysis to specific year(s) (default: None)", default=None)
 @click.option("--include-NS", help="Option to include north/south analysis", default=False)
-def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection, include_ns):
+@click.option("--show-title", help="Option to display title text", default=True)
+def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection, include_ns, show_title):
     '''
     \b
     stochprop prop season-trends
@@ -365,6 +368,8 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
     grnd_index = np.argmin(abs(z0 - grnd_ht))
     click.echo('\t\t' + "Extracted ground elevation: " + str(grnd_ht))
 
+    plt.rcParams.update({'font.size': 14})
+
     print('\n' + "Computing effective sound speed ratio for each day-of-year...")
     f1, ax1 = plt.subplots(2, figsize=(12, 6), sharex=True)
     ax1[0].set_xlim(0, 52)
@@ -373,7 +378,8 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
     ax1[0].set_ylabel("Peak ESS Ratio")
     ax1[1].set_xlabel("Week of Year")
     ax1[1].set_ylabel("Altitude [km]")
-    ax1[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Eastward (blue), Westward (red)")
+    if show_title:
+        ax1[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Eastward (blue), Westward (red)")
 
     if include_ns:
         f2, ax2 = plt.subplots(2, figsize=(12, 6), sharex=True)
@@ -383,7 +389,8 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
         ax2[0].set_ylabel("Peak ESS Ratio")
         ax2[1].set_xlabel("Week of Year")
         ax2[1].set_ylabel("Altitude [km]")
-        ax2[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Northward (purple), Southward (orange)")
+        if show_title:
+            ax2[0].set_title("Effective Sound Speed (ESS) Ratio Analysis \n Northward (purple), Southward (orange)")
 
     eff_sndspd_pk = np.empty((4, 365))
     for j, yday in enumerate(["{:03d}".format(m + 1) for m in range(365)]):
@@ -411,7 +418,7 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
 
         plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[0], axis=0) > 1.0)
         if np.sum(plot_mask) > 1:
-            ax1[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[0], axis=0)[plot_mask], s=1.0, cmap=cm.seismic_r, vmin=0.9, vmax=1.1)
+            im1 = ax1[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[0], axis=0)[plot_mask], s=1.0, cmap=cm.seismic_r, vmin=0.9, vmax=1.1)
 
         plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[1], axis=0) > 1.0)
         if np.sum(plot_mask) > 1:
@@ -427,11 +434,19 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
 
             plot_mask = np.logical_and(z0 < 100.0, np.mean(eff_sndspd_ratio[3], axis=0) > 1.0)
             if np.sum(plot_mask) > 1:
-                ax2[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[3], axis=0)[plot_mask], s=1.0, cmap=cm.PuOr_r, vmin=0.9, vmax=1.1)
+                im2 = ax2[1].scatter([float(yday) / 7.0] * len(z0[plot_mask]), z0[plot_mask], c=np.mean(eff_sndspd_ratio[3], axis=0)[plot_mask], s=1.0, cmap=cm.PuOr_r, vmin=0.9, vmax=1.1)
 
             for k in range(2, 4):
                 eff_sndspd_pk[k][j] = np.max(np.mean(eff_sndspd_ratio[k], axis=0)[np.logical_and(35.0 <= z0, z0 <= 70.0)])    
 
+    cbar = plt.colorbar(im1, ax=ax1.ravel().tolist())
+    cbar.set_ticks(np.arange(0.9, 1.1, 0.1))
+    cbar.set_ticklabels(['1.1 \n (west)', '1.0', '1.1 \n (east)'], rotation=330.0)
+
+    if include_ns:
+        cbar = plt.colorbar(im2, ax=ax2.ravel().tolist())
+        cbar.set_ticks(np.arange(0.9, 1.1, 0.1))
+        cbar.set_ticklabels(['1.1 \n (south)', '1.0', '1.1 \n (north)'], rotation=330.0)
 
 
     # Output summary of ess_ratio unity crossings
@@ -717,7 +732,7 @@ def plot_model(model_file):
         click.echo("Error: invalid model file.")
 
 
-@click.command('detection_stats', short_help="Visualize a PGM or TLM")
+@click.command('detection-stats', short_help="Visualize a PGM or TLM")
 @click.option("--tlm-label", help="Label for TLM file(s)")
 @click.option("--yield-vals", help="List of yield values (tons eq. TNT)")
 @click.option("--array-dim", help="Array dimension (number of sensors)", default=1, type=float)
@@ -749,7 +764,7 @@ def plot_detection_stats(tlm_label, yield_vals, array_dim, figure_out, show_figu
     tlm_files = [file_name for file_name in np.sort(os.listdir(tlm_dir)) if fnmatch.fnmatch(file_name, tlm_pattern + "*")]
 
     models = [0] * 2
-    models[0] = [float(file_name.split("Hz")[0][len(tlm_pattern):]) for file_name in tlm_files]
+    models[0] = [float(re.compile(r'\d+\.\d+').findall(file_name)[-1]) for file_name in tlm_files]
     models[1] = [0] * len(tlm_files)
     for n in range(len(tlm_files)):
         models[1][n] = propagation.TLossModel()

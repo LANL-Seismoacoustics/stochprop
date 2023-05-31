@@ -27,6 +27,7 @@ import matplotlib.cm as cm
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
+from matplotlib.colorbar import ColorbarBase
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -1298,12 +1299,13 @@ def blastwave_spectrum(f, W, r, p_amb=101.325, T_amb=288.15, exp_type="chemical"
 # ############################# #
 def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=True):
 
-    plt.rcParams.update({'font.size': 18})
+    plt.rcParams.update({'font.size': 14})
     _, ims_ns_cdf = ims_noise_model()
 
     P_vals = np.linspace(-50.0, max(10.0 * np.log10(blastwave_spectrum(np.array(tlms[0]), 2.0 * max(yld_vals), 1.0))) + 10.0, 200)
 
-    fig, ax = plt.subplots(len(yld_vals), len(tlms[0]), figsize=(3 * len(tlms[0]), 3 * len(yld_vals)), subplot_kw={'projection': 'polar'})
+    fig_size = (3 * len(tlms[0]) + 1, 3 * len(yld_vals))
+    fig, axes = plt.subplots(len(yld_vals), len(tlms[0]) + 1, figsize=fig_size, subplot_kw={'projection': 'polar'})
     for m in range(len(yld_vals)):
         print('\n' + "Computing detection statistics for surface explosion with yield " + str(yld_vals[m] * 1.0e-3) + " tons eq TNT...")
         for n in range(len(tlms[0])):
@@ -1321,11 +1323,11 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
             duration[duration < 5.0] = 5.0
 
             if len(yld_vals) > 1 and len(tlms[0]) > 1:
-                ax_j = ax[m][n]
+                ax_j = axes[m][n]
             elif len(yld_vals) > 1:
-                ax_j = ax[m]
+                ax_j = axes[m]
             else:
-                ax_j = ax[n]
+                ax_j = axes[n]
 
             ax_j.set_theta_direction(-1)
             ax_j.set_theta_zero_location("N")
@@ -1350,10 +1352,18 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
                 arrival = tlm.eval(rng_grid, P_grid - src0, np.ones_like(rng_grid) * center)
                 rng_prob = simps(arrival * ims_ns_cdf(P_grid, tlm_freq, duration=duration, array_dim=array_dim), P_vals)
 
-                ax_j.bar(np.radians(np.array([center] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
+                im = ax_j.bar(np.radians(np.array([center] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
                         
     print('\n' + "Plotting detection statistics...", '\n')
-    
+
+    for m in range(len(yld_vals)):
+        axes[m][-1].axis('off')
+
+    cax = fig.add_axes([(len(tlms[0]) + 0.1) / (len(tlms[0]) + 1.0), 0.1, 0.02, 0.8])
+    cbar = ColorbarBase(cax, cmap=cm.hot_r)
+    cbar.set_label("Detection Probability")
+
+
     plt.tight_layout()
 
     if output_path:
