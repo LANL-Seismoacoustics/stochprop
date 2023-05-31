@@ -439,14 +439,15 @@ def season_trends(atmo_dir, results_path, atmo_pattern, atmo_format, year_select
             for k in range(2, 4):
                 eff_sndspd_pk[k][j] = np.max(np.mean(eff_sndspd_ratio[k], axis=0)[np.logical_and(35.0 <= z0, z0 <= 70.0)])    
 
-    cbar = plt.colorbar(im1, ax=ax1.ravel().tolist())
+    cbar = plt.colorbar(im1, ax=ax1.ravel().tolist(), location="bottom", shrink=0.8, aspect=40)
     cbar.set_ticks(np.arange(0.9, 1.1, 0.1))
-    cbar.set_ticklabels(['1.1 \n (west)', '1.0', '1.1 \n (east)'], rotation=330.0)
+    cbar.set_ticklabels(['1.1 (west)', '1.0', '1.1 (east)'])
+    cbar.set_label("Effective Sound Speed (ESS) Ratio")
 
     if include_ns:
-        cbar = plt.colorbar(im2, ax=ax2.ravel().tolist())
+        cbar = plt.colorbar(im2, ax=ax2.ravel().tolist(), location="bottom", shrink=0.8, aspect=40)
         cbar.set_ticks(np.arange(0.9, 1.1, 0.1))
-        cbar.set_ticklabels(['1.1 \n (south)', '1.0', '1.1 \n (north)'], rotation=330.0)
+        cbar.set_ticklabels(['1.1 (south)', '1.0', '1.1 (north)'])
 
 
     # Output summary of ess_ratio unity crossings
