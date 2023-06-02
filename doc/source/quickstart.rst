@@ -6,6 +6,34 @@ Quickstart
 
 Quickstart discussion
 
+
+----------------------------------------
+Outline of Functionality
+----------------------------------------
+
+    ..
+
+        | stochprop
+        |   |--- stats
+        |       |--- build eofs
+        |       |--- compute coefficients
+        |       |--- coefficient overlap (projection methods too?)
+        |       |--- sample eofs
+        |       |--- perturb (using eofs and/or gravity waves)
+        |   |--- prop
+        |       |--- build PGM
+        |       |--- build TLM
+        |   |--- plot
+        |       |--- season trends (ESS ratio)
+        |       |--- eofs
+        |       |--- fit (eof)
+        |       |--- sample set (EOF sample or perturbations)
+        |       |--- season trends (coefficient overlap)
+        |       |--- PGM/TLM
+        |       |--- detection stats
+        |       |--- network performance
+
+
 ---------------------------
 Identifying Seasonal Trends
 ---------------------------
@@ -40,8 +68,8 @@ Stuff...
 
 Stuff...
 
-    .. figure:: _static/_images/season-trends.png
-        :width: 600px
+    .. figure:: _static/_images/example.ess-ratio.png
+        :width: 800px
         :align: center
         :figclass: align-center
 
@@ -187,6 +215,19 @@ Repeat for the summer season and show the first 10 EOFs (click the image to view
 
 
 
+**Analyze Fitting Accuracy**
+
+Stuff... (NEED TO WRITE THIS FUNCTION)
+
+    .. code:: none
+
+        stochprop eof fit --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example_winter
+
+
+More stuff...
+
+
+
 **Sampling the Atmospheric Structure**
 
 
@@ -196,9 +237,18 @@ Stuff...
 
         stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --week-selection '38:52,1:15'
 
+Use the coefficients to sample...
+
+    .. code:: none
+
+        stochprop eof sample --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
 
 
-**Check Seasonal Trends with EOFs (optional) **
+Visualize the samples (need to write function)...
+
+
+
+**Check Seasonal Trends with EOFs (optional)**
 
 Stuff...
 
@@ -227,10 +277,42 @@ Constructing Propagation Statistics
 
 Stuff...
 
+    .. code:: none
+
+        stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '30.0, -120.0, 0.0' --cpu-cnt 8
+
+Visualize...
+
+    .. code:: none
+
+        stochprop prop plot --model-file prop/winter/winter.pgm
+
+
+Build a transmission loss model...
+
+    .. code:: none
+
+        stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+
+Visualize...
+
+    .. code:: none
+
+        stochprop prop plot --model-file prop/winter/winter_0.200Hz.tlm
+
+
+
+
+
 
 --------------------------------
 Perturbing Atmospheric Structure
 --------------------------------
 
 Stuff...
+
+    .. code:: none
+
+        stochprop perturb eof --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test
+
 

@@ -93,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#outline-of-functionality">Outline of Functionality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#identifying-seasonal-trends">Identifying Seasonal Trends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#eofs-for-atmosphere-statistics">EOFs for Atmosphere Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#constructing-propagation-statistics">Constructing Propagation Statistics</a></li>
@@ -167,6 +168,42 @@
   <section id="quickstart">
 <span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading">¶</a></h1>
 <p>Quickstart discussion</p>
+<section id="outline-of-functionality">
+<h2>Outline of Functionality<a class="headerlink" href="#outline-of-functionality" title="Permalink to this heading">¶</a></h2>
+<blockquote>
+<div><blockquote>
+<div><div class="line-block">
+<div class="line">stochprop</div>
+<div class="line-block">
+<div class="line"><a href="#id2"><span class="problematic" id="id3">|</span></a>— stats</div>
+<div class="line-block">
+<div class="line"><a href="#id4"><span class="problematic" id="id5">|</span></a>— build eofs</div>
+<div class="line"><a href="#id6"><span class="problematic" id="id7">|</span></a>— compute coefficients</div>
+<div class="line"><a href="#id8"><span class="problematic" id="id9">|</span></a>— coefficient overlap (projection methods too?)</div>
+<div class="line"><a href="#id10"><span class="problematic" id="id11">|</span></a>— sample eofs</div>
+<div class="line"><a href="#id12"><span class="problematic" id="id13">|</span></a>— perturb (using eofs and/or gravity waves)</div>
+</div>
+<div class="line"><a href="#id14"><span class="problematic" id="id15">|</span></a>— prop</div>
+<div class="line-block">
+<div class="line"><a href="#id16"><span class="problematic" id="id17">|</span></a>— build PGM</div>
+<div class="line"><a href="#id18"><span class="problematic" id="id19">|</span></a>— build TLM</div>
+</div>
+<div class="line"><a href="#id20"><span class="problematic" id="id21">|</span></a>— plot</div>
+<div class="line-block">
+<div class="line"><a href="#id22"><span class="problematic" id="id23">|</span></a>— season trends (ESS ratio)</div>
+<div class="line"><a href="#id24"><span class="problematic" id="id25">|</span></a>— eofs</div>
+<div class="line"><a href="#id26"><span class="problematic" id="id27">|</span></a>— fit (eof)</div>
+<div class="line"><a href="#id28"><span class="problematic" id="id29">|</span></a>— sample set (EOF sample or perturbations)</div>
+<div class="line"><a href="#id30"><span class="problematic" id="id31">|</span></a>— season trends (coefficient overlap)</div>
+<div class="line"><a href="#id32"><span class="problematic" id="id33">|</span></a>— PGM/TLM</div>
+<div class="line"><a href="#id34"><span class="problematic" id="id35">|</span></a>— detection stats</div>
+<div class="line"><a href="#id36"><span class="problematic" id="id37">|</span></a>— network performance</div>
+</div>
+</div>
+</div>
+</div></blockquote>
+</div></blockquote>
+</section>
 <section id="identifying-seasonal-trends">
 <h2>Identifying Seasonal Trends<a class="headerlink" href="#identifying-seasonal-trends" title="Permalink to this heading">¶</a></h2>
 <p>Stuff…</p>
@@ -199,7 +236,7 @@
 <p>Stuff…</p>
 <blockquote>
 <div><figure class="align-center">
-<a class="reference internal image-reference" href="_images/season-trends.png"><img alt="_images/season-trends.png" src="_images/season-trends.png" style="width: 600px;" /></a>
+<a class="reference internal image-reference" href="_images/example.ess-ratio.png"><img alt="_images/example.ess-ratio.png" src="_images/example.ess-ratio.png" style="width: 800px;" /></a>
 </figure>
 </div></blockquote>
 <p>Stuff…</p>
@@ -328,6 +365,14 @@ stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_transition --week
 <a class="reference internal image-reference" href="_images/summer_eofs.png"><img alt="_images/summer_eofs.png" src="_images/summer_eofs.png" style="width: 800px;" /></a>
 </figure>
 </div></blockquote>
+<p><strong>Analyze Fitting Accuracy</strong></p>
+<p>Stuff… (NEED TO WRITE THIS FUNCTION)</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof fit --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example_winter
+</pre></div>
+</div>
+</div></blockquote>
+<p>More stuff…</p>
 <p><strong>Sampling the Atmospheric Structure</strong></p>
 <p>Stuff…</p>
 <blockquote>
@@ -335,7 +380,14 @@ stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_transition --week
 </pre></div>
 </div>
 </div></blockquote>
-<p><a href="#id2"><span class="problematic" id="id3">**</span></a>Check Seasonal Trends with EOFs (optional) **</p>
+<p>Use the coefficients to sample…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof sample --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
+</pre></div>
+</div>
+</div></blockquote>
+<p>Visualize the samples (need to write function)…</p>
+<p><strong>Check Seasonal Trends with EOFs (optional)</strong></p>
 <p>Stuff…</p>
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
@@ -358,10 +410,38 @@ stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_transition --week
 <section id="constructing-propagation-statistics">
 <h2>Constructing Propagation Statistics<a class="headerlink" href="#constructing-propagation-statistics" title="Permalink to this heading">¶</a></h2>
 <p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;30.0, -120.0, 0.0&#39; --cpu-cnt 8
+</pre></div>
+</div>
+</div></blockquote>
+<p>Visualize…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop plot --model-file prop/winter/winter.pgm
+</pre></div>
+</div>
+</div></blockquote>
+<p>Build a transmission loss model…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+</pre></div>
+</div>
+</div></blockquote>
+<p>Visualize…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop plot --model-file prop/winter/winter_0.200Hz.tlm
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 <section id="perturbing-atmospheric-structure">
 <h2>Perturbing Atmospheric Structure<a class="headerlink" href="#perturbing-atmospheric-structure" title="Permalink to this heading">¶</a></h2>
 <p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop perturb eof --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 </section>
 
