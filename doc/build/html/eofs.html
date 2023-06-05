@@ -1,76 +1,39 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Empirical Orthogonal Function Analysis &mdash; stochprop 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Atmospheric Fitting, Sampling, and Perturbation" href="sampling.html" />
     <link rel="prev" title="Stochastic Propagation Analysis" href="analysis.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> stochprop
-          
-
-          
-            
             <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -78,17 +41,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; References</a></li>
@@ -112,72 +65,33 @@
 </li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">stochprop</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="analysis.html">Stochastic Propagation Analysis</a> &raquo;</li>
-        
-      <li>Empirical Orthogonal Function Analysis</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="analysis.html">Stochastic Propagation Analysis</a></li>
+      <li class="breadcrumb-item active">Empirical Orthogonal Function Analysis</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/eofs.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="empirical-orthogonal-function-analysis">
-<span id="eofs"></span><h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this heading">¶</a></h1>
+<span id="eofs"></span><h1>Empirical Orthogonal Function Analysis<a class="headerlink" href="#empirical-orthogonal-function-analysis" title="Permalink to this heading"></a></h1>
 <ul class="simple">
 <li><p>Empirical orthogonal functions (EOFs) are a mathematical tool useful for characterizing a suite of vectors or functions via construction of basis vectors or functions.</p></li>
 <li><p>Consider <span class="math notranslate nohighlight">\(N\)</span> fields, <span class="math notranslate nohighlight">\(a_n (\vec{z})\)</span>, sampled at <span class="math notranslate nohighlight">\(M\)</span> points, <span class="math notranslate nohighlight">\(z_m\)</span> that define a matrix,</p></li>
@@ -219,7 +133,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <li><p>In the case of EOF analysis for atmospheric seasonality and variability, each <span class="math notranslate nohighlight">\(a_m(\vec{z})\)</span> is an atmospheric specification sampled at a set of altitudes, <span class="math notranslate nohighlight">\(\vec{z}\)</span>, and the set of atmospheric states in <span class="math notranslate nohighlight">\(A\)</span> includes all possible states for the entire year (and potentially multiple years).  The sets of atmospheres in each matrix, <span class="math notranslate nohighlight">\(B_j\)</span>, is a subset of <span class="math notranslate nohighlight">\(A\)</span> corresponding to a specific month or other interval.  The coefficient overlap can be computed for all combinations to identify seasonality and determine the grouping of intervals for which propagation effects will be similar.</p></li>
 </ul>
 <section id="eof-methods-in-stochprop">
-<h2>EOF methods in stochprop<a class="headerlink" href="#eof-methods-in-stochprop" title="Permalink to this heading">¶</a></h2>
+<h2>EOF methods in stochprop<a class="headerlink" href="#eof-methods-in-stochprop" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>Empirical Orthogonal Function analysis methods can be accessed by importing <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs</span></code></p></li>
 <li><p>Although analysis can be completed using any set of user defined paths, it is recommended to build a set of directories to hold the eof results, coefficient analyses, and samples produced from seasonal analysis.  It is often the case that the transitions from summer to winter and winter to summer are overly similar and can be grouped together so that only 3 season definitions are needed.  This pre-analysis set up can be completed manually or by running:</p></li>
@@ -244,7 +158,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </pre></div>
 </div>
 <section id="load-atmosphere-specifications">
-<h3>Load Atmosphere Specifications<a class="headerlink" href="#load-atmosphere-specifications" title="Permalink to this heading">¶</a></h3>
+<h3>Load Atmosphere Specifications<a class="headerlink" href="#load-atmosphere-specifications" title="Permalink to this heading"></a></h3>
 <ul>
 <li><p>Atmospheric specifications are available through a number of repositories including the Ground-to-Space (G2S) system, the European Centre for Medium-Range Weather Forecasts (ECMWF), and other sources</p></li>
 <li><p>A convenient source for G2S specifications is the University of Mississippi’s National Center for Physical Acoustics (NCPA) G2S server at <a class="reference external" href="http://g2s.ncpa.olemiss.edu">http://g2s.ncpa.olemiss.edu</a></p></li>
@@ -271,7 +185,7 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 </ul>
 </section>
 <section id="computing-eofs">
-<h3>Computing EOFs<a class="headerlink" href="#computing-eofs" title="Permalink to this heading">¶</a></h3>
+<h3>Computing EOFs<a class="headerlink" href="#computing-eofs" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Once the atmosphere matrix, <span class="math notranslate nohighlight">\(A(\vec{z})\)</span>, has been ingested, EOF analysis can be completed using:</p></li>
 </ul>
@@ -282,6 +196,10 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <li><p>The analysis results are written into files with prefix specified in the function call (“eofs/examples” in this case).  The contents of the files are summarized is the below table.</p></li>
 </ul>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 29%" />
+<col style="width: 71%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>EOF Output File</p></th>
 <th class="head"><p>Description</p></th>
@@ -313,12 +231,12 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/US_NE-eofs.png"><img alt="alternate text" src="_images/US_NE-eofs.png" style="width: 1000px;" /></a>
 <figcaption>
-<p><span class="caption-text">Mean atmospheric states (left) and the first 10 EOFs for the adiabatic sound speed (upper row) and zonal and meridional winds (lower row, blue and red, respectively) for analysis of the atmosphere in the northeastern US</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Mean atmospheric states (left) and the first 10 EOFs for the adiabatic sound speed (upper row) and zonal and meridional winds (lower row, blue and red, respectively) for analysis of the atmosphere in the northeastern US</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="compute-coefficients-and-determine-seasonality">
-<h3>Compute Coefficients and Determine Seasonality<a class="headerlink" href="#compute-coefficients-and-determine-seasonality" title="Permalink to this heading">¶</a></h3>
+<h3>Compute Coefficients and Determine Seasonality<a class="headerlink" href="#compute-coefficients-and-determine-seasonality" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>Using the EOFs for the entire calendar year, coefficient sets can be defined for individual months (or other sub-intervals) using the <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_coeffs</span></code> function.</p></li>
 <li><p>For identification of seasonality by month, the coefficient sets are first computed for each individual month using:</p></li>
@@ -342,12 +260,12 @@ a_1 \left( z_M \right) &amp; a_2 \left( z_M \right)     &amp; \cdots        &amp
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="_images/example_seasonality.png"><img alt="alternate text" src="_images/example_seasonality.png" style="width: 400px;" /></a>
 <figcaption>
-<p><span class="caption-text">Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Clustering analysis on coefficient overlap is used to identify which months share common atmospheric structure</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="command-line-interface">
-<h3>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading">¶</a></h3>
+<h3>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading"></a></h3>
 <ul>
 <li><p>A command line interface (CLI) for the EOF methods is also included and can be utilized more easily.  The various methods available can be summarized as <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">eof</span></code>:</p>
 <blockquote>
@@ -460,51 +378,33 @@ Westward waveguide changes...
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="sampling.html" class="btn btn-neutral float-right" title="Atmospheric Fitting, Sampling, and Perturbation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="analysis.html" class="btn btn-neutral float-left" title="Stochastic Propagation Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analysis.html" class="btn btn-neutral float-left" title="Stochastic Propagation Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sampling.html" class="btn btn-neutral float-right" title="Atmospheric Fitting, Sampling, and Perturbation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Philip Blom
-
-    </p>
+    <p>&#169; Copyright 2020, Philip Blom.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

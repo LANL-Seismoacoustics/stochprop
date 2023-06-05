@@ -8,7 +8,9 @@
 
 import click
 
-from . import cli 
+from . import stats as stats_cli
+from . import prop as prop_cli
+from . import plot as plot_cli
 
 
 @click.group(context_settings={'help_option_names': ['-h', '--help']})
@@ -24,10 +26,10 @@ def main():
     pass
 
 
-@click.group('eof', short_help="Empirical Orthogonal Function (EOF) methods", context_settings={'help_option_names': ['-h', '--help']})
-def eof():
+@click.group('stats', short_help="Atmosphere statistics methods", context_settings={'help_option_names': ['-h', '--help']})
+def stats():
     '''
-    stochprop eof - Analysis methods using Empirical Orthogonal Function (EOFs) to identify seasonal trends and sample the atmospheric variability
+    stochprop stats - Atmospheric statistics methods using Empirical Orthogonal Function (EOF) and related analysis methods.
     
     '''
     pass 
@@ -42,34 +44,36 @@ def prop():
     pass 
 
 
-@click.group('perturb', short_help="Atmospheric specification perturbing methods", context_settings={'help_option_names': ['-h', '--help']})
-def perturb():
+@click.group('plot', short_help="Visualization methods", context_settings={'help_option_names': ['-h', '--help']})
+def plot():
     '''
-    stochprop perturb - Generate perturbed atmospheric specifications from a reference file
+    stochprop plot - Methods to visualize various results and analyses
     
     '''
     pass 
 
 
-main.add_command(eof)
+main.add_command(stats)
 main.add_command(prop)
-main.add_command(perturb)
+main.add_command(plot)
 
-eof.add_command(cli.eof_build)
-eof.add_command(cli.eof_plot)
-eof.add_command(cli.eof_coeffs)
-eof.add_command(cli.eof_seasonality)
-eof.add_command(cli.eof_sample)
+stats.add_command(stats_cli.eof_build)
+stats.add_command(stats_cli.eof_coeffs)
+stats.add_command(stats_cli.coeff_overlap)
+stats.add_command(stats_cli.sample_eofs)
+stats.add_command(stats_cli.perturb)
 
-prop.add_command(cli.season_trends)
-prop.add_command(cli.build_pgm)
-prop.add_command(cli.build_tlm)
-prop.add_command(cli.plot_model)
-prop.add_command(cli.plot_detection_stats)
-prop.add_command(cli.plot_network_performance)
+prop.add_command(prop_cli.build_pgm)
+prop.add_command(prop_cli.build_tlm)
 
-perturb.add_command(cli.eof_perturb)
-perturb.add_command(cli.gravity_waves)
+plot.add_command(plot_cli.ess_ratio)
+plot.add_command(plot_cli.eofs)
+plot.add_command(plot_cli.eof_fit)
+plot.add_command(plot_cli.atmo_ensemble)
+plot.add_command(plot_cli.coeff_overlap)
+plot.add_command(plot_cli.prop_model)
+plot.add_command(plot_cli.detection_stats)
+plot.add_command(plot_cli.network_performance)
 
 
 if __name__ == '__main__':

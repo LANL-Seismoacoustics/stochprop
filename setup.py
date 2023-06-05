@@ -15,7 +15,7 @@ setup(name = "stochprop",
     packages = ['stochprop'],
     scripts=[],
 
-    entry_points = {'console_scripts':['stochprop=stochprop.__main__:main']},
+    entry_points = {'console_scripts':['stochprop=cli.__main__:main']},
 
     install_requires = ['click',
                         'matplotlib',

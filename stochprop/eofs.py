@@ -36,7 +36,7 @@ from scipy.spatial.distance import squareform
 #    a reference atmosphere    #
 ################################
 
-
+grav = 9.8
 gam = 1.4
 gasR = 287.0
 gamR = gam * gasR
@@ -223,14 +223,15 @@ def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
     result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
     result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 2, T, K"
     result = result + '\n' + "#% 3, U, m/s"
     result = result + '\n' + "#% 4, V, m/s"
     result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
 
     return result    
 
@@ -242,14 +243,15 @@ def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
     result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Sample: max likelihood"
-    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
     result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 2, T, K"
     result = result + '\n' + "#% 3, U, m/s"
     result = result + '\n' + "#% 4, V, m/s"
     result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
 
     return result
 
@@ -260,14 +262,15 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
     result = result + '\n' + "# Reference Specification = " + prof_path
     result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
     result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 2, T, K"
     result = result + '\n' + "#% 3, U, m/s"
     result = result + '\n' + "#% 4, V, m/s"
     result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
 
     return result
 
@@ -280,14 +283,15 @@ def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
     result = result + '\n' + "# Perturbation St Dev (winds) = " + str(stdev) + " m/s"
     result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]"
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
     result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, c, m/s"
+    result = result + '\n' + "#% 2, T, K"
     result = result + '\n' + "#% 3, U, m/s"
     result = result + '\n' + "#% 4, V, m/s"
     result = result + '\n' + "#% 5, RHO, g/cm3"
+    result = result + '\n' + "#% 6, P, mbar"
 
     return result
 
@@ -350,55 +354,57 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
     dir_files = os.listdir(path)
     for file in np.sort(dir_files):
         if fnmatch.fnmatch(file, pattern):
-            date_check = False
-
-            date_parse = re.search(r'\d{10}', file)[0]
-
-            if len(date_parse) > 0:
-                year = date_parse[:4]
-                month = date_parse[4:6]
-                day = date_parse[6:8]
-                hour = date_parse[8:10]
-                date_check = True
-
-            if not date_check:
-                file_test = open(path + file)
-                for line in file_test:
-                    if "# Model Time" in line:
-                        year = line[15:19]
-                        month = line[20:22]
-                        day = line[23:25]
-                        hour = line[26:28]
-
-                        date_check = True
-                        file_test.close()
-                        break
-
-            include_check = True 
-            if years is not None:
-                if year not in years:
-                    include_check = False 
-
-            if months is not None:
-                if month not in months:
-                    include_check = False
-            
-            if weeks is not None:
-                week = "%02d" % datetime.date(int(year), int(month), int(day)).isocalendar()[1]
-                if week not in weeks:
-                    include_check = False
-
-            if ydays is not None:
-                yday = "%03d" % datetime.date(int(year), int(month), int(day)).timetuple().tm_yday
-                if yday not in ydays:
-                    include_check = False 
-
-            if hours is not None:
-                if hour not in hours:
-                    include_check = False
-            
-            if include_check:
+            if years is None and months is None and weeks is None and ydays is None and hours is None:
                 file_list += [file]
+            else:
+                date_parse = re.search(r'\d{10}', file)[0]
+                date_check = False
+
+                if len(date_parse) > 0:
+                    year = date_parse[:4]
+                    month = date_parse[4:6]
+                    day = date_parse[6:8]
+                    hour = date_parse[8:10]
+                    date_check = True
+
+                if not date_check:
+                    file_test = open(path + file)
+                    for line in file_test:
+                        if "# Model Time" in line:
+                            year = line[15:19]
+                            month = line[20:22]
+                            day = line[23:25]
+                            hour = line[26:28]
+
+                            date_check = True
+                            file_test.close()
+                            break
+
+                include_check = True 
+                if years is not None:
+                    if year not in years:
+                        include_check = False 
+
+                if months is not None:
+                    if month not in months:
+                        include_check = False
+                
+                if weeks is not None:
+                    week = "%02d" % datetime.date(int(year), int(month), int(day)).isocalendar()[1]
+                    if week not in weeks:
+                        include_check = False
+
+                if ydays is not None:
+                    yday = "%03d" % datetime.date(int(year), int(month), int(day)).timetuple().tm_yday
+                    if yday not in ydays:
+                        include_check = False 
+
+                if hours is not None:
+                    if hour not in hours:
+                        include_check = False
+            
+                if include_check:
+                    file_list += [file]
 
     if len(file_list) > 0:
         file_list = np.sort(file_list)
@@ -695,8 +701,8 @@ def _plot_eofs(eofs_path, eof_cnt=5):
         ax1n.yaxis.set_ticklabels([])
         ax1n.set_xlabel("EOF " + str(j))
         ax1n.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
-        ax1n.plot(u_eofs[:, j + 1], u_eofs[:, 0], '-b', linewidth=3)
-        ax1n.plot(v_eofs[:, j + 1], v_eofs[:, 0], '-r', linewidth=3)
+        ax1n.plot(u_eofs[:, j + 1], u_eofs[:, 0], color="xkcd:blue", linewidth=3)
+        ax1n.plot(v_eofs[:, j + 1], v_eofs[:, 0], color="xkcd:red", linewidth=3)
 
     plt.show()
     
@@ -933,12 +939,18 @@ def build_cdf(pdf, lims, pnts=250):
             Interpolated results for the cdf
     """
 
-    norm = quad(pdf, lims[0], lims[1])[0]
 
     x_vals = np.linspace(lims[0], lims[1], pnts)
+
+    norm = simps(pdf(x_vals), x_vals)
+    cdf_vals = [simps(pdf(x_vals[:j]), x_vals[:j]) / norm if j > 0 else 0.0 for j in range(len(x_vals))]
+
+    '''
+    norm = quad(pdf, lims[0], lims[1])[0]
     cdf_vals = np.empty_like(x_vals)
     for n in range(pnts):
         cdf_vals[n] = quad(pdf, lims[0], x_vals[n])[0] / norm
+    '''
 
     return interp1d(x_vals, cdf_vals)
 
@@ -1015,7 +1027,8 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
 
     # Generate prof_cnt random atmosphere samples
     print('\t' + "Generating sample atmosphere profiles...")
-    sampled_profs = np.array([np.copy(means)] * prof_cnt)
+    sampled_profs = np.empty((prof_cnt, means.shape[0], means.shape[1] + 1))
+    sampled_profs[:, :, :5] = np.array([np.copy(means)] * prof_cnt)
 
     for eof_id in range(eof_cnt):
         print('\t\t' + "Sampling EOF coefficient for eof_id = " + str(eof_id) + "...")
@@ -1026,13 +1039,20 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
             sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
 
-            # Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])
-            temp = np.zeros_like(sampled_profs[pn][:, 0])
-            for j in range(1, len(sampled_profs[pn])):
-                temp[j] = simps(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0)
+    for pn in range(prof_cnt):
+        # Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])
+        # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}
+        # d = \gamma p/c^2
+        # T = C^2 / R \gamma
+        temp = np.zeros_like(sampled_profs[pn][:, 0])
+        for j in range(1, len(temp)):
+            temp[j] = simps(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0)
+        press = (sampled_profs[pn][0][4] * sampled_profs[pn][0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
 
-            sampled_profs[pn][:, 4] = sampled_profs[pn][0][4] * (sampled_profs[pn][0][1] / sampled_profs[pn][:, 1])**2 * np.exp(-9.8 * gam * temp)
-    
+        sampled_profs[pn][:, 5] = press
+        sampled_profs[pn][:, 4] = gam * press / sampled_profs[pn][:, 1]**2 * 0.1
+        sampled_profs[pn][:, 1] = sampled_profs[pn][:, 1]**2 / (gamR)
+
     # save the individual profiles and the mean profile
     print('\t' + "Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
@@ -1083,10 +1103,21 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
         ml_prof[:, 2] = ml_prof[:, 2] + coeff_ml * u_eofs[:, n + 1]
         ml_prof[:, 3] = ml_prof[:, 3] + coeff_ml * v_eofs[:, n + 1]
 
+
+    # define the perturbed pressure, density, and temperature
+    # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2 dz}
+    # d = \gamma p/c^2
+    # T = C^2 / R \gamma
     temp = np.zeros_like(ml_prof[:, 0])
     for j in range(1, len(ml_prof)):
         temp[j] = simps(1.0 / ml_prof[:j, 1]**2, ml_prof[:j, 0] * 1000.0)
-    ml_prof[:, 4] = ml_prof[0][4] * (ml_prof[0][1] / ml_prof[:, 1])**2 * np.exp(-9.8 * gam * temp)
+
+    # append pressure and replace sound speed values with temperature
+    press = (ml_prof[0][4] * ml_prof[0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
+
+    ml_prof = np.vstack((ml_prof.T, press)).T
+    ml_prof[:, 4] = gam * press / ml_prof[:, 1]**2 * 0.1
+    ml_prof[:, 1] = ml_prof[:, 1]**2 / (gamR)
 
     print('\t' + "Writing maximum likelihood atmosphere to file...", '\n')
     np.savetxt(output_path + "-maximum_likelihood.met", ml_prof, header=_coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt), comments='')
@@ -1096,7 +1127,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
 #   Define methods to fit or   #
 #    perturb specific atmos    #
 # ############################ #
-def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
+def fit_atmo(prof_path, eofs_path, output_path=None, eof_cnt=100, plot_result=True):
     """
         Compute a given number of EOF coefficients to fit a given
         atmophere specification using the basic functions.  Write
@@ -1116,6 +1147,7 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     """
 
     print("Generating EOF fit to " + prof_path + "...")
+    print('\t' + "Loading EOF info from " + eofs_path + "...")
 
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
@@ -1144,6 +1176,7 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
     v_diff = v_interp(means[:, 0][eofs_mask]) - means[:, 3][eofs_mask]
 
     # define the integration to compute the EOF coefficients
+    print('\t' + "Generating fit using " + str(eof_cnt) + " EOF terms...")
     def calc_coeff(n):
         result = simps(c_diff * c_eofs[:, n + 1][eofs_mask], c_eofs[:, 0][eofs_mask])
         result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], u_eofs[:, 0][eofs_mask])
@@ -1160,12 +1193,47 @@ def fit_atmo(prof_path, eofs_path, output_path, eof_cnt=100):
         fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
         fit[:, 3] = fit[:, 3] + coeffs[n] * v_eofs[:, n + 1]
 
+    # define the perturbed pressure, density, and temperature
+    # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}
+    # d = \gamma p/c^2
+    # T = C^2 / R \gamma
     temp = np.zeros_like(fit[:, 0])
     for j in range(1, len(fit)):
         temp[j] = simps(1.0 / fit[:j, 1]**2, fit[:j, 0] * 1000.0)
-    fit[:, 4] = fit[0][4] * (fit[0][1] / fit[:, 1])**2 * np.exp(-9.8 * gam * temp)
 
-    np.savetxt(output_path, fit, header=_fit_header_txt(prof_path, eofs_path, eof_cnt), comments='')
+    # append pressure and replace sound speed values with temperature
+    press = (fit[0][4] * fit[0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
+
+    fit = np.vstack((fit.T, press)).T
+    fit[:, 4] = gam * press / fit[:, 1]**2 * 0.1
+    fit[:, 1] = fit[:, 1]**2 / (gamR)
+
+    if output_path is not None:
+        print('\t' + "Writing atmosphere data info " + output_path)
+        np.savetxt(output_path, fit, header=_fit_header_txt(prof_path, eofs_path, eof_cnt), comments='')
+
+    if plot_result:
+        print('\t' + "Visualizing EOF atmospheric fit...")
+        plt.rcParams.update({'font.size': 12})
+        fig, ax = plt.subplots(1, 3, figsize=(6, 4), sharey=True)
+        ax[0].set_ylabel("Altitude [km]")
+        
+        ax[0].set_xlabel("c [m/s]")
+        ax[0].plot(np.sqrt(0.1 * gam * profile[:, 5] / profile[:, 4]), profile[:, 0], '-k', linewidth=4.0, label="Original")
+        ax[0].plot(np.sqrt(0.1 * gam * fit[:, 5] / fit[:, 4]), fit[:, 0], color='xkcd:red', linewidth=2.0, label="EOF Fit (n = " + str(eof_cnt) + ")")
+        ax[0].legend(loc="upper left", fontsize=8)
+
+        ax[1].set_xlabel("u [m/s]")
+        ax[1].plot(profile[:, 2], profile[:, 0], '-k', linewidth=4.0)
+        ax[1].plot(fit[:, 2], fit[:, 0], color='xkcd:red', linewidth=2.0)
+
+        ax[2].set_xlabel("v [m/s]")
+        ax[2].plot(profile[:, 3], profile[:, 0], '-k', linewidth=4.0)
+        ax[2].plot(fit[:, 3], fit[:, 0], color='xkcd:red', linewidth=2.0)
+
+        plt.tight_layout()
+        plt.show()
+
 
 
 def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof_cnt=50, sample_cnt=1, alt_wt_pow=2.0, sing_val_wt_pow=0.25):

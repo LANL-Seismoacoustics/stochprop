@@ -1,72 +1,35 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>stochprop.eofs &mdash; stochprop 1.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
         <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../index.html" class="icon icon-home"> stochprop
-          
-
-          
-            
             <img src="../../_static/lanl_logo.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -74,17 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../userguide.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../authorship.html">Authorship &amp; References</a></li>
@@ -93,66 +46,30 @@
 <li class="toctree-l1"><a class="reference internal" href="../../analysis.html">Stochastic Propagation Analysis</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">stochprop</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="../../index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="../index.html">Module code</a> &raquo;</li>
-        
-      <li>stochprop.eofs</li>
-    
-    
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">stochprop.eofs</li>
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for stochprop.eofs</h1><div class="highlight"><pre>
 <span></span><span class="c1"># eofs.py</span>
 <span class="c1">#</span>
@@ -192,7 +109,7 @@
 <span class="c1">#    a reference atmosphere    #</span>
 <span class="c1">################################</span>
 
-
+<span class="n">grav</span> <span class="o">=</span> <span class="mf">9.8</span>
 <span class="n">gam</span> <span class="o">=</span> <span class="mf">1.4</span>
 <span class="n">gasR</span> <span class="o">=</span> <span class="mf">287.0</span>
 <span class="n">gamR</span> <span class="o">=</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">gasR</span>
@@ -204,7 +121,7 @@
                         <span class="o">-</span><span class="mf">2.7221769e-2</span><span class="p">,</span> <span class="mf">4.247473e-4</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.9583181e-6</span><span class="p">,</span> <span class="mf">1.7295795e-8</span><span class="p">])</span>
 
 <div class="viewcode-block" id="density"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.density">[docs]</a><span class="k">def</span> <span class="nf">density</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the atmospheric density according to the US standard atmosphere model using a polynomial fit</span>
 
 <span class="sd">        Parameters</span>
@@ -226,7 +143,7 @@
     <span class="k">return</span> <span class="n">den0</span> <span class="o">*</span> <span class="mf">10.0</span><span class="o">**</span><span class="p">(</span><span class="n">poly_A</span> <span class="o">/</span> <span class="n">poly_B</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="pressure"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.pressure">[docs]</a><span class="k">def</span> <span class="nf">pressure</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the atmospheric pressure according to the US standard atmosphere model using a polynomial fit assuming an ideal gas</span>
 
 <span class="sd">        Parameters</span>
@@ -244,7 +161,7 @@
     
 
 <div class="viewcode-block" id="profiles_qc"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.profiles_qc">[docs]</a><span class="k">def</span> <span class="nf">profiles_qc</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs a quality control (QC) check on profiles in the path</span>
 <span class="sd">        matching the pattern.  It can optionally plot the bad</span>
 <span class="sd">        profiles.  If it finds any, it makes a new direcotry</span>
@@ -379,14 +296,15 @@
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Set = &quot;</span> <span class="o">+</span> <span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot; (cwd: &quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Cnt = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Sample: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prof_cnt</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# The following lines are formatted input for ncpaprop&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 0, Z0, km, 0.0&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 1, Z, km&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, c, m/s&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, T, K&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 3, U, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 4, V, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 5, RHO, g/cm3&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 6, P, mbar&quot;</span>
 
     <span class="k">return</span> <span class="n">result</span>    
 
@@ -398,14 +316,15 @@
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Set = &quot;</span> <span class="o">+</span> <span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot; (cwd: &quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Cnt = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Sample: max likelihood&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# The following lines are formatted input for ncpaprop&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 0, Z0, km, 0.0&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 1, Z, km&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, c, m/s&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, T, K&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 3, U, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 4, V, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 5, RHO, g/cm3&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 6, P, mbar&quot;</span>
 
     <span class="k">return</span> <span class="n">result</span>
 
@@ -416,14 +335,15 @@
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Reference Specification = &quot;</span> <span class="o">+</span> <span class="n">prof_path</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Set = &quot;</span> <span class="o">+</span> <span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot; (cwd: &quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Cnt = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# The following lines are formatted input for ncpaprop&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 0, Z0, km, 0.0&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 1, Z, km&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, c, m/s&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, T, K&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 3, U, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 4, V, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 5, RHO, g/cm3&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 6, P, mbar&quot;</span>
 
     <span class="k">return</span> <span class="n">result</span>
 
@@ -436,20 +356,21 @@
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# EOF Cnt = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Perturbation St Dev (winds) = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">stdev</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Sample: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">prof_cnt</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), c(m/s), U(m/s), V(m/s), R(g/cm^3)]&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;# The following lines are formatted input for ncpaprop&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 0, Z0, km, 0.0&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 1, Z, km&quot;</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, c, m/s&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 2, T, K&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 3, U, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 4, V, m/s&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 5, RHO, g/cm3&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;#% 6, P, mbar&quot;</span>
 
     <span class="k">return</span> <span class="n">result</span>
 
 
 <div class="viewcode-block" id="build_atmo_matrix"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.build_atmo_matrix">[docs]</a><span class="k">def</span> <span class="nf">build_atmo_matrix</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.dat&quot;</span><span class="p">,</span> <span class="n">years</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weeks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hours</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ydays</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">max_alt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ref_alts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prof_format</span><span class="o">=</span><span class="s2">&quot;zTuvdp&quot;</span><span class="p">,</span> <span class="n">latlon0</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_datetime</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Read in a list of atmosphere files from the path location</span>
 <span class="sd">        matching a specified pattern for continued analysis.</span>
 
@@ -506,55 +427,57 @@
     <span class="n">dir_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dir_files</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
-            <span class="n">date_check</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="n">date_parse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{10}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_parse</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">year</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
-                <span class="n">month</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
-                <span class="n">day</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
-                <span class="n">hour</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
-                <span class="n">date_check</span> <span class="o">=</span> <span class="kc">True</span>
-
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">date_check</span><span class="p">:</span>
-                <span class="n">file_test</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_test</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="s2">&quot;# Model Time&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
-                        <span class="n">year</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">19</span><span class="p">]</span>
-                        <span class="n">month</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">22</span><span class="p">]</span>
-                        <span class="n">day</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">25</span><span class="p">]</span>
-                        <span class="n">hour</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">26</span><span class="p">:</span><span class="mi">28</span><span class="p">]</span>
-
-                        <span class="n">date_check</span> <span class="o">=</span> <span class="kc">True</span>
-                        <span class="n">file_test</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-                        <span class="k">break</span>
-
-            <span class="n">include_check</span> <span class="o">=</span> <span class="kc">True</span> 
-            <span class="k">if</span> <span class="n">years</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">year</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
-                    <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span> 
-
-            <span class="k">if</span> <span class="n">months</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">month</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">months</span><span class="p">:</span>
-                    <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span>
-            
-            <span class="k">if</span> <span class="n">weeks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">week</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span><span class="o">.</span><span class="n">isocalendar</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">if</span> <span class="n">week</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">weeks</span><span class="p">:</span>
-                    <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span>
-
-            <span class="k">if</span> <span class="n">ydays</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">yday</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
-                <span class="k">if</span> <span class="n">yday</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ydays</span><span class="p">:</span>
-                    <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span> 
-
-            <span class="k">if</span> <span class="n">hours</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">hour</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hours</span><span class="p">:</span>
-                    <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span>
-            
-            <span class="k">if</span> <span class="n">include_check</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">years</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">months</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">weeks</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ydays</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hours</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">file_list</span> <span class="o">+=</span> <span class="p">[</span><span class="n">file</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">date_parse</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{10}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">date_check</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">date_parse</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">year</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+                    <span class="n">month</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+                    <span class="n">day</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+                    <span class="n">hour</span> <span class="o">=</span> <span class="n">date_parse</span><span class="p">[</span><span class="mi">8</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+                    <span class="n">date_check</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">date_check</span><span class="p">:</span>
+                    <span class="n">file_test</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="n">file</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file_test</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s2">&quot;# Model Time&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="n">year</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">15</span><span class="p">:</span><span class="mi">19</span><span class="p">]</span>
+                            <span class="n">month</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">20</span><span class="p">:</span><span class="mi">22</span><span class="p">]</span>
+                            <span class="n">day</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">23</span><span class="p">:</span><span class="mi">25</span><span class="p">]</span>
+                            <span class="n">hour</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">26</span><span class="p">:</span><span class="mi">28</span><span class="p">]</span>
+
+                            <span class="n">date_check</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">file_test</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                            <span class="k">break</span>
+
+                <span class="n">include_check</span> <span class="o">=</span> <span class="kc">True</span> 
+                <span class="k">if</span> <span class="n">years</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">year</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
+                        <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span> 
+
+                <span class="k">if</span> <span class="n">months</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">month</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">months</span><span class="p">:</span>
+                        <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span>
+                
+                <span class="k">if</span> <span class="n">weeks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">week</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%02d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span><span class="o">.</span><span class="n">isocalendar</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">week</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">weeks</span><span class="p">:</span>
+                        <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="n">ydays</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">yday</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%03d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">day</span><span class="p">))</span><span class="o">.</span><span class="n">timetuple</span><span class="p">()</span><span class="o">.</span><span class="n">tm_yday</span>
+                    <span class="k">if</span> <span class="n">yday</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ydays</span><span class="p">:</span>
+                        <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span> 
+
+                <span class="k">if</span> <span class="n">hours</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">hour</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">hours</span><span class="p">:</span>
+                        <span class="n">include_check</span> <span class="o">=</span> <span class="kc">False</span>
+            
+                <span class="k">if</span> <span class="n">include_check</span><span class="p">:</span>
+                    <span class="n">file_list</span> <span class="o">+=</span> <span class="p">[</span><span class="n">file</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">file_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">file_list</span><span class="p">)</span>
@@ -696,7 +619,7 @@
 
 
 <div class="viewcode-block" id="compute_eofs"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_eofs">[docs]</a><span class="k">def</span> <span class="nf">compute_eofs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">alts</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">build_info</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the singular value decomposition (SVD)</span>
 <span class="sd">        of an atmosphere set read into an array by</span>
 <span class="sd">        stochprop.eofs.build_atmo_matrix() and saves</span>
@@ -851,14 +774,14 @@
         <span class="n">ax1n</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
         <span class="n">ax1n</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;EOF &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
         <span class="n">ax1n</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="nb">max</span><span class="p">(</span><span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]))</span>
-        <span class="n">ax1n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-b&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-        <span class="n">ax1n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">v_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;xkcd:blue&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">ax1n</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">v_eofs</span><span class="p">[:,</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">v_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;xkcd:red&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
     
 
 <div class="viewcode-block" id="compute_coeffs"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_coeffs">[docs]</a><span class="k">def</span> <span class="nf">compute_coeffs</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">alts</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pool</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the EOF coefficients for a suite of atmospheres</span>
 <span class="sd">        and store the coefficient values.</span>
 
@@ -944,7 +867,7 @@
 
 
 <div class="viewcode-block" id="compute_overlap"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_overlap">[docs]</a><span class="k">def</span> <span class="nf">compute_overlap</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the overlap of EOF coefficient distributions</span>
 
 <span class="sd">        Parameters</span>
@@ -1012,7 +935,7 @@
 
 
 <div class="viewcode-block" id="compute_seasonality"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.compute_seasonality">[docs]</a><span class="k">def</span> <span class="nf">compute_seasonality</span><span class="p">(</span><span class="n">overlap_file</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the overlap of EOF coefficients to identify seasonality</span>
 
 <span class="sd">        Parameters</span>
@@ -1051,7 +974,7 @@
 <span class="c1">#     the coefficient PDFs     #</span>
 <span class="c1">################################</span>
 <div class="viewcode-block" id="define_coeff_limits"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.define_coeff_limits">[docs]</a><span class="k">def</span> <span class="nf">define_coeff_limits</span><span class="p">(</span><span class="n">coeff_vals</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute upper and lower bounds for coefficient values</span>
 
 <span class="sd">        Parameters</span>
@@ -1071,7 +994,7 @@
 
 
 <div class="viewcode-block" id="build_cdf"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.build_cdf">[docs]</a><span class="k">def</span> <span class="nf">build_cdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="n">pnts</span><span class="o">=</span><span class="mi">250</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute the cumulative distribution of a pdf within specified limits</span>
 
 <span class="sd">        Parameters</span>
@@ -1089,18 +1012,24 @@
 <span class="sd">            Interpolated results for the cdf</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">norm</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
 
     <span class="n">x_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lims</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pnts</span><span class="p">)</span>
-    <span class="n">cdf_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x_vals</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pnts</span><span class="p">):</span>
-        <span class="n">cdf_vals</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">quad</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">lims</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">x_vals</span><span class="p">[</span><span class="n">n</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span>
+
+    <span class="n">norm</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_vals</span><span class="p">),</span> <span class="n">x_vals</span><span class="p">)</span>
+    <span class="n">cdf_vals</span> <span class="o">=</span> <span class="p">[</span><span class="n">simps</span><span class="p">(</span><span class="n">pdf</span><span class="p">(</span><span class="n">x_vals</span><span class="p">[:</span><span class="n">j</span><span class="p">]),</span> <span class="n">x_vals</span><span class="p">[:</span><span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="n">norm</span> <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_vals</span><span class="p">))]</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    norm = quad(pdf, lims[0], lims[1])[0]</span>
+<span class="sd">    cdf_vals = np.empty_like(x_vals)</span>
+<span class="sd">    for n in range(pnts):</span>
+<span class="sd">        cdf_vals[n] = quad(pdf, lims[0], x_vals[n])[0] / norm</span>
+<span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="k">return</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">cdf_vals</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="draw_from_pdf"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.draw_from_pdf">[docs]</a><span class="k">def</span> <span class="nf">draw_from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">lims</span><span class="p">,</span> <span class="n">cdf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sample a number of values from a probability distribution</span>
 <span class="sd">        function (pdf) with specified limits</span>
 
@@ -1136,7 +1065,7 @@
 
 
 <div class="viewcode-block" id="sample_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.sample_atmo">[docs]</a><span class="k">def</span> <span class="nf">sample_atmo</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">prof_cnt</span><span class="o">=</span><span class="mi">250</span><span class="p">,</span> <span class="n">coeff_label</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate atmosphere states using coefficient distributions for</span>
 <span class="sd">        a set of empirical orthogonal basis functions</span>
 
@@ -1171,7 +1100,8 @@
 
     <span class="c1"># Generate prof_cnt random atmosphere samples</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Generating sample atmosphere profiles...&quot;</span><span class="p">)</span>
-    <span class="n">sampled_profs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">means</span><span class="p">)]</span> <span class="o">*</span> <span class="n">prof_cnt</span><span class="p">)</span>
+    <span class="n">sampled_profs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">prof_cnt</span><span class="p">,</span> <span class="n">means</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">means</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">sampled_profs</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">means</span><span class="p">)]</span> <span class="o">*</span> <span class="n">prof_cnt</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">eof_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Sampling EOF coefficient for eof_id = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
@@ -1182,13 +1112,20 @@
             <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">sampled_coeffs</span><span class="p">[</span><span class="n">pn</span><span class="p">]</span> <span class="o">*</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">eof_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">sampled_coeffs</span><span class="p">[</span><span class="n">pn</span><span class="p">]</span> <span class="o">*</span> <span class="n">v_eofs</span><span class="p">[:,</span> <span class="n">eof_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 
-            <span class="c1"># Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])</span>
-            <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">])</span>
-            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">])):</span>
-                <span class="n">temp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prof_cnt</span><span class="p">):</span>
+        <span class="c1"># Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])</span>
+        <span class="c1"># p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}</span>
+        <span class="c1"># d = \gamma p/c^2</span>
+        <span class="c1"># T = C^2 / R \gamma</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">temp</span><span class="p">)):</span>
+            <span class="n">temp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span>
+        <span class="n">press</span> <span class="o">=</span> <span class="p">(</span><span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">gam</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">grav</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">temp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span>
 
-            <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">temp</span><span class="p">)</span>
-    
+        <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">press</span>
+        <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">press</span> <span class="o">/</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">0.1</span>
+        <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sampled_profs</span><span class="p">[</span><span class="n">pn</span><span class="p">][:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamR</span><span class="p">)</span>
+
     <span class="c1"># save the individual profiles and the mean profile</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Writing sampled atmospheres to file...&quot;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">pn</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">prof_cnt</span><span class="p">):</span>
@@ -1196,7 +1133,7 @@
 
 
 <div class="viewcode-block" id="maximum_likelihood_profile"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.maximum_likelihood_profile">[docs]</a><span class="k">def</span> <span class="nf">maximum_likelihood_profile</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">coeff_label</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use coefficient distributions for a set of empirical orthogonal</span>
 <span class="sd">        basis functions to compute the maximum likelihood specification</span>
 
@@ -1239,10 +1176,21 @@
         <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">coeff_ml</span> <span class="o">*</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">coeff_ml</span> <span class="o">*</span> <span class="n">v_eofs</span><span class="p">[:,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 
+
+    <span class="c1"># define the perturbed pressure, density, and temperature</span>
+    <span class="c1"># p = \bar{p}(0) \exp{-g \gamma \int{1/c^2 dz}</span>
+    <span class="c1"># d = \gamma p/c^2</span>
+    <span class="c1"># T = C^2 / R \gamma</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ml_prof</span><span class="p">)):</span>
         <span class="n">temp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">ml_prof</span><span class="p">[:</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">ml_prof</span><span class="p">[:</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span>
-    <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_prof</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">ml_prof</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">temp</span><span class="p">)</span>
+
+    <span class="c1"># append pressure and replace sound speed values with temperature</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="p">(</span><span class="n">ml_prof</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">ml_prof</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">gam</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">grav</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">temp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span>
+
+    <span class="n">ml_prof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">ml_prof</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">press</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">press</span> <span class="o">/</span> <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">0.1</span>
+    <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">ml_prof</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamR</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Writing maximum likelihood atmosphere to file...&quot;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_path</span> <span class="o">+</span> <span class="s2">&quot;-maximum_likelihood.met&quot;</span><span class="p">,</span> <span class="n">ml_prof</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">_coeff_smpl_max_header_txt</span><span class="p">(</span><span class="n">coeff_label</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
@@ -1252,8 +1200,8 @@
 <span class="c1">#   Define methods to fit or   #</span>
 <span class="c1">#    perturb specific atmos    #</span>
 <span class="c1"># ############################ #</span>
-<div class="viewcode-block" id="fit_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.fit_atmo">[docs]</a><span class="k">def</span> <span class="nf">fit_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="fit_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.fit_atmo">[docs]</a><span class="k">def</span> <span class="nf">fit_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">plot_result</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compute a given number of EOF coefficients to fit a given</span>
 <span class="sd">        atmophere specification using the basic functions.  Write</span>
 <span class="sd">        the resulting approximated atmospheric specification to</span>
@@ -1272,6 +1220,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating EOF fit to &quot;</span> <span class="o">+</span> <span class="n">prof_path</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Loading EOF info from &quot;</span> <span class="o">+</span> <span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;...&quot;</span><span class="p">)</span>
 
     <span class="c1"># load means and eofs</span>
     <span class="n">means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">eofs_path</span> <span class="o">+</span> <span class="s2">&quot;-mean_atmo.dat&quot;</span><span class="p">)</span>
@@ -1300,6 +1249,7 @@
     <span class="n">v_diff</span> <span class="o">=</span> <span class="n">v_interp</span><span class="p">(</span><span class="n">means</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">eofs_mask</span><span class="p">])</span> <span class="o">-</span> <span class="n">means</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">][</span><span class="n">eofs_mask</span><span class="p">]</span>
 
     <span class="c1"># define the integration to compute the EOF coefficients</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Generating fit using &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; EOF terms...&quot;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">calc_coeff</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="n">c_diff</span> <span class="o">*</span> <span class="n">c_eofs</span><span class="p">[:,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">eofs_mask</span><span class="p">],</span> <span class="n">c_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">eofs_mask</span><span class="p">])</span>
         <span class="n">result</span> <span class="o">+=</span> <span class="n">simps</span><span class="p">(</span><span class="n">u_diff</span> <span class="o">*</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">eofs_mask</span><span class="p">],</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][</span><span class="n">eofs_mask</span><span class="p">])</span>
@@ -1316,16 +1266,51 @@
         <span class="n">fit</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">u_eofs</span><span class="p">[:,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
         <span class="n">fit</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">*</span> <span class="n">v_eofs</span><span class="p">[:,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
 
+    <span class="c1"># define the perturbed pressure, density, and temperature</span>
+    <span class="c1"># p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}</span>
+    <span class="c1"># d = \gamma p/c^2</span>
+    <span class="c1"># T = C^2 / R \gamma</span>
     <span class="n">temp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fit</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fit</span><span class="p">)):</span>
         <span class="n">temp</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">simps</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">fit</span><span class="p">[:</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">fit</span><span class="p">[:</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1000.0</span><span class="p">)</span>
-    <span class="n">fit</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">9.8</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">temp</span><span class="p">)</span>
 
-    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">fit</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">_fit_header_txt</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+    <span class="c1"># append pressure and replace sound speed values with temperature</span>
+    <span class="n">press</span> <span class="o">=</span> <span class="p">(</span><span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span> <span class="o">*</span> <span class="n">fit</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">gam</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">grav</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">temp</span><span class="p">)</span> <span class="o">*</span> <span class="mf">10.0</span>
+
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">fit</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">press</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+    <span class="n">fit</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">press</span> <span class="o">/</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="mf">0.1</span>
+    <span class="n">fit</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamR</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">output_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Writing atmosphere data info &quot;</span> <span class="o">+</span> <span class="n">output_path</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">fit</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="n">_fit_header_txt</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="p">),</span> <span class="n">comments</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Visualizing EOF atmospheric fit...&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;font.size&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">})</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharey</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Altitude [km]&quot;</span><span class="p">)</span>
+        
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;c [m/s]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">profile</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="n">profile</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">profile</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Original&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">0.1</span> <span class="o">*</span> <span class="n">gam</span> <span class="o">*</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">5</span><span class="p">]</span> <span class="o">/</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]),</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;xkcd:red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;EOF Fit (n = &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">eof_cnt</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper left&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;u [m/s]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">profile</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fit</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;xkcd:red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;v [m/s]&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">profile</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">profile</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;-k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
+        <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fit</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">fit</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;xkcd:red&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="perturb_atmo"><a class="viewcode-back" href="../../stochprop.eofs.html#stochprop.eofs.perturb_atmo">[docs]</a><span class="k">def</span> <span class="nf">perturb_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">stdev</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">eof_max</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">sample_cnt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">alt_wt_pow</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">sing_val_wt_pow</span><span class="o">=</span><span class="mf">0.25</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Use EOFs to perturb a specified profile using a given scale</span>
 
 <span class="sd">        Parameters</span>
@@ -1420,42 +1405,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Philip Blom
-
-    </p>
+    <p>&#169; Copyright 2020, Philip Blom.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

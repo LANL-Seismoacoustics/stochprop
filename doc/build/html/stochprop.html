@@ -1,73 +1,36 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API &mdash; stochprop 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> stochprop
-          
-
-          
-            
             <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -75,17 +38,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="userguide.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; References</a></li>
@@ -94,117 +47,125 @@
 <li class="toctree-l1"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a></li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">stochprop</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-      <li>API</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">API</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/stochprop.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="api">
-<span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this heading">¶</a></h1>
+<span id="id1"></span><h1>API<a class="headerlink" href="#api" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="stochprop.eofs.html">Empirical Orthogonal Function Analysis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stochprop.propagation.html">Propagation Statistics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="stochprop.gravity.html">Gravity Wave Perturbation Analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stochprop.eofs.html">Empirical Orthogonal Function Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.build_atmo_matrix"><code class="docutils literal notranslate"><span class="pre">build_atmo_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.build_cdf"><code class="docutils literal notranslate"><span class="pre">build_cdf()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.compute_coeffs"><code class="docutils literal notranslate"><span class="pre">compute_coeffs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.compute_eofs"><code class="docutils literal notranslate"><span class="pre">compute_eofs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.compute_overlap"><code class="docutils literal notranslate"><span class="pre">compute_overlap()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.compute_seasonality"><code class="docutils literal notranslate"><span class="pre">compute_seasonality()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.define_coeff_limits"><code class="docutils literal notranslate"><span class="pre">define_coeff_limits()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.density"><code class="docutils literal notranslate"><span class="pre">density()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.draw_from_pdf"><code class="docutils literal notranslate"><span class="pre">draw_from_pdf()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.fit_atmo"><code class="docutils literal notranslate"><span class="pre">fit_atmo()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.maximum_likelihood_profile"><code class="docutils literal notranslate"><span class="pre">maximum_likelihood_profile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.perturb_atmo"><code class="docutils literal notranslate"><span class="pre">perturb_atmo()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.pressure"><code class="docutils literal notranslate"><span class="pre">pressure()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.profiles_qc"><code class="docutils literal notranslate"><span class="pre">profiles_qc()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.eofs.html#stochprop.eofs.sample_atmo"><code class="docutils literal notranslate"><span class="pre">sample_atmo()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stochprop.propagation.html">Propagation Statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel.build"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel.display"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel.display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_az_dev_mn"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel.eval_az_dev_mn()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_az_dev_std"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel.eval_az_dev_std()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_rcel_gmm"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel.eval_rcel_gmm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.PathGeometryModel.load"><code class="docutils literal notranslate"><span class="pre">PathGeometryModel.load()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.TLossModel"><code class="docutils literal notranslate"><span class="pre">TLossModel</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.TLossModel.build"><code class="docutils literal notranslate"><span class="pre">TLossModel.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.TLossModel.display"><code class="docutils literal notranslate"><span class="pre">TLossModel.display()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.TLossModel.eval"><code class="docutils literal notranslate"><span class="pre">TLossModel.eval()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.TLossModel.load"><code class="docutils literal notranslate"><span class="pre">TLossModel.load()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.blastwave_spectrum"><code class="docutils literal notranslate"><span class="pre">blastwave_spectrum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.find_azimuth_bin"><code class="docutils literal notranslate"><span class="pre">find_azimuth_bin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.ims_noise_model"><code class="docutils literal notranslate"><span class="pre">ims_noise_model()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.kg_op"><code class="docutils literal notranslate"><span class="pre">kg_op()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.kg_ppd"><code class="docutils literal notranslate"><span class="pre">kg_ppd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.plot_detection_stats"><code class="docutils literal notranslate"><span class="pre">plot_detection_stats()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.plot_network_performance"><code class="docutils literal notranslate"><span class="pre">plot_network_performance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.run_infraga"><code class="docutils literal notranslate"><span class="pre">run_infraga()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.propagation.html#stochprop.propagation.run_modess"><code class="docutils literal notranslate"><span class="pre">run_modess()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="stochprop.gravity.html">Gravity Wave Perturbation Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.BV_freq"><code class="docutils literal notranslate"><span class="pre">BV_freq()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.cg"><code class="docutils literal notranslate"><span class="pre">cg()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.m_imag"><code class="docutils literal notranslate"><span class="pre">m_imag()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.m_sqr"><code class="docutils literal notranslate"><span class="pre">m_sqr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.perturb_atmo"><code class="docutils literal notranslate"><span class="pre">perturb_atmo()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.perturbations"><code class="docutils literal notranslate"><span class="pre">perturbations()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.prog_close"><code class="docutils literal notranslate"><span class="pre">prog_close()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.prog_increment"><code class="docutils literal notranslate"><span class="pre">prog_increment()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.prog_prep"><code class="docutils literal notranslate"><span class="pre">prog_prep()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.prog_set_step"><code class="docutils literal notranslate"><span class="pre">prog_set_step()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.single_fourier_component"><code class="docutils literal notranslate"><span class="pre">single_fourier_component()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="stochprop.gravity.html#stochprop.gravity_waves.single_fourier_component_wrapper"><code class="docutils literal notranslate"><span class="pre">single_fourier_component_wrapper()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
 
 
            </div>
-           
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Philip Blom
-
-    </p>
+    <p>&#169; Copyright 2020, Philip Blom.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

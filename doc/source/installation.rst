@@ -93,15 +93,15 @@ This command will show the general usage of the stochprop package:
       stochprop
       ---------
 
-      Python-based tools for quantifying infrasonic propagation uncertainty via
-      stochastic analyses
+    Python-based tools for quantifying infrasonic propagation uncertainty via
+    stochastic analyses
 
     Options:
       -h, --help  Show this message and exit.
 
     Commands:
-      eof      Empirical Orthogonal Function (EOF) methods
-      perturb  Atmospheric specification perturbing methods
-      prop     Propagation model construction methods
+      plot   Visualization methods
+      prop   Propagation model construction methods
+      stats  Atmosphere statistics methods
 
-Usage of the individual packages and sub-commands can be similarly displayed with the :code:`--help` flag (e.g., :code:`stochprop eof build --help`).
+Usage of the individual packages and sub-commands can be similarly displayed with the :code:`--help` flag (e.g., :code:`stochprop stats build-eofs --help`).

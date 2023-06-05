@@ -6,34 +6,6 @@ Quickstart
 
 Quickstart discussion
 
-
-----------------------------------------
-Outline of Functionality
-----------------------------------------
-
-    ..
-
-        | stochprop
-        |   |--- stats
-        |       |--- build eofs
-        |       |--- compute coefficients
-        |       |--- coefficient overlap (projection methods too?)
-        |       |--- sample eofs
-        |       |--- perturb (using eofs and/or gravity waves)
-        |   |--- prop
-        |       |--- build PGM
-        |       |--- build TLM
-        |   |--- plot
-        |       |--- season trends (ESS ratio)
-        |       |--- eofs
-        |       |--- fit (eof)
-        |       |--- sample set (EOF sample or perturbations)
-        |       |--- season trends (coefficient overlap)
-        |       |--- PGM/TLM
-        |       |--- detection stats
-        |       |--- network performance
-
-
 ---------------------------
 Identifying Seasonal Trends
 ---------------------------
@@ -42,29 +14,30 @@ Stuff...
 
     .. code-block:: console
 
-        Usage: stochprop prop season-trends [OPTIONS]
+        Usage: stochprop plot ess-ratio [OPTIONS]
 
-            stochprop prop season-trends
-            -----------------------
+          stochprop plot ess-ratio
+          -----------------------
         
-            Example Usage:
-                stochprop prop season-trends --atmo-dir profs/ --results-path example
+        Example Usage:
+            stochprop plot ess-ratio --atmo-dir profs/ --results-path example
 
-            Options:
-              --atmo-dir TEXT        Directory of atmospheric specifications (required)
-              --results-path TEXT    Output path and prefix
-              --atmo-pattern TEXT    Specification file pattern (default: '*.dat')
-              --atmo-format TEXT     Specification format (default: 'zTuvdp')
-              --year-selection TEXT  Limit analysis to specific year(s) (default: None)
-              --include-NS BOOLEAN   Option to include north/south analysis
-              -h, --help             Show this message and exit.
+        Options:
+          --atmo-dir TEXT        Directory of atmospheric specifications (required)
+          --results-path TEXT    Output path and prefix
+          --atmo-pattern TEXT    Specification file pattern (default: '*.dat')
+          --atmo-format TEXT     Specification format (default: 'zTuvdp')
+          --year-selection TEXT  Limit analysis to specific year(s) (default: None)
+          --include-NS BOOLEAN   Option to include north/south analysis
+          --show-title BOOLEAN   Option to display title text
+          -h, --help             Show this message and exit.
 
 
 Stuff...
 
     .. code:: none
 
-        stochprop prop season-trends --atmo-dir profs/
+        stochprop prop season-trends --atmo-dir profs/ --results-path example
 
 Stuff...
 
@@ -78,14 +51,13 @@ Stuff...
 
     .. code-block:: none
 
-        ##########################$#########
-        ##                                ##
-        ##           stochprop            ##
-        ##      Propagation Methods       ##
-        ##   ESS Ratio Seasonal Analysis  ##
-        ##                                ##
-        ####################################
-
+        #####################################
+        ##                                 ##
+        ##            stochprop            ##
+        ##      Visualization Methods      ##
+        ##   ESS Ratio Seasonal Analysis   ##
+        ##                                 ##
+        #####################################
 
         Run summary:
         Source directory: profs/
@@ -123,34 +95,34 @@ Stuff...
 
     .. code:: none
 
-        Usage: stochprop eof build [OPTIONS]
+        Usage: stochprop stats build-eofs [OPTIONS]
 
-        stochprop eof build
-        -----------------------
+          stochprop stats build-eofs
+          --------------------------
         
         Example Usage:
-            stochprop eof build --atmo-dir profs/ --eofs-path eofs/example
-            stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
-            stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '10:12, 01:03'
+            stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example
+            stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_low_alt --max-alt 80.0 --eof-cnt 50
+            stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_winter --month-selection '10:12, 01:03'
 
         Options:
-        --atmo-dir TEXT          Directory of atmospheric specifications (required)
-        --eofs-path TEXT         EOF output path and prefix (required)
-        --atmo-pattern TEXT      Specification file pattern (default: '*.dat')
-        --atmo-format TEXT       Specification format (default: 'zTuvdp')
-        --month-selection TEXT   Limit analysis to specific month(s) (default: None)
-        --week-selection TEXT    Limit analysis to specific week(s) (default: None)
-        --year-selection TEXT    Limit analysis to specific year(s) (default: None)
-        --save-datetime BOOLEAN  Save date time info (default: False)
-        --max-alt TEXT           Maximum altitude for trimming data (default: None)
-        --eof-cnt INTEGER        Number of EOFs to store (default: 100)
-        -h, --help               Show this message and exit.
+          --atmo-dir TEXT          Directory of atmospheric specifications (required)
+          --eofs-path TEXT         EOF output path and prefix (required)
+          --atmo-pattern TEXT      Specification file pattern (default: '*.dat')
+          --atmo-format TEXT       Specification format (default: 'zTuvdp')
+          --month-selection TEXT   Limit analysis to specific month(s) (default: None)
+          --week-selection TEXT    Limit analysis to specific week(s) (default: None)
+          --year-selection TEXT    Limit analysis to specific year(s) (default: None)
+          --save-datetime BOOLEAN  Save date time info (default: False)
+          --max-alt TEXT           Maximum altitude for trimming data (default: None)
+          --eof-cnt INTEGER        Number of EOFs to store (default: 100)
+          -h, --help               Show this message and exit.
         
 Stuff...
 
     .. code:: none
 
-        stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_winter --week-selection '38:52,1:15'
+        stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_winter --week-selection '38:52,1:15'
 
 Stuff...
 
@@ -160,7 +132,7 @@ Stuff...
         ##################################
         ##                              ##
         ##           stochprop          ##
-        ##          EOF Methods         ##
+        ##      Statistics Methods      ##
         ##   Build SVD to Define EOFs   ##
         ##                              ##
         ##################################
@@ -182,9 +154,9 @@ Stuff...
 
     .. code:: none
 
-        stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_summer --week-selection '19:35'
+        stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_summer --week-selection '19:35'
 
-        stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_transition --week-selection '16:18,36:37'  --eof-cnt 35
+        stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_transition --week-selection '16:18,36:37'  --eof-cnt 35
 
 Note that in the spring/fall analysis, there aren't enough atmospheric specifications in the 5 weeks defining the spring and fall transitions and the methods error out if more EOFs are requested than atmospheric specifications provided.  In more general analysis, sampling these weeks across multiple years provide sufficient atmospheric specification samples to produce a full 100 EOFs, but in this example the EOF count needs to be limited to 35.
 
@@ -195,7 +167,7 @@ Discussion...
 
     .. code:: none
 
-        stochprop eof plot --eofs-path eofs/example_winter
+        stochprop plot eofs --eofs-path eofs/example_winter
 
 
 Stuff...
@@ -208,6 +180,10 @@ Stuff...
 
 Repeat for the summer season and show the first 10 EOFs (click the image to view it in a larger format).
 
+    .. code:: none
+
+        stochprop plot eofs --eofs-path eofs/example_summer --eof-cnt 10
+
     .. figure:: _static/_images/summer_eofs.png
         :width: 800px
         :align: center
@@ -217,14 +193,29 @@ Repeat for the summer season and show the first 10 EOFs (click the image to view
 
 **Analyze Fitting Accuracy**
 
-Stuff... (NEED TO WRITE THIS FUNCTION)
+Stuff...
 
     .. code:: none
 
-        stochprop eof fit --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example_winter
+        stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 10
+
+    .. figure:: _static/_images/eof-fit_10.png
+        :width: 500px
+        :align: center
+        :figclass: align-center
 
 
 More stuff...
+
+    .. code:: none
+
+        stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 25
+
+    .. figure:: _static/_images/eof-fit_25.png
+        :width: 500px
+        :align: center
+        :figclass: align-center
+
 
 
 
@@ -235,13 +226,13 @@ Stuff...
 
     .. code:: none 
 
-        stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --week-selection '38:52,1:15'
+        stochprop stats eof-coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --week-selection '38:52,1:15'
 
 Use the coefficients to sample...
 
     .. code:: none
 
-        stochprop eof sample --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
+        stochprop stats sample-eofs --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
 
 
 Visualize the samples (need to write function)...
