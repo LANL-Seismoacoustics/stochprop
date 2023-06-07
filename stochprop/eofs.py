@@ -875,6 +875,9 @@ def compute_seasonality(overlap_file, file_id=None):
 
     print("Generating seasonality plot...")
 
+    if "overlap.npy" not in overlap_file:
+        overlap_file = overlap_file + "-overlap.npy"
+
     dist_mat = -np.log(np.load(overlap_file))   
     np.fill_diagonal(dist_mat, 0.0)   
     print("generating linkages")
@@ -887,13 +890,7 @@ def compute_seasonality(overlap_file, file_id=None):
         f, (ax1) = plt.subplots(1, 1, figsize=(3, 7.5))
         hierarchy.dendrogram(links, orientation="right", ax=ax1, labels=[(n + 1) for n in range(52)])
     plt.title(file_id.rpartition('/')[-1])
-
-    if file_id:
-        plt.savefig(file_id + "-seasonality.png", dpi=300)
-
-    plt.show(block=False)
-    plt.pause(5.0)
-    plt.close('all')
+    plt.show()
 
 
 ################################
@@ -1039,6 +1036,7 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
             sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
 
+    print('\t' + "Converting sound speed profiles to temperature, density, and pressure...")
     for pn in range(prof_cnt):
         # Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])
         # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}
@@ -1298,34 +1296,39 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
             u_perturb[j] = coeff_val * interp1d(u_eofs[:, 0][eof_mask], u_eofs[:, n + 1][eof_mask])(z_vals)
             v_perturb[j] = coeff_val * interp1d(v_eofs[:, 0][eof_mask], v_eofs[:, n + 1][eof_mask])(z_vals)
 
-            wts[j] = simps(u_eofs[:, 0][eof_mask] * abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask]) / simps(abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
-            wts[j] += simps(u_eofs[:, 0][eof_mask] * abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask]) / simps(abs(v_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
-            wts[j] /= (2.0 * max(u_eofs[:, 0][eof_mask]))
-            wts[j] = wts[j]**alt_wt_pow
+            z_mean = simps(c_eofs[:, 0][eof_mask] * abs(c_eofs[:, n + 1][eof_mask]), c_eofs[:, 0][eof_mask]) / simps(abs(c_eofs[:, n + 1][eof_mask]), c_eofs[:, 0][eof_mask])
+            z_mean = z_mean + simps(u_eofs[:, 0][eof_mask] * abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask]) / simps(abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
+            z_mean = z_mean + simps(v_eofs[:, 0][eof_mask] * abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask]) / simps(abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask])
 
+            wts[j] = (z_mean / max(u_eofs[:, 0][eof_mask]))**alt_wt_pow
             wts[j] *= (sing_vals[n, 1] / sing_vals[0, 1])**sing_val_wt_pow
 
         c_perturb_all[m] = np.average(c_perturb, axis=0, weights=wts)
         u_perturb_all[m] = np.average(u_perturb, axis=0, weights=wts)
         v_perturb_all[m] = np.average(v_perturb, axis=0, weights=wts)
 
-    scaling = stdev / (np.average(np.sqrt(u_perturb_all**2 + v_perturb_all**2)))
+    scaling = stdev / (np.average(np.sqrt(c_perturb_all**2 + u_perturb_all**2 + v_perturb_all**2)))
 
     for m in range(sample_cnt):
+        c_vals = np.sqrt((gam / 10.0) * (ref_atmo[:, 5][ref_mask] / ref_atmo[:, 4][ref_mask]))
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
         v_vals = np.copy(ref_atmo[:, 3][ref_mask])
-
-        d_vals = np.copy(ref_atmo[:, 4][ref_mask])
-        p_vals = np.copy(ref_atmo[:, 5][ref_mask])
-        c_vals = np.sqrt((gam / 10.0) * (p_vals / d_vals))
 
         c_vals = c_vals + c_perturb_all[m] * scaling
         u_vals = u_vals + u_perturb_all[m] * scaling
         v_vals = v_vals + v_perturb_all[m] * scaling
 
+        # define the perturbed pressure, density, and temperature
+        # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}
+        # d = \gamma p/c^2
+        # T = C^2 / R \gamma
         temp = np.zeros_like(c_vals)
         for j in range(1, len(c_vals)):
             temp[j] = simps(1.0 / c_vals[:j]**2, ref_atmo[:, 0][ref_mask][:j] * 1000.0)
-        d_vals = d_vals[0] * (c_vals[0] / c_vals)**2 * np.exp(-9.8 * gam * temp)
 
-        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, c_vals, u_vals, v_vals, d_vals)).T, header=_perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, m, sample_cnt), comments='')
+        # append pressure and replace sound speed values with temperature
+        p_vals = (ref_atmo[:, 5][ref_mask][0] * c_vals[0]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
+        d_vals = gam * p_vals / c_vals**2 * 0.1      
+        T_vals = c_vals**2 / gamR
+        
+        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, header=_perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, m, sample_cnt), comments='')

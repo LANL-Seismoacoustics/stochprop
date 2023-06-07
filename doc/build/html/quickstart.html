@@ -48,7 +48,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quickstart</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#identifying-seasonal-trends">Identifying Seasonal Trends</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#eofs-for-atmosphere-statistics">EOFs for Atmosphere Statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#constructing-propagation-statistics">Constructing Propagation Statistics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#propagation-statistics">Propagation Statistics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#perturbing-atmospheric-structure">Perturbing Atmospheric Structure</a></li>
 </ul>
 </li>
@@ -279,39 +279,151 @@ stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_transition
 </div>
 </div></blockquote>
 <p>Visualize the samples (need to write function)…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot atmo-ensemble --atmo-dir samples/winter/ --atmo-pattern &#39;*.met&#39;
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/winter_eof-samples.png"><img alt="_images/winter_eof-samples.png" src="_images/winter_eof-samples.png" style="width: 500px;" /></a>
+</figure>
+</div></blockquote>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot atmo-ensemble --atmo-dir profs/ --atmo-pattern &#39;*.dat&#39; --week-selection &#39;38:52,1:15&#39;
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/winter_g2s-atmos.png"><img alt="_images/winter_g2s-atmos.png" src="_images/winter_g2s-atmos.png" style="width: 500px;" /></a>
+</figure>
+</div></blockquote>
 <p><strong>Check Seasonal Trends with EOFs (optional)</strong></p>
 <p>Stuff…</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
 </pre></div>
 </div>
 </div></blockquote>
 <p>Stuff…</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_all --run-all-weeks True --coeff-path coeffs/example_all --eof-cnt 50
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop stats eof-coeffs --atmo-dir profs/ --eofs-path eofs/example_all --run-all-weeks True --coeff-path coeffs/example_all --eof-cnt 50
 </pre></div>
 </div>
 </div></blockquote>
 <p>Stuff…</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop eof seasonality --eofs-path eofs/example_all --coeff-path coeffs/example_all --eof-cnt 50
-</pre></div>
-</div>
-</div></blockquote>
-</section>
-<section id="constructing-propagation-statistics">
-<h2>Constructing Propagation Statistics<a class="headerlink" href="#constructing-propagation-statistics" title="Permalink to this heading"></a></h2>
-<p>Stuff…</p>
-<blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;30.0, -120.0, 0.0&#39; --cpu-cnt 8
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop stats coeff-overlap --eofs-path eofs/example_all --coeff-path coeffs/example_all --eof-cnt 50
 </pre></div>
 </div>
 </div></blockquote>
 <p>Visualize…</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop plot --model-file prop/winter/winter.pgm
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot coeff-overlap --overlap coeffs/example_all-overlap.npy
 </pre></div>
 </div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/example_all-seasonality.png"><img alt="_images/example_all-seasonality.png" src="_images/example_all-seasonality.png" style="width: 300px;" /></a>
+</figure>
+</div></blockquote>
+<p>This identifies seasonal trends such that summer extends from week 20 – 33 and winter covering weeks 38 – 52 and 1 – 14.  For comparison, the <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">plot</span> <span class="pre">ess-ratio</span></code> analysis above identified similar seasonal trends though with a slightly longer summer (weeks 19 - 35).  While this additional analysis isn’t overtly needed for this mid-latitude location, analysis of seasonal trends near the equatorial and polar regions is often elucidated by this EOF coefficient overlap analysis.</p>
+</section>
+<section id="propagation-statistics">
+<h2>Propagation Statistics<a class="headerlink" href="#propagation-statistics" title="Permalink to this heading"></a></h2>
+<p><strong>Constructing Propagation Statistics</strong></p>
+<p>Stuff…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;30.0, -120.0, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
+</pre></div>
+</div>
+</div></blockquote>
+<p>Output…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#####################################
+##                                 ##
+##            stochprop            ##
+##       Propagation Methods       ##
+##       Path Geometry Model       ##
+##                                 ##
+######################################
+
+
+Data IO summary:
+  Atmospheric specifications directory: samples/winter/
+  Specification pattern: *.met
+  Model output path: prop/winter/winter
+
+infraGA/GeoAc parameters:
+  Source location: 30.0, -120.0, 0.0
+  Inclination angles (min, max, step): [2.0, 50.0, 2.0]
+  Azimuth angles (min, max, step): [0.0, 360.0, 6.0]
+  Bounces: 25
+  Ground elevation: 0.0
+  Range max: 1000.0
+  Frequency: 0.5
+  Clean up: True
+  CPU count: 8
+
+Path Geometry Model (PGM) parameters:
+  Range window: 50.0
+  Range step: 10.0
+  Azimuth bin count: 16
+  Azimuth bin width: 30.0
+
+Generating ray paths for example_winter-00.met
+
+    ###########################################
+    ####     Running infraga-accel-sph     ####
+    ####            Propagation            ####
+    ###########################################
+
+Interpolating atmosphere data in &#39;samples/winter//example_winter-00.met&#39; using format &#39;zTuvdp&#39;...
+    Propagation region limits:
+        latitude = -90, 90
+        longitude = -180, 180
+        altitutde = 0, 150
+
+    User selected range maximum = 1000
+
+Parameter summary:
+    inclination: 2, 50, 2
+    azimuth: 0, 360, 6
+    bounces: 25
+    source location (lat, lon, alt): 30, -120, 0
+    ground elevation: 0
+    frequency: 0.5
+    S&amp;B atten coeff: 1
+    write_atmo: false
+    write_rays: false
+    write_topo: false
+    calc_amp: false
+    threads: 8
+
+Calculating ray paths: (2, 28) degrees inclination range, 0 degrees azimuth.
+Calculating ray paths: (30, 50) degrees inclination range, 0 degrees azimuth.
+Calculating ray paths: (2, 28) degrees inclination range, 6 degrees azimuth.
+Calculating ray paths: (30, 50) degrees inclination range, 6 degrees azimuth.
+Calculating ray paths: (2, 28) degrees inclination range, 12 degrees azimuth.
+Calculating ray paths: (30, 50) degrees inclination range, 12 degrees azimuth.
+...
+
+Generating ray paths for example_winter-01.met
+...
+</pre></div>
+</div>
+</div></blockquote>
+<p>Visualize…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot prop-model --model-file prop/winter/winter.pgm
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/US_RM-az_dev.png"><img alt="_images/US_RM-az_dev.png" src="_images/US_RM-az_dev.png" style="width: 500px;" /></a>
+</figure>
+</div></blockquote>
+<p>The second plot…</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="_images/US_RM-rng_cel.png"><img alt="_images/US_RM-rng_cel.png" src="_images/US_RM-rng_cel.png" style="width: 500px;" /></a>
+</figure>
 </div></blockquote>
 <p>Build a transmission loss model…</p>
 <blockquote>
@@ -321,18 +433,60 @@ stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_transition
 </div></blockquote>
 <p>Visualize…</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop plot --model-file prop/winter/winter_0.200Hz.tlm
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm
 </pre></div>
 </div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/winter_0.359_tloss.png"><img alt="_images/winter_0.359_tloss.png" src="_images/winter_0.359_tloss.png" style="width: 400px;" /></a>
+</figure>
+</div></blockquote>
+<p><em>Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.</em></p>
+<p><strong>Utilizing Propagation Statistics</strong></p>
+<p>Plotting detection statistics for a single infrasound array…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot detection-stats --tlm-files &#39;prop/US_RM/US_RM-winter_*Hz.tlm&#39; --yield-vals &#39;1, 10, 100&#39; --array-dim 5
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/det-stats.png"><img alt="_images/det-stats.png" src="_images/det-stats.png" style="width: 600px;" /></a>
+</figure>
+</div></blockquote>
+<p>Also able to apply models to a network of infrasound arrays to quantify detection capabilities…network info…</p>
+<p>Write a file that contains latitude and longitude of each network station as well as the number of sensors for each one and a transmission loss model for each…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>39.4731, -110.740, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+40.6530, -112.119, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+38.5337, -113.855, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+39.7196, -113.390, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+41.6071, -111.564, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+37.0109, -113.244, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+40.0795, -111.831, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+</pre></div>
+</div>
+</div></blockquote>
+<p>Run the analysis and visualize…</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot network-performance --network-info network_test.dat --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
+</pre></div>
+</div>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/network-performance.png"><img alt="_images/network-performance.png" src="_images/network-performance.png" style="width: 600px;" /></a>
+</figure>
 </div></blockquote>
 </section>
 <section id="perturbing-atmospheric-structure">
 <h2>Perturbing Atmospheric Structure<a class="headerlink" href="#perturbing-atmospheric-structure" title="Permalink to this heading"></a></h2>
 <p>Stuff…</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop perturb eof --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/test
 </pre></div>
 </div>
+</div></blockquote>
+<p>Visualization…</p>
+<blockquote>
+<div><figure class="align-center">
+<a class="reference internal image-reference" href="_images/perturb1.png"><img alt="_images/perturb1.png" src="_images/perturb1.png" style="width: 400px;" /></a>
+</figure>
 </div></blockquote>
 </section>
 </section>

@@ -296,11 +296,11 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
 @click.option("--method", help="Perturbation method ('eof' or 'gw')", default='eof')
 
 @click.option("--eofs-path", help="Path to EOF info (required)", default=None)
-@click.option("--eof-max", help="Maximum EOF coefficient to use (default: 100)", default=100)
-@click.option("--eof-cnt", help="Number of EOFs to use (default: 50)", default=50)
+@click.option("--eof-max", help="Maximum EOF coefficient to use (default: 50)", default=100)
+@click.option("--eof-cnt", help="Number of EOFs to use (default: 50)", default=100)
 @click.option("--std-dev", help="Standard deviation (default: 10 m/s)", default=10.0)
 @click.option("--alt-weight", help="Altitude weighting power (default: 2.0)", default=2.0)
-@click.option("--singular-value-weight", help="Sing. value weighting power (default: 0.25)", default=0.25)
+@click.option("--sv-weight", help="Sing. value weighting power (default: 0.25)", default=0.25)
 
 @click.option("--t0", help="Propagation time from source [hr] (default: 8)", default=8.0)
 @click.option("--dx", help="Horizontal wavenumber scale [km] (default: 4.0)", default=4.0)
@@ -313,7 +313,7 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
 @click.option("--cpu-cnt", help="Number of CPUs in parallel analysis (default: None)", default=None, type=int)
 @click.option("--debug-fig", help="Output for figures to aid in debugging (default: None)", default=None, type=str)
 
-def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt, sample_cnt, alt_weight, singular_value_weight, t0, dx, dz, nk, nom, random_phase, z_src, m_star, cpu_cnt, debug_fig):
+def perturb(atmo_file, sample_path, method, eofs_path, std_dev, eof_max, eof_cnt, sample_cnt, alt_weight, sv_weight, t0, dx, dz, nk, nom, random_phase, z_src, m_star, cpu_cnt, debug_fig):
     '''
     \b
     Construct perturbed atmospheric samples using either EOF-based perturbations or gravity wave perturbation calculation based on Drob et al. (2013) method.
@@ -323,8 +323,8 @@ def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt
     -----------------------
     \b
     Example Usage:
-    \t stochprop stats perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_eof --method eofs --eofs-path eofs/example 
-    \t stochprop stats perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw --method
+    \t stochprop stats perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --sample-path test_eof --method eofs --eofs-path eofs/example 
+    \t stochprop stats perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --sample-path test_gw --method
     '''
 
     click.echo("")
@@ -338,7 +338,7 @@ def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt
     click.echo("") 
 
     click.echo("  Reference specification: " + str(atmo_file))
-    click.echo("  Sample output Path: " + output_path)
+    click.echo("  Sample output Path: " + sample_path)
     click.echo("  Sample count: " + str(sample_cnt))
     click.echo("")
 
@@ -352,11 +352,11 @@ def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt
         click.echo("  EOF Max Index: " + str(eof_max))
         click.echo("  EOF Count: " + str(eof_cnt))
         click.echo("  Standard Deviation [m/s]: " + str(std_dev))
-        click.echo("  Altitude Weighting: " + str(alt_weight))
-        click.echo("  Singular Value weighting: " + str(singular_value_weight))
+        click.echo("  Altitude Weight Power: " + str(alt_weight))
+        click.echo("  Singular Value Weight Power: " + str(sv_weight))
         click.echo("")
 
-        eofs.perturb_atmo(atmo_file, eofs_path, output_path, stdev=std_dev, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=sample_cnt, alt_wt_pow=alt_weight, sing_val_wt_pow=singular_value_weight)
+        eofs.perturb_atmo(atmo_file, eofs_path, sample_path, stdev=std_dev, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=sample_cnt, alt_wt_pow=alt_weight, sing_val_wt_pow=sv_weight)
     else:
         click.echo('\n' + "Gravity wave perturbation parameters")
         click.echo("  t0: " + str(t0))
@@ -371,7 +371,7 @@ def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt
             click.echo("  cpu_cnt: " + str(cpu_cnt))
         click.echo("")
         
-        grav.perturb_atmo(atmo_file, output_path, sample_cnt=sample_cnt, t0=t0 * 3600.0, dx=dx, dz=dz, Nk=nk, N_om=nom, 
+        grav.perturb_atmo(atmo_file, sample_path, sample_cnt=sample_cnt, t0=t0 * 3600.0, dx=dx, dz=dz, Nk=nk, N_om=nom, 
                             random_phase=random_phase, z_src=z_src, m_star=m_star, env_below=False, cpu_cnt=cpu_cnt, fig_out=debug_fig)
 
 

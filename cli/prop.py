@@ -19,14 +19,16 @@ from stochprop import propagation
 @click.option("--z-grnd", help="Ground elevation for simulations (default: 0.0 km)", default=0.0)
 @click.option("--rng-max", help="Maximum range for simulations (default: 1000.0 km)", default=1000.0)
 @click.option("--freq", help="Frequency for Sutherland-Bass atten. (default: 0.5 Hz)", default=0.5)
+@click.option("--prof-format", help="Profile format (default: 'zTuvdp')", default='zTuvdp')
 @click.option("--clean-up", help="Remove individual results after merge (default: True)", default=True)
 @click.option("--cpu-cnt", help="Number of CPUs for propagation simulations", default=None)
 @click.option("--rng-window", help="Range window in PGM (default: 50 km)", default=50.0)
 @click.option("--rng-step", help="Range resolution in PGM (default: 10 km)", default=10.0)
 @click.option("--az-bin-cnt", help="Number of azimuth bins in PGM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in PGM (default: 30 deg)", default=30.0)
+@click.option("--verbose", help="Output analysis stages as they're done.",  default=False)
 def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azimuths, bounces, z_grnd, rng_max,
-                freq, clean_up, cpu_cnt, rng_window, rng_step, az_bin_cnt, az_bin_width):
+                freq, prof_format, clean_up, cpu_cnt, rng_window, rng_step, az_bin_cnt, az_bin_width, verbose):
     '''
     \b
     stochprop prop build-pgm 
@@ -74,9 +76,9 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
     src_loc = [float(val) for val in src_loc.strip(' ()[]').split(',')]
     inclinations = [float(val) for val in inclinations.strip(' ()[]').split(',')]
     azimuths = [float(val) for val in azimuths.strip(' ()[]').split(',')]
-       
+    
     propagation.run_infraga(atmos_dir, output_path + ".arrivals.dat", pattern=atmos_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
-                    inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, clean_up=clean_up)
+                    inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, clean_up=clean_up, prof_format=prof_format, verbose=verbose)
 
     pgm = propagation.PathGeometryModel()
     pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, 
@@ -118,7 +120,7 @@ def build_tlm(atmos_dir, atmos_pattern, output_path, freq, azimuths, z_grnd, rng
     click.echo("##        Propagation Methods        ##")
     click.echo("##      Transmission Loss Model      ##")
     click.echo("##                                   ##")
-    click.echo("########################################")
+    click.echo("#######################################")
     click.echo("")  
 
     click.echo('\n' + "Data IO summary:")

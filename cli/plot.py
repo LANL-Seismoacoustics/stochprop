@@ -433,7 +433,7 @@ def coeff_overlap(overlap):
     -----------------------
     \b
     Example Usage:
-    \t stochprop plot coeff-overlap --overlap coeff/example
+    \t stochprop plot coeff-overlap --overlap coeff/example-overlap.npy
     
     '''
 
@@ -488,19 +488,19 @@ def prop_model(model_file):
 
 
 @click.command('detection-stats', short_help="Visualize single station detection statistics")
-@click.option("--tlm-label", help="Label for TLM file(s)")
-@click.option("--yield-vals", help="List of yield values (tons eq. TNT)")
-@click.option("--array-dim", help="Array dimension (number of sensors)", default=1, type=float)
+@click.option("--tlm-files", help="Path and name(s) for TLM file(s)", prompt="Enter tlm file info: ")
+@click.option("--yield-vals", help="List of yield values (tons eq. TNT)", prompt="Enter yield value(s): ")
+@click.option("--array-dim", help="Array dimension (number of sensors)", default=1, type=int)
 @click.option("--figure-out", help="Destination for figure", default=None)
 @click.option("--show-figure", help="Print figure to screen", default=True)
-def detection_stats(tlm_label, yield_vals, array_dim, figure_out, show_figure):
+def detection_stats(tlm_files, yield_vals, array_dim, figure_out, show_figure):
     '''
     \b
     stochprop prop detection_stats 
     ---------------------
     \b
     Example Usage:
-    \t stochprop prop detection_stats --model-files prop/winter/winter_0.200Hz.tlm
+    \t stochprop plot detection-stats --tlm-files prop/US_RM/US_RM-winter_0.500Hz.tlm --yield-vals '1, 10, 100' --array-dim 5
 
     '''
     click.echo("")
@@ -514,16 +514,21 @@ def detection_stats(tlm_label, yield_vals, array_dim, figure_out, show_figure):
     click.echo("")  
 
     # Load TLMs
-    tlm_dir = os.path.dirname(tlm_label)
-    tlm_pattern = tlm_pattern = tlm_label.split("/")[-1]
-    tlm_files = [file_name for file_name in np.sort(os.listdir(tlm_dir)) if fnmatch.fnmatch(file_name, tlm_pattern + "*")]
+    if "*" in tlm_files:
+        tlm_dir = os.path.dirname(tlm_files)   
+        tlm_pattern = tlm_pattern = tlm_files.split("/")[-1]
+        tlm_file_list = [tlm_dir + "/" + file_name for file_name in np.sort(os.listdir(tlm_dir)) if fnmatch.fnmatch(file_name, tlm_pattern + "*")]
+    elif "," in tlm_files:
+        tlm_file_list = tlm_files.replace(" ","").split(",")
+    else:
+        tlm_file_list = [tlm_files]
 
     models = [0] * 2
-    models[0] = [float(re.compile(r'\d+\.\d+').findall(file_name)[-1]) for file_name in tlm_files]
-    models[1] = [0] * len(tlm_files)
-    for n in range(len(tlm_files)):
+    models[0] = [float(re.compile(r'\d+\.\d+').findall(file_name)[-1]) for file_name in tlm_file_list]
+    models[1] = [0] * len(tlm_file_list)
+    for n in range(len(tlm_file_list)):
         models[1][n] = sp_prop.TLossModel()
-        models[1][n].load(tlm_dir + "/" + tlm_files[n])
+        models[1][n].load(tlm_file_list[n])
 
     # Generate plot
     yield_vals = [float(val)*1.0e3 for val in yield_vals.strip(' ()[]').split(',')]

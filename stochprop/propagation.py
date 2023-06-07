@@ -45,7 +45,7 @@ resol = '100m'  # use data at this scale (not working at the moment)
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zcuvd"):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zTuvdp", verbose=False):
     """
         Run the infraga -prop algorithm to compute path geometry
         statistics for BISL using a suite of specifications
@@ -90,6 +90,9 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
             warnings.warn(msg)
         else:
+            if profs_path[-1] == "/":
+                profs_path = profs_path[:-1]
+        
             dir_files = np.sort(os.listdir(profs_path))
             for file_name in dir_files:
                 if fnmatch.fnmatch(file_name, pattern):
@@ -111,7 +114,9 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                             command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
                         command = command + " src_alt=" + str(src_loc[2])
                         command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
-                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false" + " > /dev/null"
+                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false"
+                        if not verbose:
+                            command = command + " > /dev/null"
 
                         subprocess.call(command, shell=True)
 
@@ -1356,8 +1361,12 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
                         
     print('\n' + "Plotting detection statistics...", '\n')
 
-    for m in range(len(yld_vals)):
-        axes[m][-1].axis('off')
+    if len(yld_vals) > 1:
+        for m in range(len(yld_vals)):
+            axes[m][-1].axis('off')
+    else:
+            axes[-1].axis('off')
+
 
     cax = fig.add_axes([(len(tlms[0]) + 0.1) / (len(tlms[0]) + 1.0), 0.1, 0.02, 0.8])
     cbar = ColorbarBase(cax, cmap=cm.hot_r)

@@ -237,6 +237,28 @@ Use the coefficients to sample...
 
 Visualize the samples (need to write function)...
 
+    .. code:: none 
+
+        stochprop plot atmo-ensemble --atmo-dir samples/winter/ --atmo-pattern '*.met'
+
+    .. figure:: _static/_images/winter_eof-samples.png
+        :width: 500px
+        :align: center
+        :figclass: align-center
+
+
+Stuff...
+
+
+    .. code:: none
+
+        stochprop plot atmo-ensemble --atmo-dir profs/ --atmo-pattern '*.dat' --week-selection '38:52,1:15'
+
+    .. figure:: _static/_images/winter_g2s-atmos.png
+        :width: 500px
+        :align: center
+        :figclass: align-center
+
 
 
 **Check Seasonal Trends with EOFs (optional)**
@@ -245,38 +267,144 @@ Stuff...
 
     .. code:: none
 
-        stochprop eof build --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
+        stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
 
 Stuff...
 
 
     .. code:: none
 
-        stochprop eof coeffs --atmo-dir profs/ --eofs-path eofs/example_all --run-all-weeks True --coeff-path coeffs/example_all --eof-cnt 50
+        stochprop stats eof-coeffs --atmo-dir profs/ --eofs-path eofs/example_all --run-all-weeks True --coeff-path coeffs/example_all --eof-cnt 50
 
 Stuff...
 
     .. code:: none
 
-        stochprop eof seasonality --eofs-path eofs/example_all --coeff-path coeffs/example_all --eof-cnt 50
-
-
-
------------------------------------
-Constructing Propagation Statistics
------------------------------------
-
-Stuff...
-
-    .. code:: none
-
-        stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '30.0, -120.0, 0.0' --cpu-cnt 8
+        stochprop stats coeff-overlap --eofs-path eofs/example_all --coeff-path coeffs/example_all --eof-cnt 50
 
 Visualize...
 
     .. code:: none
 
-        stochprop prop plot --model-file prop/winter/winter.pgm
+        stochprop plot coeff-overlap --overlap coeffs/example_all-overlap.npy
+
+
+    .. figure:: _static/_images/example_all-seasonality.png
+        :width: 300px
+        :align: center
+        :figclass: align-center
+
+
+This identifies seasonal trends such that summer extends from week 20 -- 33 and winter covering weeks 38 -- 52 and 1 -- 14.  For comparison, the :code:`stochprop plot ess-ratio` analysis above identified similar seasonal trends though with a slightly longer summer (weeks 19 - 35).  While this additional analysis isn't overtly needed for this mid-latitude location, analysis of seasonal trends near the equatorial and polar regions is often elucidated by this EOF coefficient overlap analysis.
+
+
+----------------------
+Propagation Statistics
+----------------------
+
+**Constructing Propagation Statistics**
+
+Stuff...
+
+    .. code:: none
+
+        stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '30.0, -120.0, 0.0' --verbose True --cpu-cnt 14 --clean-up False
+
+Output...
+
+    .. code:: none
+
+        #####################################
+        ##                                 ##
+        ##            stochprop            ##
+        ##       Propagation Methods       ##
+        ##       Path Geometry Model       ##
+        ##                                 ##
+        ######################################
+
+
+        Data IO summary:
+          Atmospheric specifications directory: samples/winter/
+          Specification pattern: *.met
+          Model output path: prop/winter/winter
+
+        infraGA/GeoAc parameters:
+          Source location: 30.0, -120.0, 0.0
+          Inclination angles (min, max, step): [2.0, 50.0, 2.0]
+          Azimuth angles (min, max, step): [0.0, 360.0, 6.0]
+          Bounces: 25
+          Ground elevation: 0.0
+          Range max: 1000.0
+          Frequency: 0.5
+          Clean up: True
+          CPU count: 8
+
+        Path Geometry Model (PGM) parameters:
+          Range window: 50.0
+          Range step: 10.0
+          Azimuth bin count: 16
+          Azimuth bin width: 30.0
+
+        Generating ray paths for example_winter-00.met  
+
+            ###########################################
+            ####     Running infraga-accel-sph     ####
+            ####            Propagation            ####
+            ###########################################
+
+        Interpolating atmosphere data in 'samples/winter//example_winter-00.met' using format 'zTuvdp'...
+            Propagation region limits:
+                latitude = -90, 90
+                longitude = -180, 180
+                altitutde = 0, 150
+
+            User selected range maximum = 1000
+
+        Parameter summary:
+            inclination: 2, 50, 2
+            azimuth: 0, 360, 6
+            bounces: 25
+            source location (lat, lon, alt): 30, -120, 0
+            ground elevation: 0
+            frequency: 0.5
+            S&B atten coeff: 1
+            write_atmo: false
+            write_rays: false
+            write_topo: false
+            calc_amp: false
+            threads: 8
+
+        Calculating ray paths: (2, 28) degrees inclination range, 0 degrees azimuth.
+        Calculating ray paths: (30, 50) degrees inclination range, 0 degrees azimuth.
+        Calculating ray paths: (2, 28) degrees inclination range, 6 degrees azimuth.
+        Calculating ray paths: (30, 50) degrees inclination range, 6 degrees azimuth.
+        Calculating ray paths: (2, 28) degrees inclination range, 12 degrees azimuth.
+        Calculating ray paths: (30, 50) degrees inclination range, 12 degrees azimuth.
+        ...
+
+        Generating ray paths for example_winter-01.met
+        ...
+
+
+
+Visualize...
+
+    .. code:: none
+
+        stochprop plot prop-model --model-file prop/winter/winter.pgm
+
+    .. figure:: _static/_images/US_RM-az_dev.png
+        :width: 500px
+        :align: center
+        :figclass: align-center
+
+The second plot...
+
+    .. figure:: _static/_images/US_RM-rng_cel.png
+        :width: 500px
+        :align: center
+        :figclass: align-center
+
 
 
 Build a transmission loss model...
@@ -289,11 +417,59 @@ Visualize...
 
     .. code:: none
 
-        stochprop prop plot --model-file prop/winter/winter_0.200Hz.tlm
+        stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm
+
+
+    .. figure:: _static/_images/winter_0.359_tloss.png
+        :width: 400px
+        :align: center
+        :figclass: align-center
+
+
+*Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.*
+
+**Utilizing Propagation Statistics**
+
+Plotting detection statistics for a single infrasound array...
+
+    .. code:: none
+
+        stochprop plot detection-stats --tlm-files 'prop/US_RM/US_RM-winter_*Hz.tlm' --yield-vals '1, 10, 100' --array-dim 5
+
+
+    .. figure:: _static/_images/det-stats.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
+
+
+Also able to apply models to a network of infrasound arrays to quantify detection capabilities...network info...
+
+
+Write a file that contains latitude and longitude of each network station as well as the number of sensors for each one and a transmission loss model for each...
+
+    .. code:: none
+
+        39.4731, -110.740, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+        40.6530, -112.119, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+        38.5337, -113.855, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+        39.7196, -113.390, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+        41.6071, -111.564, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+        37.0109, -113.244, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
+        40.0795, -111.831, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
 
 
 
+Run the analysis and visualize...
 
+    .. code:: none
+
+        stochprop plot network-performance --network-info network_test.dat --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
+
+    .. figure:: _static/_images/network-performance.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
 
 
 --------------------------------
@@ -304,6 +480,16 @@ Stuff...
 
     .. code:: none
 
-        stochprop perturb eof --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test
+        stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/test
 
+Visualization...
+
+    .. codee:: none
+
+        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern "*.met" 
+
+    .. figure:: _static/_images/perturb1.png
+        :width: 400px
+        :align: center
+        :figclass: align-center
 
