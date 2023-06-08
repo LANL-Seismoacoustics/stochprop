@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Propagation Statistics &mdash; stochprop 1.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,12 +29,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> stochprop
-            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            stochprop
+              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -79,7 +82,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="analysis.html">Stochastic Propagation Analysis</a></li>
       <li class="breadcrumb-item active">Propagation Statistics</li>
       <li class="wy-breadcrumbs-aside">
@@ -250,9 +253,9 @@
 </li>
 <li><p>The resulting models can be used in the InfraPy BISL and SpYE localizationa and yield estimation methods, respectively, as detailed in the InfraPy documentation:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>infrapy run_loc --local-detect-label data/detection_set2.json --local-loc-label data/location2 --pgm-file ../infrapy/propagation/priors/UTTR_models/UTTR_06_1800UTC.pgm
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>infrapy<span class="w"> </span>run_loc<span class="w"> </span>--local-detect-label<span class="w"> </span>data/detection_set2.json<span class="w"> </span>--local-loc-label<span class="w"> </span>data/location2<span class="w"> </span>--pgm-file<span class="w"> </span>../infrapy/propagation/priors/UTTR_models/UTTR_06_1800UTC.pgm
 
-infrapy run_yield --local-wvfrms <span class="s1">&#39;../infrapy-data/hrr-5/*/*.sac&#39;</span> --local-detect-label data/HRR-5.dets.json --src-lat <span class="m">33</span>.5377 --src-lon -106.333961 --tlm-label <span class="s2">&quot;../infrapy/propagation/priors/tloss/2007_08-&quot;</span> --local-yld-label <span class="s2">&quot;HRR-5&quot;</span>
+infrapy<span class="w"> </span>run_yield<span class="w"> </span>--local-wvfrms<span class="w"> </span><span class="s1">&#39;../infrapy-data/hrr-5/*/*.sac&#39;</span><span class="w"> </span>--local-detect-label<span class="w"> </span>data/HRR-5.dets.json<span class="w"> </span>--src-lat<span class="w"> </span><span class="m">33</span>.5377<span class="w"> </span>--src-lon<span class="w"> </span>-106.333961<span class="w"> </span>--tlm-label<span class="w"> </span><span class="s2">&quot;../infrapy/propagation/priors/tloss/2007_08-&quot;</span><span class="w"> </span>--local-yld-label<span class="w"> </span><span class="s2">&quot;HRR-5&quot;</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">UTTR_06_1800UTC.pgm</span></code> denotes a path geometry model for the Utah Test and Training Range (UTTR) during June at 18:00 UTC and there are a series of transmission loss models (<code class="code docutils literal notranslate"><span class="pre">2007_08-0.025Hz.tlm</span></code>, <code class="code docutils literal notranslate"><span class="pre">2007_08-0.003Hz.pri</span></code>, etc.) that contain transmission loss statistics at individual frequencies for the yield estimation analysis.</p>

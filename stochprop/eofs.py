@@ -647,7 +647,7 @@ def compute_eofs(A, alts, output_path, eof_cnt=100, build_info=None):
 
 def _plot_eofs(eofs_path, eof_cnt=5):
 
-    print('\t' + "Computing EOF coefficients for profiles...")
+    print("Visualizing EOF results...")
     # load means and eofs
     means = np.loadtxt(eofs_path + "-mean_atmo.dat")
     c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
@@ -703,6 +703,16 @@ def _plot_eofs(eofs_path, eof_cnt=5):
         ax1n.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
         ax1n.plot(u_eofs[:, j + 1], u_eofs[:, 0], color="xkcd:blue", linewidth=3)
         ax1n.plot(v_eofs[:, j + 1], v_eofs[:, 0], color="xkcd:red", linewidth=3)
+
+    svals = np.loadtxt(eofs_path + "-singular_values.dat")[:, 1]
+    svals/= svals[0]
+
+    print('\n' + "Singular Value Analysis")
+    print('\t' + "90% variability rank:", len(svals[svals > 0.1]))
+    print('\t' + "95% variability rank:", len(svals[svals > 0.05]))
+    print('\t' + "99% variability rank:", len(svals[svals > 0.01]))
+    print('\t' + "99.5% variability rank:", len(svals[svals > 0.005]))
+    print('\t' + "99.9% variability rank:", len(svals[svals > 0.001]), '\n')
 
     plt.show()
     

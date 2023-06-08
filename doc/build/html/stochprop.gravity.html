@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gravity Wave Perturbation Analysis &mdash; stochprop 1.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -29,12 +28,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> stochprop
-            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            stochprop
+              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -61,7 +64,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Gravity Wave Perturbation Analysis</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/stochprop.gravity.rst.txt" rel="nofollow"> View page source</a>
@@ -88,7 +91,7 @@
 rac{partial 
 ho_0}{partial z}` is the density scale height</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>H: float</strong></dt><dd><p>Scale height, :math:<a href="#id5"><span class="problematic" id="id6">`</span></a>H =</p>
 </dd>
@@ -120,7 +123,7 @@ rac{1}{4H^2
 ight)^{
 rac{3}{2}}}`</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>k: float</strong></dt><dd><blockquote>
 <div><p>Zonal wave number [km^{-1}]</p>
@@ -166,7 +169,7 @@ ight)}{
 ho_0 left( z 
 ight)}`</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>k: float</strong></dt><dd><blockquote>
 <div><p>Zonal wave number [km^{-1}]</p>
@@ -213,7 +216,7 @@ defined as :math:<a href="#id19"><span class="problematic" id="id20">`</span></a
 ight) + 
 rac{1}{4 H^2}`</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>k: float</strong></dt><dd><blockquote>
 <div><p>Zonal wave number [km^{-1}]</p>
@@ -249,7 +252,7 @@ m_sqr: float</p>
 <span class="sig-prename descclassname"><span class="pre">stochprop.gravity_waves.</span></span><span class="sig-name descname"><span class="pre">perturb_atmo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">atmo_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">28800.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N_om</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_src</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_star</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.5132741228718345</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">env_below</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/gravity_waves.html#perturb_atmo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.gravity_waves.perturb_atmo" title="Permalink to this definition"></a></dt>
 <dd><p>Use gravity waves to perturb a specified profile using the methods in Drob et al. (2013)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atmo_spec: string</strong></dt><dd><p>Path and name of the specification to be used as the reference</p>
 </dd>
@@ -297,7 +300,7 @@ ight)\)</span>.  Once computed, apply inverse Fourier transforms to</p>
 <div><p>obtain the space and time domain forms.</p>
 </div></blockquote>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>atmo_specification: string</strong></dt><dd><p>Atmospheric specification file path</p>
 </dd>
@@ -321,7 +324,7 @@ ight)\)</span>.  Once computed, apply inverse Fourier transforms to</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>z_vals: 1darray</dt><dd><p>Altitudes of output</p>
 </dd>
@@ -368,7 +371,7 @@ trapped solution) to evalute the component.</p>
 </dd>
 </dl>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>k: float</strong></dt><dd><blockquote>
 <div><p>Zonal wave number [km^{-1}]</p>
@@ -403,7 +406,7 @@ trapped solution) to evalute the component.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>u_spec: 1darray</dt><dd><p>Zonal wind perturbation spectrum, hat{u}(k, l, z, omega)</p>
 </dd>

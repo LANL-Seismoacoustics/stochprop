@@ -4,13 +4,15 @@
 Quickstart
 ==========
 
-Quickstart discussion
+Stochastic propagation analysis for infrasound propagation statistics using the *stochprop* library can be separated into a sequence of steps: 1) investigate temporal trends in the atmospheric structure at a given location to identify seasonality and separate historical atmospheric specifications into groups for summer, winter, and the spring/fall transition, 2) apply some statistical means to re-sample the atmospheric structure during each season to produce an ensemble of atmospheric samples that is a reasonable size, 3) run the re-sampled atmosphere ensemble through some propagation modeling methodology and parameterize the computed propagation predictions into a model that can be utilized in localization and characterization analyses.  Beyond these stages, the atmospheric statistics constructed for re-sampling can be used to perturb a reference atmospheric specification for an event-of-interest; though, this last application is an ongoing area of R&D.
 
----------------------------
-Identifying Seasonal Trends
----------------------------
+---------------
+Seasonal Trends
+---------------
 
-Stuff...
+For mid-latitude regions of the earth, the middle atmosphere winds associated with the circumpolar vortex have persistent orientation (eastward during the winter and westward during the summer in the northern hemisphere) and can be used to identify seasonal trends for a given location.  The temperature maximum at the stratopause is typically cooler than the near-ground temperature so that the middle atmosphere waveguide is dependent on these wind structures and therefore highly directional.  Refraction of acoustic waves back to the ground surface occurs when the sum of the sound speed and along-direction wind at some altitude aloft is greater than the sound speed near the ground surface.  Therefore, one can compute the ratio of the sound speed at various altitudes relative to that at the ground surface to identify when an infrasonic waveguide is present.
+
+The sum of the sound speed and along-direction winds is termed the "effective sound speed" (ESS) and *stochprop* includes a visualization method that analyzes the ratio of the ESS throughout the atmosphere with that near the ground surface for eastward and westward propagation:
 
     .. code-block:: console
 
@@ -30,16 +32,17 @@ Stuff...
           --year-selection TEXT  Limit analysis to specific year(s) (default: None)
           --include-NS BOOLEAN   Option to include north/south analysis
           --show-title BOOLEAN   Option to display title text
+          --xkcd-mode BOOLEAN    Use XKCD plotting style
           -h, --help             Show this message and exit.
 
 
-Stuff...
+A year of Ground-to-Space (G2S) atmospheric data is provided with *stochprop* in the 'examples/profs/' directory.  The :code:`ess-ratio` method can ingest these atmospheres to show the seasonal trends in the stratospheric waveguide:
 
     .. code:: none
 
-        stochprop prop season-trends --atmo-dir profs/ --results-path example
+        stochprop plot ess-ratio --atmo-dir profs/ --results-path example
 
-Stuff...
+Running this methos will output some information to screen and also produce a *matplotlib* figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the eats and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.
 
     .. figure:: _static/_images/example.ess-ratio.png
         :width: 800px
@@ -47,7 +50,7 @@ Stuff...
         :figclass: align-center
 
 
-Stuff...
+The information output to screen when running :code:`ess-ratio` methods summarizes the formation and dissipation of the eastward and westward waveguides.  By default, the method only analyzes the eastward and westward components of the ESS.  The :code:`--include-NS` option can be used to also compute the northward and southward components; though, in most cases these components don't provide much additional information on seasonal trends.
 
     .. code-block:: none
 
@@ -81,17 +84,15 @@ Stuff...
             Waveguide forms: May 11  (yday: 132, week: 19)
             Waveguide dissipates: August 29  (yday: 242, week: 35)
 
-There is some excess variability that causes multiple instances of the stratospheric waveguide forming and dissipating, but the general result from this analysis is that the eastward waveguide forms in September and lasts until early April (weeks 38 -- 15) and the westward waveguide forms in early May and lasts until the end of August (weeks 19 - 35).  These seasonal trends will be utilized in constructing atmospheric statistics.
+There is some excess variability for this data set that causes multiple instances of the middle atmosphere waveguide forming and dissipating, but the general result from this analysis is that the eastward waveguide forms in late September and lasts until early April (weeks 38 -- 15) and the westward waveguide forms in early May and lasts until the end of August (weeks 19 - 35).  These seasonal trends will be utilized in constructing atmospheric statistics.
 
-
-------------------------------
-EOFs for Atmosphere Statistics
-------------------------------
-
+---------------------
+Atmosphere Statistics
+---------------------
 
 **Build EOFs**
 
-Stuff...
+Empirical orthogonal functions (EOFs) are a numerical means of identifying basis functions (similar to eigenvectors) for a vector space.  In the case of atmospheric statistics, a vector can be defined describing the sound speed and wind fields and statistics of the atmospheric structure analyzed using EOF as discussed in the overview of :ref:`analysis`.  The *stochprop* statistics methods include various functions for quantifying statistics related to the atmospheric structure.  In general, the first step in such analysis is to construct a set of EOFs for a given set up atmospheric specifications.  This task is completed using :code:`stochprop stats build-eofs`:
 
     .. code:: none
 
@@ -118,13 +119,13 @@ Stuff...
           --eof-cnt INTEGER        Number of EOFs to store (default: 100)
           -h, --help               Show this message and exit.
         
-Stuff...
+From the above seasonal trends analysis using :code:`stochprop plot ess-ratio`, it was determined that the winter season corresponds to weeks 38 - 52 and 1 - 15 of the calendar year.  This information can be included in analysis via the :code:`--week-selection` parameter:
 
     .. code:: none
 
         stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_winter --week-selection '38:52,1:15'
 
-Stuff...
+Note that the notation *38:52,1:15* is used to denote all weeks between 38 and 52 plus those between 1 and 15.  Running this function reads the atmospheric data from the *profs/* directory, s check the file names and/or header info for datetime info to determine whether individual files are within the specified range of weeks, and uses a singular value decomposition (SVD) to  construct the EOFs.  For larger data sets, ingesting large numbers of atmospheric files for analysis can be time consuming; though, for this sample data set it's relatively quick.  
 
     .. code:: none
 
@@ -150,7 +151,26 @@ Stuff...
                 Weeks filter: ['38', '39', '40', '41', '42', '43', '44', '45', '46', '47', '48', '49', '50', '51', '52', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15']
             Building EOFs using SVD...
 
-Stuff...
+
+This analysis produces a number of output files in the eofs/ directory named according to the :code:`--eofs-path` option.  The contents of these files is summarized in the below table.
+
++-----------------------------------------+-------------------------------------------------------------------------------------------+
+| EOF Output File                         | Description                                                                               |
++=========================================+===========================================================================================+
+| eofs/example_winter-mean_atmo.dat       | Mean values of the sound speed, winds, and density                                        |
++-----------------------------------------+-------------------------------------------------------------------------------------------+
+| eofs/example_winter-singular_values.dat | Singular values corresponding to each EOF index                                           |
++-----------------------------------------+-------------------------------------------------------------------------------------------+
+| eofs/example_winter-snd_spd.eofs        | EOFs for the sound speed, :math:`c = \sqrt{ \gamma \frac{p}{\rho}}`                       |
++-----------------------------------------+-------------------------------------------------------------------------------------------+
+| eofs/example_winter-merid_winds.eofs    | EOFs for the meridional (north/south) winds                                               |
++-----------------------------------------+-------------------------------------------------------------------------------------------+
+| eofs/example_winter-zonal_winds.eofs    | EOFs for the zonal (east/west) winds                                                      |
++-----------------------------------------+-------------------------------------------------------------------------------------------+
+
+ * NOTE: the current implementation of *stochprop* saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S 'zTuvdp' format with comlumns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the NCPAprop package is included in the file heaeder; however, if the mean atmospheric file is used in infraGA/GeoAc be sure to specify the column format: 'zcuvd'.  This might be changed in a future update.
+
+Similar analysis can be completed for the summer and spring/fall transition periods when the middle atmosphere waveguide dissipates:
 
     .. code:: none
 
@@ -160,17 +180,16 @@ Stuff...
 
 Note that in the spring/fall analysis, there aren't enough atmospheric specifications in the 5 weeks defining the spring and fall transitions and the methods error out if more EOFs are requested than atmospheric specifications provided.  In more general analysis, sampling these weeks across multiple years provide sufficient atmospheric specification samples to produce a full 100 EOFs, but in this example the EOF count needs to be limited to 35.
 
-
 **Visualize EOFs**
 
-Discussion...
+The EOF analysis results from the EOF construction can be visualized using the EOF function in :code:`stochprop plot`.  All that's requires is to specify the EOFs path from build run:
 
     .. code:: none
 
         stochprop plot eofs --eofs-path eofs/example_winter
 
 
-Stuff...
+A figure is generating containing the mean sound speed and wind structures (left-most panels) and the first few EOFs are visualized for comparison.  As noted in the discussion of :ref:`analysis`, the EOFs are computed using stacked sound speed and wind information so the :math:`n^\text{th}` EOF defines perturbations to the sound speed and both wind components in combination.  In the figure, the zonal winds are denoted by the blue lines and meridional by red.
 
     .. figure:: _static/_images/winter_eofs.png
         :width: 600px
@@ -178,7 +197,29 @@ Stuff...
         :figclass: align-center
 
 
-Repeat for the summer season and show the first 10 EOFs (click the image to view it in a larger format).
+In addition to visualizing the mean atmosphere and EOF structure, the visualization methods perform an analysis of the singular values to identify the number of EOF terms needed for accurately representing the atmospheric structure.  In the below summary, analysis has been performed to identify the number of singular values needed to describe some percentage of the atmospheric variability by considering the ratio of the :math:`n^\text{th}` EOF's singular value to that of the :math:`n=0` EOF.  In order to include 99% of the atmospheric variability, EOFs with singular values satisfying :math:`\frac{\sigma_n}{\sigma_0} \geq 0.01` must be included.  From the analysis below, this requires inclusion of the first 56 EOFs in analysis.
+
+    .. code:: none
+
+        #######################################
+        ##                                   ##
+        ##             stochprop             ##
+        ##       Visualization Methods       ##
+        ##        EOF Analysis Results       ##
+        ##                                   ##
+        #######################################
+
+        Visualizing EOF results...
+
+        Singular Value Analysis
+            90% variability rank: 12
+            95% variability rank: 21
+            99% variability rank: 56
+            99.5% variability rank: 72
+            99.9% variability rank: 106 
+
+
+The EOF visualiation methods defaults to show the first 5 EOFs but can be adjusted to show additional contributions using the :code:`--eof-cnt` parameter.  Below is an example of the summer EOF structure showing the first 10 EOFs.
 
     .. code:: none
 
@@ -246,18 +287,6 @@ Visualize the samples (need to write function)...
         :align: center
         :figclass: align-center
 
-
-Stuff...
-
-
-    .. code:: none
-
-        stochprop plot atmo-ensemble --atmo-dir profs/ --atmo-pattern '*.dat' --week-selection '38:52,1:15'
-
-    .. figure:: _static/_images/winter_g2s-atmos.png
-        :width: 500px
-        :align: center
-        :figclass: align-center
 
 
 
@@ -426,7 +455,6 @@ Visualize...
         :figclass: align-center
 
 
-*Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.*
 
 **Utilizing Propagation Statistics**
 
@@ -441,6 +469,9 @@ Plotting detection statistics for a single infrasound array...
         :width: 600px
         :align: center
         :figclass: align-center
+
+*Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.*
+
 
 
 Also able to apply models to a network of infrasound arrays to quantify detection capabilities...network info...
@@ -486,7 +517,7 @@ Visualization...
 
     .. codee:: none
 
-        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern "*.met" 
+        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern '*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
 
     .. figure:: _static/_images/perturb1.png
         :width: 400px

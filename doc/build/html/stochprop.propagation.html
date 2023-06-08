@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Propagation Statistics &mdash; stochprop 1.0 documentation</title>
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -28,12 +27,16 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> stochprop
-            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            stochprop
+              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -60,7 +63,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Propagation Statistics</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/stochprop.propagation.rst.txt" rel="nofollow"> View page source</a>
@@ -82,10 +85,6 @@ analysis on a suite of specifications includes celerity-range and
 azimuth deviation/scatter statistics</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.PathGeometryModel.build" title="stochprop.propagation.PathGeometryModel.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(arrivals_file, output_file[, ...])</p></td>
 <td><p>Construct propagation statistics from a ray tracing arrival file (concatenated from multiple runs most likely) and output a path geometry model</p></td>
@@ -113,7 +112,7 @@ azimuth deviation/scatter statistics</p>
 <dd><p>Construct propagation statistics from a ray tracing arrival file (concatenated from
 multiple runs most likely) and output a path geometry model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>arrivals_file: string</strong></dt><dd><p>Path to file containing infraGA/GeoAc arrival information</p>
 </dd>
@@ -145,7 +144,7 @@ multiple runs most likely) and output a path geometry model</p>
 <span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subtitle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hold_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.display" title="Permalink to this definition"></a></dt>
 <dd><p>Display the propagation geometry statistics</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>file_id: string</strong></dt><dd><p>File prefix to save visualization</p>
 </dd>
@@ -162,7 +161,7 @@ multiple runs most likely) and output a path geometry model</p>
 <dd><p>Evaluate the mean back azimuth deviation at a given range
 and propagation azimuth</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
 </dd>
@@ -170,7 +169,7 @@ and propagation azimuth</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>bias: float</dt><dd><p>Predicted bias in the arrival back azimuth at specified arrival range and azimuth</p>
 </dd>
@@ -185,7 +184,7 @@ and propagation azimuth</p>
 <dd><p>Evaluate the standard deviation of the back azimuth at a given range
 and propagation azimuth</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
 </dd>
@@ -193,7 +192,7 @@ and propagation azimuth</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>stdev: float</dt><dd><p>Standard deviation of arrival back azimuths at specified range and azimuth</p>
 </dd>
@@ -208,7 +207,7 @@ and propagation azimuth</p>
 <dd><p>Evaluate reciprocal celerity Gaussian Mixture Model (GMM)
 at specified range, reciprocal celerity, and azimuth</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
 </dd>
@@ -218,7 +217,7 @@ at specified range, reciprocal celerity, and azimuth</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>pdf: float</dt><dd><p>Probability of observing an infrasonic arrival with specified celerity at specified range and azimuth</p>
 </dd>
@@ -232,7 +231,7 @@ at specified range, reciprocal celerity, and azimuth</p>
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#PathGeometryModel.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.PathGeometryModel.load" title="Permalink to this definition"></a></dt>
 <dd><p>Load a path geometry model file for use</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>model_file: string</strong></dt><dd><p>Path to PGM file constructed using stochprop.propagation.PathGeometryModel.build()</p>
 </dd>
@@ -251,10 +250,6 @@ at specified range, reciprocal celerity, and azimuth</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#stochprop.propagation.TLossModel.build" title="stochprop.propagation.TLossModel.build"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build</span></code></a>(tloss_file, output_file[, show_fits, ...])</p></td>
 <td><p>Construct propagation statistics from a NCPAprop modess or pape file (concatenated from multiple runs most likely) and output a transmission loss model</p></td>
@@ -276,7 +271,7 @@ at specified range, reciprocal celerity, and azimuth</p>
 <dd><p>Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
 multiple runs most likely) and output a transmission loss model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>tloss_file: string</strong></dt><dd><p>Path to file containing NCPAprop transmission loss information</p>
 </dd>
@@ -300,7 +295,7 @@ multiple runs most likely) and output a transmission loss model</p>
 <span class="sig-name descname"><span class="pre">display</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Transmission</span> <span class="pre">Loss</span> <span class="pre">Statistics'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_colorbar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hold_fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_ref_tloss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.display"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.display" title="Permalink to this definition"></a></dt>
 <dd><p>Display the transmission loss statistics</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>file_id: string</strong></dt><dd><p>File prefix to save visualization</p>
 </dd>
@@ -316,7 +311,7 @@ multiple runs most likely) and output a transmission loss model</p>
 <span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tloss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">az</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.eval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.eval" title="Permalink to this definition"></a></dt>
 <dd><p>Evaluate TLoss model at specified range, transmission loss, and azimuth</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>rng: float</strong></dt><dd><p>Range from source</p>
 </dd>
@@ -326,7 +321,7 @@ multiple runs most likely) and output a transmission loss model</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>pdf: float</dt><dd><p>Probability of observing an infrasonic arrival with specified transmission loss at specified range and azimuth</p>
 </dd>
@@ -340,7 +335,7 @@ multiple runs most likely) and output a transmission loss model</p>
 <span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#TLossModel.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.TLossModel.load" title="Permalink to this definition"></a></dt>
 <dd><p>Load a transmission loss file for use</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>model_file: string</strong></dt><dd><p>Path to TLoss file constructed using stochprop.propagation.TLossModel.build()</p>
 </dd>
@@ -373,7 +368,7 @@ t_0 =</p>
 <p>rac{1}{2 pi f_0} 
 rac{1}{sqrt{lpha + 1}</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>f: float</strong></dt><dd><p>Frequency [Hz]</p>
 </dd>
@@ -391,7 +386,7 @@ rac{1}{sqrt{lpha + 1}</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>P</strong><span class="classifier">float</span></dt><dd><p>Spectral value at frequency f</p>
 </dd>
@@ -405,7 +400,7 @@ rac{1}{sqrt{lpha + 1}</p>
 <span class="sig-prename descclassname"><span class="pre">stochprop.propagation.</span></span><span class="sig-name descname"><span class="pre">find_azimuth_bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">az</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_cnt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#find_azimuth_bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.find_azimuth_bin" title="Permalink to this definition"></a></dt>
 <dd><p>Identify the azimuth bin index given some specified number of bins</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>az: float</strong></dt><dd><p>Azimuth in degrees</p>
 </dd>
@@ -413,7 +408,7 @@ rac{1}{sqrt{lpha + 1}</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>index: int</dt><dd><p>Index of azimuth bin</p>
 </dd>
@@ -432,7 +427,7 @@ rac{1}{sqrt{lpha + 1}</p>
 <span class="sig-prename descclassname"><span class="pre">stochprop.propagation.</span></span><span class="sig-name descname"><span class="pre">kg_op</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_amb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101.325</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_amb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">288.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chemical'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#kg_op"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.kg_op" title="Permalink to this definition"></a></dt>
 <dd><p>Kinney &amp; Graham scaling law peak overpressure model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>W: float</strong></dt><dd><p>Explosive yield of the source [kg eq. TNT]</p>
 </dd>
@@ -446,7 +441,7 @@ rac{1}{sqrt{lpha + 1}</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>p0: float</dt><dd><p>Peak overpressure [Pa]</p>
 </dd>
@@ -460,7 +455,7 @@ rac{1}{sqrt{lpha + 1}</p>
 <span class="sig-prename descclassname"><span class="pre">stochprop.propagation.</span></span><span class="sig-name descname"><span class="pre">kg_ppd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">W</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_amb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101.325</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T_amb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">288.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exp_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'chemical'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/stochprop/propagation.html#kg_ppd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#stochprop.propagation.kg_ppd" title="Permalink to this definition"></a></dt>
 <dd><p>Kinney &amp; Graham scaling law positive phase duration model</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>W</strong><span class="classifier">float</span></dt><dd><p>Explosive yield of the source [kg eq. TNT]</p>
 </dd>
@@ -474,7 +469,7 @@ rac{1}{sqrt{lpha + 1}</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>t0</strong><span class="classifier">float</span></dt><dd><p>Positive phase duration [s]</p>
 </dd>
@@ -500,7 +495,7 @@ rac{1}{sqrt{lpha + 1}</p>
 statistics for BISL using a suite of specifications
 and combining results into single file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>profs_path: string</strong></dt><dd><p>Path to atmospheric specification files</p>
 </dd>
@@ -545,7 +540,7 @@ a set of frequency values</p>
 for –filetag that writes output into a specific location and enables
 simultaneous calculations via subprocess.popen()</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>profs_path: string</strong></dt><dd><p>Path to atmospheric specification files</p>
 </dd>
