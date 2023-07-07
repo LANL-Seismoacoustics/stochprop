@@ -32,7 +32,6 @@ The sum of the sound speed and along-direction winds is termed the "effective so
           --year-selection TEXT  Limit analysis to specific year(s) (default: None)
           --include-NS BOOLEAN   Option to include north/south analysis
           --show-title BOOLEAN   Option to display title text
-          --xkcd-mode BOOLEAN    Use XKCD plotting style
           -h, --help             Show this message and exit.
 
 
@@ -168,7 +167,7 @@ This analysis produces a number of output files in the eofs/ directory named acc
 | eofs/example_winter-zonal_winds.eofs    | EOFs for the zonal (east/west) winds                                                      |
 +-----------------------------------------+-------------------------------------------------------------------------------------------+
 
- * NOTE: the current implementation of *stochprop* saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S 'zTuvdp' format with comlumns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the NCPAprop package is included in the file heaeder; however, if the mean atmospheric file is used in infraGA/GeoAc be sure to specify the column format: 'zcuvd'.  This might be changed in a future update.
+ * NOTE: the current implementation of *stochprop* saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S 'zTuvdp' format with columns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the NCPAprop package is included in the file header; however, if the mean atmospheric file is used in infraGA/GeoAc be sure to specify the column format: 'zcuvd'.  This might be changed in a future update.
 
 Similar analysis can be completed for the summer and spring/fall transition periods when the middle atmosphere waveguide dissipates:
 
@@ -218,8 +217,9 @@ In addition to visualizing the mean atmosphere and EOF structure, the visualizat
             99.5% variability rank: 72
             99.9% variability rank: 106 
 
+Note that this visualization also reads in the computed singular values and prints variability ranks.  Such information is useful in determining how many EOFs are needed in continued analysis.  In this case, one finds that the ratio of the singular value of the 56th EOF to that of the rank 0 EOF, :math:`\frac{\sigma_{56}}{\sigma_0}` is less than 0.01 and therefore 99% of the variability in the vector space can be captured by using the first 56 EOFs in analysis.  Similar analysis below using the EOFs to fit a reference atmosphere will further demonstrate how this decision of EOF count can be made visually. 
 
-The EOF visualiation methods defaults to show the first 5 EOFs but can be adjusted to show additional contributions using the :code:`--eof-cnt` parameter.  Below is an example of the summer EOF structure showing the first 10 EOFs.
+The EOF visualization methods defaults to show the first 5 EOFs but can be adjusted to show additional contributions using the :code:`--eof-cnt` parameter.  Below is an example of the summer EOF structure showing the first 10 EOFs.  Obviously plotting higher numbers make the plot more difficult to read.  A future update may add an option to plot a specific range or sequence of EOFs (e.g., 10:20 or '1,5,9,13') if such an option is determined to be useful.
 
     .. code:: none
 
@@ -234,49 +234,51 @@ The EOF visualiation methods defaults to show the first 5 EOFs but can be adjust
 
 **Analyze Fitting Accuracy**
 
-Stuff...
+As noted above in the visualization output, the number of EOFs used in analysis determines how much of the variability in the vector suite is captured.  This can be visualized by fitting a reference atmosphere using a specified number of EOFs.  In the above result, 90% of the variability is captured by the first 12 EOFs.  Using these first 12 EOFs as basis functions to fit an atmospheric state can be done using the :code:`eof-fit` function in the :code:`stochprop plot` methods.
 
     .. code:: none
 
-        stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 10
+        stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 12
 
-    .. figure:: _static/_images/eof-fit_10.png
+    .. figure:: _static/_images/eof-fit_12.png
         :width: 500px
         :align: center
         :figclass: align-center
 
 
-More stuff...
+In this result, the reference atmosphere is projected onto the EOF basis vectors as detailed in :ref:`analysis`.  The resulting estimate is relatively accurate for the sound speed and zonal winds (left and center panels of the figure); however, the meridional winds exhibit a notably poor fit.  Consider instead if the fit uses the first 56 EOFs to capture 99% of the variability in the vector space:
 
     .. code:: none
 
-        stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 25
+        stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 56
 
-    .. figure:: _static/_images/eof-fit_25.png
+    .. figure:: _static/_images/eof-fit_56.png
         :width: 500px
         :align: center
         :figclass: align-center
 
+In this result the structure is much more accurately fit and the finer scale variations in the lower atmosphere are fit relatively accurately (though slightly smoothed).  Repeating this analysis with 72 EOFs to include 99.5% of variability improves the accuracy of these finer scale variations.  
 
-
+It should be noted that the default behavior of :code:`stochprop stats build-eofs` is to only keep the first 100 EOFs (all singular values are kept) and therefore when the above visualization results are obtained it might be necessary to re-run the EOF construction with an increased EOF count to capture higher accuracy (e.g., 106 EOFs for 99.9% variability captured in the EOF vector space).  In general, the 99.5% accuracy level has been used in evaluations of these methods.
 
 **Sampling the Atmospheric Structure**
 
 
-Stuff...
+The primary aim of using EOFs to quantify the statistics of the atmospheric structure over some archived time period is for data reduction.  This can be accomplished as noted in :ref:`analysis` via sampling of coefficient values.  Generating a suite of atmospheric samples representative of a given season requires two steps:  1) compute coefficients for the EOF basis vectors projected onto all elements of the suite, 2) use a kernel density estimate (KDE) of the finite set of coefficient values to produce a set of atmospheric samples representative of the original suite.  The first of these steps can be accomplished using the :code:`eof-coeffs` function in :code:`stochprop stats`.  This analysis requires specification of the EOF basis info, output coefficient info path, and any selection of months or weeks needed to only include the appropriate atmospheric data.  For the example winter analysis:
 
     .. code:: none 
 
         stochprop stats eof-coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --week-selection '38:52,1:15'
 
-Use the coefficients to sample...
+This analysis produces a single *example_winter-coeffs.npy* file that contains the coefficient values for all EOFs used in analysis.  These coefficients can then be used to sample the atmospheric vector space using :code:`stochprop stats sample-eofs`:
 
     .. code:: none
 
         stochprop stats sample-eofs --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
 
+The number of samples generated is controlled via :code:`--sample-cnt` and it can be slightly difficult to determine a useful number for continued analysis.  Ideally, the mean and standard deviation computed from individual sample sets should be consistent; therefore, one can repeatedly generate suites and compare these statistics.  That is, if the above method is run using :code:`--sample-cnt 10`, a set of 10 atmospheric specification samples are generated.  If it's run a second time, another set of 10 samples will be generated.  It's unlikely that with only 10 samples the mean and standard deviations of these sets will be consistent; however, if the sample count is increased it's likely that they will converge to the mean and standard deviation of the original set of atmospheres.  In ongoing evaluation of the methods here, a sample count slightly larger than the number of EOFs used in construction has produced sample sets with consistent statistics (e.g., using 75 EOFs to capture ~99.5% of variability and generating 100 atmospheric samples).  A more rigorous means of quantifying the needed number of samples is ongoing R&D.
 
-Visualize the samples (need to write function)...
+Once the sampled set of atmospheric specifications has been constructed, they can be visualized using the :code:`atmo-ensemble` method in :code:`stochprop plot`.  In this visualization, the darker/thicker lines denote the mean atmospheric state in the ensemble and the various thinner lines are various samples in the set.  By default, the first 25 samples are visualized, but this can be modified using :code:`--plot-cnt` to include more or fewer samples in the visualization.
 
     .. code:: none 
 
@@ -288,30 +290,27 @@ Visualize the samples (need to write function)...
         :figclass: align-center
 
 
-
-
 **Check Seasonal Trends with EOFs (optional)**
 
-Stuff...
+As noted in Blom et al. (2023), for locations away from mid-latitude, the effective sound speed ratio is less useful in identifying seasonal trends and an alternative method is needed.  The EOF coefficient structure across a full year of time can be computed and analyzed to identify those times of the year that have similar structure.  Consider first using the :code:`build-eofs` method to build a full year set of EOFs (without any month or week limitations):
 
     .. code:: none
 
         stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_all  --max-alt 80.0
 
-Stuff...
-
+In this case, the seasonal trends are still expected to be focused in the lower and middle atmosphere, so that the :code:`--max-alt 80.0` parameter limits the EOF construction to these regions of the atmosphere and avoids including the atmospheric tides which are dominated by a 24-hour periodicity due to solar heating.  Given this set of EOFs, one can compute coefficient sets for each week of the year using :code:`eof-coeffs` with the parameter flag :code:`--run-all-weeks` (a similar :code:`--run-all-months` is available for a coarser resolution seasonal analysis, but weekly resolution seems to be more robust).
 
     .. code:: none
 
         stochprop stats eof-coeffs --atmo-dir profs/ --eofs-path eofs/example_all --run-all-weeks True --coeff-path coeffs/example_all --eof-cnt 50
 
-Stuff...
+The above produces 52 *example_all.week_##-coeffs.py* files in the *coeffs/* directory (one for each week).  In a similar method to the above sampling of coefficient values using KDEs, each weekly set of coefficients can be analyzed and overlap of coefficient values between pairs of weeks computed as discussed in :ref:`analysis`:
 
     .. code:: none
 
         stochprop stats coeff-overlap --eofs-path eofs/example_all --coeff-path coeffs/example_all --eof-cnt 50
 
-Visualize...
+The resulting overlap can be analyzed using hierarchical clustering to identify those groupings of weeks which exhibit similar EOF projections and therefore similar atmospheric structure.  Visualizing the clustering results:
 
     .. code:: none
 
@@ -323,9 +322,7 @@ Visualize...
         :align: center
         :figclass: align-center
 
-
-This identifies seasonal trends such that summer extends from week 20 -- 33 and winter covering weeks 38 -- 52 and 1 -- 14.  For comparison, the :code:`stochprop plot ess-ratio` analysis above identified similar seasonal trends though with a slightly longer summer (weeks 19 - 35).  While this additional analysis isn't overtly needed for this mid-latitude location, analysis of seasonal trends near the equatorial and polar regions is often elucidated by this EOF coefficient overlap analysis.
-
+This identifies seasonal trends such that summer extends from week 20 to 33 and winter covers weeks 38 -- 52 and 1 -- 14.  For comparison, the :code:`stochprop plot ess-ratio` analysis above identified similar seasonal trends though with a slightly longer summer (weeks 19 - 35).  While this additional analysis isn't overtly needed for this mid-latitude location, analysis of seasonal trends near the equatorial and polar regions is often elucidated by this EOF coefficient overlap analysis.
 
 ----------------------
 Propagation Statistics
@@ -333,13 +330,47 @@ Propagation Statistics
 
 **Constructing Propagation Statistics**
 
-Stuff...
+Once a reduced set of atmospheric specifications representative of a given season and location has been constructed, propagation statistics can be computed using methods in :code:`stochprop prop`.  For localization analysis, the propagation path geometry computed via infrasonic ray tracing (propagation time and arrival range for celerity statistics, back azimuth biases due to cross winds, etc.) can be computed using the `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraGA>`_ ray tracing methods.  The :code:`build-pgm` methods to build a path geometry model (PGM) requires a directory of atmospheric specifications, an output path, a source location (latitude, longitude, altitude) (typically the reference location of the G2S locations).  As with other functions in :code:`stochprop`, usage information can be displayed with the :code:`--help` flag:
 
     .. code:: none
 
-        stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '30.0, -120.0, 0.0' --verbose True --cpu-cnt 14 --clean-up False
+        Usage: stochprop prop build-pgm [OPTIONS]
 
-Output...
+          stochprop prop build-pgm 
+          ---------------------
+        
+          Example Usage:
+              stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8
+
+        Options:
+          --atmos-dir TEXT      Directory containing atmospheric specifications
+          --atmos-pattern TEXT  Atmosphere file pattern (default: '*.met')
+          --output-path TEXT    Path and prefix for PGM output
+          --src-loc TEXT        Source location (lat, lon, alt)
+          --inclinations TEXT   Inclination min, max, and step (default: [2, 50, 2]
+          --azimuths TEXT       Azimuth min, max, and step (default: [0, 360, 6]
+          --bounces INTEGER     Number of ground bounces for ray paths (default: 25)
+          --z-grnd FLOAT        Ground elevation for simulations (default: 0.0 km)
+          --rng-max FLOAT       Maximum range for simulations (default: 1000.0 km)
+          --freq FLOAT          Frequency for Sutherland-Bass atten. (default: 0.5 Hz)
+          --prof-format TEXT    Profile format (default: 'zTuvdp')
+          --infraga-path TEXT   Path to infraGA/Geoac binaries
+          --clean-up BOOLEAN    Remove individual results after merge (default: True)
+          --cpu-cnt TEXT        Number of CPUs for propagation simulations
+          --rng-window FLOAT    Range window in PGM (default: 50 km)
+          --rng-step FLOAT      Range resolution in PGM (default: 10 km)
+          --az-bin-cnt INTEGER  Number of azimuth bins in PGM (default: 16)
+          --az-bin-width FLOAT  Azimuth bin width in PGM (default: 30 deg)
+          --verbose BOOLEAN     Output analysis stages as they're done.
+          -h, --help            Show this message and exit.
+
+The ray tracing simulation parameters (e.g., inclination and azimuth angle limits and resolutions) can be tuned if necessary.  The default model construction focuses on regional distances (within 1,000 km).  Note that the default configuration assumes the infraGA/GeoAc binaries are on your path, but if that is not the case you can specify where those methods are using the :code:`--infraga-path` parameter (as noted in the :ref:`installation` discussion, a combined PyGS conda environment is not yet implemented for which the *infraga* Python methods can be leveraged without changing environments).
+
+Construction of PGMs for the winter samples generated above can be completed using (update the call with the available number of CPUs, regardless, this will run for a while):
+
+    .. code:: none
+
+        stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --clean-up False
 
     .. code:: none
 
@@ -351,14 +382,13 @@ Output...
         ##                                 ##
         ######################################
 
-
         Data IO summary:
           Atmospheric specifications directory: samples/winter/
           Specification pattern: *.met
           Model output path: prop/winter/winter
 
         infraGA/GeoAc parameters:
-          Source location: 30.0, -120.0, 0.0
+          Source location: 39.1026, -84.5123, 0.0
           Inclination angles (min, max, step): [2.0, 50.0, 2.0]
           Azimuth angles (min, max, step): [0.0, 360.0, 6.0]
           Bounces: 25
@@ -393,7 +423,7 @@ Output...
             inclination: 2, 50, 2
             azimuth: 0, 360, 6
             bounces: 25
-            source location (lat, lon, alt): 30, -120, 0
+            source location (lat, lon, alt): 39.1026, -84.5123, 0
             ground elevation: 0
             frequency: 0.5
             S&B atten coeff: 1
@@ -415,8 +445,9 @@ Output...
         ...
 
 
+The above will cycle through all atmospheric specifications in the directory and compute ray paths for each one using the inclination and azimuth parameters specified.  Once those computations are complete, arrivals are combined into a single file (*prop/winter/winter.arrivals.dat*) and statistics are constructed for the arrival celerity and back azimuth deviation as a function of range and azimuth.  The width of the sliding range window defaults to 50 km and has a step of 10 km.  These values can be modified via :code:`--rng-window` and :code:`--rng-step`, respectively.  Azimuth bins defuault to a count of 16 with :math:`30^\circ` widths, which can be modified using :code:`--az-bin-cnt` and :code:`--az-bin-width`, respectively.  The resulting model will be saved (*prop/winter/winter.pgm*) using Pickle (output format might be updated in the future, perhaps just as a JSON file).
 
-Visualize...
+Once constructed, the method can be visualized using the :code:`prop-model` method in :code:`stochprop plot`.  For a PGM, two plots are generated showing the statistics at each compass direction (note: only the 8 primary compass directions are shown even if additional azimuth bins are computed).  The first plot shows azimuth deviation statistics with the bias (darker line) and scatter (95% confidence bound in shaded region) while the second shows the probability of an infrasonic arrival with a given celerity.
 
     .. code:: none
 
@@ -427,57 +458,80 @@ Visualize...
         :align: center
         :figclass: align-center
 
-The second plot...
-
     .. figure:: _static/_images/US_RM-rng_cel.png
         :width: 500px
         :align: center
         :figclass: align-center
 
 
+For source characterization (e.g., yield estimation), transmission loss statistics are needed between the receiver and source.  The normal mode methods in the `NCPAprop <https://github.com/chetzer-ncpa/ncpaprop>`_  software suite can be used to compute the transmission loss using an "N x 2D" framework in discrete azimuths (unlike the fully 3D ray tracing methods used for PGM construction).  Due to recent developments of terrain inclusion for the NCPAprop parabolic equation (PE) methods, an option is planned in the near term to enable TLM construction using either modal methods or PE methods.  Again, usage can be displayed using the :code:`--help` flag.
 
-Build a transmission loss model...
+    .. code:: none
+
+        Usage: stochprop prop build-tlm [OPTIONS]
+
+        stochprop prop build-tlm 
+        ---------------------
+        
+          Example Usage:
+            stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+
+        Options:
+          --atmos-dir TEXT           Directory containing atmospheric specifications
+          --atmos-pattern TEXT       Atmosphere file pattern (default: '*.met')
+          --output-path TEXT         Path and prefix for TLM output
+          --freq FLOAT               Frequency for simulation (default: 0.5 Hz)
+          --azimuths TEXT            Azimuth min, max, and step (default: [0, 360, 6]
+          --z-grnd FLOAT             Ground elevation for simulations (default: 0.0)
+          --rng-max FLOAT            Maximum range for simulations (default: 1000.0)
+          --ncpaprop-path TEXT       Path to NCPAprop binaries
+          --clean-up BOOLEAN         Remove individual results after merge (default: True)
+          --cpu-cnt TEXT             Number of CPUs for propagation simulations
+          --az-bin-cnt INTEGER       Number of azimuth bins in TLM (default: 16)
+          --az-bin-width FLOAT       Azimuth bin width in TLM (default: 30 deg)
+          --rng-lims TEXT            Range limits in TLM (default: [1, 1000])
+          --rng-cnt INTEGER          Range intervals in TLM (default: 100)
+          --rng-spacing TEXT         Option for range sampling ('linear' or 'log')
+          --use-coherent-tl BOOLEAN  Use coherent transmission loss (default: False
+          -h, --help                 Show this message and exit.
+
+As with the PGM construction, a suite of atmospheric specifications is needed as well as an output path and label.  Unlike the ray tracing methods, the azimuthal symmetry assumed in the NCPAprop methods doesn't account for the spherical Earth geometry so that the latitude and longitude are not needed (I need to add the source altitude as an option to build statistics for elevated sources).  Unlike the "infinite frequency" simulation methods using ray tracing, TLM construction requires specification of a frequency for simulation and yield estimation analysis typically requires multiple models covering some frequency range across which signal is observed.  During evaluation of the methods here, frequencies of 0.05, 0.1, 0.2, 0.5, and 1.0 have been used in computation; though, higher resolution models might be useful in more robust analyses.  As with linking infraGA/GeoAc, the path to NCPAprop binaries can be specified via :code:`--ncpaprop-path` if that directory is not on your path. For the winter example being used here, a TLM at 0.2 Hz can be computed using:
 
     .. code:: none
 
         stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 
-Visualize...
+A note about multi-threading: unlike the multi-threading in infraGA/GeoAc that's built into the software, multi-threading the NCPAprop methods is done via Python's *subprocess* library to simultaneously compute propagation effects for multiple atmospheric specifications at the same time.  Because of this, the maximum number of CPUs useful in such analysis is limited by the number of atmospheric specifications in the suite (for ray tracing, acceleration is limited by the number of unique inclination angles at each azimuth since that's how infraGA/GeoAc is parallelized).  
+
+Once computed, the model is saved into a file named using the specified output path/label and the frequency used in the calculation (*prop/winter/winter_0.200Hz.tlm* in this case).  Visualizatin of the resulting model can be be done again using the :code:`prop-model` method in the plotting tools:
 
     .. code:: none
 
         stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm
-
 
     .. figure:: _static/_images/winter_0.359_tloss.png
         :width: 400px
         :align: center
         :figclass: align-center
 
-
-
 **Utilizing Propagation Statistics**
 
-Plotting detection statistics for a single infrasound array...
+The PGM and TLM files constructed above and be ingested for use by `InfraPy <https://github.com/LANL-Seismoacoustics/infrapy>`_ for localization and yield estimation.  Additionally, several more generalized statistical analyses can be completed within *stochprop*.  As discussed in Blom et al. (2023), the IMS infrasound noise background model can be combined with an explosive blastwave model and transmission loss statistics to compute detection probability.  Several TLMs are included in the git repository for *stochprop* describing transmission loss statistics for the western US (in the vicinity of the Rocky Mountains).  These can be used to compute the probability of an arrival with a signal-to-noise ratio (SNR) greater than unity and quantify the likelihood that a signal is detected in such a scenario:
 
     .. code:: none
 
         stochprop plot detection-stats --tlm-files 'prop/US_RM/US_RM-winter_*Hz.tlm' --yield-vals '1, 10, 100' --array-dim 5
 
+In this function call, the wildcard in the TLM files specification (note those quotes around it) leads in all available TLMS matching that patter and the set of yield values are defined in tons equivalent TNT.  The resulting visualization is shown below and 
 
     .. figure:: _static/_images/det-stats.png
         :width: 600px
         :align: center
         :figclass: align-center
 
-*Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.*
+In the resulting visualization, each row corresponds to one of the explosive yield values and each column denotes results for a single transmission loss model.  *Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.  Also, for other combinations of TLMs (e.g., summer vs. winter), the labelling needs to be corrected (probably user specified), I'll figure that out later.*
 
-
-
-Also able to apply models to a network of infrasound arrays to quantify detection capabilities...network info...
-
-
-Write a file that contains latitude and longitude of each network station as well as the number of sensors for each one and a transmission loss model for each...
+In addition to computing detection statistics for a single station, a network of stations can be analyzed to quantify the probability that an explosive source of a given yield will be detected by some limiting number of stations in the network.  Because the information required in such an analysis is a bit more complex, a file containing network info is needed.  The expected format is a comma-separated-value (CSV) file containing the latitude and longitude of each station, the number of sensor elements (to account for signal gain from beamforming analysis), and a TLM.  An example network info file is summarized below for the University of Utah infrasound network.
 
     .. code:: none
 
@@ -489,38 +543,37 @@ Write a file that contains latitude and longitude of each network station as wel
         37.0109, -113.244, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
         40.0795, -111.831, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm
 
-
-
-Run the analysis and visualize...
+It should be noted that all transmission loss models should use the same frequency content, but depending on the spatial extent of the network each station might have a unique model computed for its location.  The analysis is run via :code:`stochprop plot network-performance` and requires specifying this network info as well as a source yield (in tons eq. TNT) and the latitude and longitude bounds of the region of interest.  The default behavior of this analysis is to require at least 3 detecting stations; though, this parameter can be varied with :code:`--min-det-cnt`.
 
     .. code:: none
 
-        stochprop plot network-performance --network-info network_test.dat --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
+        stochprop plot network-performance --network-info network_test.dat --src-yld 10 --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
 
     .. figure:: _static/_images/network-performance.png
         :width: 600px
         :align: center
         :figclass: align-center
 
+.. 
+    COMMENTED OUT SECTION
+    --------------------------------
+    Perturbing Atmospheric Structure
+    --------------------------------
 
---------------------------------
-Perturbing Atmospheric Structure
---------------------------------
+    The current focus of ongoing *stochprop* development is investigation of the EOF methods for atmospheric perturbation studies to quantify propagation uncertainty.  In the prototype function below, a reference atmospheric specification is perturbed using a set of EOFs to produce a suite of samples characterized by a specified standard deviation (10 m/s in this case).
 
-Stuff...
+        .. code:: none
 
-    .. code:: none
+            stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/test --std-dev 10.0
 
-        stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/test
+    The :code:`atmo-ensemble` visualization method can be used to visualize the resulting atmospheric specification set.
 
-Visualization...
+        .. code:: none
 
-    .. codee:: none
+            stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern '*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
 
-        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern '*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
-
-    .. figure:: _static/_images/perturb1.png
-        :width: 400px
-        :align: center
-        :figclass: align-center
+        .. figure:: _static/_images/perturb1.png
+            :width: 400px
+            :align: center
+            :figclass: align-center
 

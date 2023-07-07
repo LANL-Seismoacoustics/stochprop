@@ -164,7 +164,7 @@ Compute Coefficients and Determine Seasonality
 
 * The output of this analysis is a dendrogram identifying those months that are most similar.  In the below result, May - August is identified as a consistent "summer" season, October - March as "winter", and September and April as "spring/fall" transition between the two dominant seasons 
 
-.. figure:: _static/_images/example_seasonality.png
+.. figure:: _static/_images/example_all-seasonality.png
     :width: 400px
     :align: center
     :alt: alternate text

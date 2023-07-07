@@ -394,7 +394,7 @@ def detection_stats(tlm_files, yield_vals, array_dim, figure_out, show_figure):
 @click.command('network-performance', short_help="Visualize detection statistics for a network")
 @click.option("--network-info", help="Text file of network info")
 @click.option("--freq", help="Frequency for analysis", default=None)
-@click.option("--src-yld", help="Explosive yield (kg eq. TNT)", default=10e3, type=float)
+@click.option("--src-yld", help="Explosive yield (tons eq. TNT) (default 10)", default=10, type=float)
 @click.option("--min-det-cnt", help="Minimum detecting stations", default=3, type=int)
 @click.option("--resol", help="Grid resolution", default=100, type=int)
 @click.option("--lat-min", help="Minimum latitude of grid", default=30.0)
@@ -423,5 +423,5 @@ def network_performance(network_info, freq, src_yld, min_det_cnt, resol, lat_min
     click.echo("########################################")
     click.echo("")  
 
-    sp_prop.plot_network_performance(network_info, freq, src_yld, min_det_cnt, lat_min, lat_max, lon_min, lon_max, resol, figure_out, show_figure)
+    sp_prop.plot_network_performance(network_info, freq, src_yld * 1.0e3, min_det_cnt, lat_min, lat_max, lon_min, lon_max, resol, figure_out, show_figure)
 
