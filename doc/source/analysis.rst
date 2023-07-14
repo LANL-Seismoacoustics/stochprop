@@ -26,6 +26,10 @@ _______________________________________
 * Empirical Orthogonal Functions (EOFs) provide a mathematical means of measuring variations in the atmospheric state
 * Methods measure EOF statistics to reduce the number of atmospheric samples necessary to characterize the atmosphere at a given location during a specified time period
 
+    .. toctree::
+        :hidden:
+
+        eofs
 
 _________________________________________________________________
 :ref:`Atmospheric Fitting, Sampling, and Perturbation <sampling>`
@@ -34,6 +38,10 @@ _________________________________________________________________
 * Statistics of the coefficients for a suite of atmospheric states can be used to generate a set of characteristics samples
 * Randomly generated EOF coefficients can be used to generate perturbations to an initial atmospheric specification and construct a suite of atmospheric states that fall within expected uncertainty
 
+    .. toctree::
+        :hidden:
+
+        sampling
 
 __________________________________________
 :ref:`Propagation Statistics <propagation>`
@@ -41,6 +49,10 @@ __________________________________________
 * InfraGA/GeoAc ray tracing analysis can be applied to a suite of atmospheric states to predict geometric propagation characteristics such as arrival location, travel time, and direction of arrival needed to estimate the source location
 * NCPAprop modal simulations can be applied to a suite of atmospheric states to predict finite frequency transmission loss needed to characterize the infrasonic source
 
+    .. toctree::
+        :hidden:
+
+        propagation
 
 ___________________________________________
 :ref:`Gravity Wave Perturbations <gravity>`
@@ -51,7 +63,4 @@ ___________________________________________
     .. toctree::
         :hidden:
 
-        eofs
-        sampling
-        propagation
         gravity

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stochastic Propagation Analysis &mdash; stochprop 1.0 documentation</title>
+  <title>Stochastic Propagation Analysis &mdash; stochprop 0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -12,9 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -29,16 +30,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            stochprop
-              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> stochprop
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -50,13 +50,19 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Stochastic Propagation Analysis</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#empirical-orthogonal-functions"><span class="xref std std-ref">Empirical Orthogonal Functions</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#atmospheric-fitting-sampling-and-perturbation"><span class="xref std std-ref">Atmospheric Fitting, Sampling, and Perturbation</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#propagation-statistics"><span class="xref std std-ref">Propagation Statistics</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gravity-wave-perturbations"><span class="xref std std-ref">Gravity Wave Perturbations</span></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#empirical-orthogonal-functions"><span class="xref std std-ref">Empirical Orthogonal Functions</span></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="eofs.html">Empirical Orthogonal Function Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#atmospheric-fitting-sampling-and-perturbation"><span class="xref std std-ref">Atmospheric Fitting, Sampling, and Perturbation</span></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="sampling.html">Atmospheric Fitting, Sampling, and Perturbation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#propagation-statistics"><span class="xref std std-ref">Propagation Statistics</span></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="propagation.html">Propagation Statistics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#gravity-wave-perturbations"><span class="xref std std-ref">Gravity Wave Perturbations</span></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="gravity.html">Gravity Wave Perturbations</a></li>
 </ul>
 </li>
@@ -77,7 +83,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
       <li class="breadcrumb-item active">Stochastic Propagation Analysis</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/analysis.rst.txt" rel="nofollow"> View page source</a>
@@ -106,24 +112,39 @@
 </ul>
 <section id="empirical-orthogonal-functions">
 <h2><a class="reference internal" href="eofs.html#eofs"><span class="std std-ref">Empirical Orthogonal Functions</span></a><a class="headerlink" href="#empirical-orthogonal-functions" title="Permalink to this heading"></a></h2>
-<ul class="simple">
+<ul>
 <li><p>Empirical Orthogonal Functions (EOFs) provide a mathematical means of measuring variations in the atmospheric state</p></li>
-<li><p>Methods measure EOF statistics to reduce the number of atmospheric samples necessary to characterize the atmosphere at a given location during a specified time period</p></li>
+<li><p>Methods measure EOF statistics to reduce the number of atmospheric samples necessary to characterize the atmosphere at a given location during a specified time period</p>
+<blockquote>
+<div><div class="toctree-wrapper compound">
+</div>
+</div></blockquote>
+</li>
 </ul>
 </section>
 <section id="atmospheric-fitting-sampling-and-perturbation">
 <h2><a class="reference internal" href="sampling.html#sampling"><span class="std std-ref">Atmospheric Fitting, Sampling, and Perturbation</span></a><a class="headerlink" href="#atmospheric-fitting-sampling-and-perturbation" title="Permalink to this heading"></a></h2>
-<ul class="simple">
+<ul>
 <li><p>EOFs can be used to fit a specified atmosphere by computing coefficients for each EOF</p></li>
 <li><p>Statistics of the coefficients for a suite of atmospheric states can be used to generate a set of characteristics samples</p></li>
-<li><p>Randomly generated EOF coefficients can be used to generate perturbations to an initial atmospheric specification and construct a suite of atmospheric states that fall within expected uncertainty</p></li>
+<li><p>Randomly generated EOF coefficients can be used to generate perturbations to an initial atmospheric specification and construct a suite of atmospheric states that fall within expected uncertainty</p>
+<blockquote>
+<div><div class="toctree-wrapper compound">
+</div>
+</div></blockquote>
+</li>
 </ul>
 </section>
 <section id="propagation-statistics">
 <h2><a class="reference internal" href="propagation.html#propagation"><span class="std std-ref">Propagation Statistics</span></a><a class="headerlink" href="#propagation-statistics" title="Permalink to this heading"></a></h2>
-<ul class="simple">
+<ul>
 <li><p>InfraGA/GeoAc ray tracing analysis can be applied to a suite of atmospheric states to predict geometric propagation characteristics such as arrival location, travel time, and direction of arrival needed to estimate the source location</p></li>
-<li><p>NCPAprop modal simulations can be applied to a suite of atmospheric states to predict finite frequency transmission loss needed to characterize the infrasonic source</p></li>
+<li><p>NCPAprop modal simulations can be applied to a suite of atmospheric states to predict finite frequency transmission loss needed to characterize the infrasonic source</p>
+<blockquote>
+<div><div class="toctree-wrapper compound">
+</div>
+</div></blockquote>
+</li>
 </ul>
 </section>
 <section id="gravity-wave-perturbations">

@@ -22,9 +22,9 @@ copyright = '2020, Philip Blom'
 author = 'Philip Blom'
 
 # The short X.Y version
-version = ''
+version = '0.1'
 # The full version, including alpha/beta/rc tags
-release = '1.0'
+release = '0.1'
 
 
 

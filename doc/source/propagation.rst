@@ -1,8 +1,69 @@
 .. _propagation:
 
+
+
 =====================================
 Propagation Statistics
 =====================================
+
+**********************************************
+Visualizing Effective Sound Speed Ratio Trends
+**********************************************
+
+It should be noted that in addition to the EOF-based method of identifying seasonal trends, it's often useful to consider the effective sound speed ratio in the east and westward directions.  Such analysis can be performed using the :code:`stochprop prop season-trends` methods to ingest a set of atmospheric specifications, averaging across years and computing the altitudes for which the effective sound speed in a given direction exceeds that near the ground.  
+
+	.. code-block:: none
+
+		##########################$#########
+		##                                ##
+		##           stochprop            ##
+		##      Propagation Methods       ##
+		##   ESS Ratio Seasonal Analysis  ##
+		##                                ##
+		####################################
+
+
+		Run summary:
+		Source directory: profs/
+		Specification pattern: *.dat
+		Specification format: zTuvdp
+		Output path: example
+
+			Loading profiles from profs/ with pattern: *.dat
+				Extracted ground elevation: 1.589
+
+		Computing effective sound speed ratio for each day-of-year...
+
+		Eastward waveguide changes...
+			Waveguide dissipates: January 22  (yday: 22, week: 3)
+			Waveguide forms: January 24  (yday: 24, week: 3)
+			Waveguide dissipates: January 25  (yday: 25, week: 4)
+			Waveguide forms: January 26  (yday: 26, week: 4)
+			Waveguide dissipates: January 31  (yday: 31, week: 4)
+			Waveguide forms: February 02  (yday: 33, week: 5)
+			Waveguide dissipates: April 25  (yday: 116, week: 17)
+			Waveguide forms: September 28  (yday: 272, week: 39)
+
+		Westward waveguide changes...
+			Waveguide forms: January 18  (yday: 18, week: 3)
+			Waveguide dissipates: February 02  (yday: 33, week: 5)
+			Waveguide forms: May 12  (yday: 133, week: 19)
+			Waveguide dissipates: August 23  (yday: 236, week: 34)
+			Waveguide forms: August 29  (yday: 242, week: 35)
+			Waveguide dissipates: August 30  (yday: 243, week: 35)
+
+	This analysis also produces a visualization of the effective sound speed trends as shown below
+
+	.. figure:: _static/_images/example.ess-ratio.png
+		:width: 1000px
+		:align: center
+		:alt: alternate text
+		:figclass: align-center
+
+
+*******************************
+Building Propagation Statistics
+*******************************
 
 * Propagation statistics for path geometry (e.g., arrival location, travel time, direction of arrival) and transmission loss can be computed for use in improving localization and yield estimation analyses, respectively.
 * In the case of localization, a general celerity (horizontal group velocity) model is available in InfraPy constructed as a three-component Gaussian-mixture-model (GMM).  This model contains peaks corresponding to the tropospheric, stratospheric, and thermospheric waveguides and has been defined by fitting the parameterized GMM to a kernel density estimate of a full year of ray tracing analyses.
@@ -25,9 +86,7 @@ Propagation Statistics
     
     Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects
 
-********************************
-Path Geometry Models (PGMs)
-********************************
+**Path Geometry Models (PGMs)**
 
 * Path geometry models describing the arrival location, travel time, direction of arrival (back azimuth, inclination angle) can be computed using geometric modeling simulations such as those in the InfraGA/GeoAc package.  
 
@@ -74,10 +133,7 @@ Path Geometry Models (PGMs)
     det_list = lklhds.json_to_detection_list('data/detection_set2.json')
     result, pdf = bisl.run(det_list, path_geo_model=pgm)
                     
-    
-********************************
-Transmission Loss Models (TLMs)
-********************************
+**Transmission Loss Models (TLMs)**
 
 * Analysis of source characteristics includes estimation of the power of the acoustic signal at some reference distance from the (typically) complex source mechanism
 

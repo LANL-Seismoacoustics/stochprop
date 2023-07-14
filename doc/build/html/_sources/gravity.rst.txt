@@ -7,9 +7,10 @@ Gravity Wave Perturbations
 
 * Stochastic gravity wave perturbation methods are included in :code:`stochprop` using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.
 
-++++++++++++++++++++++++++++++++++++++++++++
+********************************************
 Freely Propagation and Trapped Gravity Waves
-++++++++++++++++++++++++++++++++++++++++++++
+********************************************
+
 * Gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber, :math:`m`, can be expressed as,
 
 .. math::
@@ -64,9 +65,9 @@ Freely Propagation and Trapped Gravity Waves
 
 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+***********************************************************
 Damping, Source and Saturation Spectra, and Critical Layers
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+***********************************************************
 
 * At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, :math:`m \rightarrow m + m_i,` where,
 
@@ -107,9 +108,9 @@ Damping, Source and Saturation Spectra, and Critical Layers
 		
 * Lastly, from the above definition for the vertical group velocity, :math:`c_{g,z}`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_{g,z}` similarly goes to zero.  In such a location the wave energy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
 
-++++++++++++++++++++++++++++++++++++++++
+****************************************
 Gravity Wave implementation in stochprop
-++++++++++++++++++++++++++++++++++++++++
+****************************************
 
 * The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is sumamrized here
 
@@ -166,6 +167,10 @@ Gravity Wave implementation in stochprop
 
 		# Run gravity wave calculation
 		gravity_waves.perturb_atmo(atmo_spec, output_path, t0=t0, cpu_cnt=10)
+
+**********************
+Command Line interface
+**********************
 
 * A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running :code:`stochprop perturb gravity-waves --help`:
 

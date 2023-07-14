@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Propagation Statistics &mdash; stochprop 1.0 documentation</title>
+  <title>Propagation Statistics &mdash; stochprop 0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -12,9 +12,10 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -29,16 +30,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            stochprop
-              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> stochprop
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -52,19 +52,16 @@
 <li class="toctree-l1 current"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#empirical-orthogonal-functions"><span class="xref std std-ref">Empirical Orthogonal Functions</span></a></li>
 <li class="toctree-l2"><a class="reference internal" href="analysis.html#atmospheric-fitting-sampling-and-perturbation"><span class="xref std std-ref">Atmospheric Fitting, Sampling, and Perturbation</span></a></li>
-<li class="toctree-l2"><a class="reference internal" href="analysis.html#propagation-statistics"><span class="xref std std-ref">Propagation Statistics</span></a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="analysis.html#gravity-wave-perturbations"><span class="xref std std-ref">Gravity Wave Perturbations</span></a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="eofs.html">Empirical Orthogonal Function Analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sampling.html">Atmospheric Fitting, Sampling, and Perturbation</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="analysis.html#propagation-statistics"><span class="xref std std-ref">Propagation Statistics</span></a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Propagation Statistics</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#path-geometry-models-pgms">Path Geometry Models (PGMs)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#transmission-loss-models-tlms">Transmission Loss Models (TLMs)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#visualizing-effective-sound-speed-ratio-trends">Visualizing Effective Sound Speed Ratio Trends</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#building-propagation-statistics">Building Propagation Statistics</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#command-line-interface">Command Line interface</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="gravity.html">Gravity Wave Perturbations</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#gravity-wave-perturbations"><span class="xref std std-ref">Gravity Wave Perturbations</span></a></li>
 </ul>
 </li>
 </ul>
@@ -82,7 +79,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
           <li class="breadcrumb-item"><a href="analysis.html">Stochastic Propagation Analysis</a></li>
       <li class="breadcrumb-item active">Propagation Statistics</li>
       <li class="wy-breadcrumbs-aside">
@@ -96,6 +93,57 @@
              
   <section id="propagation-statistics">
 <span id="propagation"></span><h1>Propagation Statistics<a class="headerlink" href="#propagation-statistics" title="Permalink to this heading"></a></h1>
+<section id="visualizing-effective-sound-speed-ratio-trends">
+<h2>Visualizing Effective Sound Speed Ratio Trends<a class="headerlink" href="#visualizing-effective-sound-speed-ratio-trends" title="Permalink to this heading"></a></h2>
+<p>It should be noted that in addition to the EOF-based method of identifying seasonal trends, it’s often useful to consider the effective sound speed ratio in the east and westward directions.  Such analysis can be performed using the <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">prop</span> <span class="pre">season-trends</span></code> methods to ingest a set of atmospheric specifications, averaging across years and computing the altitudes for which the effective sound speed in a given direction exceeds that near the ground.</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>##########################$#########
+##                                ##
+##           stochprop            ##
+##      Propagation Methods       ##
+##   ESS Ratio Seasonal Analysis  ##
+##                                ##
+####################################
+
+
+Run summary:
+Source directory: profs/
+Specification pattern: *.dat
+Specification format: zTuvdp
+Output path: example
+
+        Loading profiles from profs/ with pattern: *.dat
+                Extracted ground elevation: 1.589
+
+Computing effective sound speed ratio for each day-of-year...
+
+Eastward waveguide changes...
+        Waveguide dissipates: January 22  (yday: 22, week: 3)
+        Waveguide forms: January 24  (yday: 24, week: 3)
+        Waveguide dissipates: January 25  (yday: 25, week: 4)
+        Waveguide forms: January 26  (yday: 26, week: 4)
+        Waveguide dissipates: January 31  (yday: 31, week: 4)
+        Waveguide forms: February 02  (yday: 33, week: 5)
+        Waveguide dissipates: April 25  (yday: 116, week: 17)
+        Waveguide forms: September 28  (yday: 272, week: 39)
+
+Westward waveguide changes...
+        Waveguide forms: January 18  (yday: 18, week: 3)
+        Waveguide dissipates: February 02  (yday: 33, week: 5)
+        Waveguide forms: May 12  (yday: 133, week: 19)
+        Waveguide dissipates: August 23  (yday: 236, week: 34)
+        Waveguide forms: August 29  (yday: 242, week: 35)
+        Waveguide dissipates: August 30  (yday: 243, week: 35)
+</pre></div>
+</div>
+<p>This analysis also produces a visualization of the effective sound speed trends as shown below</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/example.ess-ratio.png"><img alt="alternate text" src="_images/example.ess-ratio.png" style="width: 1000px;" /></a>
+</figure>
+</div></blockquote>
+</section>
+<section id="building-propagation-statistics">
+<h2>Building Propagation Statistics<a class="headerlink" href="#building-propagation-statistics" title="Permalink to this heading"></a></h2>
 <ul class="simple">
 <li><p>Propagation statistics for path geometry (e.g., arrival location, travel time, direction of arrival) and transmission loss can be computed for use in improving localization and yield estimation analyses, respectively.</p></li>
 <li><p>In the case of localization, a general celerity (horizontal group velocity) model is available in InfraPy constructed as a three-component Gaussian-mixture-model (GMM).  This model contains peaks corresponding to the tropospheric, stratospheric, and thermospheric waveguides and has been defined by fitting the parameterized GMM to a kernel density estimate of a full year of ray tracing analyses.</p></li>
@@ -115,8 +163,7 @@
 <p><span class="caption-text">Stochastic propagation models are constructing using a suite of possible atmospheric states, propagation modeling applied to each, and a statistical model describing the variability in the resulting set of predicted effects</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
-<section id="path-geometry-models-pgms">
-<h2>Path Geometry Models (PGMs)<a class="headerlink" href="#path-geometry-models-pgms" title="Permalink to this heading"></a></h2>
+<p><strong>Path Geometry Models (PGMs)</strong></p>
 <ul>
 <li><p>Path geometry models describing the arrival location, travel time, direction of arrival (back azimuth, inclination angle) can be computed using geometric modeling simulations such as those in the InfraGA/GeoAc package.</p></li>
 <li><p>Ray tracing simulations can be run for all atmospheric specification files in a given directory using the <code class="code docutils literal notranslate"><span class="pre">stochprop.propagation.run_infraga</span></code> method by specifying the directory, output file, geometry (3D Cartesian or spherical), CPU count (if the infraGA/GeoAc OpenMPI methods are installed), azimuth and inclination angle ranges, and source location</p>
@@ -161,9 +208,7 @@
 <span class="n">result</span><span class="p">,</span> <span class="n">pdf</span> <span class="o">=</span> <span class="n">bisl</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">det_list</span><span class="p">,</span> <span class="n">path_geo_model</span><span class="o">=</span><span class="n">pgm</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
-<section id="transmission-loss-models-tlms">
-<h2>Transmission Loss Models (TLMs)<a class="headerlink" href="#transmission-loss-models-tlms" title="Permalink to this heading"></a></h2>
+<p><strong>Transmission Loss Models (TLMs)</strong></p>
 <ul class="simple">
 <li><p>Analysis of source characteristics includes estimation of the power of the acoustic signal at some reference distance from the (typically) complex source mechanism</p></li>
 <li><p>Such analysis using regional signals requires a propagation model that relates the energy losses along the path, termed the transmission loss and in the case of infrasonic analysis, several methods are available in the NCPAprop software suite from the University of Mississippi</p></li>
@@ -253,9 +298,9 @@
 </li>
 <li><p>The resulting models can be used in the InfraPy BISL and SpYE localizationa and yield estimation methods, respectively, as detailed in the InfraPy documentation:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>infrapy<span class="w"> </span>run_loc<span class="w"> </span>--local-detect-label<span class="w"> </span>data/detection_set2.json<span class="w"> </span>--local-loc-label<span class="w"> </span>data/location2<span class="w"> </span>--pgm-file<span class="w"> </span>../infrapy/propagation/priors/UTTR_models/UTTR_06_1800UTC.pgm
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>infrapy run_loc --local-detect-label data/detection_set2.json --local-loc-label data/location2 --pgm-file ../infrapy/propagation/priors/UTTR_models/UTTR_06_1800UTC.pgm
 
-infrapy<span class="w"> </span>run_yield<span class="w"> </span>--local-wvfrms<span class="w"> </span><span class="s1">&#39;../infrapy-data/hrr-5/*/*.sac&#39;</span><span class="w"> </span>--local-detect-label<span class="w"> </span>data/HRR-5.dets.json<span class="w"> </span>--src-lat<span class="w"> </span><span class="m">33</span>.5377<span class="w"> </span>--src-lon<span class="w"> </span>-106.333961<span class="w"> </span>--tlm-label<span class="w"> </span><span class="s2">&quot;../infrapy/propagation/priors/tloss/2007_08-&quot;</span><span class="w"> </span>--local-yld-label<span class="w"> </span><span class="s2">&quot;HRR-5&quot;</span>
+infrapy run_yield --local-wvfrms <span class="s1">&#39;../infrapy-data/hrr-5/*/*.sac&#39;</span> --local-detect-label data/HRR-5.dets.json --src-lat <span class="m">33</span>.5377 --src-lon -106.333961 --tlm-label <span class="s2">&quot;../infrapy/propagation/priors/tloss/2007_08-&quot;</span> --local-yld-label <span class="s2">&quot;HRR-5&quot;</span>
 </pre></div>
 </div>
 <p>where <code class="code docutils literal notranslate"><span class="pre">UTTR_06_1800UTC.pgm</span></code> denotes a path geometry model for the Utah Test and Training Range (UTTR) during June at 18:00 UTC and there are a series of transmission loss models (<code class="code docutils literal notranslate"><span class="pre">2007_08-0.025Hz.tlm</span></code>, <code class="code docutils literal notranslate"><span class="pre">2007_08-0.003Hz.pri</span></code>, etc.) that contain transmission loss statistics at individual frequencies for the yield estimation analysis.</p>
