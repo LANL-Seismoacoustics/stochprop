@@ -3,37 +3,35 @@
 ==========================
 Gravity Wave Perturbations
 ==========================
-* Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of bouyancy or gravity waves.
-
-* Stochastic gravity wave perturbation methods are included in :code:`stochprop` using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.
+Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of buoyancy or gravity waves.  Stochastic gravity wave perturbation methods are included in :code:`stochprop` using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.  These methods are in-development and are on the slow side due to the numerical limitations of Python (I might write them up in C/C++ at some point).
 
 ********************************************
 Freely Propagation and Trapped Gravity Waves
 ********************************************
 
-* Gravity wave dynamics are governed by a pair relations describing the disperion and wave action conservation.  The dispersion relation describing the vertical wavenumber, :math:`m`, can be expressed as,
+Gravity wave dynamics are governed by a pair relations describing the dispersion and wave action conservation.  The dispersion relation describing the vertical wavenumber, :math:`m`, can be expressed as,
 
-.. math::
-	m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}
+	.. math::
+		m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}
  
-* In this relation :math:`k` and :math:`l` are the zonal and meridional wave numbers, :math:`k_h^2 = \sqrt{k^2 + l^2}` is the combined horizontal wavenumber, :math:`H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}` is the density scale height, :math:`\rho_0 \left( z \right)` is the ambient atmospheric density, :math:`N = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}` is the atmospheric bouyancy frequency, and :math:`\hat{\omega}` is the intrinsic angular frequency (relative to the moving air) that is defined from to the absolute angular frequency (relative to the ground), :math:`\omega`, horizontal wavenumbers, and winds,
+In this relation :math:`k` and :math:`l` are the zonal and meridional wave numbers, :math:`k_h^2 = \sqrt{k^2 + l^2}` is the combined horizontal wavenumber, :math:`H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}` is the density scale height, :math:`\rho_0 \left( z \right)` is the ambient atmospheric density, :math:`N = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}` is the atmospheric buoyancy frequency, and :math:`\hat{\omega}` is the intrinsic angular frequency (relative to the moving air) that is defined from to the absolute angular frequency (relative to the ground), :math:`\omega`, horizontal wavenumbers, and winds,
 
-.. math::
-	\hat{\omega} \left( k, l, \omega, z \right) = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)
+	.. math::
+		\hat{\omega} \left( k, l, \omega, z \right) = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)
 
-* This dispersion relation can be solved for :math:`\hat{\omega}` and used to define the vertical group velocity,
+This dispersion relation can be solved for :math:`\hat{\omega}` and used to define the vertical group velocity,
 
-.. math::
-	\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad 
-	c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}} 
+	.. math::
+		\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad 
+		c_{g,z} \left(k, l, \omega, z \right) = \frac{\partial \hat{\omega}}{\partial m} = -\frac{m k_h N}{\left( k_h^2 + m^2 + \frac{1}{4 H^2} \right)^\frac{3}{2}} 
 
-* The conservation of wave action leads to a condition on the vertical velocity perturbation spectrum that can be used to define a freely propagating solution,
+The conservation of wave action leads to a condition on the vertical velocity perturbation spectrum that can be used to define a freely propagating solution,
 
-.. math::
-	\rho_0 m \left| \hat{w} \right|^2 = \text{constant} \; \rightarrow \;
-	\hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}}
+	.. math::
+		\rho_0 m \left| \hat{w} \right|^2 = \text{constant} \; \rightarrow \;
+		\hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}}
 
-* The above relation is valid in the case that :math:`m \left( k, l, \omega, z \right)` remains real through the integration upward in the exponential.  In the case that an altitude exists for which the vertical wavenumber becomes imaginary, the gravity wave energy reflects from this turning height and the above relation is not valid.  Instead, the solution is expressed in the form,
+The above relation is valid in the case that :math:`m \left( k, l, \omega, z \right)` remains real through the integration upward in the exponential.  In the case that an altitude exists for which the vertical wavenumber becomes imaginary, the gravity wave energy reflects from this turning height and the above relation is not valid.  Instead, the solution is expressed in the form,
 
 	.. math::
  		\hat{w} \left( k, l, \omega, z \right) = 2 i \sqrt{\pi} \hat{w}_0 \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai} \left( r \right) e^{-i \frac{\pi}{4}} S_n
@@ -48,28 +46,26 @@ Freely Propagation and Trapped Gravity Waves
 	.. math::
    		S_n = \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime
 
-* The vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios through derivatives of the vertical velocity spectrum,
+The vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios through derivatives of the vertical velocity spectrum,
 
-.. math::
-	\hat{u}^\text{(free)} = - \frac{k m}{k_h^2} \hat{w}, \quad
-   	\hat{u}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{k}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
+	.. math::
+		\hat{u}^\text{(free)} = - \frac{k m}{k_h^2} \hat{w}, \quad
+		\hat{u}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{k}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
 
-.. math::
-	\hat{v}^\text{(free)} = - \frac{l m}{k_h^2} \hat{w}, \quad
-   	\hat{v}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{l}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
+	.. math::
+		\hat{v}^\text{(free)} = - \frac{l m}{k_h^2} \hat{w}, \quad
+		\hat{v}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{l}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
 
-* Finally, once computed for the entire atmosphere, the spatial and temporal domain forms can be computed by an inverse Fourier transform,
+Finally, once computed for the entire atmosphere, the spatial and temporal domain forms can be computed by an inverse Fourier transform,
 
-.. math::
-	w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}
-
-
+	.. math::
+		w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}
 
 ***********************************************************
 Damping, Source and Saturation Spectra, and Critical Layers
 ***********************************************************
 
-* At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, :math:`m \rightarrow m + m_i,` where,
+At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, :math:`m \rightarrow m + m_i,` where,
 
 	.. math::
 		m_i \left(k, l, \omega, z \right) = -\nu \frac{m^3}{\hat{\omega}}, \quad \nu = 3.563 \times 10^{-7} \frac{T_0^{\, 0.69}}{\rho_0}
@@ -86,7 +82,7 @@ Damping, Source and Saturation Spectra, and Critical Layers
 
 	* Note that if :math:`z_t` is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.
 
-* The source spectra defined by Warner & McIntyre (1996) specifies the wave energy density for a source at 20 km altitude (note: :math:`\hat{\omega}` exponential corrected in publication errata),
+The source spectra defined by Warner & McIntyre (1996) specifies the wave energy density for a source at 20 km altitude (note: :math:`\hat{\omega}` exponential corrected in publication errata),
 
 	.. math::
 		\mathcal{E}_\text{src} \left(m, \hat{\omega} \right) = 1.35 \times 10^{-2} \frac{m}{m_*^4 + m^4} \frac{N^2}{\hat{\omega}^\frac{5}{3}} \Omega, \quad \Omega = \frac{\hat{\omega}_\text{min}^\frac{2}{3}}{1 - \left( \frac{\hat{\omega}_\text{min}}{N} \right)^\frac{2}{3}}, \quad m_* = \frac{2 \pi}{2.5 \text{km}}
@@ -96,7 +92,7 @@ Damping, Source and Saturation Spectra, and Critical Layers
 	.. math::
 		\mathcal{E} \left(k, l, \omega \right) = \frac{1}{2} \frac{N^2}{\hat{\omega}^2} \left| \hat{w}_0 \right|^2 \quad \rightarrow \quad \left| \hat{w}_0 \right|^2 = 2.7 \times 10^{-2} \frac{m^2}{m^4_* + m^4}  \frac{\hat{\omega}^\frac{1}{3}}{k_h^2} \Omega.
 
-* Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner & McIntyre (1996) where the spectral coordinate saturation spectrum is (note: the exponential for :math:`\hat{\omega}` is again corrected in publication errata),
+Gravity wave breaking in the atmosphere is included in analysis via a saturation limit following work by Warner & McIntyre (1996) where the spectral coordinate saturation spectrum is (note: the exponential for :math:`\hat{\omega}` is again corrected in publication errata),
 
 	.. math::
 		\mathcal{E}_\text{sat} \left(k, l, \omega \right) = 1.35 \times 10^{-2} \frac{N^2}{\hat{\omega}^\frac{5}{3} m^3}
@@ -106,19 +102,21 @@ Damping, Source and Saturation Spectra, and Critical Layers
 	.. math::
 		\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.
 		
-* Lastly, from the above definition for the vertical group velocity, :math:`c_{g,z}`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_{g,z}` similarly goes to zero.  In such a location the wave energy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
+Lastly, from the above definition for the vertical group velocity, :math:`c_{g,z}`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_{g,z}` similarly goes to zero.  In such a location the wave energy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  
+
+In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
 
 ****************************************
 Gravity Wave implementation in stochprop
 ****************************************
 
-* The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is sumamrized here
+The implementation of the gravity wave analysis partially follows that summarized by Drob et al. (2013) and is summarized here.
 
   * Atmospheric information is constructed from a provided atmospheric specification:
 
     #. Interpolations of the ambient horizontal winds, :math:`u_0 \left( z \right)` and :math:`v_0 \left( z \right)`, density, :math:`\rho_0 \left( z \right)`, and temperature, :math:`T_0 \left( z \right)` are defined.  
 
-    #. The density scale height, :math:`H \left( z \right)`, is computed using finite differences of the ambient density.  
+    #. The density scale height, :math:`H \left( z \right) = - \rho_0 \left( z \right) \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`, is computed using finite differences of the ambient density.  
   
     #. Atmospheric fields are re-sampled on a higher resolution set of altitudes with :math:`dz = 200` meters.
   
@@ -168,37 +166,39 @@ Gravity Wave implementation in stochprop
 		# Run gravity wave calculation
 		gravity_waves.perturb_atmo(atmo_spec, output_path, t0=t0, cpu_cnt=10)
 
-**********************
-Command Line interface
-**********************
+..
+	COMMENTED OUT SECTION ABOUT CLI FOR GRAVITY WAVE COMPUTATION
+	**********************
+	Command Line interface
+	**********************
 
-* A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running :code:`stochprop perturb gravity-waves --help`:
+	A command line interface (CLI) method is also included and can be utilized more easily.  General usage info can be displayed by running :code:`stochprop perturb gravity-waves --help`:
 
-	.. code-block:: console
+		.. code-block:: console
 
-		Usage: stochprop perturb gravity-waves [OPTIONS]
+			Usage: stochprop stats perturb [OPTIONS]
 
-		Gravity wave perturbation calculation based on Drob et al. (2013) method.
+			Gravity wave perturbation calculation based on Drob et al. (2013) method.
 
-		Example Usage:
-       		stochprop perturb gravity-waves --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw
+			Example Usage:
+				stochprop perturb gravity-waves --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --out test_gw
 
-		Options:
-  		  --atmo-file TEXT        Reference atmspheric specification (required)
-		  --out TEXT              Output prefix (required)
-		  --sample-cnt INTEGER    Number of perturbated samples (default: 25)
-		  --t0 FLOAT              Propagation time from source [hr] (default: 8)
-		  --dx FLOAT              Horizontal wavenumber scale [km] (default: 4.0)
-		  --dz FLOAT              Altitude resolution [km] (default: 0.2)
-		  --nk INTEGER            Horizontal wavenumber resolution (default: 128)
-		  --nom INTEGER           Frequency resolution (default: 5)
-		  --random-phase BOOLEAN  Randomize phase at source [bool] (default: False)
-		  --z-src FLOAT           Gravity wave source altitude [km] (default: 20.0)
-		  --m-star FLOAT          Gravity wave source spectrum peak [1/km] (default: (2 pi) / 2.5)
-		  --cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)
-		  -h, --help              Show this message and exit.
+			Options:
+			--atmo-file TEXT        Reference atmspheric specification (required)
+			--out TEXT              Output prefix (required)
+			--sample-cnt INTEGER    Number of perturbated samples (default: 25)
+			--t0 FLOAT              Propagation time from source [hr] (default: 8)
+			--dx FLOAT              Horizontal wavenumber scale [km] (default: 4.0)
+			--dz FLOAT              Altitude resolution [km] (default: 0.2)
+			--nk INTEGER            Horizontal wavenumber resolution (default: 128)
+			--nom INTEGER           Frequency resolution (default: 5)
+			--random-phase BOOLEAN  Randomize phase at source [bool] (default: False)
+			--z-src FLOAT           Gravity wave source altitude [km] (default: 20.0)
+			--m-star FLOAT          Gravity wave source spectrum peak [1/km] (default: (2 pi) / 2.5)
+			--cpu-cnt INTEGER       Number of CPUs to use in parallel analysis (default: None)
+			-h, --help              Show this message and exit.
 
-* An example set of perturbations is shown below.
+An example set of perturbations is shown below.
 
 .. figure:: _static/_images/gw_example.png
     :width: 300px
@@ -206,4 +206,4 @@ Command Line interface
     :alt: alternate text
     :figclass: align-center
     
-* Note: Although perturbations to the ambient temperature are included in the Drob et al. (2013) discussion, they are not included here and modifications to the :math:`N_k`, :math:`dx`, and :math:`N_\omega` values often cause issues with the calculation of gravity waves.  Work is ongoing to debug and improve the efficiency of the methods here and will be added in a future update of :code:`stochprop`.
+Note: Although perturbations to the ambient temperature are included in the Drob et al. (2013) discussion, they are not included here and modifications to the :math:`N_k`, :math:`dx`, and :math:`N_\omega` values often cause issues with the calculation of gravity waves.  Work is ongoing to debug and improve the efficiency of the methods here and will be added in a future update of :code:`stochprop`.

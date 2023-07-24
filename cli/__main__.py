@@ -63,6 +63,7 @@ stats.add_command(stats_cli.coeff_overlap)
 stats.add_command(stats_cli.sample_eofs)
 stats.add_command(stats_cli.perturb)
 
+prop.add_command(prop_cli.fit_celerity)
 prop.add_command(prop_cli.build_pgm)
 prop.add_command(prop_cli.build_tlm)
 

@@ -57,7 +57,7 @@ def parse_option_list(input):
 @click.option("--year-selection", help="Limit analysis to specific year(s) (default: None)", default=None)
 @click.option("--include-NS", help="Option to include north/south analysis", default=False)
 @click.option("--show-title", help="Option to display title text", default=True)
-@click.option("--xkcd-mode", help="Use XKCD plotting style", default=False)
+@click.option("--xkcd-mode", help="Use XKCD plotting style", default=False, hidden=True)
 def ess_ratio(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection, include_ns, show_title, xkcd_mode):
     '''
     \b
@@ -118,7 +118,7 @@ def ess_ratio(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection,
 @click.command('eofs', short_help="Plot EOF results")
 @click.option("--eofs-path", help="EOF output path and prefix (required)", prompt="EOF path: ")
 @click.option("--eof-cnt", help="Number of EOFs to visualize (default: 5)", default=5)
-@click.option("--xkcd-mode", help="Use XKCD plotting style", default=False)
+@click.option("--xkcd-mode", help="Use XKCD plotting style", default=False, hidden=True)
 def eofs(eofs_path, eof_cnt, xkcd_mode):
     '''
     \b

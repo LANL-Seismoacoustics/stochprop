@@ -289,7 +289,7 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
     eofs.sample_atmo(coeff_vals, eofs_path, sample_path, eof_cnt=eof_cnt, prof_cnt=sample_cnt)
 
 
-@click.command('perturb', short_help="Construct perturbed atmospheric models")
+@click.command('perturb', short_help="Construct perturbed atmospheric models", hidden=True)
 @click.option("--atmo-file", help="Reference atmospheric specification (required)", prompt="Reference atmospheric specification: ")
 @click.option("--sample-path", help="Output prefix (required)", prompt="Sample (output) prefix: ")
 @click.option("--sample-cnt", help="Number of perturbed samples (default: 25)", default=25)
@@ -317,8 +317,7 @@ def perturb(atmo_file, sample_path, method, eofs_path, std_dev, eof_max, eof_cnt
     '''
     \b
     Construct perturbed atmospheric samples using either EOF-based perturbations or gravity wave perturbation calculation based on Drob et al. (2013) method.
-
-    
+    \b
     stochprop stats perturb
     -----------------------
     \b
