@@ -301,8 +301,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             print("")
 
             if clean_up:
-                command = "rm "  + profs_path + "/*.dat"
-                subprocess.call(command, shell=True)
+                os.remove(profs_path + "/*.dat")
 
 
 def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path="", clean_up=False, keep_lossless=False, cpu_cnt=1):
@@ -397,8 +396,7 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
             command = command + " >> " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz.Nby2D_tloss_1d.lossless.nm" % freq
             subprocess.call(command, shell=True)
 
-            command = "rm " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp*" % freq
-            subprocess.call(command, shell=True)
+            os.remove(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp*" % freq)
 
         print('\t' + "Combining transmission loss predictions..." + '\n')
         command = "cat " + profs_path + "/*_%.3f" % freq + "Hz*.nm > " + results_path + ".nm"
@@ -410,11 +408,147 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
             subprocess.call(command, shell=True)
 
         if clean_up:
-            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm", shell=True)
-            subprocess.call("rm " + profs_path + "/*_%.3f" % freq + "Hz*.nm", shell=True)
+            os.remove(profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm")
+            os.remove(profs_path + "/*_%.3f" % freq + "Hz*.nm")
 
 
 
+
+def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, ncpaprop_path="", topo_path_label=None, clean_up=False, keep_lossless=False, cpu_cnt=1, verbose=False):
+    """
+        Run one of the NCPAprop methods to compute transmission
+        loss values for a suite of atmospheric specifications at
+        a set of frequency values
+        
+        Note: the methods here use the ncpaprop-release version that includes 
+        an option for --filetag that writes output into a specific location 
+        and enables simultaneous calculations via subprocess.popen()
+
+        Example ncpaprop function calls (usable from infraGA/GeoAc examples directory):
+
+            Effective Sound Speed Modal (modess)
+                modess --multiprop --atmosfile ToyAtmo.met --zground_km 1.0 --freq 0.5 --azimuth_start 0 --azimuth_end 360 --azimuth_step 3 --maxrange_km 1000 --Nrng_steps 1000 --filetag test
+            
+            ePade Parabolic Equation (epape)
+                epape --multiprop --starter self --atmosfile ToyAtmo.met --groundheight_km 1.0 --freq 0.5 --azimuth_start 0 --azimuth_end 360 --azimuth_step 3 --maxrange_km 1000 --Nrng_steps 1000  --filetag test
+                epape --singleprop --topo --starter self --atmosfile ToyAtmo.met --topofile topo/line.dat --freq 0.5 --azimuth 0 --maxrange_km 1000 --Nrng_steps 1000 --filetag test2
+
+        Note on defining flat ground elevation:
+            For some reason, most parameters are the same between modess and pape (e.g., freq, azimuth_start, Nrng_steps), but the parameter to define the ground elevation is difference (--zground_km in modess vs. --groundheight_km in epape).  I might email Claus about this...
+
+        Notes on including terrain:
+            Including terrain requires individual azimuth runs to match up azimuths with correct terrain lines (can't use Nx2D)
+            Need to figure out how terrain files are going to be built (external and have specified directory?)
+            Terrain line file requires header info:
+                # 'infraga extract-terrain --geom line' summary:
+                # lat: 37.114912493
+                # lon: -116.069089728
+                # azimuth: 59.0
+                # range: 1000.0
+                #% r, km
+                #% z, km
+                0.0  0.8320394823
+                1.8518518518517908	0.8875136241398117
+                3.703703703703796	0.9092146274618726
+                5.555555555556105	0.9170049733706201
+                ...
+                
+        Parameters
+        ----------
+        ncpaprop_method: string
+            Method in NCPAprop to use (currently supports 'modess' or 'epape')
+        profs_path: string
+            Path to atmospheric specification files
+        results_file: string
+            Path and name of file where results will be written
+        pattern: string
+            Pattern identifying atmospheric specification within profs_path location
+        azimuths: iterable object
+            Iterable of starting, ending, and step for propagation azimuths
+        freq: float
+            Frequency for simulation
+        z_grnd: float
+            Elevation of the ground surface relative to sea level
+        rng_max: float
+            Maximum propagation range for propagation paths
+        rng_resol: float
+            Resolution for range ouputs (defaults to 1 km)
+        ncpaprop_path: string
+            Path to NCPAprop binaries (if not on path)
+        topo_path_label: string
+            Path and label for terrain files to use in epape simulations
+        clean_up: boolean
+            Flag to remove individual .nm files after combining
+        keep_lossless: boolean
+            Flag to keep the lossless (no absorption) results
+        cpu_cnt : integer
+            Number of CPUs to use in subprocess.popen loop for simultaneous calculations
+        """
+
+    if profs_path[-1] != "/":
+        profs_path = profs_path + "/"
+
+    if topo_path_label is not None:
+        output_suffix = ".pe"
+        command_prefix = ncpaprop_path + " epape --singleprop --topo --starter self"
+
+        # Add methods here to cycle through azimuths using appropriate terrain lines
+
+
+
+
+
+
+    else:
+        if ncpaprop_method == "modess":
+            output_suffix = ".nm"
+            command_prefix = ncpaprop_path + " modess --multiprop --zground_km " + str(z_grnd)
+        else:
+            output_suffix = ".pe"
+            command_prefix = ncpaprop_path + " epape --multiprop --starter self --groundheight_km " + str(z_grnd)
+
+        dir_files = np.sort(os.listdir(profs_path))
+        if os.path.isfile(results_path + output_suffix):
+            print(results_path + output_suffix + " already exists  --->  Skipping NCPAprop modess runs...")
+        else:
+            print("Running NCPAprop modess for atmospheric specifications in " + profs_path)
+            command_list = []
+            for file_name in dir_files:
+                if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
+                    command = command_prefix + " --atmosfile " + profs_path + file_name
+                    command = command + " --freq " + str(freq)
+                    command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
+                    command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
+                    command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz" % freq
+                    if not verbose:
+                        command = command + " > /dev/null"
+                    command_list = command_list + [command]
+
+            for j in range(0, len(command_list), cpu_cnt):              
+                if cpu_cnt==1 or j + 1 == len(command_list):
+                    print('\t' + "Running NCPAprop " + ncpaprop_method + " for sample " + str(j + 1) + "of " + str(len(command_list)))
+                elif cpu_cnt==2 or j + 2 == len(command_list):
+                    print('\t' + "Running NCPAprop " + ncpaprop_method + " for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
+                else:
+                    print('\t' + "Running NCPAprop " + ncpaprop_method + " for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
+
+                procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
+                for proc in procs_list:
+                    proc.communicate()
+                    proc.wait()
+
+        print('\t' + "Combining transmission loss predictions..." + '\n')
+        command = "cat " + profs_path + "*_%.3f" % freq + "Hz*.nm > " + results_path + ".nm"
+        subprocess.call(command, shell=True)
+
+        if keep_lossless:
+            command = "cat " + profs_path + "*_%.3f" % freq + "Hz*.lossless.nm > " + results_path + ".lossless.nm"
+            print('\t\t' + command)
+            subprocess.call(command, shell=True)
+
+        if clean_up:
+            os.remove(profs_path + "*_%.3f" % freq + "Hz*.lossless.nm", shell=True)
+            os.remove(profs_path + "*_%.3f" % freq + "Hz*.nm", shell=True)
 
 
 # ############################ #
