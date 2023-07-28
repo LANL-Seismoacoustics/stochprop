@@ -5,10 +5,11 @@ channels:
   - defaults
 
 dependencies:
-  - python=3.6
+  - python>=3.6
   - click
   - matplotlib
   - numpy
+  - numpydoc
   - scipy
   - netcdf4
   - ipython
@@ -16,6 +17,7 @@ dependencies:
   - pyproj
   - pathos
   - sphinx
+  - sphinx_rtd_theme
   - pip
 
   - pip:

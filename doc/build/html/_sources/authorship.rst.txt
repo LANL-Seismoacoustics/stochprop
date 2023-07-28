@@ -1,11 +1,34 @@
 .. _authorship:
 
-=====================================
-Authorship & License Info
-=====================================
+=======================
+Authorship & References
+=======================
 
-Authors: Philip Blom
+*Notes on authorship and development*
 
-© 2020 Triad National Security, LLC. All rights reserved. 
+Author: Philip Blom (pblom@lanl.gov)
 
-Notice: These data were produced by Triad National Security, LLC under Contract No. 89233218CNA000001 with the Department of Energy/National Nuclear Security Administration. For five (5) years from September 21,2020, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this data to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this data to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE/NNSA. Neither the United States nor the United States Department of Energy/National Nuclear Security Administration, nor any of their employees, makes any warranty, express or implied, or assumes any legal liability or responsibility for the accuracy, completeness, or usefulness of any data, apparatus, product, or process disclosed, or represents that its use would not infringe privately owned rights.
+------------
+Citing Usage
+------------
+
+The Empirical Orthogonal Function (EOF) analyses available in :code:`stochprop` are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi's National Center for Physical Acoustics (NCPA) and will be summarizing in an upcoming publication:
+
+    * Blom, P., Waxler, R., & Frazier, W.G.  (2023). “Quantification of spatial and seasonal trends in the atmosphere and construction of statistical models for infrasonic propagation.” *Geophysical Journal International*, In Review.
+
+Stochastic, propagation-based models for infrasonic signal analysis were initially introduced in analysis of the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE) framworks so that usage of path geometry and transmission loss models should be cited using:
+
+    * Blom, P. S., Marcillo, O., & Arrowsmith, S. J. (2015). Improved Bayesian infrasonic source localization for regional infrasound. *Geophysical Journal International*, 203(3), 1682-1693.
+
+    * Blom, P. S., Dannemann, F. K., & Marcillo, O. E. (2018). Bayesian characterization of explosive sources using infrasonic signals. *Geophysical Journal International*, 215(1), 240-251.
+
+Gravity wave perturbation methods available here are leveraged from work by Drob et al. (2013) and Lalande & Waxler (2016) as well as supporting work referenced in those manuscripts:
+
+    * Drob, D. P., Broutman, D., Hedlin, M. A., Winslow, N. W., & Gibson, R. G. (2013). A method for specifying atmospheric gravity wavefields for long‐range infrasound propagation calculations. *Journal of Geophysical Research: Atmospheres*, 118(10), 3933-3943.
+
+    * Lalande, J. M., & Waxler, R. (2016). The interaction between infrasonic waves and gravity wave perturbations: Application to observations using UTTR rocket motor fuel elimination events. *Journal of Geophysical Research: Atmospheres*, 121(10), 5585-5600.
+
+    * Warner, C. D., & McIntyre, M. E. (1996). On the propagation and dissipation of gravity wave spectra through a realistic middle atmosphere. *Journal of Atmospheric Sciences*, 53(22), 3213-3235.
+
+See the documentation for the supporting packages (InfraGA/GeoAc, NCPAprop, InfraPy) for guidance on citing usage of those methods.
+

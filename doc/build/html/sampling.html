@@ -1,75 +1,42 @@
-
-
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atmospheric Fitting, Sampling, and Perturbation &mdash; stochprop 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
-  <title>Atmospheric Fitting, Sampling, and Perturbation &mdash; stochprop 1.0 documentation</title>
-  
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Propagation Statistics" href="propagation.html" />
     <link rel="prev" title="Empirical Orthogonal Function Analysis" href="eofs.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> stochprop
-          
-
-          
-            
             <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
-          
           </a>
-
-          
-            
-            
-          
-
-          
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,269 +44,173 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; License Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="userguide.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authorship.html">Authorship &amp; References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="analysis.html">Stochastic Propagation Analysis</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="eofs.html">Empirical Orthogonal Function Analysis</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Atmospheric Fitting, Sampling, and Perturbation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="propagation.html">Propagation Statistics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gravity.html">Gravity Wave Perturbations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#empirical-orthogonal-functions"><span class="xref std std-ref">Empirical Orthogonal Functions</span></a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="analysis.html#atmospheric-fitting-sampling-and-perturbation"><span class="xref std std-ref">Atmospheric Fitting, Sampling, and Perturbation</span></a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Atmospheric Fitting, Sampling, and Perturbation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fitting-an-atmospheric-specification-using-eofs">Fitting an Atmospheric Specification using EOFs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sampling-specifications-using-eof-coefficient-distributions">Sampling Specifications using EOF Coefficient Distributions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perturbing-specifications-to-account-for-uncertainty">Perturbing Specifications to Account for Uncertainty</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#command-line-interface">Command Line interface</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="stochprop.html">API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">References and Citing Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#propagation-statistics"><span class="xref std std-ref">Propagation Statistics</span></a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#gravity-wave-perturbations"><span class="xref std std-ref">Gravity Wave Perturbations</span></a></li>
+</ul>
+</li>
 </ul>
 
-            
-          
         </div>
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">stochprop</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
-      <li><a href="index.html">Docs</a> &raquo;</li>
-        
-          <li><a href="analysis.html">Stochastic Propagation Analysis</a> &raquo;</li>
-        
-      <li>Atmospheric Fitting, Sampling, and Perturbation</li>
-    
-    
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="analysis.html">Stochastic Propagation Analysis</a></li>
+      <li class="breadcrumb-item active">Atmospheric Fitting, Sampling, and Perturbation</li>
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/sampling.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <section id="atmospheric-fitting-sampling-and-perturbation">
-<span id="sampling"></span><h1>Atmospheric Fitting, Sampling, and Perturbation<a class="headerlink" href="#atmospheric-fitting-sampling-and-perturbation" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p>The Empirical Orthogonal Functions (EOFs) constructed using a suite of atmospheric specifications can be utilized in a number of different analyses of the atmospheric state</p></li>
-<li><p>In general, an atmospheric state can be constructed by defining a reference atmosphere, <span class="math notranslate nohighlight">\(b_0 \left( z_m \right)\)</span>, and a set of coefficients, <span class="math notranslate nohighlight">\(\mathcal{C}_n\)</span>,</p></li>
-</ul>
+<span id="sampling"></span><h1>Atmospheric Fitting, Sampling, and Perturbation<a class="headerlink" href="#atmospheric-fitting-sampling-and-perturbation" title="Permalink to this heading"></a></h1>
+<p>The Empirical Orthogonal Functions (EOFs) constructed using a suite of atmospheric specifications can be utilized in a number of different analyses of the atmospheric state.  In general, an atmospheric state can be constructed by defining a reference atmosphere, <span class="math notranslate nohighlight">\(\vec{B}_0\)</span>, and a set of coefficients, <span class="math notranslate nohighlight">\(\mathcal{C}_n\)</span>,</p>
 <div class="math notranslate nohighlight">
-\[\hat{b} \left( z_m \right) = b_0 \left( z_m \right) + \sum_n{ \mathcal{C}_n \mathcal{E}_n \left( z_m \right)},\]</div>
+\[\hat{\vec{B}} = \vec{B}_0 + \sum_n{ \mathcal{C}_n \vec{\varepsilon}_n}\]</div>
 <section id="fitting-an-atmospheric-specification-using-eofs">
-<h2>Fitting an Atmospheric Specification using EOFs<a class="headerlink" href="#fitting-an-atmospheric-specification-using-eofs" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>In the case that a specific state, <span class="math notranslate nohighlight">\(b \left(z_m \right)\)</span>, is known, it can be approximated using the EOF set by using the mean state pulled from the original SVD analysis and coefficients defined by projecting the atmospheric state difference from this mean onto each EOF,</p></li>
-</ul>
+<h2>Fitting an Atmospheric Specification using EOFs<a class="headerlink" href="#fitting-an-atmospheric-specification-using-eofs" title="Permalink to this heading"></a></h2>
+<p>In the case that a specific state, <span class="math notranslate nohighlight">\(\vec{B}\)</span>, is known, it can be approximated using the EOF basis functions by using the mean state pulled from the original SVD analysis, <span class="math notranslate nohighlight">\(\bar{\vec{A}}\)</span>, and coefficients defined by projecting the atmospheric state difference from this mean onto each EOF,</p>
 <div class="math notranslate nohighlight">
-\[b_0 \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n^{(b)} = \sum_m{\mathcal{E}_n \left( z_m \right) \left( b \left( z_m \right) - \bar{a} \left( z_m \right) \right)},\]</div>
-<ul class="simple">
-<li><p>These coefficient calculations and construction of a new atmospheric specification can be completed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.fit_atmo</span></code> with the path to specific atmospheric state, a set of EOFs, and a specified number of coefficients to compute,</p></li>
-</ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">prof_path</span> <span class="o">=</span> <span class="s2">&quot;profs/01/g2stxt_2010010100_39.7393_-104.9900.dat&quot;</span>
+\[\hat{\vec{B}} = \bar{\vec{A}} + \sum_n{ \mathcal{C}_n^{(\vec{B})} \vec{\varepsilon}_n}, \quad \quad \mathcal{C}_n^{(\vec{B})} = \vec{\varepsilon}_n \cdot \left( \vec{B} - \bar{\vec{A}} \right)\]</div>
+<p>These coefficient calculations and construction of a new atmospheric specification can be completed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.fit_atmo</span></code> with the path to specific atmospheric state, a set of EOFs, and a specified number of coefficients to compute,</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">prof_path</span> <span class="o">=</span> <span class="s2">&quot;profs/g2stxt_2011010118_39.1026_-84.5123.dat&quot;</span>
 <span class="n">eofs_path</span> <span class="o">=</span> <span class="s2">&quot;eofs/example&quot;</span>
 
 <span class="n">eofs</span><span class="o">.</span><span class="n">fit_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;eof_fit-N=30.met&quot;</span><span class="p">,</span> <span class="n">eof_cnt</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>This analysis is useful to determine how many coefficients are needed to accurately reproduce an atmospheric state from a set of EOFs.  Such an analysis is shown below for varying number of coefficients and convergence is found at 50 - 60 terms.</p></li>
-</ul>
+<p>This analysis is useful to determine how many coefficients are needed to accurately reproduce an atmospheric state from a set of EOFs.  Such an analysis is shown below for varying number of coefficients and convergence is found at 50 - 60 terms.</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/US_NE-fits.png"><img alt="alternate text" src="_images/US_NE-fits.png" style="width: 700px;" /></a>
 <figcaption>
-<p><span class="caption-text">Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 - 60 terms in the summation</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Accuracy of fitting a specific atmospheric state (black) using varying numbers of EOF coefficients (red) shows convergence for approximately 50 - 60 terms in the summation</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="sampling-specifications-using-eof-coefficient-distributions">
-<h2>Sampling Specifications using EOF Coefficient Distributions<a class="headerlink" href="#sampling-specifications-using-eof-coefficient-distributions" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>Samples can be generated that are representative of a given coefficient distributions as constructed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_coeffs</span></code> or a combination of them.</p></li>
-<li><p>In such a case, the reference atmosphere is again the mean state from the SVD analysis and the coefficients are randomly generated from the distributions defined by kernel density estimates (KDE’s) of the coefficient results</p></li>
-</ul>
+<h2>Sampling Specifications using EOF Coefficient Distributions<a class="headerlink" href="#sampling-specifications-using-eof-coefficient-distributions" title="Permalink to this heading"></a></h2>
+<p>Samples can be generated that are representative of a given coefficient distributions as discussed in Blom et al. (2023) to re-sample a given vector space and provide some data reduction needed for propagation simulation campaigns.  Once an EOF basis function set has been defined, the coefficients defining the projection of the EOFs onto the original set is computed.  Given the set of coefficients for the set, a kernel density estimate (KDE) is applied to sample the coefficient values and produce representative atmospheric state vectors.  From the EOF result, <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.compute_coeffs</span></code> can be used to build coefficient values and <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.sample_atmo</span></code> used to generate samples.</p>
+<p>The mathematics involved are detailed in Blom et al. (2023),</p>
 <div class="math notranslate nohighlight">
-\[b_0^{(B)} \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n \longleftarrow \mathcal{P}_n^{(B)} \left( \mathcal{C} \right)\]</div>
-<ul class="simple">
-<li><p>In addition to sampling the coefficient distributions, the maximum likelihood atmospheric state can be defined by defining each coefficient to be the maximum of the distribution,</p></li>
-</ul>
-<div class="math notranslate nohighlight">
-\[b_0^{(B)} \left( z_m \right) = \bar{a}  \left( z_m \right) , \quad \quad \mathcal{C}_n = \text{argmax} \left[ \mathcal{P}_n^{(B)} \left( \mathcal{C} \right) \right]\]</div>
-<ul class="simple">
-<li><p>This sampling and maximum likelihood calculation can be run by loading coefficient results and running,</p></li>
-</ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_05-coeffs.npy&quot;</span><span class="p">)</span>
-<span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_06-coeffs.npy&quot;</span><span class="p">)))</span>
-<span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_07-coeffs.npy&quot;</span><span class="p">)))</span>
-<span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_08-coeffs.npy&quot;</span><span class="p">)))</span>
-
-<span class="n">eofs</span><span class="o">.</span><span class="n">sample_atmo</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;samples/summer/example-summer&quot;</span><span class="p">,</span> <span class="n">prof_cnt</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
-<span class="n">eofs</span><span class="o">.</span><span class="n">maximum_likelihood_profile</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;samples/example-summer&quot;</span><span class="p">)</span>
+\[\hat{\vec{A}}_m = \bar{\vec{A}} + \sum_n{ \hat{\mathcal{C}}_n^{(m)} \vec{\varepsilon}_n}, \quad \quad \hat{\mathcal{C}}_n^{(m)}  \text{ from } \hat{\mathcal{P}}_n^{(A)} \left( \mathcal{C} \right) = \text{KDE} \left[ \mathcal{C}_n^{(\vec{A}_1)}, \mathcal{C}_n^{(\vec{A}_2)}, \ldots,  \mathcal{C}_n^{(\vec{A}_N)}  \right]\]</div>
+<p>Numerically, this can be accomplished via the <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.sample_atmo</span></code> function,</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;coeffs/example_winter-coeffs.npy&quot;</span><span class="p">)</span>
+<span class="n">eofs</span><span class="o">.</span><span class="n">sample_atmo</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;samples/winter/example-winter&quot;</span><span class="p">,</span> <span class="n">prof_cnt</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
 </pre></div>
 </div>
-<ul class="simple">
-<li><p>This analysis can be completed for each identified season to generate a suite of atmospheric specifications representative of the season as shown in the figure below.  This can often provide a significant amount of data reduction for propagation studies as multiple years of specifications (numbering in the 100’s or 1,000’s) can be used to construct a representative set of 10’s of atmospheres that characterize the time period of interest as in the figure below.</p></li>
-</ul>
+<p>This analysis can be completed for each identified season to generate a suite of atmospheric specifications representative of the season as shown in the figure below.  This can often provide a significant amount of data reduction for propagation studies as multiple years of specifications (numbering in the 100’s or 1,000’s) can be used to construct a representative set of 10’s of atmospheres that characterize the time period of interest as in the figure below.</p>
 <figure class="align-center" id="id2">
 <a class="reference internal image-reference" href="_images/US_RM-samples.png"><img alt="alternate text" src="_images/US_RM-samples.png" style="width: 500px;" /></a>
 <figcaption>
-<p><span class="caption-text">Samples for seasonal trends in the western US show the change in directionality of the stratospheric waveguide in summer and winter</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Samples for seasonal trends in the western US show the change in directionality of the stratospheric waveguide in summer and winter.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="perturbing-specifications-to-account-for-uncertainty">
-<h2>Perturbing Specifications to Account for Uncertainty<a class="headerlink" href="#perturbing-specifications-to-account-for-uncertainty" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>In most infrasonic analysis, propagation analysis through a specification for the approximate time and location of an event doesn’t produce the exact arrivals observed due to the dynamic and sparsely sampled nature of the atmosphere</p></li>
-<li><p>Because of this, it is useful to apply random perturbations to the estimated atmospheric state covering some confidence level and consider propagation through the entire suite of “possible” states</p></li>
-<li><p>In such a case, the reference atmosphere, <span class="math notranslate nohighlight">\(c_0 \left( z_m \right)\)</span> defines the initial states, coefficients are randomly generated from a normal distribution, and weighting is applied based on the singular values and mean altitudes of the EOFs,</p></li>
-</ul>
+<h2>Perturbing Specifications to Account for Uncertainty<a class="headerlink" href="#perturbing-specifications-to-account-for-uncertainty" title="Permalink to this heading"></a></h2>
+<p>In most infrasonic analysis, propagation analysis through a specification for the approximate time and location of an event doesn’t produce the exact arrivals observed due to the dynamic and sparsely sampled nature of the atmosphere. Because of this, it is useful to apply random perturbations to the estimated atmospheric state covering some confidence level and consider propagation through the entire suite of “possible” states.  In such a case, the reference atmosphere, <span class="math notranslate nohighlight">\(\vec{A}_0\)</span> defines the initial states and coefficients are randomly generated from a normal distribution,</p>
 <div class="math notranslate nohighlight">
-\[b_0 \left( z_m \right) = c_0 \left( z_m \right), \quad \quad \mathcal{C}_n \longleftarrow \mathcal{N} \left(0, \sigma^* \right), \quad \quad w_n = \mathcal{S}_n^{\gamma} \; \bar{z}_n^{\eta}\]</div>
-<ul class="simple">
-<li><p>The set of perturbations is scaled to match the specified standard deviation after summing over coefficients and averaged over the entire set of altitudes</p></li>
-<li><p>Unlike the above methods, in this analysis a weighting is defined by the singular value of the associated EOF and the mean altitude of the EOF, <span class="math notranslate nohighlight">\(\bar{z}_n = \sum_m{z_m \mathcal{E}_n \left( z_m \right)}\)</span> in order to avoid rapidly oscillating EOFs from contributing too much noise and to focus perturbations at higher altitudes where uncertainties are larger, respectively.  The exponential coefficients have default values of <span class="math notranslate nohighlight">\(\gamma = 0.25\)</span> and <span class="math notranslate nohighlight">\(\eta=2\)</span>, but can be modified in the function call.</p></li>
-<li><p>This perturbation analysis can be completed using <code class="code docutils literal notranslate"><span class="pre">stochprop.eofs.perturb_atmo</span></code> with a specified starting atmosphere, set of EOFs, output path, uncertainty measure in meters-per-second, and number of samples needed,</p></li>
-</ul>
-<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">eofs</span><span class="o">.</span><span class="n">perturb_atmo</span><span class="p">(</span><span class="n">prof_path</span><span class="p">,</span> <span class="n">eofs_path</span><span class="p">,</span> <span class="s2">&quot;eof_perturb&quot;</span><span class="p">,</span> <span class="n">uncertainty</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">sample_cnt</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>The below figure shows a sampling of results using uncertainties of 5.0, 10.0, and 15.0 meters-per-second.  The black curve is input as the estimated atmospheric state and the red curves are generated by the perturbations.</p></li>
-</ul>
-<figure class="align-center" id="id3">
-<a class="reference internal image-reference" href="_images/atmo_perturb.png"><img alt="alternate text" src="_images/atmo_perturb.png" style="width: 500px;" /></a>
-<figcaption>
-<p><span class="caption-text">Perturbations to a reference atmospheric state can be computed using randomly generated coefficients for a suite of EOFs with specified standard deviation</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</figcaption>
-</figure>
+\[\tilde{\vec{A}}_m = \vec{A}_0 + \mathcal{W} \left( \varsigma \right) \sum_n{ w_n \mathcal{C}_n^{(m)} \vec{\varepsilon}_n}, \quad \mathcal{C}_n^{(m)} \text{ from } \mathcal{N} \left(0, 1 \right),\]</div>
+<p>the inter-EOF weighting, <span class="math notranslate nohighlight">\(w_n\)</span>, and the overall perturbation scaling, <span class="math notranslate nohighlight">\(\mathcal{W}\)</span>, along with application to localization and characterization analyses are ongoing areas of R&amp;D…</p>
 </section>
 <section id="command-line-interface">
-<h2>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p>Command line methods are included to access the perturbation methods more efficiently.  Usage info for the EOF perturbation methods can be displayed by running <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">perturb</span> <span class="pre">eof</span> <span class="pre">--help</span></code>:</p>
+<h2>Command Line interface<a class="headerlink" href="#command-line-interface" title="Permalink to this heading"></a></h2>
+<p>The command line interface (CLI) for the fitting and sampling via EOFs can be utilized more easily as summarized in the <a class="reference internal" href="quickstart.html#quickstart"><span class="std std-ref">Quickstart</span></a>.  Fitting of an atmospheric specification using EOFs can be done through a visualization method and the sampling methods are included in the statistics methods, <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span></code>. Usage info can be summarized using the <code class="code docutils literal notranslate"><span class="pre">--help</span></code> (or <code class="code docutils literal notranslate"><span class="pre">-h</span></code>) option:</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">stochprop perturb eof</span>
-<span class="go">---------------------</span>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: stochprop plot eof-fit [OPTIONS]
 
-<span class="go">Example Usage:</span>
-<span class="go">    stochprop perturb eof --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --eofs-path eofs/example --out test</span>
+  stochprop plot eof-fit
+  -----------------------
 
-<span class="go">Options:</span>
-<span class="go">--atmo-file TEXT               Reference atmospheric specification</span>
-<span class="go">                                (required)</span>
-<span class="go">--eofs-path TEXT               Path to EOF info (required)</span>
-<span class="go">--out TEXT                     Output prefix (required)</span>
-<span class="go">--std-dev FLOAT                Standard deviation (default: 10 m/s)</span>
-<span class="go">--eof-max INTEGER              Maximum EOF coefficient to use (default: 100)</span>
-<span class="go">--eof-cnt INTEGER              Number of EOFs to use (default: 50)</span>
-<span class="go">--sample-cnt INTEGER           Number of perturbed samples (default: 25)</span>
-<span class="go">--alt-weight FLOAT             Altitude weighting power (default: 2.0)</span>
-<span class="go">--singular-value-weight FLOAT  Sing. value weighting power (default: 0.25)</span>
-<span class="go">-h, --help                     Show this message and exit.</span>
+  Example Usage:
+       stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 25
+
+Options:
+  --atmo-file TEXT    Reference atmospheric specification (required)
+  --eofs-path TEXT    EOF output path and prefix (required)
+  --eof-cnt INTEGER   Number of EOFs to visualize (default: 5)
+  --output-file TEXT  Output file to save fit (optional)
+  -h, --help          Show this message and exit.
 </pre></div>
 </div>
 </div></blockquote>
-</li>
-</ul>
+<p>Fitting an atmospheric specification can be done via the visualization methods,</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 25
+</pre></div>
+</div>
+</div></blockquote>
+<p>The coefficient calculations and sampling can be accomplished using the <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span></code> methods as summarized in the <a class="reference internal" href="quickstart.html#quickstart"><span class="std std-ref">Quickstart</span></a>,</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop stats eof-coeffs --atmo-dir profs/ --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --week-selection &#39;38:52,1:15&#39;
+
+stochprop stats sample-eofs --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
+</pre></div>
+</div>
+</div></blockquote>
 </section>
 </section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="propagation.html" class="btn btn-neutral float-right" title="Propagation Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="eofs.html" class="btn btn-neutral float-left" title="Empirical Orthogonal Function Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="eofs.html" class="btn btn-neutral float-left" title="Empirical Orthogonal Function Analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="propagation.html" class="btn btn-neutral float-right" title="Propagation Statistics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &copy; Copyright 2020, Philip Blom
-
-    </p>
+    <p>&#169; Copyright 2020, Philip Blom.</p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
