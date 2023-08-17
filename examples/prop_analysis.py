@@ -9,10 +9,10 @@
 # Note: this analysis can be run via the stochprop CLI using the following steps:
 # -------------------------------------------------------------------------------
 #
-# stochprop prop build-pgm --atmos-dir samples/winter --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 6
+# stochprop prop build-pgm --atmo-dir samples/winter --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 6
 # stochprop prop plot --model-file prop/winter/winter.pgm
 # 
-# stochprop prop build-tlm --atmos-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 6
+# stochprop prop build-tlm --atmo-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 6
 # stochprop prop plot --model-file prop/winter/winter_0.100Hz.tlm
 
 # ... (repeat tlm for other frequencies and all models for other seasons)

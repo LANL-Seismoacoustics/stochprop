@@ -149,7 +149,7 @@ TLM files are written (e.g., 'prop/winter/example-winter0.100Hz.tlm') and saved 
     Transmission loss statistics used for source characterization can be constructed using analysis of NCPAprop normal mode algorithm output.
 
 
-The transmission loss models constructed in :code:`stochprop` can be utilized in the InfraPy Spectral Yield Estimation (SpYE) algorithm by specifying a set of models and their associated frequencies (see InfraPy example for detection and waveform data setup).
+The transmission loss models constructed in *stochprop* can be utilized in the InfraPy Spectral Yield Estimation (SpYE) algorithm by specifying a set of models and their associated frequencies (see InfraPy example for detection and waveform data setup).
 
 
 ----------------------
@@ -173,10 +173,10 @@ The model construction above can be completed from the command line by specifyin
 
     .. code-block:: none
 
-        stochprop prop build-pgm --atmos-dir samples/winter --output-path prop/winter/winter --src-loc '30.0, -120.0, 0.0' --cpu-cnt 8
+        stochprop prop build-pgm --atmo-dir samples/winter --output-path prop/winter/winter --src-loc '30.0, -120.0, 0.0' --cpu-cnt 8
         stochprop plot prop-model --model-file prop/winter/winter.pgm
 
-        stochprop prop build-tlm --atmos-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 8
+        stochprop prop build-tlm --atmo-dir samples/winter --output-path prop/winter/winter --freq 0.1  --cpu-cnt 8
         stochprop plot prop-model --model-file prop/winter/winter_0.100Hz.tlm
 
 One notable option that can be useful in constructing models is the :code:`--clean-up` flag that determines whether propagation simulation results from individual atmospheric specifications are kept after the results have been merged.  This parameter defaults to True, but it's recommended to turn it to False when initially building models to be sure individual results can be evaluated if necessary.  In the case that simulations are interrupted, this flag being turned to False so that individual results aren't removed aids in re-starting the analysis because the wrappers for the infraGA/GeoAc and NCPAprop methods check whether results are present for a given atmospheric file and skip that file if results are found (this also means that when a simulation campaign is interrupted, the last file that is likely incomplete should be removed before resuming the model construction).

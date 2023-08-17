@@ -41,7 +41,7 @@ A year of Ground-to-Space (G2S) atmospheric data is provided with *stochprop* in
 
         stochprop plot ess-ratio --atmo-dir profs/ --results-path example
 
-Running this methos will output some information to screen and also produce a *matplotlib* figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the eats and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.
+Running this method will output some information to screen and also produce a *matplotlib* figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the eats and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.
 
     .. figure:: _static/_images/example.ess-ratio.png
         :width: 800px
@@ -167,7 +167,7 @@ This analysis produces a number of output files in the eofs/ directory named acc
 | eofs/example_winter-zonal_winds.eofs    | EOFs for the zonal (east/west) winds                                                      |
 +-----------------------------------------+-------------------------------------------------------------------------------------------+
 
- * NOTE: the current implementation of *stochprop* saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S 'zTuvdp' format with columns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the NCPAprop package is included in the file header; however, if the mean atmospheric file is used in infraGA/GeoAc be sure to specify the column format: 'zcuvd'.  This might be changed in a future update.
+ * NOTE: the current implementation of *stochprop* saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S 'zTuvdp' format with columns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the *NCPAprop* package is included in the file header; however, if the mean atmospheric file is used in *infraGA/GeoAc* be sure to specify the column format: 'zcuvd'.  This might be changed in a future update.
 
 Similar analysis can be completed for the summer and spring/fall transition periods when the middle atmosphere waveguide dissipates:
 
@@ -330,7 +330,7 @@ Propagation Statistics
 
 **Constructing Propagation Statistics**
 
-Once a reduced set of atmospheric specifications representative of a given season and location has been constructed, propagation statistics can be computed using methods in :code:`stochprop prop`.  For localization analysis, the propagation path geometry computed via infrasonic ray tracing (propagation time and arrival range for celerity statistics, back azimuth biases due to cross winds, etc.) can be computed using the `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraGA>`_ ray tracing methods.  The :code:`build-pgm` methods to build a path geometry model (PGM) requires a directory of atmospheric specifications, an output path, a source location (latitude, longitude, altitude) (typically the reference location of the G2S locations).  As with other functions in :code:`stochprop`, usage information can be displayed with the :code:`--help` flag:
+Once a reduced set of atmospheric specifications representative of a given season and location has been constructed, propagation statistics can be computed using methods in :code:`stochprop prop`.  For localization analysis, the propagation path geometry computed via infrasonic ray tracing (propagation time and arrival range for celerity statistics, back azimuth biases due to cross winds, etc.) can be computed using the `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraGA>`_ ray tracing methods.  The :code:`build-pgm` methods to build a path geometry model (PGM) requires a directory of atmospheric specifications, an output path, a source location (latitude, longitude, altitude) (typically the reference location of the G2S locations).  As with other functions in *stochprop*, usage information can be displayed with the :code:`--help` flag:
 
     .. code:: none
 
@@ -340,11 +340,11 @@ Once a reduced set of atmospheric specifications representative of a given seaso
           ---------------------
         
           Example Usage:
-              stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8
+              stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8
 
         Options:
-          --atmos-dir TEXT      Directory containing atmospheric specifications
-          --atmos-pattern TEXT  Atmosphere file pattern (default: '*.met')
+          --atmo-dir TEXT      Directory containing atmospheric specifications
+          --atmo-pattern TEXT  Atmosphere file pattern (default: '*.met')
           --output-path TEXT    Path and prefix for PGM output
           --src-loc TEXT        Source location (lat, lon, alt)
           --inclinations TEXT   Inclination min, max, and step (default: [2, 50, 2]
@@ -370,7 +370,7 @@ Construction of PGMs for the winter samples generated above can be completed usi
 
     .. code:: none
 
-        stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --clean-up False
+        stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --clean-up False
 
     .. code:: none
 
@@ -474,11 +474,11 @@ For source characterization (e.g., yield estimation), transmission loss statisti
         ---------------------
         
           Example Usage:
-            stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+            stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 
         Options:
-          --atmos-dir TEXT           Directory containing atmospheric specifications
-          --atmos-pattern TEXT       Atmosphere file pattern (default: '*.met')
+          --atmo-dir TEXT           Directory containing atmospheric specifications
+          --atmo-pattern TEXT       Atmosphere file pattern (default: '*.met')
           --output-path TEXT         Path and prefix for TLM output
           --freq FLOAT               Frequency for simulation (default: 0.5 Hz)
           --azimuths TEXT            Azimuth min, max, and step (default: [0, 360, 6]
@@ -499,11 +499,11 @@ As with the PGM construction, a suite of atmospheric specifications is needed as
 
     .. code:: none
 
-        stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+        stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 
 A note about multi-threading: unlike the multi-threading in infraGA/GeoAc that's built into the software, multi-threading the NCPAprop methods is done via Python's *subprocess* library to simultaneously compute propagation effects for multiple atmospheric specifications at the same time.  Because of this, the maximum number of CPUs useful in such analysis is limited by the number of atmospheric specifications in the suite (for ray tracing, acceleration is limited by the number of unique inclination angles at each azimuth since that's how infraGA/GeoAc is parallelized).  
 
-Once computed, the model is saved into a file named using the specified output path/label and the frequency used in the calculation (*prop/winter/winter_0.200Hz.tlm* in this case).  Visualizatin of the resulting model can be be done again using the :code:`prop-model` method in the plotting tools:
+Once computed, the model is saved into a file named using the specified output path/label and the frequency used in the calculation (*prop/winter/winter_0.200Hz.tlm* in this case).  Visualization of the resulting model can be be done again using the :code:`prop-model` method in the plotting tools:
 
     .. code:: none
 
@@ -522,7 +522,7 @@ The PGM and TLM files constructed above and be ingested for use by `InfraPy <htt
 
         stochprop plot detection-stats --tlm-files 'prop/US_RM/US_RM-winter_*Hz.tlm' --yield-vals '1, 10, 100' --array-dim 5
 
-In this function call, the wildcard in the TLM files specification (note those quotes around it) leads in all available TLMS matching that patter and the set of yield values are defined in tons equivalent TNT.  The resulting visualization is shown below and 
+In this function call, the wildcard in the TLM files specification (note those quotes around it) leads in all available TLMs matching that patter and the set of yield values are defined in tons equivalent TNT.  The resulting visualization is shown below and 
 
     .. figure:: _static/_images/det-stats.png
         :width: 600px
