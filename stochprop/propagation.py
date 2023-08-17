@@ -12,6 +12,7 @@ import pickle
 import imp
 import itertools
 import subprocess
+import glob
 
 import numpy as np
 
@@ -412,8 +413,6 @@ def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.
             os.remove(profs_path + "/*_%.3f" % freq + "Hz*.nm")
 
 
-
-
 def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, ncpaprop_path="", topo_path_label=None, clean_up=False, keep_lossless=False, cpu_cnt=1, verbose=False):
     """
         Run one of the NCPAprop methods to compute transmission
@@ -488,33 +487,29 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
     if profs_path[-1] != "/":
         profs_path = profs_path + "/"
 
-    if topo_path_label is not None:
-        output_suffix = ".pe"
-        command_prefix = ncpaprop_path + " epape --singleprop --topo --starter self"
-
-        # Add methods here to cycle through azimuths using appropriate terrain lines
-
-
-
-
-
-
+    if ncpaprop_method == "modess":
+        output_suffix = ".nm"
+        command_prefix = ncpaprop_path + " modess --multiprop --zground_km " + str(z_grnd)
     else:
-        if ncpaprop_method == "modess":
-            output_suffix = ".nm"
-            command_prefix = ncpaprop_path + " modess --multiprop --zground_km " + str(z_grnd)
-        else:
-            output_suffix = ".pe"
-            command_prefix = ncpaprop_path + " epape --multiprop --starter self --groundheight_km " + str(z_grnd)
+        output_suffix = ".pe"
+        command_prefix = ncpaprop_path + " epape --multiprop --starter self --groundheight_km " + str(z_grnd)
 
-        dir_files = np.sort(os.listdir(profs_path))
-        if os.path.isfile(results_path + output_suffix):
-            print(results_path + output_suffix + " already exists  --->  Skipping NCPAprop modess runs...")
+    if os.path.isfile(results_path + output_suffix):
+
+        print(results_path + output_suffix + " already exists  --->  Skipping NCPAprop modess runs...")
+    else:
+        if topo_path_label is not None:
+            output_suffix = ".pe"
+            command_prefix = ncpaprop_path + " epape --singleprop --topo --starter self"
+
+            # Add methods here to cycle through azimuths using appropriate terrain lines
+
         else:
-            print("Running NCPAprop modess for atmospheric specifications in " + profs_path)
+            dir_files = np.sort(os.listdir(profs_path))
+            print("Running NCPAprop " + ncpaprop_method + " for atmospheric specifications in " + profs_path)
             command_list = []
             for file_name in dir_files:
-                if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
+                if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz" + output_suffix):
                     command = command_prefix + " --atmosfile " + profs_path + file_name
                     command = command + " --freq " + str(freq)
                     command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
@@ -537,18 +532,18 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                     proc.communicate()
                     proc.wait()
 
-        print('\t' + "Combining transmission loss predictions..." + '\n')
-        command = "cat " + profs_path + "*_%.3f" % freq + "Hz*.nm > " + results_path + ".nm"
-        subprocess.call(command, shell=True)
-
-        if keep_lossless:
-            command = "cat " + profs_path + "*_%.3f" % freq + "Hz*.lossless.nm > " + results_path + ".lossless.nm"
-            print('\t\t' + command)
+            print('\t' + "Combining transmission loss predictions..." + '\n')
+            command = "cat " + profs_path + "*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
             subprocess.call(command, shell=True)
 
-        if clean_up:
-            os.remove(profs_path + "*_%.3f" % freq + "Hz*.lossless.nm", shell=True)
-            os.remove(profs_path + "*_%.3f" % freq + "Hz*.nm", shell=True)
+            if keep_lossless:
+                command = "cat " + profs_path + "*_%.3f" % freq + "Hz*.lossless" + output_suffix + " > " + results_path + ".lossless" + output_suffix
+                print('\t\t' + command)
+                subprocess.call(command, shell=True)
+
+            if clean_up:
+                for file in glob.glob(profs_path + "*%.3fHz*" % freq + output_suffix):
+                    os.remove(file)
 
 
 # ############################ #
@@ -1207,7 +1202,15 @@ class TLossModel(object):
 
             # read in data, convert tloss to dB relative to 1 km, and wrap azimuths to [-180.0:180.0]
             print('\t' + "Reading in data...")
-            rngs, az, tloss_re, tloss_im, tloss_coh = np.loadtxt(tloss_file, unpack=True)
+            if tloss_file[-3:] == ".nm":
+                rngs, az, tloss_re, tloss_im, tloss_coh = np.loadtxt(tloss_file, unpack=True)
+                if use_coh:
+                    tloss = 10.0 * np.log10(tloss_coh)
+                else:
+                    tloss = 10.0 * np.log10(np.sqrt(tloss_re**2 + tloss_im**2))
+            else:
+                rngs, az, tloss_re, tloss_im = np.loadtxt(tloss_file, unpack=True)
+                tloss = 10.0 * np.log10(np.sqrt(tloss_re**2 + tloss_im**2))
 
             # output_rngs = np.sort(np.unique(rngs)[::2])
             if rng_smpls == "linear":
@@ -1218,15 +1221,10 @@ class TLossModel(object):
             az[az > 180.0] -= 360.0
             az[az < -180.0] += 360.0
 
-            if use_coh:
-                tloss = 10.0 * np.log10(tloss_coh)
-            else:
-                tloss = 10.0 * np.log10(np.sqrt(tloss_re**2 + tloss_im**2))
-            
             tloss[np.isneginf(tloss)] = min(tloss[np.isfinite(tloss)])
             tloss[np.isposinf(tloss)] = max(tloss[np.isfinite(tloss)])
 
-            tloss_vals = np.linspace(-75.0, 0.0, len(output_rngs))
+            tloss_vals = np.linspace(-150.0, 0.0, len(output_rngs))
             pdf_vals = np.empty((self._az_bin_cnt, len(output_rngs), len(tloss_vals)))
 
             for az_index in range(self._az_bin_cnt):

@@ -93,8 +93,8 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 
 
 @click.command('build-pgm', short_help="Build a path geometry model (PGM)")
-@click.option("--atmos-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
-@click.option("--atmos-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
+@click.option("--atmo-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
+@click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
 @click.option("--output-path", help="Path and prefix for PGM output", prompt="Path and prefix for PGM output")
 @click.option("--src-loc", help="Source location (lat, lon, alt)", prompt="Enter source location (lat, lon, alt)")
 @click.option("--inclinations", help="Inclination min, max, and step (default: [2, 50, 2]", default = "[2.0, 50.0, 2.0]")
@@ -112,7 +112,7 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 @click.option("--az-bin-cnt", help="Number of azimuth bins in PGM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in PGM (default: 30 deg)", default=30.0)
 @click.option("--verbose", help="Output analysis stages as they're done.",  default=False)
-def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azimuths, bounces, z_grnd, rng_max,
+def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimuths, bounces, z_grnd, rng_max,
                 freq, prof_format, infraga_path, clean_up, cpu_cnt, rng_window, rng_step, az_bin_cnt, az_bin_width, verbose):
     '''
     \b
@@ -120,7 +120,7 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
     ---------------------
     \b
     Example Usage:
-    \t stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8
+    \t stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8
 
     '''
 
@@ -135,8 +135,8 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
     click.echo("")  
 
     click.echo('\n' + "Data IO summary:")
-    click.echo("  Atmospheric specifications directory: " + atmos_dir)
-    click.echo("  Specification pattern: " + atmos_pattern)
+    click.echo("  Atmospheric specifications directory: " + atmo_dir)
+    click.echo("  Specification pattern: " + atmo_pattern)
     click.echo("  Model output path: " + output_path)
 
     click.echo('\n' + "infraGA/GeoAc parameters:")
@@ -162,7 +162,7 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
     inclinations = [float(val) for val in inclinations.strip(' ()[]').split(',')]
     azimuths = [float(val) for val in azimuths.strip(' ()[]').split(',')]
     
-    propagation.run_infraga(atmos_dir, output_path + ".arrivals.dat", pattern=atmos_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
+    propagation.run_infraga(atmo_dir, output_path + ".arrivals.dat", pattern=atmo_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
                     inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, infraga_path=infraga_path, clean_up=clean_up, prof_format=prof_format, verbose=verbose)
 
     pgm = propagation.PathGeometryModel()
@@ -172,9 +172,9 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
 
 
 @click.command('build-tlm', short_help="Build a transmission loss model (TLM)")
-@click.option("--atmos-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
+@click.option("--atmo-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
 @click.option("--output-path", help="Path and prefix for TLM output", prompt="Path and prefix for TLM output")
-@click.option("--atmos-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
+@click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
 @click.option("--topo-label", help="Path and label for terrain files (optional)", default=None)
 @click.option("--ncpaprop-method", help="NCPAprop method ('modess' or 'epape')", default='modess')
 @click.option("--ncpaprop-path", help="Path to NCPAprop binaries (if not on path)", default="")
@@ -192,7 +192,7 @@ def build_pgm(atmos_dir, atmos_pattern, output_path, src_loc, inclinations, azim
 @click.option("--rng-cnt", help="Range intervals in TLM (default: 100)", default=100)
 @click.option("--rng-spacing", help="Option for range sampling ('linear' or 'log')", default='linear')
 @click.option("--use-coherent-tl", help="Use coherent transmission loss (default: False", default=False)
-def build_tlm(atmos_dir, output_path, atmos_pattern, topo_label, ncpaprop_method, ncpaprop_path, freq, azimuths, z_grnd,
+def build_tlm(atmo_dir, output_path, atmo_pattern, topo_label, ncpaprop_method, ncpaprop_path, freq, azimuths, z_grnd,
               rng_max, rng_resol, clean_up, verbose, cpu_cnt, az_bin_cnt, az_bin_width, rng_lims, rng_cnt, rng_spacing, 
               use_coherent_tl):
     '''
@@ -201,7 +201,7 @@ def build_tlm(atmos_dir, output_path, atmos_pattern, topo_label, ncpaprop_method
     ------------------------
     \b
     Example Usage:
-    \t stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+    \t stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 
     '''
 
@@ -216,8 +216,8 @@ def build_tlm(atmos_dir, output_path, atmos_pattern, topo_label, ncpaprop_method
     click.echo("")  
 
     click.echo('\n' + "Data IO summary:")
-    click.echo("  Atmospheric specifications directory: " + atmos_dir)
-    click.echo("  Specification pattern: " + atmos_pattern)
+    click.echo("  Atmospheric specifications directory: " + atmo_dir)
+    click.echo("  Specification pattern: " + atmo_pattern)
     if topo_label is not None:
         click.echo("Topography files label: " + topo_label)
     click.echo("  Model output path: " + output_path)
@@ -251,11 +251,16 @@ def build_tlm(atmos_dir, output_path, atmos_pattern, topo_label, ncpaprop_method
     else:
         cpu_cnt = int(cpu_cnt)
 
-    propagation.run_ncpaprop(ncpaprop_method, atmos_dir, output_path + "_%.3f" %freq + "Hz", pattern=atmos_pattern, 
+    propagation.run_ncpaprop(ncpaprop_method, atmo_dir, output_path + "_%.3f" %freq + "Hz", pattern=atmo_pattern, 
                              azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, rng_resol=rng_resol, 
                              ncpaprop_path=ncpaprop_path, topo_path_label=topo_label, clean_up=clean_up, cpu_cnt=cpu_cnt,
                              verbose=verbose)
 
+    if ncpaprop_method == "modess":
+        output_suffix = ".nm"
+    else:
+        output_suffix = ".pe"
+        
     tlm = propagation.TLossModel()
-    tlm.build(output_path + "_%.3f" %freq + "Hz.nm", output_path + "_%.3f" %freq + "Hz.tlm", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
+    tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz.tlm", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
                 az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing)
