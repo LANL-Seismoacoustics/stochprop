@@ -3,7 +3,7 @@
 ==========================
 Gravity Wave Perturbations
 ==========================
-Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of buoyancy or gravity waves.  Stochastic gravity wave perturbation methods are included in :code:`stochprop` using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.  These methods are in-development and are on the slow side due to the numerical limitations of Python (I might write them up in C/C++ at some point).
+Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of buoyancy or gravity waves.  Stochastic gravity wave perturbation methods are included in *stochprop* using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.  These methods are in-development and are on the slow side due to the numerical limitations of Python (I might write them up in C/C++ at some point).
 
 ********************************************
 Freely Propagation and Trapped Gravity Waves
@@ -144,7 +144,7 @@ The implementation of the gravity wave analysis partially follows that summarize
   
     #. Similary, the number of reflections used in computing the trapped solution phase shift if determined by the ratio of the propagation time of the trapped solution with the specified time.
 
-    #. Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in :code:`stochprop` compute each Fourier component independently and use available :code:`multiprocessing` tools to run the calculations in parallel.  For :math:`N_k = 128` and :math:`dx=4`, the gravity wave perturbations can be computed using 10 CPUs in approximatley 20 - 30 minutes.
+    #. Unlike the Drob et al. (2013) implementation where the Fourier components are integrated upward together, the implementation in *stochprop* compute each Fourier component independently and use available :code:`multiprocessing` tools to run the calculations in parallel.  For :math:`N_k = 128` and :math:`dx=4`, the gravity wave perturbations can be computed using 10 CPUs in approximatley 20 - 30 minutes.
 
   * The gravity wave field in the spatial and time domain are obtained by inverting the spatial components using :code:`numpy.fft.ifft` on the appropriate axes and the :math:`\omega` integration is simplified by setting :math:`t=0` in the solution which reduces the time/frequency domain inversion to a simple integration,
 
@@ -206,4 +206,4 @@ An example set of perturbations is shown below.
     :alt: alternate text
     :figclass: align-center
     
-Note: Although perturbations to the ambient temperature are included in the Drob et al. (2013) discussion, they are not included here and modifications to the :math:`N_k`, :math:`dx`, and :math:`N_\omega` values often cause issues with the calculation of gravity waves.  Work is ongoing to debug and improve the efficiency of the methods here and will be added in a future update of :code:`stochprop`.
+Note: Although perturbations to the ambient temperature are included in the Drob et al. (2013) discussion, they are not included here and modifications to the :math:`N_k`, :math:`dx`, and :math:`N_\omega` values often cause issues with the calculation of gravity waves.  Work is ongoing to debug and improve the efficiency of the methods here and will be added in a future update of *stochprop*.

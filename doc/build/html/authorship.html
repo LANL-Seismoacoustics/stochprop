@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Authorship &amp; References &mdash; stochprop 0.1 documentation</title>
+  <title>Authorship &amp; References &mdash; stochprop 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,15 +29,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> stochprop
-            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            stochprop
+              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -68,7 +71,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Authorship &amp; References</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/authorship.rst.txt" rel="nofollow"> View page source</a>
@@ -81,14 +84,14 @@
              
   <section id="authorship-references">
 <span id="authorship"></span><h1>Authorship &amp; References<a class="headerlink" href="#authorship-references" title="Permalink to this heading"></a></h1>
-<p><em>Notes on authorship and development</em></p>
+<p>The methods in <em>stochprop</em> were developed by infrasound SMEs at Los Alamos National Laboratory and University of Mississippi National Center for Physical Acoustics as documented in Blom et al. (2023).  The Python implementation of the methods has been written and is maintained by Philip Blom at LANL.  For any questions on the methods, see the GJI publication and for questions or issues with the implementation and features of the software contact:</p>
 <p>Author: Philip Blom (<a class="reference external" href="mailto:pblom&#37;&#52;&#48;lanl&#46;gov">pblom<span>&#64;</span>lanl<span>&#46;</span>gov</a>)</p>
 <section id="citing-usage">
 <h2>Citing Usage<a class="headerlink" href="#citing-usage" title="Permalink to this heading"></a></h2>
-<p>The Empirical Orthogonal Function (EOF) analyses available in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code> are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi’s National Center for Physical Acoustics (NCPA) and will be summarizing in an upcoming publication:</p>
+<p>The Empirical Orthogonal Function (EOF) analyses available in <em>stochprop</em> are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi’s National Center for Physical Acoustics (NCPA).  The methods are summarized in the below manuscript:</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>Blom, P., Waxler, R., &amp; Frazier, W.G.  (2023). “Quantification of spatial and seasonal trends in the atmosphere and construction of statistical models for infrasonic propagation.” <em>Geophysical Journal International</em>, In Review.</p></li>
+<li><p>Blom, P., Waxler, R., &amp; Frazier, G. (2023). Quantification of spatial and seasonal trends in the atmosphere and construction of statistical models for infrasonic propagation. <em>Geophysical Journal International</em>, 235(2), 1007-1020.</p></li>
 </ul>
 </div></blockquote>
 <p>Stochastic, propagation-based models for infrasonic signal analysis were initially introduced in analysis of the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE) framworks so that usage of path geometry and transmission loss models should be cited using:</p>
@@ -98,7 +101,7 @@
 <li><p>Blom, P. S., Dannemann, F. K., &amp; Marcillo, O. E. (2018). Bayesian characterization of explosive sources using infrasonic signals. <em>Geophysical Journal International</em>, 215(1), 240-251.</p></li>
 </ul>
 </div></blockquote>
-<p>Gravity wave perturbation methods available here are leveraged from work by Drob et al. (2013) and Lalande &amp; Waxler (2016) as well as supporting work referenced in those manuscripts:</p>
+<p>Gravity wave perturbation methods are implemented here as a prototype feature and leverage work by Drob et al. (2013) and Lalande &amp; Waxler (2016) as well as supporting work referenced in those manuscripts:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Drob, D. P., Broutman, D., Hedlin, M. A., Winslow, N. W., &amp; Gibson, R. G. (2013). A method for specifying atmospheric gravity wavefields for long‐range infrasound propagation calculations. <em>Journal of Geophysical Research: Atmospheres</em>, 118(10), 3933-3943.</p></li>

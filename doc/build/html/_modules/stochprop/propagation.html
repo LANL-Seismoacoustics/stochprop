@@ -11,10 +11,9 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
         <script src="../../_static/doctools.js"></script>
         <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -27,15 +26,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> stochprop
-            <img src="../../_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            stochprop
+              <img src="../../_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -62,7 +65,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home"></a></li>
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
       <li class="breadcrumb-item active">stochprop.propagation</li>
       <li class="wy-breadcrumbs-aside">
@@ -88,6 +91,7 @@
 <span class="kn">import</span> <span class="nn">imp</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">glob</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -298,7 +302,7 @@
 <span class="c1">#     with multiple profiles     #</span>
 <span class="c1"># ############################## #</span>
 <div class="viewcode-block" id="run_infraga"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.run_infraga">[docs]</a><span class="k">def</span> <span class="nf">run_infraga</span><span class="p">(</span><span class="n">profs_path</span><span class="p">,</span> <span class="n">results_file</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="n">bounces</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">inclinations</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">60.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">azimuths</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">180.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z_grnd</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng_max</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">infraga_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">clean_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">prof_format</span><span class="o">=</span><span class="s2">&quot;zTuvdp&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the infraga -prop algorithm to compute path geometry</span>
 <span class="sd">        statistics for BISL using a suite of specifications</span>
 <span class="sd">        and combining results into single file</span>
@@ -377,12 +381,11 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">clean_up</span><span class="p">:</span>
-                <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;rm &quot;</span>  <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*.dat&quot;</span>
-                <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*.dat&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="run_modess"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.run_modess">[docs]</a><span class="k">def</span> <span class="nf">run_modess</span><span class="p">(</span><span class="n">profs_path</span><span class="p">,</span> <span class="n">results_path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">azimuths</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mf">180.0</span><span class="p">,</span> <span class="mf">180.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z_grnd</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng_max</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">ncpaprop_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">clean_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_lossless</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Run the NCPAprop normal mode methods to compute transmission</span>
 <span class="sd">        loss values for a suite of atmospheric specifications at</span>
 <span class="sd">        a set of frequency values</span>
@@ -473,8 +476,7 @@
             <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot; &gt;&gt; &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">Hz.Nby2D_tloss_1d.lossless.nm&quot;</span> <span class="o">%</span> <span class="n">freq</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-            <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;rm &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">Hz-temp*&quot;</span> <span class="o">%</span> <span class="n">freq</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">Hz-temp*&quot;</span> <span class="o">%</span> <span class="n">freq</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Combining transmission loss predictions...&quot;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;cat &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*.nm &gt; &quot;</span> <span class="o">+</span> <span class="n">results_path</span> <span class="o">+</span> <span class="s2">&quot;.nm&quot;</span>
@@ -486,11 +488,141 @@
             <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">clean_up</span><span class="p">:</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;rm &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*.lossless.nm&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="s2">&quot;rm &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*.nm&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*.lossless.nm&quot;</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*.nm&quot;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="run_ncpaprop"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.run_ncpaprop">[docs]</a><span class="k">def</span> <span class="nf">run_ncpaprop</span><span class="p">(</span><span class="n">ncpaprop_method</span><span class="p">,</span> <span class="n">profs_path</span><span class="p">,</span> <span class="n">results_path</span><span class="p">,</span> <span class="n">pattern</span><span class="o">=</span><span class="s2">&quot;*.met&quot;</span><span class="p">,</span> <span class="n">azimuths</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">359.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">],</span> <span class="n">freq</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">z_grnd</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rng_max</span><span class="o">=</span><span class="mf">1000.0</span><span class="p">,</span> <span class="n">rng_resol</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ncpaprop_path</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">topo_path_label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">clean_up</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keep_lossless</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">cpu_cnt</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Run one of the NCPAprop methods to compute transmission</span>
+<span class="sd">        loss values for a suite of atmospheric specifications at</span>
+<span class="sd">        a set of frequency values</span>
+<span class="sd">        </span>
+<span class="sd">        Note: the methods here use the ncpaprop-release version that includes </span>
+<span class="sd">        an option for --filetag that writes output into a specific location </span>
+<span class="sd">        and enables simultaneous calculations via subprocess.popen()</span>
 
+<span class="sd">        Example ncpaprop function calls (usable from infraGA/GeoAc examples directory):</span>
+
+<span class="sd">            Effective Sound Speed Modal (modess)</span>
+<span class="sd">                modess --multiprop --atmosfile ToyAtmo.met --zground_km 1.0 --freq 0.5 --azimuth_start 0 --azimuth_end 360 --azimuth_step 3 --maxrange_km 1000 --Nrng_steps 1000 --filetag test</span>
+<span class="sd">            </span>
+<span class="sd">            ePade Parabolic Equation (epape)</span>
+<span class="sd">                epape --multiprop --starter self --atmosfile ToyAtmo.met --groundheight_km 1.0 --freq 0.5 --azimuth_start 0 --azimuth_end 360 --azimuth_step 3 --maxrange_km 1000 --Nrng_steps 1000  --filetag test</span>
+<span class="sd">                epape --singleprop --topo --starter self --atmosfile ToyAtmo.met --topofile topo/line.dat --freq 0.5 --azimuth 0 --maxrange_km 1000 --Nrng_steps 1000 --filetag test2</span>
+
+<span class="sd">        Note on defining flat ground elevation:</span>
+<span class="sd">            For some reason, most parameters are the same between modess and pape (e.g., freq, azimuth_start, Nrng_steps), but the parameter to define the ground elevation is difference (--zground_km in modess vs. --groundheight_km in epape).  I might email Claus about this...</span>
+
+<span class="sd">        Notes on including terrain:</span>
+<span class="sd">            Including terrain requires individual azimuth runs to match up azimuths with correct terrain lines (can&#39;t use Nx2D)</span>
+<span class="sd">            Need to figure out how terrain files are going to be built (external and have specified directory?)</span>
+<span class="sd">            Terrain line file requires header info:</span>
+<span class="sd">                # &#39;infraga extract-terrain --geom line&#39; summary:</span>
+<span class="sd">                # lat: 37.114912493</span>
+<span class="sd">                # lon: -116.069089728</span>
+<span class="sd">                # azimuth: 59.0</span>
+<span class="sd">                # range: 1000.0</span>
+<span class="sd">                #% r, km</span>
+<span class="sd">                #% z, km</span>
+<span class="sd">                0.0  0.8320394823</span>
+<span class="sd">                1.8518518518517908	0.8875136241398117</span>
+<span class="sd">                3.703703703703796	0.9092146274618726</span>
+<span class="sd">                5.555555555556105	0.9170049733706201</span>
+<span class="sd">                ...</span>
+<span class="sd">                </span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ncpaprop_method: string</span>
+<span class="sd">            Method in NCPAprop to use (currently supports &#39;modess&#39; or &#39;epape&#39;)</span>
+<span class="sd">        profs_path: string</span>
+<span class="sd">            Path to atmospheric specification files</span>
+<span class="sd">        results_file: string</span>
+<span class="sd">            Path and name of file where results will be written</span>
+<span class="sd">        pattern: string</span>
+<span class="sd">            Pattern identifying atmospheric specification within profs_path location</span>
+<span class="sd">        azimuths: iterable object</span>
+<span class="sd">            Iterable of starting, ending, and step for propagation azimuths</span>
+<span class="sd">        freq: float</span>
+<span class="sd">            Frequency for simulation</span>
+<span class="sd">        z_grnd: float</span>
+<span class="sd">            Elevation of the ground surface relative to sea level</span>
+<span class="sd">        rng_max: float</span>
+<span class="sd">            Maximum propagation range for propagation paths</span>
+<span class="sd">        rng_resol: float</span>
+<span class="sd">            Resolution for range ouputs (defaults to 1 km)</span>
+<span class="sd">        ncpaprop_path: string</span>
+<span class="sd">            Path to NCPAprop binaries (if not on path)</span>
+<span class="sd">        topo_path_label: string</span>
+<span class="sd">            Path and label for terrain files to use in epape simulations</span>
+<span class="sd">        clean_up: boolean</span>
+<span class="sd">            Flag to remove individual .nm files after combining</span>
+<span class="sd">        keep_lossless: boolean</span>
+<span class="sd">            Flag to keep the lossless (no absorption) results</span>
+<span class="sd">        cpu_cnt : integer</span>
+<span class="sd">            Number of CPUs to use in subprocess.popen loop for simultaneous calculations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">profs_path</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span>
+        <span class="n">profs_path</span> <span class="o">=</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span>
+
+    <span class="k">if</span> <span class="n">ncpaprop_method</span> <span class="o">==</span> <span class="s2">&quot;modess&quot;</span><span class="p">:</span>
+        <span class="n">output_suffix</span> <span class="o">=</span> <span class="s2">&quot;.nm&quot;</span>
+        <span class="n">command_prefix</span> <span class="o">=</span> <span class="n">ncpaprop_path</span> <span class="o">+</span> <span class="s2">&quot; modess --multiprop --zground_km &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_grnd</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_suffix</span> <span class="o">=</span> <span class="s2">&quot;.pe&quot;</span>
+        <span class="n">command_prefix</span> <span class="o">=</span> <span class="n">ncpaprop_path</span> <span class="o">+</span> <span class="s2">&quot; epape --multiprop --starter self --groundheight_km &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">z_grnd</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">results_path</span> <span class="o">+</span> <span class="n">output_suffix</span><span class="p">):</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">results_path</span> <span class="o">+</span> <span class="n">output_suffix</span> <span class="o">+</span> <span class="s2">&quot; already exists  ---&gt;  Skipping NCPAprop modess runs...&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">topo_path_label</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">output_suffix</span> <span class="o">=</span> <span class="s2">&quot;.pe&quot;</span>
+            <span class="n">command_prefix</span> <span class="o">=</span> <span class="n">ncpaprop_path</span> <span class="o">+</span> <span class="s2">&quot; epape --singleprop --topo --starter self&quot;</span>
+
+            <span class="c1"># Add methods here to cycle through azimuths using appropriate terrain lines</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dir_files</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">profs_path</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Running NCPAprop &quot;</span> <span class="o">+</span> <span class="n">ncpaprop_method</span> <span class="o">+</span> <span class="s2">&quot; for atmospheric specifications in &quot;</span> <span class="o">+</span> <span class="n">profs_path</span><span class="p">)</span>
+            <span class="n">command_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">file_name</span> <span class="ow">in</span> <span class="n">dir_files</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">profs_path</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz&quot;</span> <span class="o">+</span> <span class="n">output_suffix</span><span class="p">):</span>
+                    <span class="n">command</span> <span class="o">=</span> <span class="n">command_prefix</span> <span class="o">+</span> <span class="s2">&quot; --atmosfile &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="n">file_name</span>
+                    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot; --freq &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+                    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot; --maxrange_km &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">rng_max</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; --Nrng_steps &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">rng_max</span> <span class="o">/</span> <span class="n">rng_resol</span><span class="p">))</span>
+                    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot; --azimuth_start &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">azimuths</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; --azimuth_end &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">azimuths</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot; --azimuth_step &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">azimuths</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot; --filetag &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">%.3f</span><span class="s2">Hz&quot;</span> <span class="o">%</span> <span class="n">freq</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">verbose</span><span class="p">:</span>
+                        <span class="n">command</span> <span class="o">=</span> <span class="n">command</span> <span class="o">+</span> <span class="s2">&quot; &gt; /dev/null&quot;</span>
+                    <span class="n">command_list</span> <span class="o">=</span> <span class="n">command_list</span> <span class="o">+</span> <span class="p">[</span><span class="n">command</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">),</span> <span class="n">cpu_cnt</span><span class="p">):</span>              
+                <span class="k">if</span> <span class="n">cpu_cnt</span><span class="o">==</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Running NCPAprop &quot;</span> <span class="o">+</span> <span class="n">ncpaprop_method</span> <span class="o">+</span> <span class="s2">&quot; for sample &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">)))</span>
+                <span class="k">elif</span> <span class="n">cpu_cnt</span><span class="o">==</span><span class="mi">2</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">):</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Running NCPAprop &quot;</span> <span class="o">+</span> <span class="n">ncpaprop_method</span> <span class="o">+</span> <span class="s2">&quot; for samples &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">)))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Running NCPAprop &quot;</span> <span class="o">+</span> <span class="n">ncpaprop_method</span> <span class="o">+</span> <span class="s2">&quot; for samples &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; - &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">j</span> <span class="o">+</span> <span class="n">cpu_cnt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot; of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">command_list</span><span class="p">)))</span>
+
+                <span class="n">procs_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">command_list</span><span class="p">[</span><span class="n">j</span><span class="p">:</span><span class="n">j</span> <span class="o">+</span> <span class="n">cpu_cnt</span><span class="p">]]</span>
+                <span class="k">for</span> <span class="n">proc</span> <span class="ow">in</span> <span class="n">procs_list</span><span class="p">:</span>
+                    <span class="n">proc</span><span class="o">.</span><span class="n">communicate</span><span class="p">()</span>
+                    <span class="n">proc</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Combining transmission loss predictions...&quot;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;cat &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*&quot;</span> <span class="o">+</span> <span class="n">output_suffix</span> <span class="o">+</span> <span class="s2">&quot; &gt; &quot;</span> <span class="o">+</span> <span class="n">results_path</span> <span class="o">+</span> <span class="n">output_suffix</span>
+            <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">keep_lossless</span><span class="p">:</span>
+                <span class="n">command</span> <span class="o">=</span> <span class="s2">&quot;cat &quot;</span> <span class="o">+</span> <span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;*_</span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="s2">&quot;Hz*.lossless&quot;</span> <span class="o">+</span> <span class="n">output_suffix</span> <span class="o">+</span> <span class="s2">&quot; &gt; &quot;</span> <span class="o">+</span> <span class="n">results_path</span> <span class="o">+</span> <span class="s2">&quot;.lossless&quot;</span> <span class="o">+</span> <span class="n">output_suffix</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">command</span><span class="p">)</span>
+                <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">clean_up</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">profs_path</span> <span class="o">+</span> <span class="s2">&quot;*</span><span class="si">%.3f</span><span class="s2">Hz*&quot;</span> <span class="o">%</span> <span class="n">freq</span> <span class="o">+</span> <span class="n">output_suffix</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span></div>
 
 
 <span class="c1"># ############################ #</span>
@@ -498,7 +630,7 @@
 <span class="c1">#      Propagation Models      #</span>
 <span class="c1"># ############################ #</span>
 <div class="viewcode-block" id="find_azimuth_bin"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.find_azimuth_bin">[docs]</a><span class="k">def</span> <span class="nf">find_azimuth_bin</span><span class="p">(</span><span class="n">az</span><span class="p">,</span> <span class="n">bin_cnt</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Identify the azimuth bin index given some specified number of bins</span>
 
 <span class="sd">        Parameters</span>
@@ -526,7 +658,7 @@
 
 
 <div class="viewcode-block" id="PathGeometryModel"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel">[docs]</a><span class="k">class</span> <span class="nc">PathGeometryModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Propagation path geometry statistics computed using ray tracing</span>
 <span class="sd">        analysis on a suite of specifications includes celerity-range and</span>
 <span class="sd">        azimuth deviation/scatter statistics</span>
@@ -561,7 +693,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">az_dev_std</span> <span class="o">=</span> <span class="p">[]</span>
 
 <div class="viewcode-block" id="PathGeometryModel.eval_rcel_gmm"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_rcel_gmm">[docs]</a>    <span class="k">def</span> <span class="nf">eval_rcel_gmm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">rcel</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate reciprocal celerity Gaussian Mixture Model (GMM)</span>
 <span class="sd">            at specified range, reciprocal celerity, and azimuth</span>
 
@@ -606,7 +738,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.eval_az_dev_mn"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_az_dev_mn">[docs]</a>    <span class="k">def</span> <span class="nf">eval_az_dev_mn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate the mean back azimuth deviation at a given range</span>
 <span class="sd">            and propagation azimuth</span>
 
@@ -638,7 +770,7 @@
             <span class="k">return</span> <span class="n">mn</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.eval_az_dev_std"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.eval_az_dev_std">[docs]</a>    <span class="k">def</span> <span class="nf">eval_az_dev_std</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate the standard deviation of the back azimuth at a given range</span>
 <span class="sd">            and propagation azimuth</span>
 
@@ -671,7 +803,7 @@
             <span class="k">return</span> <span class="n">vr</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.build"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arrivals_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rng_width</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span> <span class="n">rng_spacing</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">geom</span><span class="o">=</span><span class="s2">&quot;3d&quot;</span><span class="p">,</span> <span class="n">src_loc</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="n">min_turning_ht</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">az_bin_cnt</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">az_bin_wdth</span><span class="o">=</span><span class="mf">30.0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Construct propagation statistics from a ray tracing arrival file (concatenated from</span>
 <span class="sd">            multiple runs most likely) and output a path geometry model</span>
 
@@ -916,7 +1048,7 @@
                 <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">priors</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.load"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_file</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a path geometry model file for use</span>
 
 <span class="sd">        Parameters</span>
@@ -977,7 +1109,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">_rcel_wts</span><span class="p">[</span><span class="n">n_az</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">interp1d</span><span class="p">(</span><span class="n">fit_params</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fit_params</span><span class="p">[</span><span class="mi">5</span><span class="p">][</span><span class="n">n_az</span><span class="p">][:,</span> <span class="n">j</span><span class="p">],</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="PathGeometryModel.display"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.PathGeometryModel.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">show_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the propagation geometry statistics</span>
 
 <span class="sd">        Parameters</span>
@@ -1120,7 +1252,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tloss_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 <div class="viewcode-block" id="TLossModel.build"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tloss_file</span><span class="p">,</span> <span class="n">output_file</span><span class="p">,</span> <span class="n">show_fits</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_coh</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">az_bin_cnt</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">az_bin_wdth</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">rng_lims</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1000.0</span><span class="p">],</span> <span class="n">rng_cnt</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">rng_smpls</span><span class="o">=</span><span class="s2">&quot;linear&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Construct propagation statistics from a NCPAprop modess or pape file (concatenated from</span>
 <span class="sd">            multiple runs most likely) and output a transmission loss model</span>
 
@@ -1149,7 +1281,15 @@
 
             <span class="c1"># read in data, convert tloss to dB relative to 1 km, and wrap azimuths to [-180.0:180.0]</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Reading in data...&quot;</span><span class="p">)</span>
-            <span class="n">rngs</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">tloss_re</span><span class="p">,</span> <span class="n">tloss_im</span><span class="p">,</span> <span class="n">tloss_coh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">tloss_file</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">tloss_file</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]</span> <span class="o">==</span> <span class="s2">&quot;.nm&quot;</span><span class="p">:</span>
+                <span class="n">rngs</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">tloss_re</span><span class="p">,</span> <span class="n">tloss_im</span><span class="p">,</span> <span class="n">tloss_coh</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">tloss_file</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">use_coh</span><span class="p">:</span>
+                    <span class="n">tloss</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">tloss_coh</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tloss</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tloss_re</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">tloss_im</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rngs</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">tloss_re</span><span class="p">,</span> <span class="n">tloss_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">tloss_file</span><span class="p">,</span> <span class="n">unpack</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">tloss</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tloss_re</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">tloss_im</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
 
             <span class="c1"># output_rngs = np.sort(np.unique(rngs)[::2])</span>
             <span class="k">if</span> <span class="n">rng_smpls</span> <span class="o">==</span> <span class="s2">&quot;linear&quot;</span><span class="p">:</span>
@@ -1160,15 +1300,10 @@
             <span class="n">az</span><span class="p">[</span><span class="n">az</span> <span class="o">&gt;</span> <span class="mf">180.0</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">360.0</span>
             <span class="n">az</span><span class="p">[</span><span class="n">az</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">180.0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">360.0</span>
 
-            <span class="k">if</span> <span class="n">use_coh</span><span class="p">:</span>
-                <span class="n">tloss</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">tloss_coh</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">tloss</span> <span class="o">=</span> <span class="mf">10.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tloss_re</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">tloss_im</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
-            
             <span class="n">tloss</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isneginf</span><span class="p">(</span><span class="n">tloss</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">tloss</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">tloss</span><span class="p">)])</span>
             <span class="n">tloss</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isposinf</span><span class="p">(</span><span class="n">tloss</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">tloss</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">tloss</span><span class="p">)])</span>
 
-            <span class="n">tloss_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">75.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_rngs</span><span class="p">))</span>
+            <span class="n">tloss_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">150.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_rngs</span><span class="p">))</span>
             <span class="n">pdf_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">_az_bin_cnt</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">output_rngs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tloss_vals</span><span class="p">)))</span>
 
             <span class="k">for</span> <span class="n">az_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_az_bin_cnt</span><span class="p">):</span>
@@ -1242,7 +1377,7 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TLossModel.load"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a transmission loss file for use</span>
 
 <span class="sd">        Parameters</span>
@@ -1271,7 +1406,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pdf_fits</span><span class="p">[</span><span class="n">az_index</span><span class="p">]</span> <span class="o">=</span> <span class="n">RectBivariateSpline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rng_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tloss_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pdf_vals</span><span class="p">[</span><span class="n">az_index</span><span class="p">])</span></div>
 
 <div class="viewcode-block" id="TLossModel.eval"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rng</span><span class="p">,</span> <span class="n">tloss</span><span class="p">,</span> <span class="n">az</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Evaluate TLoss model at specified range, transmission loss, and azimuth</span>
 
 <span class="sd">            Parameters</span>
@@ -1312,7 +1447,7 @@
         <span class="k">return</span> <span class="n">result</span></div>
 
 <div class="viewcode-block" id="TLossModel.display"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.TLossModel.display">[docs]</a>    <span class="k">def</span> <span class="nf">display</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Transmission Loss Statistics&quot;</span><span class="p">,</span> <span class="n">show_colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold_fig</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show_ref_tloss</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Display the transmission loss statistics</span>
 
 <span class="sd">        Parameters</span>
@@ -1419,7 +1554,7 @@
 <span class="c1">##   Blastwave Model   ##</span>
 <span class="c1">#########################</span>
 <div class="viewcode-block" id="kg_op"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.kg_op">[docs]</a><span class="k">def</span> <span class="nf">kg_op</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p_amb</span><span class="o">=</span><span class="mf">101.325</span><span class="p">,</span> <span class="n">T_amb</span><span class="o">=</span><span class="mf">288.15</span><span class="p">,</span> <span class="n">exp_type</span><span class="o">=</span><span class="s2">&quot;chemical&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kinney &amp; Graham scaling law peak overpressure model</span>
 <span class="sd">                </span>
 <span class="sd">        Parameters</span>
@@ -1461,7 +1596,7 @@
 
 
 <div class="viewcode-block" id="kg_ppd"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.kg_ppd">[docs]</a><span class="k">def</span> <span class="nf">kg_ppd</span><span class="p">(</span><span class="n">W</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p_amb</span><span class="o">=</span><span class="mf">101.325</span><span class="p">,</span> <span class="n">T_amb</span><span class="o">=</span><span class="mf">288.15</span><span class="p">,</span> <span class="n">exp_type</span><span class="o">=</span><span class="s2">&quot;chemical&quot;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Kinney &amp; Graham scaling law positive phase duration model</span>
 <span class="sd">                </span>
 <span class="sd">        Parameters</span>
@@ -1505,7 +1640,7 @@
 
 
 <div class="viewcode-block" id="blastwave_spectrum"><a class="viewcode-back" href="../../stochprop.propagation.html#stochprop.propagation.blastwave_spectrum">[docs]</a><span class="k">def</span> <span class="nf">blastwave_spectrum</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">W</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">p_amb</span><span class="o">=</span><span class="mf">101.325</span><span class="p">,</span> <span class="n">T_amb</span><span class="o">=</span><span class="mf">288.15</span><span class="p">,</span> <span class="n">exp_type</span><span class="o">=</span><span class="s2">&quot;chemical&quot;</span><span class="p">,</span> <span class="n">shaping_param</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot; </span>
 <span class="sd">        Fourier transform amplitude for the acoustic</span>
 <span class="sd">            blastwave in sasm.acoustic.blastwave().</span>
 <span class="sd">        </span>

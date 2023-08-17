@@ -59,13 +59,13 @@ To deactivate an active environment, use
 
 **Installing via PyGS**
 
-*Add some explanation of the Python Geophysics Suite (PyGS)*
+A number of LANL infrasound software tools have been developed and made available to the community through the `LANL Seismoacoustics github page <https://github.com/LANL-Seismoacoustics/infrapy>`_.  Collectively, these tools are referred to as the Python Geophysics Suite (PyGS).  As noted above, the methods in *stochprop* function as a linkage between propagation modeling methods in *InfraGA/GeoAc* and *NCPAprop* to localization and yield estimation methods in *InfraPy*.  Because of this, it's useful to install these various packages into a single Anaconda environment; however, package conflicts exist that make a full installation of these tools difficult.  Resolving these conflicts is an ongoing effort.
 
-Once Anaconda is installed, you can install stochprop using pip by navigating to the base directory of the package (there will be a file there named setup.py).  Assuming InfraPy has been installed within a conda environment called infrapy_env, it is possible to install stochprop in the same environment buy first creating a clone of the infrapy environment,
+For now, there are minimal conflicts between *stochprop* and the ray tracing methods in *infraGA/GeoAc*.  One can install *stochprop* directly using pip by navigating to the base directory of the package (there will be a file there named 'setup.py').  Assuming *infraga* has been installed within a conda environment called infraga_env, it is possible to install *stochprop* in the same environment buy first creating a clone of the *infraga* environment,
 
 .. code-block:: none
 
-    conda create --name pygs_env --clone infrapy_env
+    conda create --name pygs_env --clone infraga_env
 
 then install the stochprop methods into the new Python Geophysics Suite environment (pygs_env),
 
@@ -74,11 +74,11 @@ then install the stochprop methods into the new Python Geophysics Suite environm
     conda activate pygs_env
     pip install -e .
 
-A similar installation can be done for the `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraGA>`_ anaconda environment so that all methods are available in a single work space.  Note: this combined installation is still in development and there are sone package conflicts that may break as the various libraries advance.
+Once conflicts have been resolved, a single 'pygs.yml' file will be made available that installs the various LANL geophysics python tools into a single Anaconda environment.
 
 **Testing stochprop**
 
-Once the installation is complete, you can test the methods by running the command line interface help.  Firstly, activate either the :code:`stochprop_env` or :code:`pygs_env`, then run the :code:`--help` option for stochprop.
+Once the installation is complete, you can test the methods by running the command line interface help.  Firstly, activate either the :code:`stochprop_env` or :code:`pygs_env`, then run the :code:`--help` or :code:`-h` option for stochprop.
 
 .. code-block:: none
 
@@ -104,4 +104,4 @@ This command will show the general usage of the stochprop package:
       prop   Propagation model construction methods
       stats  Atmosphere statistics methods
 
-Usage of the individual packages and sub-commands can be similarly displayed with the :code:`--help` flag (e.g., :code:`stochprop stats build-eofs --help`).
+Usage of the individual packages and sub-commands can be similarly displayed with the help flag (e.g., :code:`stochprop stats build-eofs -h`).

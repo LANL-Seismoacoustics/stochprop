@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation &mdash; stochprop 0.1 documentation</title>
+  <title>Installation &mdash; stochprop 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -30,15 +29,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> stochprop
-            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            stochprop
+              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -70,7 +73,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Installation</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
@@ -115,9 +118,9 @@ can be utilized without InfraPy, but full usage will require installation of Inf
 </pre></div>
 </div>
 <p><strong>Installing via PyGS</strong></p>
-<p><em>Add some explanation of the Python Geophysics Suite (PyGS)</em></p>
-<p>Once Anaconda is installed, you can install stochprop using pip by navigating to the base directory of the package (there will be a file there named setup.py).  Assuming InfraPy has been installed within a conda environment called infrapy_env, it is possible to install stochprop in the same environment buy first creating a clone of the infrapy environment,</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>conda create --name pygs_env --clone infrapy_env
+<p>A number of LANL infrasound software tools have been developed and made available to the community through the <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infrapy">LANL Seismoacoustics github page</a>.  Collectively, these tools are referred to as the Python Geophysics Suite (PyGS).  As noted above, the methods in <em>stochprop</em> function as a linkage between propagation modeling methods in <em>InfraGA/GeoAc</em> and <em>NCPAprop</em> to localization and yield estimation methods in <em>InfraPy</em>.  Because of this, it’s useful to install these various packages into a single Anaconda environment; however, package conflicts exist that make a full installation of these tools difficult.  Resolving these conflicts is an ongoing effort.</p>
+<p>For now, there are minimal conflicts between <em>stochprop</em> and the ray tracing methods in <em>infraGA/GeoAc</em>.  One can install <em>stochprop</em> directly using pip by navigating to the base directory of the package (there will be a file there named ‘setup.py’).  Assuming <em>infraga</em> has been installed within a conda environment called infraga_env, it is possible to install <em>stochprop</em> in the same environment buy first creating a clone of the <em>infraga</em> environment,</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>conda create --name pygs_env --clone infraga_env
 </pre></div>
 </div>
 <p>then install the stochprop methods into the new Python Geophysics Suite environment (pygs_env),</p>
@@ -125,9 +128,9 @@ can be utilized without InfraPy, but full usage will require installation of Inf
 pip install -e .
 </pre></div>
 </div>
-<p>A similar installation can be done for the <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraGA">InfraGA/GeoAc</a> anaconda environment so that all methods are available in a single work space.  Note: this combined installation is still in development and there are sone package conflicts that may break as the various libraries advance.</p>
+<p>Once conflicts have been resolved, a single ‘pygs.yml’ file will be made available that installs the various LANL geophysics python tools into a single Anaconda environment.</p>
 <p><strong>Testing stochprop</strong></p>
-<p>Once the installation is complete, you can test the methods by running the command line interface help.  Firstly, activate either the <code class="code docutils literal notranslate"><span class="pre">stochprop_env</span></code> or <code class="code docutils literal notranslate"><span class="pre">pygs_env</span></code>, then run the <code class="code docutils literal notranslate"><span class="pre">--help</span></code> option for stochprop.</p>
+<p>Once the installation is complete, you can test the methods by running the command line interface help.  Firstly, activate either the <code class="code docutils literal notranslate"><span class="pre">stochprop_env</span></code> or <code class="code docutils literal notranslate"><span class="pre">pygs_env</span></code>, then run the <code class="code docutils literal notranslate"><span class="pre">--help</span></code> or <code class="code docutils literal notranslate"><span class="pre">-h</span></code> option for stochprop.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop --help
 </pre></div>
 </div>
@@ -149,7 +152,7 @@ Commands:
   stats  Atmosphere statistics methods
 </pre></div>
 </div>
-<p>Usage of the individual packages and sub-commands can be similarly displayed with the <code class="code docutils literal notranslate"><span class="pre">--help</span></code> flag (e.g., <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span> <span class="pre">build-eofs</span> <span class="pre">--help</span></code>).</p>
+<p>Usage of the individual packages and sub-commands can be similarly displayed with the help flag (e.g., <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span> <span class="pre">build-eofs</span> <span class="pre">-h</span></code>).</p>
 </section>
 </section>
 

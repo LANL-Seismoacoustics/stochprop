@@ -175,8 +175,8 @@ As detailed in the :ref:`quickstart`, at mid-latitude locations, the effective s
 .. code-block:: python
 
 	for m in range(52):
-        Am, zm, _ = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, weeks=['%02d' % (m + 1)])
-        eofs.compute_coeffs(Am, zm, eofs_path, coeff_path + ".week_{:02d}".format(m + 1), eof_cnt=eof_cnt)
+		Am, zm, _ = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, weeks=['%02d' % (m + 1)])
+		eofs.compute_coeffs(Am, zm, eofs_path, coeff_path + ".week_{:02d}".format(m + 1), eof_cnt=eof_cnt)
 
 
 

@@ -4,7 +4,7 @@
 References and Citing Usage
 ===========================
 
-The Empirical Orthogonal Function (EOF) analyses available in :code:`stochprop` are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi's National Center for Physical Acoustics (NCPA) and will be summarizing in an upcoming publication:
+The Empirical Orthogonal Function (EOF) analyses available in *stochprop* are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi's National Center for Physical Acoustics (NCPA) and will be summarizing in an upcoming publication:
 
     * Waxler, R., Blom, P., & Frazier, W. G., On the generation of statistical models for infrasound propagation from statistical models for the atmosphere: identifying seasonal and regional trends.  *Geophysical Journal International*, In Preparation
 

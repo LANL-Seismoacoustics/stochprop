@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; stochprop 0.1 documentation</title>
+  <title>Quickstart &mdash; stochprop 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -12,10 +12,9 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -31,15 +30,19 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> stochprop
-            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            stochprop
+              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -71,7 +74,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">Quickstart</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
@@ -116,7 +119,7 @@
 </pre></div>
 </div>
 </div></blockquote>
-<p>Running this methos will output some information to screen and also produce a <em>matplotlib</em> figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the eats and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.</p>
+<p>Running this method will output some information to screen and also produce a <em>matplotlib</em> figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the eats and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.</p>
 <blockquote>
 <div><figure class="align-center">
 <a class="reference internal image-reference" href="_images/example.ess-ratio.png"><img alt="_images/example.ess-ratio.png" src="_images/example.ess-ratio.png" style="width: 800px;" /></a>
@@ -221,10 +224,6 @@ Run summary:
 </div></blockquote>
 <p>This analysis produces a number of output files in the eofs/ directory named according to the <code class="code docutils literal notranslate"><span class="pre">--eofs-path</span></code> option.  The contents of these files is summarized in the below table.</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 31%" />
-<col style="width: 69%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>EOF Output File</p></th>
 <th class="head"><p>Description</p></th>
@@ -250,7 +249,7 @@ Run summary:
 </table>
 <blockquote>
 <div><ul class="simple">
-<li><p>NOTE: the current implementation of <em>stochprop</em> saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S ‘zTuvdp’ format with columns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the NCPAprop package is included in the file header; however, if the mean atmospheric file is used in infraGA/GeoAc be sure to specify the column format: ‘zcuvd’.  This might be changed in a future update.</p></li>
+<li><p>NOTE: the current implementation of <em>stochprop</em> saves the mean atmospheric structure using only the sound speed, winds, and density.  Other output atmospheric data (samples, perturbations, etc.) are saved in the G2S ‘zTuvdp’ format with columns containing altitude, temperature, zonal wind, meridional wind, density, and pressure.  The format information needed for the <em>NCPAprop</em> package is included in the file header; however, if the mean atmospheric file is used in <em>infraGA/GeoAc</em> be sure to specify the column format: ‘zcuvd’.  This might be changed in a future update.</p></li>
 </ul>
 </div></blockquote>
 <p>Similar analysis can be completed for the summer and spring/fall transition periods when the middle atmosphere waveguide dissipates:</p>
@@ -383,7 +382,7 @@ Singular Value Analysis
 <section id="propagation-statistics">
 <h2>Propagation Statistics<a class="headerlink" href="#propagation-statistics" title="Permalink to this heading"></a></h2>
 <p><strong>Constructing Propagation Statistics</strong></p>
-<p>Once a reduced set of atmospheric specifications representative of a given season and location has been constructed, propagation statistics can be computed using methods in <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">prop</span></code>.  For localization analysis, the propagation path geometry computed via infrasonic ray tracing (propagation time and arrival range for celerity statistics, back azimuth biases due to cross winds, etc.) can be computed using the <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraGA">InfraGA/GeoAc</a> ray tracing methods.  The <code class="code docutils literal notranslate"><span class="pre">build-pgm</span></code> methods to build a path geometry model (PGM) requires a directory of atmospheric specifications, an output path, a source location (latitude, longitude, altitude) (typically the reference location of the G2S locations).  As with other functions in <code class="code docutils literal notranslate"><span class="pre">stochprop</span></code>, usage information can be displayed with the <code class="code docutils literal notranslate"><span class="pre">--help</span></code> flag:</p>
+<p>Once a reduced set of atmospheric specifications representative of a given season and location has been constructed, propagation statistics can be computed using methods in <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">prop</span></code>.  For localization analysis, the propagation path geometry computed via infrasonic ray tracing (propagation time and arrival range for celerity statistics, back azimuth biases due to cross winds, etc.) can be computed using the <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraGA">InfraGA/GeoAc</a> ray tracing methods.  The <code class="code docutils literal notranslate"><span class="pre">build-pgm</span></code> methods to build a path geometry model (PGM) requires a directory of atmospheric specifications, an output path, a source location (latitude, longitude, altitude) (typically the reference location of the G2S locations).  As with other functions in <em>stochprop</em>, usage information can be displayed with the <code class="code docutils literal notranslate"><span class="pre">--help</span></code> flag:</p>
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: stochprop prop build-pgm [OPTIONS]
 
@@ -391,11 +390,11 @@ Singular Value Analysis
   ---------------------
 
   Example Usage:
-      stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;[30.0, -120.0, 0.0]&#39;  --cpu-cnt 8
+      stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;[30.0, -120.0, 0.0]&#39;  --cpu-cnt 8
 
 Options:
-  --atmos-dir TEXT      Directory containing atmospheric specifications
-  --atmos-pattern TEXT  Atmosphere file pattern (default: &#39;*.met&#39;)
+  --atmo-dir TEXT      Directory containing atmospheric specifications
+  --atmo-pattern TEXT  Atmosphere file pattern (default: &#39;*.met&#39;)
   --output-path TEXT    Path and prefix for PGM output
   --src-loc TEXT        Source location (lat, lon, alt)
   --inclinations TEXT   Inclination min, max, and step (default: [2, 50, 2]
@@ -420,7 +419,7 @@ Options:
 <p>The ray tracing simulation parameters (e.g., inclination and azimuth angle limits and resolutions) can be tuned if necessary.  The default model construction focuses on regional distances (within 1,000 km).  Note that the default configuration assumes the infraGA/GeoAc binaries are on your path, but if that is not the case you can specify where those methods are using the <code class="code docutils literal notranslate"><span class="pre">--infraga-path</span></code> parameter (as noted in the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> discussion, a combined PyGS conda environment is not yet implemented for which the <em>infraga</em> Python methods can be leveraged without changing environments).</p>
 <p>Construction of PGMs for the winter samples generated above can be completed using (update the call with the available number of CPUs, regardless, this will run for a while):</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-pgm --atmos-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;39.1026, -84.5123, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;39.1026, -84.5123, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#####################################
@@ -516,11 +515,11 @@ stochprop prop build-tlm
 ---------------------
 
   Example Usage:
-    stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+    stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 
 Options:
-  --atmos-dir TEXT           Directory containing atmospheric specifications
-  --atmos-pattern TEXT       Atmosphere file pattern (default: &#39;*.met&#39;)
+  --atmo-dir TEXT           Directory containing atmospheric specifications
+  --atmo-pattern TEXT       Atmosphere file pattern (default: &#39;*.met&#39;)
   --output-path TEXT         Path and prefix for TLM output
   --freq FLOAT               Frequency for simulation (default: 0.5 Hz)
   --azimuths TEXT            Azimuth min, max, and step (default: [0, 360, 6]
@@ -541,12 +540,12 @@ Options:
 </div></blockquote>
 <p>As with the PGM construction, a suite of atmospheric specifications is needed as well as an output path and label.  Unlike the ray tracing methods, the azimuthal symmetry assumed in the NCPAprop methods doesn’t account for the spherical Earth geometry so that the latitude and longitude are not needed (I need to add the source altitude as an option to build statistics for elevated sources).  Unlike the “infinite frequency” simulation methods using ray tracing, TLM construction requires specification of a frequency for simulation and yield estimation analysis typically requires multiple models covering some frequency range across which signal is observed.  During evaluation of the methods here, frequencies of 0.05, 0.1, 0.2, 0.5, and 1.0 have been used in computation; though, higher resolution models might be useful in more robust analyses.  As with linking infraGA/GeoAc, the path to NCPAprop binaries can be specified via <code class="code docutils literal notranslate"><span class="pre">--ncpaprop-path</span></code> if that directory is not on your path. For the winter example being used here, a TLM at 0.2 Hz can be computed using:</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-tlm --atmos-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 </pre></div>
 </div>
 </div></blockquote>
 <p>A note about multi-threading: unlike the multi-threading in infraGA/GeoAc that’s built into the software, multi-threading the NCPAprop methods is done via Python’s <em>subprocess</em> library to simultaneously compute propagation effects for multiple atmospheric specifications at the same time.  Because of this, the maximum number of CPUs useful in such analysis is limited by the number of atmospheric specifications in the suite (for ray tracing, acceleration is limited by the number of unique inclination angles at each azimuth since that’s how infraGA/GeoAc is parallelized).</p>
-<p>Once computed, the model is saved into a file named using the specified output path/label and the frequency used in the calculation (<em>prop/winter/winter_0.200Hz.tlm</em> in this case).  Visualizatin of the resulting model can be be done again using the <code class="code docutils literal notranslate"><span class="pre">prop-model</span></code> method in the plotting tools:</p>
+<p>Once computed, the model is saved into a file named using the specified output path/label and the frequency used in the calculation (<em>prop/winter/winter_0.200Hz.tlm</em> in this case).  Visualization of the resulting model can be be done again using the <code class="code docutils literal notranslate"><span class="pre">prop-model</span></code> method in the plotting tools:</p>
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm
 </pre></div>
@@ -562,7 +561,7 @@ Options:
 </pre></div>
 </div>
 </div></blockquote>
-<p>In this function call, the wildcard in the TLM files specification (note those quotes around it) leads in all available TLMS matching that patter and the set of yield values are defined in tons equivalent TNT.  The resulting visualization is shown below and</p>
+<p>In this function call, the wildcard in the TLM files specification (note those quotes around it) leads in all available TLMs matching that patter and the set of yield values are defined in tons equivalent TNT.  The resulting visualization is shown below and</p>
 <blockquote>
 <div><figure class="align-center">
 <a class="reference internal image-reference" href="_images/det-stats.png"><img alt="_images/det-stats.png" src="_images/det-stats.png" style="width: 600px;" /></a>
