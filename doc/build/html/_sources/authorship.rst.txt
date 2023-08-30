@@ -4,7 +4,7 @@
 Authorship & References
 =======================
 
-The methods in *stochprop* were developed by infrasound SMEs at Los Alamos National Laboratory and University of Mississippi National Center for Physical Acoustics as documented in Blom et al. (2023).  The Python implementation of the methods has been written and is maintained by Philip Blom at LANL.  For any questions on the methods, see the GJI publication and for questions or issues with the implementation and features of the software contact:
+The methods in *stochprop* were developed by infrasound SMEs at Los Alamos National Laboratory and University of Mississippi National Center for Physical Acoustics as documented in Blom et al. (2023).  The Python implementation of the methods has been written by and is maintained by Philip Blom at LANL.  For any questions on the methods, see the GJI publication and for questions or issues with the implementation and features of the software contact:
 
 Author: Philip Blom (pblom@lanl.gov)
 

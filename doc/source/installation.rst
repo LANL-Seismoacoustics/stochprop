@@ -8,7 +8,7 @@ Installation
 Operating Systems
 -----------------
 
-stochprop can currently be installed on machines running newer versions of Linux or Apple OS X.  Installation on a Windows system requires an Anaconda Python installation and 
+stochprop has been installed on machines running newer versions of Linux or Apple OS X.  Installation on a Windows system has not been tested, but requires an Anaconda Python installation, so it should be reasonably straightforward.  Installation of propagation and signal analysis tools on such a system might be more challenging however. 
 
 ----------------------------------------
 Dependencies
@@ -17,12 +17,12 @@ Dependencies
 
 **Anaconda**
 
-The installation of stochprop is ideally completed using pip through `Anaconda <https://www.anaconda.com/distribution/>`_ to resolve and download the correct python libraries. If you don't currently have anaconda installed on your system, please do that first.
+The installation of stochprop is ideally completed using pip through `Anaconda <https://docs.anaconda.com/free/anaconda/install/index.html>`_ to resolve and download the correct python libraries. If you don't currently have Anaconda installed on your system, you will need to do that first.
 
 
 **Propagation Modeling Methods**
 
-A subset of the stochprop methods require access to the  LANL `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraGA>`_ ray tracing methods as well as the `NCPAprop <https://github.com/chetzer-ncpa/ncpaprop>`_ normal mode methods.  Many of the empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.
+A subset of the stochprop methods require access to the  LANL `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraGA>`_ ray tracing methods as well as the `NCPAprop <https://github.com/chetzer-ncpa/ncpaprop-release>`_ normal mode methods.  Many of the empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.
 
 
 **InfraPy Signal Analysis Methods**
@@ -37,7 +37,7 @@ stochprop Installation
 
 **Stand Alone Install**
 
-A stand alone conda environment can be created with only the stochprop using pip:
+A stand alone Anaconda environment can be created with the stochprop YML file,
 
 .. code-block:: none
 

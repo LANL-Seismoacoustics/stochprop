@@ -100,13 +100,16 @@ def eof_build(atmo_dir, eofs_path, atmo_pattern, atmo_format, month_selection, w
         click.echo("  Saving date time info")
     click.echo("")
     
-    A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True, max_alt=max_alt)
-    if save_datetime:
-        np.save(eofs_path + ".datetimes", datetimes)
+    if len(os.path.dirname(eofs_path)) > 0 and not os.path.isdir(os.path.dirname(eofs_path)):
+        click.echo("ERROR: Invalid EOFs output directory: " + eofs_path + '\n')
+    else:
+        A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True, max_alt=max_alt)
+        if save_datetime:
+            np.save(eofs_path + ".datetimes", datetimes)
 
-    build_info = {'atmo_dir': atmo_dir, 'month_selection' : month_selection,
-                    'year_selection' : year_selection, 'week_selection' : week_selection}
-    eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt, build_info=build_info)
+        build_info = {'atmo_dir': atmo_dir, 'month_selection' : month_selection,
+                        'year_selection' : year_selection, 'week_selection' : week_selection}
+        eofs.compute_eofs(A, z0, eofs_path, eof_cnt=eof_cnt, build_info=build_info)
     
 
 @click.command('eof-coeffs', short_help="Compute EOF coefficients")
@@ -172,23 +175,28 @@ def eof_coeffs(atmo_dir, eofs_path, coeff_path, atmo_pattern, atmo_format, run_a
         click.echo("  Saving date time info")
     click.echo("")
 
-    if run_all_months:
-        for m in range(12):
-            Am, zm, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, months=['%02d' % (m + 1)], return_datetime=True)
-            if save_datetime:
-                np.save(coeff_path + ".datetimes.month_{:02d}".format(m + 1), datetimes)
-            eofs.compute_coeffs(Am, zm, eofs_path, coeff_path + ".month_{:02d}".format(m + 1), eof_cnt=eof_cnt)
-    elif run_all_weeks:
-        for m in range(52):
-            Am, zm, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, weeks=['%02d' % (m + 1)], return_datetime=True)
-            if save_datetime:
-                np.save(coeff_path + ".datetimes.week_{:02d}".format(m + 1), datetimes)
-            eofs.compute_coeffs(Am, zm, eofs_path, coeff_path + ".week_{:02d}".format(m + 1), eof_cnt=eof_cnt)
+    if len(os.path.dirname(eofs_path)) > 0 and not os.path.isdir(os.path.dirname(eofs_path)):
+        click.echo("ERROR: Invalid eofs_path output directory: " + eofs_path + '\n')
+    elif len(os.path.dirname(coeff_path)) > 0 and not os.path.isdir(os.path.dirname(coeff_path)):
+        click.echo("ERROR: Invalid coeff_path output directory: " + coeff_path + '\n')
     else:
-        A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True)
-        if save_datetime:
-            np.save(coeff_path + ".datetimes", datetimes)
-        eofs.compute_coeffs(A, z0, eofs_path, coeff_path, eof_cnt=eof_cnt)
+        if run_all_months:
+            for m in range(12):
+                Am, zm, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, months=['%02d' % (m + 1)], return_datetime=True)
+                if save_datetime:
+                    np.save(coeff_path + ".datetimes.month_{:02d}".format(m + 1), datetimes)
+                eofs.compute_coeffs(Am, zm, eofs_path, coeff_path + ".month_{:02d}".format(m + 1), eof_cnt=eof_cnt)
+        elif run_all_weeks:
+            for m in range(52):
+                Am, zm, datetimes = eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, weeks=['%02d' % (m + 1)], return_datetime=True)
+                if save_datetime:
+                    np.save(coeff_path + ".datetimes.week_{:02d}".format(m + 1), datetimes)
+                eofs.compute_coeffs(Am, zm, eofs_path, coeff_path + ".week_{:02d}".format(m + 1), eof_cnt=eof_cnt)
+        else:
+            A, z0, datetimes = eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, return_datetime=True)
+            if save_datetime:
+                np.save(coeff_path + ".datetimes", datetimes)
+            eofs.compute_coeffs(A, z0, eofs_path, coeff_path, eof_cnt=eof_cnt)
 
 
 @click.command('coeff-overlap', short_help="Compute EOF coefficient overlap to identify seasonality")
@@ -252,7 +260,8 @@ def coeff_overlap(coeff_path, eofs_path, eof_cnt):
 @click.option("--sample-path", help="Path for samples to be saved (required)", prompt="Sample (output) path:")
 @click.option("--sample-cnt", help="Number of samples to generate (default: 100)", default=100)
 @click.option("--eof-cnt", help="Number of EOFs to use (default: 100)", default=100)
-def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
+@click.option("--label", help="Info to write into output headers (Default: None)", default="None")
+def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt, label):
     '''
     \b
     stochprop stats sample-eofs
@@ -286,7 +295,7 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt):
     else:
         coeff_vals = np.load(coeff_path + "-coeffs.npy")
 
-    eofs.sample_atmo(coeff_vals, eofs_path, sample_path, eof_cnt=eof_cnt, prof_cnt=sample_cnt)
+    eofs.sample_atmo(coeff_vals, eofs_path, sample_path, eof_cnt=eof_cnt, prof_cnt=sample_cnt, coeff_label=label)
 
 
 @click.command('perturb', short_help="Construct perturbed atmospheric models", hidden=True)

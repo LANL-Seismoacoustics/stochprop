@@ -17,6 +17,7 @@ import imp
 import subprocess
 import pkg_resources
 import re 
+import warnings
 
 from netCDF4 import Dataset
 
@@ -645,14 +646,34 @@ def compute_eofs(A, alts, output_path, eof_cnt=100, build_info=None):
     v_eofs_out.close()
 
 
+def _load_eofs(eofs_path):
+    if os.path.isfile(eofs_path + "-mean_atmo.dat"):
+        mean_atmo = np.loadtxt(eofs_path + "-mean_atmo.dat")
+        c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
+        u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
+        v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+        sing_vals = np.loadtxt(eofs_path + "-singular_values.dat")
+
+        return mean_atmo, c_eofs, u_eofs, v_eofs, sing_vals
+
+    elif os.path.isfile(eofs_path + "mean_atmo.dat"):
+        mean_atmo = np.loadtxt(eofs_path + "mean_atmo.dat")
+        c_eofs = np.loadtxt(eofs_path + "snd_spd.eofs")
+        u_eofs = np.loadtxt(eofs_path + "zonal_winds.eofs")
+        v_eofs = np.loadtxt(eofs_path + "merid_winds.eofs")
+        sing_vals = np.loadtxt(eofs_path + "singular_values.dat")
+
+        return mean_atmo, c_eofs, u_eofs, v_eofs, sing_vals
+    else:
+        print('\n' + "ERROR: No EOF results found for eofs_path: " + eofs_path + '\n')
+        exit()
+
+
 def _plot_eofs(eofs_path, eof_cnt=5):
 
     print("Visualizing EOF results...")
     # load means and eofs
-    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    mean_atmo, c_eofs, u_eofs, v_eofs, _ = _load_eofs(eofs_path)
 
     c_lim = np.max(abs(c_eofs[:, 1:eof_cnt]))
     u_lim = np.max(abs(u_eofs[:, 1:eof_cnt]))
@@ -672,7 +693,7 @@ def _plot_eofs(eofs_path, eof_cnt=5):
     ax0.xaxis.set_ticks_position('top')
     ax0.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
 
-    ax0.plot(means[:, 1], means[:,0], '-k', linewidth=3)
+    ax0.plot(mean_atmo[:, 1], mean_atmo[:,0], '-k', linewidth=3)
 
     ax1 = fig.add_subplot(spec[1, 0])
     ax1.grid()
@@ -682,8 +703,8 @@ def _plot_eofs(eofs_path, eof_cnt=5):
     ax1.xaxis.set_ticks_position('bottom')
     ax1.set_ylim(min(c_eofs[:, 0]), max(c_eofs[:, 0]))
 
-    ax1.plot(means[:, 2], means[:,0], '-b', linewidth=3)
-    ax1.plot(means[:, 3], means[:,0], '-r', linewidth=3)
+    ax1.plot(mean_atmo[:, 2], mean_atmo[:,0], '-b', linewidth=3)
+    ax1.plot(mean_atmo[:, 3], mean_atmo[:,0], '-r', linewidth=3)
 
     for j in range(eof_cnt):
         ax0n = fig.add_subplot(spec[0, j + 1])
@@ -744,11 +765,8 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
     """
 
     print('\t' + "Computing EOF coefficients for profiles...")
-    # load means and eofs
-    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    # load mean atmosphere and eofs
+    mean_atmo, c_eofs, u_eofs, v_eofs, _ = _load_eofs(eofs_path)
 
     # check A and specified alts are consistent
     file_len = int(A.shape[1] / 5)
@@ -757,14 +775,14 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
         print("Warning!  Altitudes don't match dimension of atmosphere matrix.")
         return 0
 
-    alt_min = max(means[0, 0], alts[0])
-    alt_max = min(means[-1, 0], alts[-1])
+    alt_min = max(mean_atmo[0, 0], alts[0])
+    alt_max = min(mean_atmo[-1, 0], alts[-1])
 
-    eofs_mask = np.logical_and(alt_min <= means[:, 0], means[:, 0] <= alt_max)
+    eofs_mask = np.logical_and(alt_min <= mean_atmo[:, 0], mean_atmo[:, 0] <= alt_max)
     A_mask = np.logical_and(alt_min <= alts, alts <= alt_max)
 
     A_alts = alts[A_mask]
-    eof_alts = means[:, 0][eofs_mask]
+    eof_alts = mean_atmo[:, 0][eofs_mask]
 
     # cycle through profiles in A to define coefficients
     coeffs = np.empty((A.shape[0], eof_cnt))
@@ -780,9 +798,9 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
         v_interp = interp1d(A_alts, An[file_len * 2:file_len * 3][A_mask], kind='cubic')
         
         # evaluate differences at the sampled points of the mean/eofs
-        c_diff = c_interp(eof_alts) - means[:, 1][eofs_mask]
-        u_diff = u_interp(eof_alts) - means[:, 2][eofs_mask]
-        v_diff = v_interp(eof_alts) - means[:, 3][eofs_mask]
+        c_diff = c_interp(eof_alts) - mean_atmo[:, 1][eofs_mask]
+        u_diff = u_interp(eof_alts) - mean_atmo[:, 2][eofs_mask]
+        v_diff = v_interp(eof_alts) - mean_atmo[:, 3][eofs_mask]
 
         # define the integration to compute the EOF coefficients
         def calc_coeff(n):
@@ -830,7 +848,7 @@ def compute_overlap(coeffs, eofs_path, eof_cnt=100, method="mean"):
 
     overlap = np.ones((len(coeffs), len(coeffs)))
     
-    eof_weights = np.loadtxt(eofs_path + "-singular_values.dat")[:, 1][:eof_cnt]**2
+    _, _, _, _, eof_weights = _load_eofs(eofs_path)
     eof_weights /= np.sum(eof_weights)  
 
     if method == "mean":
@@ -1019,10 +1037,7 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
 
     print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
     print('\t' + "Loading mean profile info and eofs...")
-    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    mean_atmo, c_eofs, u_eofs, v_eofs, _ = _load_eofs(eofs_path)
 
     # use kernel density estimates to define coefficient pdf's
     # and use the mean and span to define the limits for sampling
@@ -1034,8 +1049,8 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
 
     # Generate prof_cnt random atmosphere samples
     print('\t' + "Generating sample atmosphere profiles...")
-    sampled_profs = np.empty((prof_cnt, means.shape[0], means.shape[1] + 1))
-    sampled_profs[:, :, :5] = np.array([np.copy(means)] * prof_cnt)
+    sampled_profs = np.empty((prof_cnt, mean_atmo.shape[0], mean_atmo.shape[1] + 1))
+    sampled_profs[:, :, :5] = np.array([np.copy(mean_atmo)] * prof_cnt)
 
     for eof_id in range(eof_cnt):
         print('\t\t' + "Sampling EOF coefficient for eof_id = " + str(eof_id) + "...")
@@ -1087,10 +1102,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
     print("-" * 50 + '\n' + "Generating maximum likelihood atmosphere states from coefficient PDFs...")
     # load mean profile and eofs
     print('\t' + "Loading mean profile info and eofs...")
-    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    mean_atmo, c_eofs, u_eofs, v_eofs, _ = _load_eofs(eofs_path)
 
     plt.show(block=False)
 
@@ -1099,7 +1111,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
     print('\t' + "Determining maximum likelihood coefficient values...")
 
     # Generate the profile fit
-    ml_prof = np.copy(means)
+    ml_prof = np.copy(mean_atmo)
     for n in range(eof_cnt):
         kernel = gaussian_kde(coeffs[:, n])
         lims = define_coeff_limits(coeffs[:, n])
@@ -1158,20 +1170,17 @@ def fit_atmo(prof_path, eofs_path, output_path=None, eof_cnt=100, plot_result=Tr
     print('\t' + "Loading EOF info from " + eofs_path + "...")
 
     # load means and eofs
-    means = np.loadtxt(eofs_path + "-mean_atmo.dat")
-    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
+    mean_atmo, c_eofs, u_eofs, v_eofs, _ = _load_eofs(eofs_path)
 
     # load profile and identify common altitudes
     # Note: means and eofs are assumed to have identical sampling (means[:, 0] = {..}_eofs[:, 0])
     #       but the profile being fit may not have matching sampling
     profile = np.loadtxt(prof_path)
 
-    alt_min = max(means[0, 0], profile[0, 0])
-    alt_max = min(means[-1, 0], profile[-1, 0])
+    alt_min = max(mean_atmo[0, 0], profile[0, 0])
+    alt_max = min(mean_atmo[-1, 0], profile[-1, 0])
 
-    eofs_mask = np.logical_and(alt_min <= means[:, 0], means[:, 0] <= alt_max)
+    eofs_mask = np.logical_and(alt_min <= mean_atmo[:, 0], mean_atmo[:, 0] <= alt_max)
     prof_mask = np.logical_and(alt_min <= profile[:, 0], profile[:, 0] <= alt_max)
 
     # interpolate the profile and evaluate differences at the sampled points of the mean/eofs
@@ -1179,9 +1188,9 @@ def fit_atmo(prof_path, eofs_path, output_path=None, eof_cnt=100, plot_result=Tr
     u_interp = interp1d(profile[:, 0][prof_mask], profile[:, 2][prof_mask], kind='cubic')
     v_interp = interp1d(profile[:, 0][prof_mask], profile[:, 3][prof_mask], kind='cubic')
 
-    c_diff = c_interp(means[:, 0][eofs_mask]) - means[:, 1][eofs_mask]
-    u_diff = u_interp(means[:, 0][eofs_mask]) - means[:, 2][eofs_mask]
-    v_diff = v_interp(means[:, 0][eofs_mask]) - means[:, 3][eofs_mask]
+    c_diff = c_interp(mean_atmo[:, 0][eofs_mask]) - mean_atmo[:, 1][eofs_mask]
+    u_diff = u_interp(mean_atmo[:, 0][eofs_mask]) - mean_atmo[:, 2][eofs_mask]
+    v_diff = v_interp(mean_atmo[:, 0][eofs_mask]) - mean_atmo[:, 3][eofs_mask]
 
     # define the integration to compute the EOF coefficients
     print('\t' + "Generating fit using " + str(eof_cnt) + " EOF terms...")
@@ -1195,7 +1204,7 @@ def fit_atmo(prof_path, eofs_path, output_path=None, eof_cnt=100, plot_result=Tr
     # run the integration to define coefficients
     coeffs = np.array([calc_coeff(n) for n in range(eof_cnt)])
 
-    fit = np.copy(means)
+    fit = np.copy(mean_atmo)
     for n in range(eof_cnt):
         fit[:, 1] = fit[:, 1] + coeffs[n] * c_eofs[:, n + 1]
         fit[:, 2] = fit[:, 2] + coeffs[n] * u_eofs[:, n + 1]
@@ -1272,11 +1281,8 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
 
     print("Generating EOF perturbations to " + prof_path + "...")
     ref_atmo = np.loadtxt(prof_path)
-
-    c_eofs = np.loadtxt(eofs_path + "-snd_spd.eofs")
-    u_eofs = np.loadtxt(eofs_path + "-zonal_winds.eofs")
-    v_eofs = np.loadtxt(eofs_path + "-merid_winds.eofs")
-    sing_vals = np.loadtxt(eofs_path + "-singular_values.dat")
+    _, c_eofs, u_eofs, v_eofs, sing_vals = _load_eofs(eofs_path)
+    
 
     # Define altitude limits
     alt_min = max(u_eofs[0, 0], ref_atmo[0, 0])

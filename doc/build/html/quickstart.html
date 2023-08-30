@@ -88,6 +88,24 @@
   <section id="quickstart">
 <span id="id1"></span><h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this heading"></a></h1>
 <p>Stochastic propagation analysis for infrasound propagation statistics using the <em>stochprop</em> library can be separated into a sequence of steps: 1) investigate temporal trends in the atmospheric structure at a given location to identify seasonality and separate historical atmospheric specifications into groups for summer, winter, and the spring/fall transition, 2) apply some statistical means to re-sample the atmospheric structure during each season to produce an ensemble of atmospheric samples that is a reasonable size, 3) run the re-sampled atmosphere ensemble through some propagation modeling methodology and parameterize the computed propagation predictions into a model that can be utilized in localization and characterization analyses.  Beyond these stages, the atmospheric statistics constructed for re-sampling can be used to perturb a reference atmospheric specification for an event-of-interest; though, this last application is an ongoing area of R&amp;D.</p>
+<p>For the following example usage of the software, check that the Anaconda environment is active (<code class="code docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">stochprop_env</span></code>) and <code class="code docutils literal notranslate"><span class="pre">cd</span></code> into the ‘stochprop/examples’ directory where the sample data is located. In general, a useful project directory structure for applying stochprop to a given project includes several subdirectories in the main working directory (recommended, but not required):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘profs’ directory with source G2S atmospheric specifications</p></li>
+<li><p>‘eofs’ directory to write EOF results into</p></li>
+<li><p>‘coeffs’ directory for EOF projection results</p></li>
+<li><p>‘samples’ directory for results of EOF coefficient samples, atmospheric fitting, and perturbation results</p></li>
+<li><p>‘prop’ directory for propagation statistics model output</p></li>
+</ul>
+</div></blockquote>
+<p>The ‘profs’ directory is included with the <em>stochprop</em> git repository and includes a set of G2S specifications for the Quickstart tutorial here.  Also, because a set of example transmission loss models are included, the ‘prop’ directory is included with the repository.  The other directories will need to be created before continuing the Quickstart:</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">mkdir eofs</span>
+<span class="go">mkdir coeffs</span>
+<span class="go">mkdir samples</span>
+</pre></div>
+</div>
+</div></blockquote>
 <section id="seasonal-trends">
 <h2>Seasonal Trends<a class="headerlink" href="#seasonal-trends" title="Permalink to this heading"></a></h2>
 <p>For mid-latitude regions of the earth, the middle atmosphere winds associated with the circumpolar vortex have persistent orientation (eastward during the winter and westward during the summer in the northern hemisphere) and can be used to identify seasonal trends for a given location.  The temperature maximum at the stratopause is typically cooler than the near-ground temperature so that the middle atmosphere waveguide is dependent on these wind structures and therefore highly directional.  Refraction of acoustic waves back to the ground surface occurs when the sum of the sound speed and along-direction wind at some altitude aloft is greater than the sound speed near the ground surface.  Therefore, one can compute the ratio of the sound speed at various altitudes relative to that at the ground surface to identify when an infrasonic waveguide is present.</p>
@@ -115,11 +133,11 @@
 </div></blockquote>
 <p>A year of Ground-to-Space (G2S) atmospheric data is provided with <em>stochprop</em> in the ‘examples/profs/’ directory.  The <code class="code docutils literal notranslate"><span class="pre">ess-ratio</span></code> method can ingest these atmospheres to show the seasonal trends in the stratospheric waveguide:</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot ess-ratio --atmo-dir profs/ --results-path example
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop plot ess-ratio --atmo-dir profs/ --results-path ess-ratio-example
 </pre></div>
 </div>
 </div></blockquote>
-<p>Running this method will output some information to screen and also produce a <em>matplotlib</em> figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the eats and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.</p>
+<p>Running this method will output some information to screen and also produce a <em>matplotlib</em> figure window showing the below ESS ratio analysis.  In the figure, the upper panel shows the maximum ESS ratio between 40 and 60 km altitude to the east (blue) and west (red).  The colormap in the lower panel shows the ESS ratio throughout the ratio for values greater than unity again to the east and west in blue and red, respectively.  The colormap covers from unity up to a value of 1.1 so easily compare waveguide characteristic at distinct locations.</p>
 <blockquote>
 <div><figure class="align-center">
 <a class="reference internal image-reference" href="_images/example.ess-ratio.png"><img alt="_images/example.ess-ratio.png" src="_images/example.ess-ratio.png" style="width: 800px;" /></a>
@@ -326,6 +344,37 @@ Singular Value Analysis
 </div></blockquote>
 <p>In this result the structure is much more accurately fit and the finer scale variations in the lower atmosphere are fit relatively accurately (though slightly smoothed).  Repeating this analysis with 72 EOFs to include 99.5% of variability improves the accuracy of these finer scale variations.</p>
 <p>It should be noted that the default behavior of <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span> <span class="pre">build-eofs</span></code> is to only keep the first 100 EOFs (all singular values are kept) and therefore when the above visualization results are obtained it might be necessary to re-run the EOF construction with an increased EOF count to capture higher accuracy (e.g., 106 EOFs for 99.9% variability captured in the EOF vector space).  In general, the 99.5% accuracy level has been used in evaluations of these methods.</p>
+<p>In the case that the EOF fit to the atmospheric structure is needed for continued work, it can be written into a file (again, useful to define a subdirectory in ‘samples’) using:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir samples/fits/
+
+stochprop plot eof-fit --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --eof-cnt 56 --output-file &#39;samples/fits/2011-01-01_fit-56.met&#39;
+</pre></div>
+</div>
+</div></blockquote>
+<p>This produces a file with header information summarizing the EOF fit parameters and the atmospheric data in a format identical to other G2S files:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Data Source: stochprop v0.1.0
+# Calculated: 2023-08-30 10:54:55.038919
+# Method: Fitting
+# Reference Specification = profs/g2stxt_2011010118_39.1026_-84.5123.dat
+# EOF Set = eofs/example_winter (cwd: /path/to/stochprop/examples)
+# EOF Cnt = 56
+# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]
+# The following lines are formatted input for ncpaprop
+#% 0, Z0, km, 0.0
+#% 1, Z, km
+#% 2, T, K
+#% 3, U, m/s
+#% 4, V, m/s
+#% 5, RHO, g/cm3
+#% 6, P, mbar
+0.000000000000000000e+00 2.835923387873799015e+02 5.990006341023006442e+00 2.687147261693745293e-02 1.235309932432432888e-03 1.005431122324828380e+03
+1.000000000000000056e-01 2.828483807135883126e+02 6.076833219597064684e+00 -1.821912076473385100e-02 1.238559089438562863e-03 1.005431122324828380e+03
+...
+</pre></div>
+</div>
+</div></blockquote>
 <p><strong>Sampling the Atmospheric Structure</strong></p>
 <p>The primary aim of using EOFs to quantify the statistics of the atmospheric structure over some archived time period is for data reduction.  This can be accomplished as noted in <a class="reference internal" href="analysis.html#analysis"><span class="std std-ref">Stochastic Propagation Analysis</span></a> via sampling of coefficient values.  Generating a suite of atmospheric samples representative of a given season requires two steps:  1) compute coefficients for the EOF basis vectors projected onto all elements of the suite, 2) use a kernel density estimate (KDE) of the finite set of coefficient values to produce a set of atmospheric samples representative of the original suite.  The first of these steps can be accomplished using the <code class="code docutils literal notranslate"><span class="pre">eof-coeffs</span></code> function in <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span></code>.  This analysis requires specification of the EOF basis info, output coefficient info path, and any selection of months or weeks needed to only include the appropriate atmospheric data.  For the example winter analysis:</p>
 <blockquote>
@@ -333,9 +382,11 @@ Singular Value Analysis
 </pre></div>
 </div>
 </div></blockquote>
-<p>This analysis produces a single <em>example_winter-coeffs.npy</em> file that contains the coefficient values for all EOFs used in analysis.  These coefficients can then be used to sample the atmospheric vector space using <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span> <span class="pre">sample-eofs</span></code>:</p>
+<p>This analysis produces a single <em>example_winter-coeffs.npy</em> file that contains the coefficient values for all EOFs used in analysis.  These coefficients can then be used to sample the atmospheric vector space using <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">stats</span> <span class="pre">sample-eofs</span></code>.  However, it’s useful to first create a subdirectory for this set of samples ot keep them separate from other seasonal samples,</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop stats sample-eofs --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir samples/winter
+
+stochprop stats sample-eofs --eofs-path eofs/example_winter --coeff-path coeffs/example_winter --sample-path samples/winter/example_winter --sample-cnt 50
 </pre></div>
 </div>
 </div></blockquote>
@@ -349,6 +400,31 @@ Singular Value Analysis
 <a class="reference internal image-reference" href="_images/winter_eof-samples.png"><img alt="_images/winter_eof-samples.png" src="_images/winter_eof-samples.png" style="width: 500px;" /></a>
 </figure>
 </div></blockquote>
+<p>Similar to the fitting output, this produces a file with header information summarizing the EOF sampling parameters and the atmospheric data in a format identical to other G2S files:</p>
+<blockquote>
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span># Data Source: stochprop v0.1.0
+# Calculated: 2023-08-30 10:02:07.187834
+# Method: Coefficient KDE Sampling
+# Coeff Label = None
+# EOF Set = eofs/example_winter (cwd: /path/to/stochprop/examples)
+# EOF Cnt = 100
+# Sample: 0/50
+# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]
+# The following lines are formatted input for ncpaprop
+#% 0, Z0, km, 0.0
+#% 1, Z, km
+#% 2, T, K
+#% 3, U, m/s
+#% 4, V, m/s
+#% 5, RHO, g/cm3
+#% 6, P, mbar
+0.000000000000000000e+00 2.826111359577614053e+02 9.776727538213997315e-01 1.721851603574645839e+00 1.235309932432432671e-03 1.001952425169503158e+03
+1.000000000000000056e-01 2.819774741146347310e+02 1.301368733916757225e+00 2.318155321169644623e+00 1.238085929951651589e-03 1.001952425169503158e+03
+...
+</pre></div>
+</div>
+</div></blockquote>
+<p>The ‘Coeff Label’ field can be set in the CLI call using <code class="code docutils literal notranslate"><span class="pre">--label</span></code> and is useful to provide some additional information about the sampling (e.g., <code class="code docutils literal notranslate"><span class="pre">--label</span> <span class="pre">'Sampling</span> <span class="pre">of</span> <span class="pre">winter</span> <span class="pre">atmospheric</span> <span class="pre">structure</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">western</span> <span class="pre">US'</span></code>).</p>
 <p><strong>Check Seasonal Trends with EOFs (optional)</strong></p>
 <p>As noted in Blom et al. (2023), for locations away from mid-latitude, the effective sound speed ratio is less useful in identifying seasonal trends and an alternative method is needed.  The EOF coefficient structure across a full year of time can be computed and analyzed to identify those times of the year that have similar structure.  Consider first using the <code class="code docutils literal notranslate"><span class="pre">build-eofs</span></code> method to build a full year set of EOFs (without any month or week limitations):</p>
 <blockquote>
@@ -417,9 +493,11 @@ Options:
 </div>
 </div></blockquote>
 <p>The ray tracing simulation parameters (e.g., inclination and azimuth angle limits and resolutions) can be tuned if necessary.  The default model construction focuses on regional distances (within 1,000 km).  Note that the default configuration assumes the infraGA/GeoAc binaries are on your path, but if that is not the case you can specify where those methods are using the <code class="code docutils literal notranslate"><span class="pre">--infraga-path</span></code> parameter (as noted in the <a class="reference internal" href="installation.html#installation"><span class="std std-ref">Installation</span></a> discussion, a combined PyGS conda environment is not yet implemented for which the <em>infraga</em> Python methods can be leveraged without changing environments).</p>
-<p>Construction of PGMs for the winter samples generated above can be completed using (update the call with the available number of CPUs, regardless, this will run for a while):</p>
+<p>Similar to the sampling analysis, it’s useful to define subdirectories for individual seasonal propagation models.  Construction of PGMs for the winter samples generated above can be completed using (update the call with the available number of CPUs; regardless, this will run for a while):</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;39.1026, -84.5123, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir prop/winter
+
+stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;39.1026, -84.5123, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#####################################
@@ -567,7 +645,7 @@ Options:
 <a class="reference internal image-reference" href="_images/det-stats.png"><img alt="_images/det-stats.png" src="_images/det-stats.png" style="width: 600px;" /></a>
 </figure>
 </div></blockquote>
-<p>In the resulting visualization, each row corresponds to one of the explosive yield values and each column denotes results for a single transmission loss model.  <em>Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.  Also, for other combinations of TLMs (e.g., summer vs. winter), the labelling needs to be corrected (probably user specified), I’ll figure that out later.</em></p>
+<p>In the resulting visualization, each row corresponds to one of the explosive yield values and each column denotes results for a single transmission loss model.  <em>Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.  Also, for other combinations of TLMs (e.g., summer vs. winter), the labelling needs to be corrected</em></p>
 <p>In addition to computing detection statistics for a single station, a network of stations can be analyzed to quantify the probability that an explosive source of a given yield will be detected by some limiting number of stations in the network.  Because the information required in such an analysis is a bit more complex, a file containing network info is needed.  The expected format is a comma-separated-value (CSV) file containing the latitude and longitude of each station, the number of sensor elements (to account for signal gain from beamforming analysis), and a TLM.  An example network info file is summarized below for the University of Utah infrasound network.</p>
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>39.4731, -110.740, 4, prop/US_RM/US_RM-winter_0.500Hz.tlm

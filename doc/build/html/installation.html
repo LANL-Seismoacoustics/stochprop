@@ -88,14 +88,14 @@
 <span id="id1"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h1>
 <section id="operating-systems">
 <h2>Operating Systems<a class="headerlink" href="#operating-systems" title="Permalink to this heading"></a></h2>
-<p>stochprop can currently be installed on machines running newer versions of Linux or Apple OS X.  Installation on a Windows system requires an Anaconda Python installation and</p>
+<p>stochprop has been installed on machines running newer versions of Linux or Apple OS X.  Installation on a Windows system has not been tested, but requires an Anaconda Python installation, so it should be reasonably straightforward.  Installation of propagation and signal analysis tools on such a system might be more challenging however.</p>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this heading"></a></h2>
 <p><strong>Anaconda</strong></p>
-<p>The installation of stochprop is ideally completed using pip through <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda</a> to resolve and download the correct python libraries. If you don’t currently have anaconda installed on your system, please do that first.</p>
+<p>The installation of stochprop is ideally completed using pip through <a class="reference external" href="https://docs.anaconda.com/free/anaconda/install/index.html">Anaconda</a> to resolve and download the correct python libraries. If you don’t currently have Anaconda installed on your system, you will need to do that first.</p>
 <p><strong>Propagation Modeling Methods</strong></p>
-<p>A subset of the stochprop methods require access to the  LANL <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraGA">InfraGA/GeoAc</a> ray tracing methods as well as the <a class="reference external" href="https://github.com/chetzer-ncpa/ncpaprop">NCPAprop</a> normal mode methods.  Many of the empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.</p>
+<p>A subset of the stochprop methods require access to the  LANL <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraGA">InfraGA/GeoAc</a> ray tracing methods as well as the <a class="reference external" href="https://github.com/chetzer-ncpa/ncpaprop-release">NCPAprop</a> normal mode methods.  Many of the empirical orthogonal function (EOF) based atmospheric statistics and gravity wave pertorbation methods can be used without these propagation tools, but full usage of stochprop requires them.</p>
 <p><strong>InfraPy Signal Analysis Methods</strong></p>
 <p>The propagation models constructed in stochprop are intended for use in the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE)
 methods in the LANL <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infrapy">InfraPy</a> signal analysis software suite.  As with the InfraGA/GeoAc and NCPAprop linkages, many of the EOF-based atmospheric statistics methods
@@ -104,7 +104,7 @@ can be utilized without InfraPy, but full usage will require installation of Inf
 <section id="stochprop-installation">
 <h2>stochprop Installation<a class="headerlink" href="#stochprop-installation" title="Permalink to this heading"></a></h2>
 <p><strong>Stand Alone Install</strong></p>
-<p>A stand alone conda environment can be created with only the stochprop using pip:</p>
+<p>A stand alone Anaconda environment can be created with the stochprop YML file,</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>conda env create -f stochprop_env.yml
 </pre></div>
 </div>
