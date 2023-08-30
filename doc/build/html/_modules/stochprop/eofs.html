@@ -431,7 +431,15 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s2">&quot;Hours filter:&quot;</span><span class="p">,</span> <span class="n">hours</span><span class="p">)</span>
 
     <span class="n">file_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+
     <span class="n">dir_files</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">path</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
     <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">dir_files</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">fnmatch</span><span class="o">.</span><span class="n">fnmatch</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">years</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">months</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">weeks</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">ydays</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hours</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -927,7 +935,9 @@
 
     <span class="n">overlap</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">coeffs</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)))</span>
     
-    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">eof_weights</span> <span class="o">=</span> <span class="n">_load_eofs</span><span class="p">(</span><span class="n">eofs_path</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">sing_vals</span> <span class="o">=</span> <span class="n">_load_eofs</span><span class="p">(</span><span class="n">eofs_path</span><span class="p">)</span>
+
+    <span class="n">eof_weights</span> <span class="o">=</span> <span class="n">sing_vals</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][:</span><span class="n">eof_cnt</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span>
     <span class="n">eof_weights</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">eof_weights</span><span class="p">)</span>  
 
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;mean&quot;</span><span class="p">:</span>

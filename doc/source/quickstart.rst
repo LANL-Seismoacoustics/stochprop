@@ -140,7 +140,7 @@ From the above seasonal trends analysis using :code:`stochprop plot ess-ratio`, 
 
         stochprop stats build-eofs --atmo-dir profs/ --eofs-path eofs/example_winter --week-selection '38:52,1:15'
 
-Note that the notation *38:52,1:15* is used to denote all weeks between 38 and 52 plus those between 1 and 15.  Running this function reads the atmospheric data from the *profs/* directory, s check the file names and/or header info for datetime info to determine whether individual files are within the specified range of weeks, and uses a singular value decomposition (SVD) to  construct the EOFs.  For larger data sets, ingesting large numbers of atmospheric files for analysis can be time consuming; though, for this sample data set it's relatively quick.  
+Note that the notation *38:52,1:15* is used to denote all weeks between 38 and 52 plus those between 1 and 15.  Running this function reads the atmospheric data from the *profs/* directory, check the file names and/or header info for datetime info to determine whether individual files are within the specified range of weeks, and uses a singular value decomposition (SVD) to  construct the EOFs.  For larger data sets, ingesting large numbers of atmospheric files for analysis can be time consuming; though, for this sample data set it's relatively quick.  
 
     .. code:: none
 

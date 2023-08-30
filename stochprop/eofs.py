@@ -352,7 +352,15 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
         print('\t\t' + "Hours filter:", hours)
 
     file_list = []
+
+    if path is None or path == "":
+        path = "."
+
     dir_files = os.listdir(path)
+
+    if path == ".":
+        path = ""
+
     for file in np.sort(dir_files):
         if fnmatch.fnmatch(file, pattern):
             if years is None and months is None and weeks is None and ydays is None and hours is None:
@@ -848,7 +856,9 @@ def compute_overlap(coeffs, eofs_path, eof_cnt=100, method="mean"):
 
     overlap = np.ones((len(coeffs), len(coeffs)))
     
-    _, _, _, _, eof_weights = _load_eofs(eofs_path)
+    _, _, _, _, sing_vals = _load_eofs(eofs_path)
+
+    eof_weights = sing_vals[:, 1][:eof_cnt]**2
     eof_weights /= np.sum(eof_weights)  
 
     if method == "mean":

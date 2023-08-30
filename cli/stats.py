@@ -331,8 +331,8 @@ def perturb(atmo_file, sample_path, method, eofs_path, std_dev, eof_max, eof_cnt
     -----------------------
     \b
     Example Usage:
-    \t stochprop stats perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --sample-path test_eof --method eofs --eofs-path eofs/example 
-    \t stochprop stats perturb --atmo-file profs/g2stxt_2010010118_39.7393_-104.9900.dat --sample-path test_gw --method
+    \t stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --sample-path test_eof --method eof --eofs-path eofs/example 
+    \t stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --sample-path test_gw --method gw
     '''
 
     click.echo("")
