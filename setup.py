@@ -9,7 +9,7 @@ import glob
 from distutils.core import setup
 
 setup(name = "stochprop",
-    version = '0.1.0',
+    version = '0.1.2',
     description = "A set of tools for analyzing atmospheric variability and uncertainty in infrasound propagation studies",
     author_email = 'pblom at lanl dot gov',
     packages = ['stochprop'],
