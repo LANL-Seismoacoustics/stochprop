@@ -9,13 +9,14 @@ import glob
 from distutils.core import setup
 
 setup(name = "stochprop",
-    version = '0.1.2',
+    version = '0.1.0',
     description = "A set of tools for analyzing atmospheric variability and uncertainty in infrasound propagation studies",
     author_email = 'pblom at lanl dot gov',
-    packages = ['stochprop'],
+    packages = ['stochprop',
+                'stochprop.cli'],
     scripts=[],
 
-    entry_points = {'console_scripts':['stochprop=cli.__main__:main']},
+    entry_points = {'console_scripts':['stochprop=stochprop.cli.__main__:main']},
 
     install_requires = ['click',
                         'matplotlib',
