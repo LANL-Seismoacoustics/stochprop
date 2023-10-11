@@ -302,7 +302,8 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             print("")
 
             if clean_up:
-                os.remove(profs_path + "/*.dat")
+                for file in glob.glob(profs_path + "*.arrivals.dat"):
+                    os.remove(file)
 
 
 def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path="", clean_up=False, keep_lossless=False, cpu_cnt=1):
