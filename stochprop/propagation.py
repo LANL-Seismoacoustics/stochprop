@@ -289,14 +289,16 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                         command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
                         if geom == "sph":
                             command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
-                        command = command + " src_alt=" + str(src_loc[2])
-                        command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
+                        command = command + " src_alt=" + str(src_loc[2]) + " freq=" + str(freq) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
                         command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false"
                         
                         if reverse_winds:
                             command = command + " reverse_winds=True"
+
                         if topo_file is not None:
                             command = command + " topo_file=" + topo_file 
+                        else:
+                            command = command + " z_grnd=" + str(z_grnd)
 
                         if not verbose:
                             command = command + " > /dev/null"
