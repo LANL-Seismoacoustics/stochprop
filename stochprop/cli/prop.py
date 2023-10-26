@@ -90,8 +90,6 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
     plt.show()
 
 
-
-
 @click.command('build-pgm', short_help="Build a path geometry model (PGM)")
 @click.option("--atmo-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
@@ -111,9 +109,13 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 @click.option("--rng-step", help="Range resolution in PGM (default: 10 km)", default=10.0)
 @click.option("--az-bin-cnt", help="Number of azimuth bins in PGM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in PGM (default: 30 deg)", default=30.0)
+@click.option("--min-turning-ht", help="Minimum turning height altitude [km]", default=0.0)
+@click.option("--station-centered", help="Flag to build a station-centered model via back projection", default=False)
+@click.option("--topo-file", help="Terrain file for propagation simulation", default=None)
 @click.option("--verbose", help="Output analysis stages as they're done.",  default=False)
 def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimuths, bounces, z_grnd, rng_max,
-                freq, prof_format, infraga_path, clean_up, cpu_cnt, rng_window, rng_step, az_bin_cnt, az_bin_width, verbose):
+                freq, prof_format, infraga_path, clean_up, cpu_cnt, rng_window, rng_step, az_bin_cnt, az_bin_width,
+                min_turning_ht, station_centered, topo_file, verbose):
     '''
     \b
     stochprop prop build-pgm 
@@ -137,6 +139,13 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     click.echo('\n' + "Data IO summary:")
     click.echo("  Atmospheric specifications directory: " + atmo_dir)
     click.echo("  Specification pattern: " + atmo_pattern)
+    if topo_file is not None:
+        click.echo("  Terrain file: " + topo_file)
+        station_centered = True       
+
+    if station_centered:
+        click.echo("    --> note: running station-centered construction via back projection")
+
     click.echo("  Model output path: " + output_path)
 
     click.echo('\n' + "infraGA/GeoAc parameters:")
@@ -163,11 +172,15 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     azimuths = [float(val) for val in azimuths.strip(' ()[]').split(',')]
     
     propagation.run_infraga(atmo_dir, output_path + ".arrivals.dat", pattern=atmo_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
-                    inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, infraga_path=infraga_path, clean_up=clean_up, prof_format=prof_format, verbose=verbose)
+                    inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, infraga_path=infraga_path, 
+                    clean_up=clean_up, prof_format=prof_format, reverse_winds=station_centered, topo_file=topo_file, verbose=verbose)
+
+    # update source altitude if below ground surface
+    src_loc[2] = max(src_loc[2], z_grnd)
 
     pgm = propagation.PathGeometryModel()
-    pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, 
-                rng_spacing=rng_step, az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width)
+    pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step,
+                az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width, min_turning_ht=min_turning_ht, station_centered=station_centered)
 
 
 

@@ -222,7 +222,7 @@ def _plot_ess_ratio(A, z0, datetimes, grnd_index, results_path, include_ns, show
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zTuvdp", verbose=False):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zTuvdp", reverse_winds=False, topo_file=None, verbose=False):
     """
         Run the infraga -prop algorithm to compute path geometry
         statistics for BISL using a suite of specifications
@@ -292,6 +292,12 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                         command = command + " src_alt=" + str(src_loc[2])
                         command = command + " freq=" + str(freq) + " z_grnd=" + str(z_grnd) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
                         command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false"
+                        
+                        if reverse_winds:
+                            command = command + " reverse_winds=True"
+                        if topo_file is not None:
+                            command = command + " topo_file=" + topo_file 
+
                         if not verbose:
                             command = command + " > /dev/null"
 
@@ -305,113 +311,6 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                 for file in glob.glob(profs_path + "*.arrivals.dat"):
                     os.remove(file)
 
-
-def run_modess(profs_path, results_path, pattern="*.met", azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, ncpaprop_path="", clean_up=False, keep_lossless=False, cpu_cnt=1):
-    """
-        Run the NCPAprop normal mode methods to compute transmission
-        loss values for a suite of atmospheric specifications at
-        a set of frequency values
-        
-        Note: the methods here use the ncpaprop_v2 version that includes an option
-        for --filetag that writes output into a specific location and enables
-        simultaneous calculations via subprocess.popen()
-
-        Parameters
-        ----------
-        profs_path: string
-            Path to atmospheric specification files
-        results_file: string
-            Path and name of file where results will be written
-        pattern: string
-            Pattern identifying atmospheric specification within profs_path location
-        azimuths: iterable object
-            Iterable of starting, ending, and step for propagation azimuths
-        freq: float
-            Frequency for simulation
-        z_grnd: float
-            Elevation of the ground surface relative to sea level
-        rng_max: float
-            Maximum propagation range for propagation paths
-        clean_up: boolean
-            Flag to remove individual .nm files after combining
-        keep_lossless: boolean
-            Flag to keep the lossless (no absorption) results
-        cpu_cnt : integer
-            Number of CPUs to use in subprocess.popen loop for simultaneous calculations
-        """
-
-    dir_files = np.sort(os.listdir(profs_path))
-    if os.path.isfile(results_path + ".nm"):
-        print(results_path + ".nm already exists  --->  Skipping NCPAprop modess runs...")
-    else:
-        print("Running NCPAprop modess for atmospheric specifications in " + profs_path)
-        command_list = []
-        for file_name in dir_files:
-            if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
-                command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --freq " + str(freq) + "  --maxrange_km " + str(rng_max) + " --zground_km " + str(z_grnd) 
-                command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
-                command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz" % freq + " > /dev/null"
-                command_list = command_list + [command]
-
-
-        for j in range(0, len(command_list), cpu_cnt):              
-            if cpu_cnt==1 or j + 1 == len(command_list):
-                print('\t' + "Running NCPAprop modess for sample " + str(j + 1) + "of " + str(len(command_list)))
-            elif cpu_cnt==2 or j + 2 == len(command_list):
-                print('\t' + "Running NCPAprop modess for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
-            else:
-                print('\t' + "Running NCPAprop modess for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
-
-            procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
-            for proc in procs_list:
-                proc.communicate()
-                proc.wait()
-
-        if rng_max > 1001:
-            command_list = []
-            for file_name in dir_files:
-                if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz.nm"):
-                    command = ncpaprop_path + "Modess --multiprop --atmosfile " + profs_path + "/" + file_name + " --freq " + str(freq)
-                    command = command + "  --maxrange_km " + str(int(rng_max / 1000.0)) + " --Nrng_steps " + str(int(rng_max / 1000.0)) + " --zground_km " + str(z_grnd)
-                    command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
-                    command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp" % freq + " > /dev/null"
-                    command_list = command_list + [command]
-
-            for j in range(0, len(command_list), cpu_cnt):              
-                if cpu_cnt==1 or j + 1 == len(command_list):
-                    print('\t' + "Running NCPAprop modess near-source for sample " + str(j + 1) + "of " + str(len(command_list)))
-                elif cpu_cnt==2 or j + 2 == len(command_list):
-                    print('\t' + "Running NCPAprop modess near-source for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
-                else:
-                    print('\t' + "Running NCPAprop modess near-source for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
-
-                procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
-                for proc in procs_list:
-                    proc.communicate()
-                    proc.wait()
-
-            command = "cat " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp.Nby2D_tloss_1d.nm" % freq
-            command = command + " >> " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz.Nby2D_tloss_1d.nm" % freq
-            subprocess.call(command, shell=True)                    
-
-            command = "cat " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp.Nby2D_tloss_1d.lossless.nm" % freq
-            command = command + " >> " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz.Nby2D_tloss_1d.lossless.nm" % freq
-            subprocess.call(command, shell=True)
-
-            os.remove(profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz-temp*" % freq)
-
-        print('\t' + "Combining transmission loss predictions..." + '\n')
-        command = "cat " + profs_path + "/*_%.3f" % freq + "Hz*.nm > " + results_path + ".nm"
-        subprocess.call(command, shell=True)
-
-        if keep_lossless:
-            command = "cat " + profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm > " + results_path + ".lossless.nm"
-            print('\t\t' + command)
-            subprocess.call(command, shell=True)
-
-        if clean_up:
-            os.remove(profs_path + "/*_%.3f" % freq + "Hz*.lossless.nm")
-            os.remove(profs_path + "/*_%.3f" % freq + "Hz*.nm")
 
 
 def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, ncpaprop_path="", topo_path_label=None, clean_up=False, keep_lossless=False, cpu_cnt=1, verbose=False):
@@ -724,7 +623,7 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False):
         """
             Construct propagation statistics from a ray tracing arrival file (concatenated from
             multiple runs most likely) and output a path geometry model
@@ -752,7 +651,9 @@ class PathGeometryModel(object):
                 Number of azimuth bins to use in analysis
             az_bin_width: float
                 Azimuth bin width in degrees for analysis
-
+            station_centered: bool
+                Flag to build station-centered model via back projection ray tracing (needed for inclusion of terrain)
+                
         """
         if os.path.isfile(output_file):
             print(output_file + " already exists  --->  Skipping path geometry model construction...")
@@ -781,17 +682,27 @@ class PathGeometryModel(object):
                     theta, phi, n, x, y, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
 
                     rngs = np.sqrt(x**2 + y**2)
-                    az = 90.0 - np.degrees(np.arctan2(y, x))
-                    az_dev = (90.0 - np.degrees(np.arctan2(-y, -x))) - back_az
+                    if station_centered:
+                        az = 90.0 - np.degrees(np.arctan2(-y, -x))
+                        az_dev = (90.0 - np.degrees(np.arctan2(y, x))) - phi 
+                    else:
+                        az = 90.0 - np.degrees(np.arctan2(y, x))
+                        az_dev = (90.0 - np.degrees(np.arctan2(-y, -x))) - back_az
+ 
                 else:
                     theta, phi, n, lats, lons, t, cel, z_max, incl, back_az, amp_geo, amp_atmo = np.loadtxt(arrivals_file, unpack=True)
 
-                    az, temp_az, rngs = sph_proj.inv(np.array([src_loc[1]] * len(lons)), np.array([src_loc[0]] * len(lats)), lons, lats)
-                    rngs = rngs / 1000.0
-                    az_dev = np.array(temp_az) - back_az
+                    if station_centered:
+                        az, temp_az, rngs = sph_proj.inv(lons, lats, np.array([src_loc[1]] * len(lons)), np.array([src_loc[0]] * len(lats)))
+                        rngs = rngs / 1000.0
+                        az_dev = np.array(temp_az) - phi
+                    else:
+                        az, temp_az, rngs = sph_proj.inv(np.array([src_loc[1]] * len(lons)), np.array([src_loc[0]] * len(lats)), lons, lats)
+                        rngs = rngs / 1000.0
+                        az_dev = np.array(temp_az) - back_az
 
                 rcel = 1.0 / cel
-
+ 
                 # wrap angles to +/- 180 degrees
                 phi[phi > 180.0] -= 360.0
                 phi[phi < -180.0] += 360.0
