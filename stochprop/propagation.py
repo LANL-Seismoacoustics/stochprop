@@ -9,12 +9,13 @@ import os
 import fnmatch
 import warnings
 import pickle
-import imp
 import itertools
 import subprocess
 import glob
 
 import numpy as np
+
+from importlib.util import find_spec
 
 from datetime import datetime
 from pyproj import Geod
@@ -625,7 +626,7 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, rng_max=1000.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False):
         """
             Construct propagation statistics from a ray tracing arrival file (concatenated from
             multiple runs most likely) and output a path geometry model
@@ -643,6 +644,8 @@ class PathGeometryModel(object):
                 Range bin width in kilometers
             rng_spacing: float
                 Spacing between range bins in kilometers
+            rng_max: float
+                Maximum range in model
             geom: string
                 Geometry used in infraGA/GeoAc simulation.  Options are "3d" and "sph"
             src_loc: iterable
@@ -669,6 +672,7 @@ class PathGeometryModel(object):
                 self._az_bin_cnt = az_bin_cnt
 
                 # define range bins and parameter arrays
+                self._rng_max = rng_max
                 rng_bins = np.arange(0.0, self._rng_max, rng_spacing)
                 rng_cnt = len(rng_bins)
 
@@ -714,6 +718,10 @@ class PathGeometryModel(object):
 
                 az_dev[az_dev > 180.0] -= 360.0
                 az_dev[az_dev < -180.0] += 360.0
+
+                print("phi lims:", min(phi), max(phi))
+                print("az lims:", min(az), max(az))
+                print("az_dev lims:", min(az_dev), max(az_dev))
 
                 # Cycle through azimuth bins creating fit
                 az_wts = np.empty(self._az_bin_cnt)
@@ -863,12 +871,18 @@ class PathGeometryModel(object):
                             window1.remove()
                             window2.remove()
 
+                    rng_wts[rng_wts > 4.0 / len(rng_wts)] = 4.0 / len(rng_wts)
+                    print("rng_wts:", rng_wts)
+
                     for nr in range(rng_cnt):
                         rcel_wts[n_az][nr] *= rng_wts[nr] / np.sum(rng_wts)
 
                     plt.close('all')
 
+                
                 # Normalize weights by total arrivals at all azimuths
+                print("az_wts:", az_wts)
+
                 for n_az in range(self._az_bin_cnt):
                     rcel_wts[n_az] *= az_wts[n_az] / np.sum(az_wts)
 
@@ -943,7 +957,7 @@ class PathGeometryModel(object):
                     self._rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
                     self._rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
 
-    def display(self, file_id=None, subtitle=None, show_colorbar=True, hold_fig=False):
+    def display(self, file_id=None, subtitle=None, show_colorbar=True, hold_fig=False, cmap_max=None):
         """
         Display the propagation geometry statistics
 
@@ -957,22 +971,22 @@ class PathGeometryModel(object):
         """
 
         resol = 100
-        rngs = np.linspace(0.0, 1000.0, resol)
+        rngs = np.linspace(0.0, self._rng_max, resol)
         bias = np.empty([resol])
         width = np.empty([resol])
 
         bias_color = 'Blue'
         var_color = 'LightBlue'
 
-        compass_file = imp.find_module('stochprop')[1] + '/resources/compass.png'
+        compass_file = find_spec('stochprop').submodule_search_locations[0] + '/resources/compass.png'
 
         f1, ax = plt.subplots(3, 3, figsize=(12, 9))
 
         for n1, n2 in itertools.product(list(range(3)), repeat=2):
             if n1 != 1 or n2 != 1:
                 ax[n1, n2].set_ylim([-10, 10])
-                ax[n1, n2].set_xlim([0, 1000])
-                ax[n1, n2].set_xticks([0, 250, 500, 750, 1000])
+                ax[n1, n2].set_xlim([0, self._rng_max])
+                # ax[n1, n2].set_xticks(np.arange(0, self._rng_max, 5))
             if n2 != 0:
                 ax[n1, n2].set_yticklabels([])
             if n1 != 2:
@@ -1013,7 +1027,7 @@ class PathGeometryModel(object):
 
         # Plot celerity-range statistics
         cels = np.linspace(0.2, 0.4, resol)
-        rngs = np.linspace(0, 1000.0, resol)
+        rngs = np.linspace(0, self._rng_max, resol)
         R, V = np.meshgrid(rngs, cels)
         R = R.flatten()
         V = V.flatten()
@@ -1022,17 +1036,20 @@ class PathGeometryModel(object):
 
         palette = cm.nipy_spectral_r
 
-        pdf_max = 0.0
-        for az in np.arange(-180.0, 180.0, 45.0):
-            pdf_max = max(pdf_max, max(self.eval_rcel_gmm(R, 1.0 / V, [az] * len(R))))
+        if cmap_max is not None:
+            pdf_max = cmap_max
+        else:
+            pdf_max = 0.0
+            for az in np.arange(-180.0, 180.0, 45.0):
+                pdf_max = max(pdf_max, max(self.eval_rcel_gmm(R, 1.0 / V, [az] * len(R))))
 
         f2, ax = plt.subplots(3, 3, figsize=(12, 9))
 
         for n1, n2 in itertools.product(list(range(3)), repeat=2):
             if n1 != 1 or n2 != 1:
                 ax[n1, n2].set_ylim([0.2, 0.4])
-                ax[n1, n2].set_xlim([0, 1000])
-                ax[n1, n2].set_xticks([0, 250, 500, 750, 1000])
+                ax[n1, n2].set_xlim([0, self._rng_max])
+                # ax[n1, n2].set_xticks([0, 250, 500, 750, 1000])
             if n2 != 0:
                 ax[n1, n2].set_yticklabels([])
             if n1 != 2:
@@ -1294,7 +1311,7 @@ class TLossModel(object):
 
         """
         scale_max = 0.1
-        compass_file = imp.find_module('stochprop')[1] + '/resources/compass.png'
+        compass_file = find_spec('stochprop').submodule_search_locations[0] + '/resources/compass.png'
 
         resol = 100
         rngs = np.linspace(0.0, 1000.0, resol)
@@ -1368,7 +1385,8 @@ class TLossModel(object):
 #########################
 def ims_noise_model():
 
-    ims_ns = np.loadtxt(imp.find_module('stochprop')[1] + '/resources/IMSNOISE_MIN_MED_MAX.txt')
+    ims_ns = np.loadtxt(find_spec('stochprop').submodule_search_locations[0] + '/resources/IMSNOISE_MIN_MED_MAX.txt')
+
     ns_mean = interp1d(ims_ns[:, 0], 10.0 * ims_ns[:, 2], bounds_error=False, fill_value="extrapolate")
     ns_sigma = interp1d(ims_ns[:, 0], 10.0 * (ims_ns[:, 3] - ims_ns[:, 1]) / 4.0, bounds_error=False, fill_value="extrapolate")
 
@@ -1556,8 +1574,8 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
             else:
                 ax_j = axes[n]
 
-            ax_j.set_theta_direction(-1)
             ax_j.set_theta_zero_location("N")
+            ax_j.set_theta_direction(-1)
 
             ax_j.set_xticks(np.linspace(0, 2 * np.pi, 4, endpoint=False))
             ax_j.set_yticks(np.linspace(0, np.round(tlm.rng_vals[-1], -1), 5))

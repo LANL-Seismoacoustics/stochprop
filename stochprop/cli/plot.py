@@ -309,14 +309,16 @@ def coeff_overlap(overlap):
 
 @click.command('prop-model', short_help="Visualize a PGM or TLM")
 @click.option("--model-file", help="stochprop PGM or TLM file (required)", prompt="PGM or TLM file")
-def prop_model(model_file):
+@click.option("--output-id", help="File ID for output image file", default=None)
+@click.option("--cmap-max", help="Value maximum for colormap (default='auto')", default=None)
+def prop_model(model_file, output_id, cmap_max):
     '''
     \b
     stochprop plot prop-model
     ---------------------
     \b
     Example Usage:
-    \t stochprop plot prop-model --model-file prop/winter/winter.pgm
+    \t stochprop plot prop-model --model-file prop/winter/winter.pgm --output-id winter
     \t stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm
 
     '''
@@ -333,11 +335,11 @@ def prop_model(model_file):
     if model_file[-3:] == 'pgm':
         model = sp_prop.PathGeometryModel()
         model.load(model_file)
-        model.display(hold_fig=True)
+        model.display(file_id=output_id, hold_fig=True, cmap_max=cmap_max)
     elif model_file[-3:] == 'tlm':
         model = sp_prop.TLossModel()
         model.load(model_file)
-        model.display(hold_fig=True)
+        model.display(file_id=output_id, hold_fig=True)
     else:
         click.echo("Error: invalid model file.")
 
@@ -355,7 +357,7 @@ def detection_stats(tlm_files, yield_vals, array_dim, figure_out, show_figure):
     ---------------------
     \b
     Example Usage:
-    \t stochprop plot detection-stats --tlm-files prop/US_RM/US_RM-winter_0.500Hz.tlm --yield-vals '1, 10, 100' --array-dim 5
+    \t stochprop plot detection-stats --tlm-files 'prop/US_RM/US_RM-winter_*.tlm' --yield-vals '1, 10, 100' --array-dim 5
 
     '''
     click.echo("")

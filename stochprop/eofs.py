@@ -13,13 +13,13 @@ import os
 import calendar
 import fnmatch
 import datetime
-import imp
 import subprocess
 import pkg_resources
 import re 
-import warnings
 
 from netCDF4 import Dataset
+
+from importlib.util import find_spec
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -419,8 +419,7 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
         file_list = np.sort(file_list)
         if prof_format == "ecmwf" or prof_format == "ECMWF":
             # Add a check and download here for the ETOPO file
-            etopo_file = imp.find_module('stochprop')[1] + '/resources/ETOPO1_Ice_g_gmt4.grd'
-
+            etopo_file = find_spec('stochprop').submodule_search_locations[0] + '/resources/ETOPO1_Ice_g_gmt4.grd'
             etopo1 = Dataset(etopo_file)
 
             grid_lons = etopo1.variables['x'][:]

@@ -179,7 +179,7 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     src_loc[2] = max(src_loc[2], z_grnd)
 
     pgm = propagation.PathGeometryModel()
-    pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step,
+    pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step, rng_max=rng_max,
                 az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width, min_turning_ht=min_turning_ht, station_centered=station_centered)
 
 
