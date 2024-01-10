@@ -12,6 +12,7 @@ import pickle
 import itertools
 import subprocess
 import glob
+import tempfile
 
 import numpy as np
 
@@ -223,7 +224,7 @@ def _plot_ess_ratio(A, z0, datetimes, grnd_index, results_path, include_ns, show
 #  Running infraga and NCPAprop  #
 #     with multiple profiles     #
 # ############################## #
-def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", clean_up=False, prof_format="zTuvdp", reverse_winds=False, topo_file=None, verbose=False):
+def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3d", bounces=25, inclinations=[1.0, 60.0, 1.0], azimuths=[-180.0, 180.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, src_loc=[0.0, 0.0, 0.0], infraga_path="", local_temp_dir=None, prof_format="zTuvdp", reverse_winds=False, topo_file=None, verbose=False):
     """
         Run the infraga -prop algorithm to compute path geometry
         statistics for BISL using a suite of specifications
@@ -257,8 +258,8 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
             The horizontal (latitude and longitude) and altitude of the source
         infraga_path: string
             Location of infraGA executables
-        clean_up: boolean
-            Flag to remove individual [..].arrival.dat files after combining
+        local_temp_dir: string
+            Path of local directory for storing individual infraGA results
         """
 
     if os.path.isfile(results_file):
@@ -270,53 +271,61 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
         else:
             if profs_path[-1] == "/":
                 profs_path = profs_path[:-1]
-        
-            dir_files = np.sort(os.listdir(profs_path))
-            for file_name in dir_files:
-                if fnmatch.fnmatch(file_name, pattern):
-                    file_id = os.path.splitext(file_name)[0]
 
-                    if os.path.isfile(profs_path + "/" + file_id + ".arrivals.dat"):
-                        print("InfraGA/GeoAc arrivals for " + file_name + " already finished...")
-                    else:
-                        print("Generating ray paths for " + file_name)
-                        if cpu_cnt:
-                            command = "mpirun -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+            with tempfile.TemporaryDirectory(prefix='infraga_') as tmpdirname:
+                if local_temp_dir is not None:
+                    print("Writing individual infraGA results into local directory: " + local_temp_dir + '\n')
+                    if not os.path.isdir(local_temp_dir):
+                        os.mkdir(local_temp_dir)
+                    tmpdirname = local_temp_dir
+                else:
+                    print('Created temp directory:', tmpdirname + '\n')
+                    
+                dir_files = np.sort(os.listdir(profs_path))
+                for file_name in dir_files:
+                    if fnmatch.fnmatch(file_name, pattern):
+                        file_id = os.path.splitext(file_name)[0]
+
+                        if os.path.isfile(tmpdirname + "/" + file_id + ".arrivals.dat"):
+                            print("InfraGA/GeoAc arrivals for " + file_name + " already computed...")
                         else:
-                            command = infraga_path + " infraga-" + geom + " -prop "
+                            print("Generating ray paths for " + file_name)
+                            if cpu_cnt:
+                                command = "mpirun -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+                            else:
+                                command = infraga_path + " infraga-" + geom + " -prop "
 
-                        command = command + profs_path + "/" + file_name
-                        command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
-                        command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
-                        if geom == "sph":
-                            command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
-                        command = command + " src_alt=" + str(src_loc[2]) + " freq=" + str(freq) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
-                        command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false"
-                        
-                        if reverse_winds:
-                            command = command + " reverse_winds=True"
+                            command = command + profs_path + "/" + file_name
+                            command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
+                            command = command + " az_min=" + str(azimuths[0]) + " az_max=" + str(azimuths[1]) + " az_step=" + str(azimuths[2])
+                            if geom == "sph":
+                                command = command + " src_lat=" + str(src_loc[0]) + " src_lon=" + str(src_loc[1])
+                            command = command + " src_alt=" + str(src_loc[2]) + " freq=" + str(freq) + " max_rng=" + str(rng_max) + " prof_format=" + str(prof_format)
+                            command = command + " calc_amp=False" + " bounces=" + str(bounces) + " write_rays=false"
+                            
+                            if reverse_winds:
+                                command = command + " reverse_winds=True"
 
-                        if topo_file is not None:
-                            command = command + " topo_file=" + topo_file 
-                        else:
-                            command = command + " z_grnd=" + str(z_grnd)
+                            if topo_file is not None:
+                                command = command + " topo_file=" + topo_file 
+                            else:
+                                command = command + " z_grnd=" + str(z_grnd)
 
-                        if not verbose:
-                            command = command + " > /dev/null"
+                            command = command + " output_id=" + tmpdirname + "/" + file_id
 
-                        subprocess.call(command, shell=True)
+                            if not verbose:
+                                command = command + " > /dev/null"
 
-            command = "cat " + profs_path + "/*.arrivals.dat > " + results_file
-            subprocess.call(command, shell=True)
-            print("")
+                            print(command)
+                            subprocess.call(command, shell=True)
 
-            if clean_up:
-                for file in glob.glob(profs_path + "*.arrivals.dat"):
-                    os.remove(file)
-
+                command = "cat " + tmpdirname + "/*.arrivals.dat > " + results_file
+                subprocess.call(command, shell=True)
+                print("")
 
 
-def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, ncpaprop_path="", topo_path_label=None, clean_up=False, keep_lossless=False, cpu_cnt=1, verbose=False):
+
+def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, ncpaprop_path="", topo_path_label=None, local_temp_dir=None, keep_lossless=False, cpu_cnt=1, verbose=False):
     """
         Run one of the NCPAprop methods to compute transmission
         loss values for a suite of atmospheric specifications at
@@ -379,8 +388,8 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
             Path to NCPAprop binaries (if not on path)
         topo_path_label: string
             Path and label for terrain files to use in epape simulations
-        clean_up: boolean
-            Flag to remove individual .nm files after combining
+        local_temp_dir: string
+            Path of local directory for storing individual NCPAprop results
         keep_lossless: boolean
             Flag to keep the lossless (no absorption) results
         cpu_cnt : integer
@@ -392,61 +401,76 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
 
     if ncpaprop_method == "modess":
         output_suffix = ".nm"
-        command_prefix = ncpaprop_path + " modess --multiprop --zground_km " + str(z_grnd)
     else:
         output_suffix = ".pe"
-        command_prefix = ncpaprop_path + " epape --multiprop --starter self --groundheight_km " + str(z_grnd)
 
     if os.path.isfile(results_path + output_suffix):
-
-        print(results_path + output_suffix + " already exists  --->  Skipping NCPAprop modess runs...")
+        print(results_path + output_suffix + " already exists  --->  Skipping NCPAprop simulations...")
     else:
-        if topo_path_label is not None:
-            output_suffix = ".pe"
-            command_prefix = ncpaprop_path + " epape --singleprop --topo --starter self"
+        with tempfile.TemporaryDirectory(prefix='infraga_') as tmpdirname:
+            if local_temp_dir is not None:
+                print("Writing individual NCPAprop results into local directory:" + local_temp_dir + '\n')
+                if not os.path.isdir(local_temp_dir):
+                    os.mkdir(local_temp_dir)
+                tmpdirname = local_temp_dir
+            else:
+                print('Created temp directory:', tmpdirname + '\n')
+                
+            if topo_path_label is not None:
+                output_suffix = ".pe"
+                command_prefix = ncpaprop_path + " epape --singleprop --topo --starter self"
 
-            # Add methods here to cycle through azimuths using appropriate terrain lines
+                # Add methods here to cycle through azimuths using appropriate terrain lines
 
-        else:
-            dir_files = np.sort(os.listdir(profs_path))
-            print("Running NCPAprop " + ncpaprop_method + " for atmospheric specifications in " + profs_path)
-            command_list = []
-            for file_name in dir_files:
-                if fnmatch.fnmatch(file_name, pattern) and not os.path.isfile(profs_path + os.path.splitext(file_name)[0] + "_%.3f" % freq + "Hz" + output_suffix):
-                    command = command_prefix + " --atmosfile " + profs_path + file_name
-                    command = command + " --freq " + str(freq)
-                    command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
-                    command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
-                    command = command + " --filetag " + profs_path + "/" + os.path.splitext(file_name)[0] + "_%.3fHz" % freq
-                    if not verbose:
-                        command = command + " > /dev/null"
-                    command_list = command_list + [command]
-
-            for j in range(0, len(command_list), cpu_cnt):              
-                if cpu_cnt==1 or j + 1 == len(command_list):
-                    print('\t' + "Running NCPAprop " + ncpaprop_method + " for sample " + str(j + 1) + "of " + str(len(command_list)))
-                elif cpu_cnt==2 or j + 2 == len(command_list):
-                    print('\t' + "Running NCPAprop " + ncpaprop_method + " for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
+            else:
+                if ncpaprop_method == "modess":
+                    command_prefix = ncpaprop_path + " modess --multiprop --zground_km " + str(z_grnd)
                 else:
-                    print('\t' + "Running NCPAprop " + ncpaprop_method + " for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
+                    command_prefix = ncpaprop_path + " epape --multiprop --starter self --groundheight_km " + str(z_grnd)
 
-                procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
-                for proc in procs_list:
-                    proc.communicate()
-                    proc.wait()
+                dir_files = np.sort(os.listdir(profs_path))
+                print("Running NCPAprop " + ncpaprop_method + " for atmospheric specifications in " + profs_path)
+                command_list = []
+                for file_name in dir_files:
+                    if fnmatch.fnmatch(file_name, pattern):
+                        file_id = os.path.splitext(file_name)[0]
+                        if os.path.isfile(tmpdirname + "/" + file_id + "_%.3fHz" % freq + ".Nby2D_tloss_1d" + output_suffix):
+                            print("NCPAprop results for " + file_name + " at " + str(freq) + " Hz already computed...")
+                        else:
+                            command = command_prefix + " --atmosfile " + profs_path + file_name
+                            command = command + " --freq " + str(freq)
+                            command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
+                            command = command + " --azimuth_start " + str(azimuths[0]) + " --azimuth_end " + str(azimuths[1]) + " --azimuth_step " + str(azimuths[2])
+                            command = command + " --filetag " + tmpdirname + "/" + file_id + "_%.3fHz" % freq
+                            command = command + " > /dev/null"
 
-            print('\t' + "Combining transmission loss predictions..." + '\n')
-            command = "cat " + profs_path + "*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
-            subprocess.call(command, shell=True)
+                            command_list = command_list + [command]
 
-            if keep_lossless:
-                command = "cat " + profs_path + "*_%.3f" % freq + "Hz*.lossless" + output_suffix + " > " + results_path + ".lossless" + output_suffix
-                print('\t\t' + command)
+                for j in range(0, len(command_list), cpu_cnt):              
+                    if cpu_cnt==1 or j + 1 == len(command_list):
+                        print('\t' + "Running NCPAprop " + ncpaprop_method + " for sample " + str(j + 1) + "of " + str(len(command_list)))
+                    elif cpu_cnt==2 or j + 2 == len(command_list):
+                        print('\t' + "Running NCPAprop " + ncpaprop_method + " for samples " + str(j + 1) + ", " + str(j + 2) + " of " + str(len(command_list)))
+                    else:
+                        print('\t' + "Running NCPAprop " + ncpaprop_method + " for samples " + str(j + 1) + " - " + str(min(j + cpu_cnt, len(command_list))) + " of " + str(len(command_list)))
+
+                    procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
+                    for proc in procs_list:
+                        proc.communicate()
+                        proc.wait()
+
+                print('\t' + "Combining transmission loss predictions...")
+                command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
+
+                print('\t' + command)
                 subprocess.call(command, shell=True)
 
-            if clean_up:
-                for file in glob.glob(profs_path + "*%.3fHz*" % freq + output_suffix):
-                    os.remove(file)
+                if keep_lossless:
+                    command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*.lossless" + output_suffix + " > " + results_path + ".lossless" + output_suffix
+                    print('\t' + command)
+                    subprocess.call(command, shell=True)
+
+
 
 
 # ############################ #

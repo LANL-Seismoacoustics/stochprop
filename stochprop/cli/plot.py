@@ -412,7 +412,7 @@ def network_performance(network_info, freq, src_yld, min_det_cnt, resol, lat_min
     ---------------------
     \b
     Example Usage:
-    \t stochprop prop network-performance --network-info network_test.dat --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
+    \t stochprop plot network-performance --network-info network_test.dat --lat-min 36 --lat-max 42 --lon-min -117.5 --lon-max -107.5
 
     '''
     click.echo("")
