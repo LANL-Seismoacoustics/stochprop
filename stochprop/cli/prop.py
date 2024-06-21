@@ -188,7 +188,7 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 @click.option("--atmo-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
 @click.option("--output-path", help="Path and prefix for TLM output", prompt="Path and prefix for TLM output")
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
-@click.option("--topo-label", help="Path and label for terrain files (optional)", default=None)
+@click.option("--use-topo", help="Option to include terrain in simulations (Default: False)", default=None)
 @click.option("--ncpaprop-method", help="NCPAprop method ('modess' or 'epape')", default='modess')
 @click.option("--ncpaprop-path", help="Path to NCPAprop binaries (if not on path)", default="")
 @click.option("--freq", help="Frequency for simulation (default: 0.5 Hz)", default=0.5)
@@ -196,6 +196,7 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 @click.option("--z-grnd", help="Ground elevation for simulations (default: 0.0)", default=0.0)
 @click.option("--rng-max", help="Maximum range for simulations (default: 1000.0)", default=1000.0)
 @click.option("--rng-resol", help="Range resolution for output (default: 1.0)", default=1.0)
+@click.option("--src-loc", help="Source location (lat, lon, alt)", prompt="Enter source location (lat, lon, alt)")
 @click.option("--local-temp-dir", help="Local storage for individual NCPAprop results", default=None)
 @click.option("--verbose", help="Show NCPAprop output (default: False)", default=False)
 @click.option("--cpu-cnt", help="Number of CPUs for propagation simulations", default=None)
@@ -205,9 +206,11 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 @click.option("--rng-cnt", help="Range intervals in TLM (default: 100)", default=100)
 @click.option("--rng-spacing", help="Option for range sampling ('linear' or 'log')", default='linear')
 @click.option("--use-coherent-tl", help="Use coherent transmission loss (default: False", default=False)
-def build_tlm(atmo_dir, output_path, atmo_pattern, topo_label, ncpaprop_method, ncpaprop_path, freq, azimuths, z_grnd,
-              rng_max, rng_resol, local_temp_dir, verbose, cpu_cnt, az_bin_cnt, az_bin_width, rng_lims, rng_cnt, rng_spacing, 
-              use_coherent_tl):
+@click.option("--station-centered", help="Flag to build a station-centered model via back projection", default=False)
+
+def build_tlm(atmo_dir, output_path, atmo_pattern, use_topo, ncpaprop_method, ncpaprop_path, freq, azimuths, z_grnd,
+              rng_max, rng_resol, src_loc, local_temp_dir, verbose, cpu_cnt, az_bin_cnt, az_bin_width, rng_lims, rng_cnt, rng_spacing, 
+              use_coherent_tl, station_centered):
     '''
     \b
     stochprop prop build-tlm
@@ -231,9 +234,15 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, topo_label, ncpaprop_method, 
     click.echo('\n' + "Data IO summary:")
     click.echo("  Atmospheric specifications directory: " + atmo_dir)
     click.echo("  Specification pattern: " + atmo_pattern)
-    if topo_label is not None:
-        click.echo("Topography files label: " + topo_label)
+    if use_topo:
+        click.echo("Including terrain in analysis")
+        click.echo("Source location: " + src_loc)
     click.echo("  Model output path: " + output_path)
+
+
+    if use_topo:
+        ncpaprop_method = "epape"
+
 
     click.echo('\n' + "NCPAprop parameters:")
     if len(ncpaprop_path) > 0:
@@ -254,8 +263,11 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, topo_label, ncpaprop_method, 
     click.echo("  Range count: " + str(rng_cnt))
     click.echo("  Range spacing: " + str(rng_spacing))
     click.echo("  Use coherent transmission loss: " + str(use_coherent_tl))
+    if use_topo:
+        click.echo("  Use terrain in epape: True")
     click.echo("")
 
+    src_loc = [float(val) for val in src_loc.strip(' ()[]').split(',')]
     azimuths = [float(val) for val in azimuths.strip(' ()[]').split(',')]
     rng_lims = [float(val) for val in rng_lims.strip(' ()[]').split(',')]
 
@@ -266,8 +278,8 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, topo_label, ncpaprop_method, 
 
     propagation.run_ncpaprop(ncpaprop_method, atmo_dir, output_path + "_%.3f" %freq + "Hz", pattern=atmo_pattern, 
                              azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, rng_resol=rng_resol, 
-                             ncpaprop_path=ncpaprop_path, topo_path_label=topo_label, local_temp_dir=local_temp_dir,
-                             cpu_cnt=cpu_cnt, verbose=verbose)
+                             src_loc=src_loc, ncpaprop_path=ncpaprop_path, use_topo=use_topo, 
+                             local_temp_dir=local_temp_dir, cpu_cnt=cpu_cnt)
 
     if ncpaprop_method == "modess":
         output_suffix = ".nm"
