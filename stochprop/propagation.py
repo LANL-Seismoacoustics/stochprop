@@ -325,7 +325,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
 
 
 
-def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, ncpaprop_path="", topo_path_label=None, local_temp_dir=None, keep_lossless=False, cpu_cnt=1, verbose=False):
+def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, src_loc=[40.0, -110.0, 0.0], ncpaprop_path="", use_topo=False, local_temp_dir=None, keep_lossless=False, reverse_winds=False, cpu_cnt=1):
     """
         Run one of the NCPAprop methods to compute transmission
         loss values for a suite of atmospheric specifications at
@@ -342,15 +342,18 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
             
             ePade Parabolic Equation (epape)
                 epape --multiprop --starter self --atmosfile ToyAtmo.met --groundheight_km 1.0 --freq 0.5 --azimuth_start 0 --azimuth_end 360 --azimuth_step 3 --maxrange_km 1000 --Nrng_steps 1000  --filetag test
-                epape --singleprop --topo --starter self --atmosfile ToyAtmo.met --topofile topo/line.dat --freq 0.5 --azimuth 0 --maxrange_km 1000 --Nrng_steps 1000 --filetag test2
+                epape --singleprop --topo --starter self --atmosfile ToyAtmo.met --topofile topo/line.dat --freq 0.5 --azimuth 0 --maxrange_km 1000 --Nrng_steps 1000 --sourceheight_km 0.0 --filetag test2
 
         Note on defining flat ground elevation:
             For some reason, most parameters are the same between modess and pape (e.g., freq, azimuth_start, Nrng_steps), but the parameter to define the ground elevation is difference (--zground_km in modess vs. --groundheight_km in epape).  I might email Claus about this...
 
         Notes on including terrain:
             Including terrain requires individual azimuth runs to match up azimuths with correct terrain lines (can't use Nx2D)
-            Need to figure out how terrain files are going to be built (external and have specified directory?)
-            Terrain line file requires header info:
+
+            There is a utility function in InfraGA/GeoAc that extracts terrain lines from etopo1 that can be used here.
+                infraga utils extract-terrain --geom line --lat1 40.0 --lon1 -102.5 --azimuth -90.0 --range 750.0 --output-file line_topo.dat
+                        
+            Terrain line file requires header info (included in InfraGA util output):
                 # 'infraga extract-terrain --geom line' summary:
                 # lat: 37.114912493
                 # lon: -116.069089728
@@ -363,7 +366,12 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 3.703703703703796	0.9092146274618726
                 5.555555555556105	0.9170049733706201
                 ...
-                
+
+
+
+
+
+
         Parameters
         ----------
         ncpaprop_method: string
@@ -384,10 +392,12 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
             Maximum propagation range for propagation paths
         rng_resol: float
             Resolution for range ouputs (defaults to 1 km)
+        src_loc: iterable object
+            The horizontal (latitude and longitude) and altitude of the source
         ncpaprop_path: string
             Path to NCPAprop binaries (if not on path)
-        topo_path_label: string
-            Path and label for terrain files to use in epape simulations
+        use_topo: bool
+            Flag to turn on terrain inclusion for simulations
         local_temp_dir: string
             Path of local directory for storing individual NCPAprop results
         keep_lossless: boolean
@@ -409,18 +419,64 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
     else:
         with tempfile.TemporaryDirectory(prefix='infraga_') as tmpdirname:
             if local_temp_dir is not None:
-                print("Writing individual NCPAprop results into local directory:" + local_temp_dir + '\n')
+                print("Writing individual NCPAprop results into local directory: " + local_temp_dir + '\n')
                 if not os.path.isdir(local_temp_dir):
                     os.mkdir(local_temp_dir)
                 tmpdirname = local_temp_dir
             else:
                 print('Created temp directory:', tmpdirname + '\n')
                 
-            if topo_path_label is not None:
+            if use_topo:
+                reverse_winds = True
                 output_suffix = ".pe"
-                command_prefix = ncpaprop_path + " epape --singleprop --topo --starter self"
+                command_prefix = ncpaprop_path + " ePape --singleprop --topo --starter self"
 
                 # Add methods here to cycle through azimuths using appropriate terrain lines
+
+                topo_extract = "infraga utils extract-terrain --geom nx2d --show-terrain False"
+                topo_extract = topo_extract + " --lat1 " + str(src_loc[0]) + " --lon1 " + str(src_loc[1])
+                topo_extract = topo_extract + " --nx2d-resol " + str(azimuths[-1]) + " --range " + str(rng_max + 1.0)
+                topo_extract = topo_extract + " --output-file " + tmpdirname + "/terrain"
+                subprocess.call(topo_extract, shell=True)
+
+                dir_files = np.sort(os.listdir(profs_path))
+                for file_name in dir_files:
+                    if fnmatch.fnmatch(file_name, pattern):
+                        file_id = os.path.splitext(file_name)[0]
+
+                        print('\n' + "Running simulations using --atmosfile " + profs_path + file_name)
+                        command_list = []
+                        for az_val in np.arange(*azimuths):
+                            command = command_prefix + " --atmosfile " + profs_path + file_name
+                            command = command + " --topofile " + tmpdirname + "/terrain_%06.2fdeg.line.dat" % az_val
+                            command = command + " --freq " + str(freq) + " --azimuth " + str(az_val)
+                            command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
+                            command = command + " --filetag " + tmpdirname + "/" + file_id + "_%.3fHz" % freq + "_%06.2fdeg" % az_val
+                            command = command + " > /dev/null"
+                    
+                            command_list = command_list + [command]
+
+                        for j in range(0, len(command_list), cpu_cnt):              
+                            if cpu_cnt==1 or j + 1 == len(command_list):
+                                print('\t' + "Running NCPAprop " + ncpaprop_method + " for azimuth " + str(j * azimuths[2]))
+                            elif cpu_cnt==2 or j + 2 == len(command_list):
+                                print('\t' + "Running NCPAprop " + ncpaprop_method + " for azimuths " + str(j * azimuths[2]) + ", " + str((j + 1) * azimuths[2]))
+                            else:
+                                print('\t' + "Running NCPAprop " + ncpaprop_method + " for azimuths " + str(j * azimuths[2]) + " - " + str(min(j + cpu_cnt, len(command_list)) * azimuths[2]))
+
+                            procs_list = [subprocess.Popen(cmd, shell=True) for cmd in command_list[j:j + cpu_cnt]]
+                            for proc in procs_list:
+                                proc.communicate()
+                                proc.wait()
+                
+                        print('\t' + "Merging azimuth results...")
+                        command = "cat " + tmpdirname + "/" + file_id + "_%.3f" % freq + "Hz*" + output_suffix + " > " + tmpdirname + "/" + file_id + "_%.3fHz.tloss_2d" % freq + output_suffix
+                        subprocess.call(command, shell=True)
+
+                print('\t' + "Combining transmission loss predictions...")
+                command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz.tloss_2d" + output_suffix + " > " + results_path + output_suffix
+                print('\t' + command)
+                subprocess.call(command, shell=True)                        
 
             else:
                 if ncpaprop_method == "modess":
@@ -1175,7 +1231,7 @@ class TLossModel(object):
 
             az[az > 180.0] -= 360.0
             az[az < -180.0] += 360.0
-
+ 
             tloss[np.isneginf(tloss)] = min(tloss[np.isfinite(tloss)])
             tloss[np.isposinf(tloss)] = max(tloss[np.isfinite(tloss)])
 
@@ -1220,7 +1276,7 @@ class TLossModel(object):
                 for nr, rng_val in enumerate(output_rngs):
                     nearest_rng = rngs[np.argmin(abs(rngs - rng_val))]
                     masked_tloss = tloss[np.logical_and(az_mask, rngs==nearest_rng)] - tloss_norm
-                    
+
                     if np.std(masked_tloss) < 0.05:
                         pdf_vals[az_index][nr] = norm.pdf(tloss_vals, loc=np.mean(masked_tloss), scale=0.05)
                     else:
