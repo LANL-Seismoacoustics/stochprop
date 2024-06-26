@@ -95,7 +95,7 @@ def ess_ratio(atmo_dir, results_path, atmo_pattern, atmo_format, year_selection,
     A, z0, datetimes = sp_eofs.build_atmo_matrix(atmo_dir, pattern=atmo_pattern, prof_format=atmo_format, years=years_list, return_datetime=True)
     for line in open(atmo_dir + [file for file in os.listdir(atmo_dir) if fnmatch.fnmatch(file, atmo_pattern)][0], 'r'):
         if "Ground Height" in line:
-            grnd_ht = float(line[18:])
+            grnd_ht = float(re.findall("\d+\.\d+",line)[0])
             break
     grnd_index = np.argmin(abs(z0 - grnd_ht))
     click.echo('\t\t' + "Extracted ground elevation: " + str(grnd_ht))
