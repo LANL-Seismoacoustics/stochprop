@@ -1838,7 +1838,6 @@ def yield_hob_stats(yld_vals, hob_vals, infraga_config, output_path, channel_Cnt
                 [0.5, 2.0],
                 [1.0, 8.0]]
 
-
     with tempfile.TemporaryDirectory(prefix='infraga_') as tmpdirname:
         if local_temp_dir is not None:
             print("\n  Writing individual infraGA results into local directory: " + local_temp_dir + '\n')
@@ -1865,7 +1864,6 @@ def yield_hob_stats(yld_vals, hob_vals, infraga_config, output_path, channel_Cnt
 
         print('\nBuilding statistics...')
         file_out = open(output_path + ".det_stats.dat", 'w')
-
 
         infraga_cnfg = cnfg.ConfigParser()
         infraga_cnfg.read(infraga_config)
@@ -1903,7 +1901,7 @@ def yield_hob_stats(yld_vals, hob_vals, infraga_config, output_path, channel_Cnt
                         det_prob = det_prob + [np.nanmean(ims_ns_cdf(f[f_mask], p_fft[f_mask], duration=duration, array_dim=channel_Cnt))]
 
                     det_prob = np.array(det_prob)
-                    print(str(int(alt)) + '\t' + str(int(np.round(yld / 1.0e3))) + '\t' + str(np.nanmax(det_prob)) + '\t' + str(f_dom) + '\t' + str(p_fft_pk), file=file_out)
+                    print(str(alt) + '\t' + str(np.round(yld / 1.0e3, 2)) + '\t' + str(np.nanmax(det_prob)) + '\t' + str(f_dom) + '\t' + str(p_fft_pk), file=file_out)
                 else:
                     print('\t\tError loading waveform result: ' + wvfrm_file + ' (eigenrays may not exist or simulations might have failed).')
 
