@@ -295,18 +295,12 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, use_topo, ncpaprop_method, nc
 @click.command('yld-hob', short_help="Compute statistics for atmospheric explosions")
 @click.option("--infraga-config", help="InfraGA config file", prompt="infraGA config file: ")
 @click.option("--output-path", help="Path and prefix for output", prompt="Path for output")
-
-@click.option("--yld-lims", help="Yield limits [kg eq. TNT]", default="1.0e3, 1.0e6")
-@click.option("--yld-cnt", help="Yield values to consider (log scaling)", default=25)
-@click.option("--hob-lims", help="Height-of-burst limits [km]", default="0.0, 60.0")
-@click.option("--hob-dz", help="Height-of-burst resolution [km]", default=2.0)
-
-@click.option("--channel-cnt", help="Number of channels in array", default=4)
-
-
+@click.option("--yld-lims", help="Yield limits [kg eq. TNT]", default="1.0e3, 10.0e6")
+@click.option("--yld-cnt", help="Yield values to consider (log scaling)", default=50)
+@click.option("--hob-lims", help="Height-of-burst limits [km]", default="0.0, 50.0")
+@click.option("--hob-dz", help="Height-of-burst resolution [km]", default=1.0)
+@click.option("--channel-cnt", help="Number of channels in array", default=6)
 @click.option("--local-temp-dir", help="Local storage for individual infraGA results", default=None)
-
-
 def yld_hob(infraga_config, output_path, yld_lims, yld_cnt, hob_lims, hob_dz, channel_cnt, local_temp_dir):
     '''
     \b
