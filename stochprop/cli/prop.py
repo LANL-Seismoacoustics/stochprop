@@ -95,12 +95,12 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
 @click.option("--output-path", help="Path and prefix for PGM output", prompt="Path and prefix for PGM output")
 @click.option("--src-loc", help="Source location (lat, lon, alt)", prompt="Enter source location (lat, lon, alt)")
-@click.option("--inclinations", help="Inclination min, max, and step (default: [2, 50, 2]", default = "[2.0, 50.0, 2.0]")
+@click.option("--inclinations", help="Inclination min, max, step (default: [2, 50, 2]", default = "[2.0, 50.0, 2.0]")
 @click.option("--azimuths", help="Azimuth min, max, and step (default: [0, 360, 6]", default = "[0.0, 360.0, 6.0]")
-@click.option("--bounces", help="Number of ground bounces for ray paths (default: 25)", default=25)
-@click.option("--z-grnd", help="Ground elevation for simulations (default: 0.0 km)", default=0.0)
-@click.option("--rng-max", help="Maximum range for simulations (default: 1000.0 km)", default=1000.0)
-@click.option("--freq", help="Frequency for Sutherland-Bass atten. (default: 0.5 Hz)", default=0.5)
+@click.option("--bounces", help="Number of ground bounces for paths (default: 25)", default=25)
+@click.option("--z-grnd", help="Ground elevation (default: 0.0 km)", default=0.0)
+@click.option("--rng-max", help="Maximum range (default: 1000.0 km)", default=1000.0)
+@click.option("--freq", help="Freq. for non-geometric atten. (default: 0.5 Hz)", default=0.5)
 @click.option("--prof-format", help="Profile format (default: 'zTuvdp')", default='zTuvdp')
 @click.option("--infraga-path", help="Path to infraGA/Geoac binaries", default='')
 @click.option("--local-temp-dir", help="Local storage for individual infraGA results", default=None)
@@ -110,7 +110,7 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 @click.option("--az-bin-cnt", help="Number of azimuth bins in PGM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in PGM (default: 30 deg)", default=30.0)
 @click.option("--min-turning-ht", help="Minimum turning height altitude [km]", default=0.0)
-@click.option("--station-centered", help="Flag to build a station-centered model via back projection", default=False)
+@click.option("--station-centered", help="Build a station-centered model", default=False)
 @click.option("--topo-file", help="Terrain file for propagation simulation", default=None)
 @click.option("--verbose", help="Output analysis stages as they're done.",  default=False)
 def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimuths, bounces, z_grnd, rng_max,
@@ -122,7 +122,8 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     ---------------------
     \b
     Example Usage:
-    \t stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8 --local-temp-dir samples/winter/arrivals
+    \t stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \\
+             --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8 --local-temp-dir samples/winter/arrivals
 
     '''
 
@@ -188,7 +189,6 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 @click.option("--atmo-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
 @click.option("--output-path", help="Path and prefix for TLM output", prompt="Path and prefix for TLM output")
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
-@click.option("--use-topo", help="Option to include terrain in simulations (Default: False)", default=None)
 @click.option("--ncpaprop-method", help="NCPAprop method ('modess' or 'epape')", default='modess')
 @click.option("--ncpaprop-path", help="Path to NCPAprop binaries (if not on path)", default="")
 @click.option("--freq", help="Frequency for simulation (default: 0.5 Hz)", default=0.5)
@@ -198,19 +198,19 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 @click.option("--rng-resol", help="Range resolution for output (default: 1.0)", default=1.0)
 @click.option("--src-loc", help="Source location (lat, lon, alt)", prompt="Enter source location (lat, lon, alt)")
 @click.option("--local-temp-dir", help="Local storage for individual NCPAprop results", default=None)
-@click.option("--verbose", help="Show NCPAprop output (default: False)", default=False)
 @click.option("--cpu-cnt", help="Number of CPUs for propagation simulations", default=None)
 @click.option("--az-bin-cnt", help="Number of azimuth bins in TLM (default: 16)", default=16)
 @click.option("--az-bin-width", help="Azimuth bin width in TLM (default: 30 deg)", default=30.0)
 @click.option("--rng-lims", help="Range limits in TLM (default: [1, 1000])", default='[1, 1000.0]')
 @click.option("--rng-cnt", help="Range intervals in TLM (default: 100)", default=100)
 @click.option("--rng-spacing", help="Option for range sampling ('linear' or 'log')", default='linear')
-@click.option("--use-coherent-tl", help="Use coherent transmission loss (default: False", default=False)
-@click.option("--station-centered", help="Flag to build a station-centered model via back projection", default=False)
+@click.option("--use-coherent-tl", help="Use coherent transmission loss (default: False)", default=False)
+@click.option("--station-centered", help="Build a station-centered model (default: False)", default=False)
+@click.option("--use-topo", help="Include terrain in simulations (Default: False)", default=None)
 
-def build_tlm(atmo_dir, output_path, atmo_pattern, use_topo, ncpaprop_method, ncpaprop_path, freq, azimuths, z_grnd,
-              rng_max, rng_resol, src_loc, local_temp_dir, verbose, cpu_cnt, az_bin_cnt, az_bin_width, rng_lims, rng_cnt, rng_spacing, 
-              use_coherent_tl, station_centered):
+def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_path, freq, azimuths, z_grnd,
+              rng_max, rng_resol, src_loc, local_temp_dir, cpu_cnt, az_bin_cnt, az_bin_width, rng_lims, rng_cnt, rng_spacing, 
+              use_coherent_tl, station_centered, use_topo):
     '''
     \b
     stochprop prop build-tlm
@@ -278,7 +278,7 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, use_topo, ncpaprop_method, nc
 
     propagation.run_ncpaprop(ncpaprop_method, atmo_dir, output_path + "_%.3f" %freq + "Hz", pattern=atmo_pattern, 
                              azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, rng_resol=rng_resol, 
-                             src_loc=src_loc, ncpaprop_path=ncpaprop_path, use_topo=use_topo, 
+                             src_loc=src_loc, ncpaprop_path=ncpaprop_path, use_topo=use_topo, reverse_winds=station_centered,
                              local_temp_dir=local_temp_dir, cpu_cnt=cpu_cnt)
 
     if ncpaprop_method == "modess":

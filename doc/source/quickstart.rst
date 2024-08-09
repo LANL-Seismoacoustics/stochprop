@@ -419,31 +419,35 @@ Once a reduced set of atmospheric specifications representative of a given seaso
 
           stochprop prop build-pgm 
           ---------------------
-        
+
           Example Usage:
-              stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8
+              stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+                  --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8 --local-temp-dir samples/winter/arrivals
 
         Options:
-          --atmo-dir TEXT      Directory containing atmospheric specifications
-          --atmo-pattern TEXT  Atmosphere file pattern (default: '*.met')
-          --output-path TEXT    Path and prefix for PGM output
-          --src-loc TEXT        Source location (lat, lon, alt)
-          --inclinations TEXT   Inclination min, max, and step (default: [2, 50, 2]
-          --azimuths TEXT       Azimuth min, max, and step (default: [0, 360, 6]
-          --bounces INTEGER     Number of ground bounces for ray paths (default: 25)
-          --z-grnd FLOAT        Ground elevation for simulations (default: 0.0 km)
-          --rng-max FLOAT       Maximum range for simulations (default: 1000.0 km)
-          --freq FLOAT          Frequency for Sutherland-Bass atten. (default: 0.5 Hz)
-          --prof-format TEXT    Profile format (default: 'zTuvdp')
-          --infraga-path TEXT   Path to infraGA/Geoac binaries
-          --clean-up BOOLEAN    Remove individual results after merge (default: True)
-          --cpu-cnt TEXT        Number of CPUs for propagation simulations
-          --rng-window FLOAT    Range window in PGM (default: 50 km)
-          --rng-step FLOAT      Range resolution in PGM (default: 10 km)
-          --az-bin-cnt INTEGER  Number of azimuth bins in PGM (default: 16)
-          --az-bin-width FLOAT  Azimuth bin width in PGM (default: 30 deg)
-          --verbose BOOLEAN     Output analysis stages as they're done.
-          -h, --help            Show this message and exit.
+          --atmo-dir TEXT             Directory containing atmospheric specifications
+          --atmo-pattern TEXT         Atmosphere file pattern (default: '*.met')
+          --output-path TEXT          Path and prefix for PGM output
+          --src-loc TEXT              Source location (lat, lon, alt)
+          --inclinations TEXT         Inclination min, max, step (default: [2, 50, 2]
+          --azimuths TEXT             Azimuth min, max, and step (default: [0, 360, 6]
+          --bounces INTEGER           Number of ground bounces for paths (default: 25)
+          --z-grnd FLOAT              Ground elevation (default: 0.0 km)
+          --rng-max FLOAT             Maximum range (default: 1000.0 km)
+          --freq FLOAT                Freq. for non-geometric atten. (default: 0.5 Hz)
+          --prof-format TEXT          Profile format (default: 'zTuvdp')
+          --infraga-path TEXT         Path to infraGA/Geoac binaries
+          --local-temp-dir TEXT       Local storage for individual infraGA results
+          --cpu-cnt TEXT              Number of CPUs for propagation simulations
+          --rng-window FLOAT          Range window in PGM (default: 50 km)
+          --rng-step FLOAT            Range resolution in PGM (default: 10 km)
+          --az-bin-cnt INTEGER        Number of azimuth bins in PGM (default: 16)
+          --az-bin-width FLOAT        Azimuth bin width in PGM (default: 30 deg)
+          --min-turning-ht FLOAT      Minimum turning height altitude [km]
+          --station-centered BOOLEAN  Build a station-centered model
+          --topo-file TEXT            Terrain file for propagation simulation
+          --verbose BOOLEAN           Output analysis stages as they're done.
+          -h, --help                  Show this message and exit.
 
 The ray tracing simulation parameters (e.g., inclination and azimuth angle limits and resolutions) can be tuned if necessary.  The default model construction focuses on regional distances (within 1,000 km).  Note that the default configuration assumes the infraGA/GeoAc binaries are on your path, but if that is not the case you can specify where those methods are using the :code:`--infraga-path` parameter (as noted in the :ref:`installation` discussion, a combined PyGS conda environment is not yet implemented for which the *infraga* Python methods can be leveraged without changing environments).
 
@@ -453,7 +457,8 @@ Similar to the sampling analysis, it's useful to define subdirectories for indiv
 
         mkdir prop/winter 
 
-        stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --clean-up False
+        stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+            --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --clean-up False
 
     .. code:: none
 
@@ -553,36 +558,43 @@ For source characterization (e.g., yield estimation), transmission loss statisti
 
         Usage: stochprop prop build-tlm [OPTIONS]
 
-        stochprop prop build-tlm 
-        ---------------------
-        
+          stochprop prop build-tlm
+          ------------------------
+  
           Example Usage:
-            stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+               stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+                                --freq 0.2  --cpu-cnt 8 --local-temp-dir samples/winter/tloss
 
         Options:
-          --atmo-dir TEXT           Directory containing atmospheric specifications
-          --atmo-pattern TEXT       Atmosphere file pattern (default: '*.met')
-          --output-path TEXT         Path and prefix for TLM output
-          --freq FLOAT               Frequency for simulation (default: 0.5 Hz)
-          --azimuths TEXT            Azimuth min, max, and step (default: [0, 360, 6]
-          --z-grnd FLOAT             Ground elevation for simulations (default: 0.0)
-          --rng-max FLOAT            Maximum range for simulations (default: 1000.0)
-          --ncpaprop-path TEXT       Path to NCPAprop binaries
-          --clean-up BOOLEAN         Remove individual results after merge (default: True)
-          --cpu-cnt TEXT             Number of CPUs for propagation simulations
-          --az-bin-cnt INTEGER       Number of azimuth bins in TLM (default: 16)
-          --az-bin-width FLOAT       Azimuth bin width in TLM (default: 30 deg)
-          --rng-lims TEXT            Range limits in TLM (default: [1, 1000])
-          --rng-cnt INTEGER          Range intervals in TLM (default: 100)
-          --rng-spacing TEXT         Option for range sampling ('linear' or 'log')
-          --use-coherent-tl BOOLEAN  Use coherent transmission loss (default: False
-          -h, --help                 Show this message and exit.
+          --atmo-dir TEXT             Directory containing atmospheric specifications
+          --output-path TEXT          Path and prefix for TLM output
+          --atmo-pattern TEXT         Atmosphere file pattern (default: '*.met')
+          --ncpaprop-method TEXT      NCPAprop method ('modess' or 'epape')
+          --ncpaprop-path TEXT        Path to NCPAprop binaries (if not on path)
+          --freq FLOAT                Frequency for simulation (default: 0.5 Hz)
+          --azimuths TEXT             Azimuth min, max, and step (default: [0, 360, 3]
+          --z-grnd FLOAT              Ground elevation for simulations (default: 0.0)
+          --rng-max FLOAT             Maximum range for simulations (default: 1000.0)
+          --rng-resol FLOAT           Range resolution for output (default: 1.0)
+          --src-loc TEXT              Source location (lat, lon, alt)
+          --local-temp-dir TEXT       Local storage for individual NCPAprop results
+          --cpu-cnt TEXT              Number of CPUs for propagation simulations
+          --az-bin-cnt INTEGER        Number of azimuth bins in TLM (default: 16)
+          --az-bin-width FLOAT        Azimuth bin width in TLM (default: 30 deg)
+          --rng-lims TEXT             Range limits in TLM (default: [1, 1000])
+          --rng-cnt INTEGER           Range intervals in TLM (default: 100)
+          --rng-spacing TEXT          Option for range sampling ('linear' or 'log')
+          --use-coherent-tl BOOLEAN   Use coherent transmission loss (default: False)
+          --station-centered BOOLEAN  Build a station-centered model (default: False)
+          --use-topo TEXT             Include terrain in simulations (Default: False)
+          -h, --help                  Show this message and exit.
 
 As with the PGM construction, a suite of atmospheric specifications is needed as well as an output path and label.  Unlike the ray tracing methods, the azimuthal symmetry assumed in the NCPAprop methods doesn't account for the spherical Earth geometry so that the latitude and longitude are not needed (I need to add the source altitude as an option to build statistics for elevated sources).  Unlike the "infinite frequency" simulation methods using ray tracing, TLM construction requires specification of a frequency for simulation and yield estimation analysis typically requires multiple models covering some frequency range across which signal is observed.  During evaluation of the methods here, frequencies of 0.05, 0.1, 0.2, 0.5, and 1.0 have been used in computation; though, higher resolution models might be useful in more robust analyses.  As with linking infraGA/GeoAc, the path to NCPAprop binaries can be specified via :code:`--ncpaprop-path` if that directory is not on your path. For the winter example being used here, a TLM at 0.2 Hz can be computed using:
 
     .. code:: none
 
-        stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+        stochprop prop build-tlm --atmo-dir samples/winter/  \
+            --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 
 A note about multi-threading: unlike the multi-threading in infraGA/GeoAc that's built into the software, multi-threading the NCPAprop methods is done via Python's *subprocess* library to simultaneously compute propagation effects for multiple atmospheric specifications at the same time.  Because of this, the maximum number of CPUs useful in such analysis is limited by the number of atmospheric specifications in the suite (for ray tracing, acceleration is limited by the number of unique inclination angles at each azimuth since that's how infraGA/GeoAc is parallelized).  
 
@@ -596,6 +608,8 @@ Once computed, the model is saved into a file named using the specified output p
         :width: 400px
         :align: center
         :figclass: align-center
+
+In development modifications to the PGM and TLM construction methods enable station-specific computations including terrain interactions.  These methods reverse the wind directions (east <--> west, north <--> south) to simulate propagation backwards in time from a station location back towards possible source locations.  This can be specified using :code:`--station-centered True`.  Such analysis is typically performed to account for terrain around the station which infrasonic energy interacts with during propagation.  In PGM construction, a latitude/longitude terrain grid is needed and can be specified as :code:`--topo-file topo_grid.dat` (such a grid can be generated using :code:`infraga utils extract-terrain`) from `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraga>`_.  The "N-by-2D" simulation method in  `NCPAprop <https://github.com/chetzer-ncpa/ncpaprop>`_ requires individual terrain lines for each azimuth simulation.  Extraction of such lines is automated within the :code:`stochprop prop build-tlm` method, but requires that `InfraGA/GeoAc <https://github.com/LANL-Seismoacoustics/infraga>`_ be installed in the same conda environment.  As TLM construction doesn't utilize a single file, the flag to use terrain in NCPAprop PE simulations for TLM construction is :code:`--use-topo True`.  It should be noted that these terrain inclusive models are still being evaluated and their performance is unknown (might be better, might be worse).
 
 **Utilizing Propagation Statistics**
 
