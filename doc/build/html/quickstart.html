@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quickstart &mdash; stochprop 0.1.0 documentation</title>
+  <title>Quickstart &mdash; stochprop 0.1.2 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
@@ -12,11 +12,11 @@
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="_static/jquery.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -30,19 +30,15 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-
-          
-          
-          <a href="index.html" class="icon icon-home">
-            stochprop
-              <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
+            <a href="index.html" class="icon icon-home"> stochprop
+            <img src="_static/lanl_logo.png" class="logo" alt="Logo"/>
           </a>
               <div class="version">
                 0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -74,7 +70,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li><a href="index.html" class="icon icon-home"></a></li>
       <li class="breadcrumb-item active">Quickstart</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
@@ -242,6 +238,10 @@ Run summary:
 </div></blockquote>
 <p>This analysis produces a number of output files in the eofs/ directory named according to the <code class="code docutils literal notranslate"><span class="pre">--eofs-path</span></code> option.  The contents of these files is summarized in the below table.</p>
 <table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>EOF Output File</p></th>
 <th class="head"><p>Description</p></th>
@@ -466,29 +466,33 @@ stochprop stats sample-eofs --eofs-path eofs/example_winter --coeff-path coeffs/
   ---------------------
 
   Example Usage:
-      stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;[30.0, -120.0, 0.0]&#39;  --cpu-cnt 8
+      stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+          --src-loc &#39;[30.0, -120.0, 0.0]&#39;  --cpu-cnt 8 --local-temp-dir samples/winter/arrivals
 
 Options:
-  --atmo-dir TEXT      Directory containing atmospheric specifications
-  --atmo-pattern TEXT  Atmosphere file pattern (default: &#39;*.met&#39;)
-  --output-path TEXT    Path and prefix for PGM output
-  --src-loc TEXT        Source location (lat, lon, alt)
-  --inclinations TEXT   Inclination min, max, and step (default: [2, 50, 2]
-  --azimuths TEXT       Azimuth min, max, and step (default: [0, 360, 6]
-  --bounces INTEGER     Number of ground bounces for ray paths (default: 25)
-  --z-grnd FLOAT        Ground elevation for simulations (default: 0.0 km)
-  --rng-max FLOAT       Maximum range for simulations (default: 1000.0 km)
-  --freq FLOAT          Frequency for Sutherland-Bass atten. (default: 0.5 Hz)
-  --prof-format TEXT    Profile format (default: &#39;zTuvdp&#39;)
-  --infraga-path TEXT   Path to infraGA/Geoac binaries
-  --clean-up BOOLEAN    Remove individual results after merge (default: True)
-  --cpu-cnt TEXT        Number of CPUs for propagation simulations
-  --rng-window FLOAT    Range window in PGM (default: 50 km)
-  --rng-step FLOAT      Range resolution in PGM (default: 10 km)
-  --az-bin-cnt INTEGER  Number of azimuth bins in PGM (default: 16)
-  --az-bin-width FLOAT  Azimuth bin width in PGM (default: 30 deg)
-  --verbose BOOLEAN     Output analysis stages as they&#39;re done.
-  -h, --help            Show this message and exit.
+  --atmo-dir TEXT             Directory containing atmospheric specifications
+  --atmo-pattern TEXT         Atmosphere file pattern (default: &#39;*.met&#39;)
+  --output-path TEXT          Path and prefix for PGM output
+  --src-loc TEXT              Source location (lat, lon, alt)
+  --inclinations TEXT         Inclination min, max, step (default: [2, 50, 2]
+  --azimuths TEXT             Azimuth min, max, and step (default: [0, 360, 6]
+  --bounces INTEGER           Number of ground bounces for paths (default: 25)
+  --z-grnd FLOAT              Ground elevation (default: 0.0 km)
+  --rng-max FLOAT             Maximum range (default: 1000.0 km)
+  --freq FLOAT                Freq. for non-geometric atten. (default: 0.5 Hz)
+  --prof-format TEXT          Profile format (default: &#39;zTuvdp&#39;)
+  --infraga-path TEXT         Path to infraGA/Geoac binaries
+  --local-temp-dir TEXT       Local storage for individual infraGA results
+  --cpu-cnt TEXT              Number of CPUs for propagation simulations
+  --rng-window FLOAT          Range window in PGM (default: 50 km)
+  --rng-step FLOAT            Range resolution in PGM (default: 10 km)
+  --az-bin-cnt INTEGER        Number of azimuth bins in PGM (default: 16)
+  --az-bin-width FLOAT        Azimuth bin width in PGM (default: 30 deg)
+  --min-turning-ht FLOAT      Minimum turning height altitude [km]
+  --station-centered BOOLEAN  Build a station-centered model
+  --topo-file TEXT            Terrain file for propagation simulation
+  --verbose BOOLEAN           Output analysis stages as they&#39;re done.
+  -h, --help                  Show this message and exit.
 </pre></div>
 </div>
 </div></blockquote>
@@ -497,7 +501,8 @@ Options:
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mkdir prop/winter
 
-stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter --src-loc &#39;39.1026, -84.5123, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
+stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+    --src-loc &#39;39.1026, -84.5123, 0.0&#39; --verbose True --cpu-cnt 14 --clean-up False
 </pre></div>
 </div>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#####################################
@@ -589,36 +594,43 @@ Generating ray paths for example_winter-01.met
 <blockquote>
 <div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Usage: stochprop prop build-tlm [OPTIONS]
 
-stochprop prop build-tlm
----------------------
+  stochprop prop build-tlm
+  ------------------------
 
   Example Usage:
-    stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+       stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+                        --freq 0.2  --cpu-cnt 8 --local-temp-dir samples/winter/tloss
 
 Options:
-  --atmo-dir TEXT           Directory containing atmospheric specifications
-  --atmo-pattern TEXT       Atmosphere file pattern (default: &#39;*.met&#39;)
-  --output-path TEXT         Path and prefix for TLM output
-  --freq FLOAT               Frequency for simulation (default: 0.5 Hz)
-  --azimuths TEXT            Azimuth min, max, and step (default: [0, 360, 6]
-  --z-grnd FLOAT             Ground elevation for simulations (default: 0.0)
-  --rng-max FLOAT            Maximum range for simulations (default: 1000.0)
-  --ncpaprop-path TEXT       Path to NCPAprop binaries
-  --clean-up BOOLEAN         Remove individual results after merge (default: True)
-  --cpu-cnt TEXT             Number of CPUs for propagation simulations
-  --az-bin-cnt INTEGER       Number of azimuth bins in TLM (default: 16)
-  --az-bin-width FLOAT       Azimuth bin width in TLM (default: 30 deg)
-  --rng-lims TEXT            Range limits in TLM (default: [1, 1000])
-  --rng-cnt INTEGER          Range intervals in TLM (default: 100)
-  --rng-spacing TEXT         Option for range sampling (&#39;linear&#39; or &#39;log&#39;)
-  --use-coherent-tl BOOLEAN  Use coherent transmission loss (default: False
-  -h, --help                 Show this message and exit.
+  --atmo-dir TEXT             Directory containing atmospheric specifications
+  --output-path TEXT          Path and prefix for TLM output
+  --atmo-pattern TEXT         Atmosphere file pattern (default: &#39;*.met&#39;)
+  --ncpaprop-method TEXT      NCPAprop method (&#39;modess&#39; or &#39;epape&#39;)
+  --ncpaprop-path TEXT        Path to NCPAprop binaries (if not on path)
+  --freq FLOAT                Frequency for simulation (default: 0.5 Hz)
+  --azimuths TEXT             Azimuth min, max, and step (default: [0, 360, 3]
+  --z-grnd FLOAT              Ground elevation for simulations (default: 0.0)
+  --rng-max FLOAT             Maximum range for simulations (default: 1000.0)
+  --rng-resol FLOAT           Range resolution for output (default: 1.0)
+  --src-loc TEXT              Source location (lat, lon, alt)
+  --local-temp-dir TEXT       Local storage for individual NCPAprop results
+  --cpu-cnt TEXT              Number of CPUs for propagation simulations
+  --az-bin-cnt INTEGER        Number of azimuth bins in TLM (default: 16)
+  --az-bin-width FLOAT        Azimuth bin width in TLM (default: 30 deg)
+  --rng-lims TEXT             Range limits in TLM (default: [1, 1000])
+  --rng-cnt INTEGER           Range intervals in TLM (default: 100)
+  --rng-spacing TEXT          Option for range sampling (&#39;linear&#39; or &#39;log&#39;)
+  --use-coherent-tl BOOLEAN   Use coherent transmission loss (default: False)
+  --station-centered BOOLEAN  Build a station-centered model (default: False)
+  --use-topo TEXT             Include terrain in simulations (Default: False)
+  -h, --help                  Show this message and exit.
 </pre></div>
 </div>
 </div></blockquote>
 <p>As with the PGM construction, a suite of atmospheric specifications is needed as well as an output path and label.  Unlike the ray tracing methods, the azimuthal symmetry assumed in the NCPAprop methods doesn’t account for the spherical Earth geometry so that the latitude and longitude are not needed (I need to add the source altitude as an option to build statistics for elevated sources).  Unlike the “infinite frequency” simulation methods using ray tracing, TLM construction requires specification of a frequency for simulation and yield estimation analysis typically requires multiple models covering some frequency range across which signal is observed.  During evaluation of the methods here, frequencies of 0.05, 0.1, 0.2, 0.5, and 1.0 have been used in computation; though, higher resolution models might be useful in more robust analyses.  As with linking infraGA/GeoAc, the path to NCPAprop binaries can be specified via <code class="code docutils literal notranslate"><span class="pre">--ncpaprop-path</span></code> if that directory is not on your path. For the winter example being used here, a TLM at 0.2 Hz can be computed using:</p>
 <blockquote>
-<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+<div><div class="highlight-none notranslate"><div class="highlight"><pre><span></span>stochprop prop build-tlm --atmo-dir samples/winter/  \
+    --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
 </pre></div>
 </div>
 </div></blockquote>
@@ -632,6 +644,7 @@ Options:
 <a class="reference internal image-reference" href="_images/winter_0.359_tloss.png"><img alt="_images/winter_0.359_tloss.png" src="_images/winter_0.359_tloss.png" style="width: 400px;" /></a>
 </figure>
 </div></blockquote>
+<p>In development modifications to the PGM and TLM construction methods enable station-specific computations including terrain interactions.  These methods reverse the wind directions (east &lt;–&gt; west, north &lt;–&gt; south) to simulate propagation backwards in time from a station location back towards possible source locations.  This can be specified using <code class="code docutils literal notranslate"><span class="pre">--station-centered</span> <span class="pre">True</span></code>.  Such analysis is typically performed to account for terrain around the station which infrasonic energy interacts with during propagation.  In PGM construction, a latitude/longitude terrain grid is needed and can be specified as <code class="code docutils literal notranslate"><span class="pre">--topo-file</span> <span class="pre">topo_grid.dat</span></code> (such a grid can be generated using <code class="code docutils literal notranslate"><span class="pre">infraga</span> <span class="pre">utils</span> <span class="pre">extract-terrain</span></code>) from <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraga">InfraGA/GeoAc</a>.  The “N-by-2D” simulation method in  <a class="reference external" href="https://github.com/chetzer-ncpa/ncpaprop">NCPAprop</a> requires individual terrain lines for each azimuth simulation.  Extraction of such lines is automated within the <code class="code docutils literal notranslate"><span class="pre">stochprop</span> <span class="pre">prop</span> <span class="pre">build-tlm</span></code> method, but requires that <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infraga">InfraGA/GeoAc</a> be installed in the same conda environment.  As TLM construction doesn’t utilize a single file, the flag to use terrain in NCPAprop PE simulations for TLM construction is <code class="code docutils literal notranslate"><span class="pre">--use-topo</span> <span class="pre">True</span></code>.  It should be noted that these terrain inclusive models are still being evaluated and their performance is unknown (might be better, might be worse).</p>
 <p><strong>Utilizing Propagation Statistics</strong></p>
 <p>The PGM and TLM files constructed above and be ingested for use by <a class="reference external" href="https://github.com/LANL-Seismoacoustics/infrapy">InfraPy</a> for localization and yield estimation.  Additionally, several more generalized statistical analyses can be completed within <em>stochprop</em>.  As discussed in Blom et al. (2023), the IMS infrasound noise background model can be combined with an explosive blastwave model and transmission loss statistics to compute detection probability.  Several TLMs are included in the git repository for <em>stochprop</em> describing transmission loss statistics for the western US (in the vicinity of the Rocky Mountains).  These can be used to compute the probability of an arrival with a signal-to-noise ratio (SNR) greater than unity and quantify the likelihood that a signal is detected in such a scenario:</p>
 <blockquote>

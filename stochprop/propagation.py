@@ -325,7 +325,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
 
 
 
-def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, src_loc=[40.0, -110.0, 0.0], ncpaprop_path="", use_topo=False, local_temp_dir=None, keep_lossless=False, reverse_winds=False, cpu_cnt=1):
+def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, src_loc=[40.0, -110.0, 0.0], ncpaprop_path="", use_topo=False, local_temp_dir=None, reverse_winds=False, cpu_cnt=1):
     """
         Run one of the NCPAprop methods to compute transmission
         loss values for a suite of atmospheric specifications at
@@ -366,10 +366,6 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 3.703703703703796	0.9092146274618726
                 5.555555555556105	0.9170049733706201
                 ...
-
-
-
-
 
 
         Parameters
@@ -425,9 +421,31 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 tmpdirname = local_temp_dir
             else:
                 print('Created temp directory:', tmpdirname + '\n')
-                
+
+            if reverse_winds or use_topo:
+                if not os.path.isdir(tmpdirname + "/atmo"):
+                    os.mkdir(tmpdirname + "/atmo")
+
+                print("Writing new atmo files into " + tmpdirname + '/atmo' + " and updating profs_path...")
+                dir_files = np.sort(os.listdir(profs_path))
+                header = ""
+                for file_name in dir_files:
+                    if fnmatch.fnmatch(file_name, pattern):
+                        with open(profs_path + file_name, 'r') as file_data:
+                            header = ''.join([line if "#" in line else '' for line in file_data])
+
+                        atmo_data = np.loadtxt(profs_path  + file_name)
+                        atmo_data[:, 2] = -atmo_data[:, 2]
+                        atmo_data[:, 3] = -atmo_data[:, 3]
+
+                        np.savetxt(tmpdirname + "/atmo/" + os.path.splitext(os.path.basename(file_name))[0] + ".reversed.met", atmo_data, header=header, comments='')
+
+                profs_path = tmpdirname + "/atmo/"
+
             if use_topo:
-                reverse_winds = True
+                if not os.path.isdir(tmpdirname + "/topo"):
+                    os.mkdir(tmpdirname + "/topo")
+
                 output_suffix = ".pe"
                 command_prefix = ncpaprop_path + " ePape --singleprop --topo --starter self"
 
@@ -436,7 +454,7 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 topo_extract = "infraga utils extract-terrain --geom nx2d --show-terrain False"
                 topo_extract = topo_extract + " --lat1 " + str(src_loc[0]) + " --lon1 " + str(src_loc[1])
                 topo_extract = topo_extract + " --nx2d-resol " + str(azimuths[-1]) + " --range " + str(rng_max + 1.0)
-                topo_extract = topo_extract + " --output-file " + tmpdirname + "/terrain"
+                topo_extract = topo_extract + " --output-file " + tmpdirname + "/topo/terrain"
                 subprocess.call(topo_extract, shell=True)
 
                 dir_files = np.sort(os.listdir(profs_path))
@@ -448,7 +466,7 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                         command_list = []
                         for az_val in np.arange(*azimuths):
                             command = command_prefix + " --atmosfile " + profs_path + file_name
-                            command = command + " --topofile " + tmpdirname + "/terrain_%06.2fdeg.line.dat" % az_val
+                            command = command + " --topofile " + tmpdirname + "/topo/terrain_%06.2fdeg.line.dat" % az_val
                             command = command + " --freq " + str(freq) + " --azimuth " + str(az_val)
                             command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
                             command = command + " --filetag " + tmpdirname + "/" + file_id + "_%.3fHz" % freq + "_%06.2fdeg" % az_val
@@ -517,14 +535,8 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
 
                 print('\t' + "Combining transmission loss predictions...")
                 command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
-
                 print('\t' + command)
                 subprocess.call(command, shell=True)
-
-                if keep_lossless:
-                    command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*.lossless" + output_suffix + " > " + results_path + ".lossless" + output_suffix
-                    print('\t' + command)
-                    subprocess.call(command, shell=True)
 
 
 
