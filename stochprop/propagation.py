@@ -1836,7 +1836,7 @@ def yield_hob_stats(yld_vals, hob_vals, infraga_config, output_path, channel_Cnt
                 [0.05, 0.3],
                 [0.2, 0.8],
                 [0.5, 2.0],
-                [1.0, 8.0]]X
+                [1.0, 8.0]]
 
     with tempfile.TemporaryDirectory(prefix='infraga_') as tmpdirname:
         if local_temp_dir is not None:
