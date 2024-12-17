@@ -311,7 +311,8 @@ def coeff_overlap(overlap):
 @click.option("--model-file", help="stochprop PGM or TLM file (required)", prompt="PGM or TLM file")
 @click.option("--output-id", help="File ID for output image file", default=None)
 @click.option("--cmap-max", help="Value maximum for colormap (default='auto')", default=None)
-def prop_model(model_file, output_id, cmap_max):
+@click.option("--hide-cbar", help="Hide the colorbar", default=False)
+def prop_model(model_file, output_id, cmap_max, hide_cbar):
     '''
     \b
     stochprop plot prop-model
@@ -339,7 +340,7 @@ def prop_model(model_file, output_id, cmap_max):
     elif model_file[-3:] == 'tlm':
         model = sp_prop.TLossModel()
         model.load(model_file)
-        model.display(file_id=output_id, hold_fig=True)
+        model.display(file_id=output_id, hold_fig=True, cmap_max=cmap_max, show_colorbar=(not hide_cbar))
     else:
         click.echo("Error: invalid model file.")
 

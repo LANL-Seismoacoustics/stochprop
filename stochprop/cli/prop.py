@@ -239,10 +239,9 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         click.echo("Source location: " + src_loc)
     click.echo("  Model output path: " + output_path)
 
-
     if use_topo:
         ncpaprop_method = "epape"
-
+        station_centered = True
 
     click.echo('\n' + "NCPAprop parameters:")
     if len(ncpaprop_path) > 0:
@@ -288,4 +287,4 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         
     tlm = propagation.TLossModel()
     tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz.tlm", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
-                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing)
+                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing, station_centered=station_centered)

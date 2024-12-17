@@ -1125,7 +1125,6 @@ class PathGeometryModel(object):
         V = V.flatten()
 
         pdf = np.empty([resol, resol])
-
         palette = cm.nipy_spectral_r
 
         if cmap_max is not None:
@@ -1195,7 +1194,7 @@ class TLossModel(object):
         self.rng_vals = [0]
         self.tloss_vals = [0]
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear"):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear", station_centered=False):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
@@ -1241,9 +1240,12 @@ class TLossModel(object):
             else:
                 output_rngs = np.logspace(np.log10(rng_lims[0]), np.log10(rng_lims[1]), rng_cnt)
 
+            if station_centered:
+                az = az - 180.0
+                
             az[az > 180.0] -= 360.0
             az[az < -180.0] += 360.0
- 
+
             tloss[np.isneginf(tloss)] = min(tloss[np.isfinite(tloss)])
             tloss[np.isposinf(tloss)] = max(tloss[np.isfinite(tloss)])
 
@@ -1390,7 +1392,7 @@ class TLossModel(object):
 
         return result
 
-    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, hold_fig=False, show_ref_tloss=False):
+    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, cmap_max=None, hold_fig=False, show_ref_tloss=False):
         """
         Display the transmission loss statistics
 
@@ -1414,7 +1416,17 @@ class TLossModel(object):
         TL = TL.flatten()
 
         palette = cm.nipy_spectral_r
-        f1, ax = plt.subplots(3, 3, figsize=(14, 9))
+
+        if cmap_max is not None:
+            scale_max = cmap_max
+        else:
+            scale_max = 0.1
+
+        if show_colorbar:
+            f1, ax = plt.subplots(3, 3, figsize=(14, 9))
+        else:
+            f1, ax = plt.subplots(3, 3, figsize=(13.8, 9))
+
 
         for n1, n2 in itertools.product(range(3), repeat=2):
             if n1 != 1 or n2 != 1:
