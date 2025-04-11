@@ -327,7 +327,7 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
 
 
 
-def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, src_loc=[40.0, -110.0, 0.0], ncpaprop_path="", use_topo=False, local_temp_dir=None, keep_lossless=False, reverse_winds=False, cpu_cnt=1):
+def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azimuths=[0.0, 359.0, 3.0], freq=0.1, z_grnd=0.0, rng_max=1000.0, rng_resol=1.0, src_loc=[40.0, -110.0, 0.0], ncpaprop_path="", use_topo=False, local_temp_dir=None, reverse_winds=False, cpu_cnt=1):
     """
         Run one of the NCPAprop methods to compute transmission
         loss values for a suite of atmospheric specifications at
@@ -422,9 +422,31 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 tmpdirname = local_temp_dir
             else:
                 print('Created temp directory:', tmpdirname + '\n')
-                
+
+            if reverse_winds or use_topo:
+                if not os.path.isdir(tmpdirname + "/atmo"):
+                    os.mkdir(tmpdirname + "/atmo")
+
+                print("Writing new atmo files into " + tmpdirname + '/atmo' + " and updating profs_path...")
+                dir_files = np.sort(os.listdir(profs_path))
+                header = ""
+                for file_name in dir_files:
+                    if fnmatch.fnmatch(file_name, pattern):
+                        with open(profs_path + file_name, 'r') as file_data:
+                            header = ''.join([line if "#" in line else '' for line in file_data])
+
+                        atmo_data = np.loadtxt(profs_path  + file_name)
+                        atmo_data[:, 2] = -atmo_data[:, 2]
+                        atmo_data[:, 3] = -atmo_data[:, 3]
+
+                        np.savetxt(tmpdirname + "/atmo/" + os.path.splitext(os.path.basename(file_name))[0] + ".reversed.met", atmo_data, header=header, comments='')
+
+                profs_path = tmpdirname + "/atmo/"
+
             if use_topo:
-                reverse_winds = True
+                if not os.path.isdir(tmpdirname + "/topo"):
+                    os.mkdir(tmpdirname + "/topo")
+
                 output_suffix = ".pe"
                 command_prefix = ncpaprop_path + " ePape --singleprop --topo --starter self"
 
@@ -433,7 +455,7 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 topo_extract = "infraga utils extract-terrain --geom nx2d --show-terrain False"
                 topo_extract = topo_extract + " --lat1 " + str(src_loc[0]) + " --lon1 " + str(src_loc[1])
                 topo_extract = topo_extract + " --nx2d-resol " + str(azimuths[-1]) + " --range " + str(rng_max + 1.0)
-                topo_extract = topo_extract + " --output-file " + tmpdirname + "/terrain"
+                topo_extract = topo_extract + " --output-file " + tmpdirname + "/topo/terrain"
                 subprocess.call(topo_extract, shell=True)
 
                 dir_files = np.sort(os.listdir(profs_path))
@@ -445,7 +467,7 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                         command_list = []
                         for az_val in np.arange(*azimuths):
                             command = command_prefix + " --atmosfile " + profs_path + file_name
-                            command = command + " --topofile " + tmpdirname + "/terrain_%06.2fdeg.line.dat" % az_val
+                            command = command + " --topofile " + tmpdirname + "/topo/terrain_%06.2fdeg.line.dat" % az_val
                             command = command + " --freq " + str(freq) + " --azimuth " + str(az_val)
                             command = command + " --maxrange_km " + str(rng_max) + " --Nrng_steps " + str(int(rng_max / rng_resol))
                             command = command + " --filetag " + tmpdirname + "/" + file_id + "_%.3fHz" % freq + "_%06.2fdeg" % az_val
@@ -514,14 +536,8 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
 
                 print('\t' + "Combining transmission loss predictions...")
                 command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
-
                 print('\t' + command)
                 subprocess.call(command, shell=True)
-
-                if keep_lossless:
-                    command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*.lossless" + output_suffix + " > " + results_path + ".lossless" + output_suffix
-                    print('\t' + command)
-                    subprocess.call(command, shell=True)
 
 
 
@@ -1110,7 +1126,6 @@ class PathGeometryModel(object):
         V = V.flatten()
 
         pdf = np.empty([resol, resol])
-
         palette = cm.nipy_spectral_r
 
         if cmap_max is not None:
@@ -1180,7 +1195,7 @@ class TLossModel(object):
         self.rng_vals = [0]
         self.tloss_vals = [0]
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear"):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear", station_centered=False):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
@@ -1226,9 +1241,12 @@ class TLossModel(object):
             else:
                 output_rngs = np.logspace(np.log10(rng_lims[0]), np.log10(rng_lims[1]), rng_cnt)
 
+            if station_centered:
+                az = az - 180.0
+                
             az[az > 180.0] -= 360.0
             az[az < -180.0] += 360.0
- 
+
             tloss[np.isneginf(tloss)] = min(tloss[np.isfinite(tloss)])
             tloss[np.isposinf(tloss)] = max(tloss[np.isfinite(tloss)])
 
@@ -1375,7 +1393,7 @@ class TLossModel(object):
 
         return result
 
-    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, hold_fig=False, show_ref_tloss=False):
+    def display(self, file_id=None, title="Transmission Loss Statistics", show_colorbar=True, cmap_max=None, hold_fig=False, show_ref_tloss=False):
         """
         Display the transmission loss statistics
 
@@ -1399,7 +1417,17 @@ class TLossModel(object):
         TL = TL.flatten()
 
         palette = cm.nipy_spectral_r
-        f1, ax = plt.subplots(3, 3, figsize=(14, 9))
+
+        if cmap_max is not None:
+            scale_max = cmap_max
+        else:
+            scale_max = 0.1
+
+        if show_colorbar:
+            f1, ax = plt.subplots(3, 3, figsize=(14, 9))
+        else:
+            f1, ax = plt.subplots(3, 3, figsize=(13.8, 9))
+
 
         for n1, n2 in itertools.product(range(3), repeat=2):
             if n1 != 1 or n2 != 1:
