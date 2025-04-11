@@ -140,33 +140,33 @@ def _plot_ess_ratio(A, z0, datetimes, grnd_index, results_path, include_ns, show
     for j in range(364):
         if (eff_sndspd_pk[0][j] - 1.0) * (eff_sndspd_pk[0][j + 1] - 1) <= 0.0:
             if eff_sndspd_pk[0][j] > eff_sndspd_pk[0][j + 1]:
-                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
             else:
-                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
 
     print('\n' + "Westward waveguide changes...")
     for j in range(364):
         if (eff_sndspd_pk[1][j] - 1.0) * (eff_sndspd_pk[1][j + 1] - 1) <= 0.0:
             if eff_sndspd_pk[1][j] > eff_sndspd_pk[1][j + 1]:
-                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
             else:
-                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
     if include_ns:
         print('\n' + "Northward waveguide changes...")
         for j in range(364):
             if (eff_sndspd_pk[2][j] - 1.0) * (eff_sndspd_pk[2][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[2][j] > eff_sndspd_pk[2][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
 
         print('\n' + "Southward waveguide changes...")
         for j in range(364):
             if (eff_sndspd_pk[3][j] - 1.0) * (eff_sndspd_pk[3][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[3][j] > eff_sndspd_pk[3][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
     print('')
 
     ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[0], '-b', linewidth=2.5)
@@ -186,33 +186,33 @@ def _plot_ess_ratio(A, z0, datetimes, grnd_index, results_path, include_ns, show
         for j in range(364):
             if (eff_sndspd_pk[0][j] - 1.0) * (eff_sndspd_pk[0][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[0][j] > eff_sndspd_pk[0][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
 
         print('\n' + "Westward waveguide changes...", file=output_file)
         for j in range(364):
             if (eff_sndspd_pk[1][j] - 1.0) * (eff_sndspd_pk[1][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[1][j] > eff_sndspd_pk[1][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
         if include_ns:
             print('\n' + "Northward waveguide changes...", file=output_file)
             for j in range(364):
                 if (eff_sndspd_pk[2][j] - 1.0) * (eff_sndspd_pk[2][j + 1] - 1) <= 0.0:
                     if eff_sndspd_pk[2][j] > eff_sndspd_pk[2][j + 1]:
-                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                     else:
-                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
 
             print('\n' + "Southward waveguide changes...", file=output_file)
             for j in range(364):
                 if (eff_sndspd_pk[3][j] - 1.0) * (eff_sndspd_pk[3][j + 1] - 1) <= 0.0:
                     if eff_sndspd_pk[3][j] > eff_sndspd_pk[3][j + 1]:
-                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                     else:
-                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
 
         output_file.close()
 
