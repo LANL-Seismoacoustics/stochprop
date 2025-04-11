@@ -7,6 +7,7 @@
 import click
 
 import numpy as np
+import configparser as cnfg
 
 import matplotlib.pyplot as plt 
 
@@ -287,4 +288,65 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         
     tlm = propagation.TLossModel()
     tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz.tlm", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
-                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing, station_centered=station_centered)
+                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing)
+
+
+@click.command('yld-hob', short_help="Compute statistics for atmospheric explosions")
+@click.option("--infraga-config", help="InfraGA config file", prompt="infraGA config file: ")
+@click.option("--output-path", help="Path and prefix for output", prompt="Path for output")
+@click.option("--yld-lims", help="Yield limits [kg eq. TNT]", default="1.0e3, 10.0e6")
+@click.option("--yld-cnt", help="Yield values to consider (log scaling)", default=50)
+@click.option("--hob-lims", help="Height-of-burst limits [km]", default="0.0, 50.0")
+@click.option("--hob-dz", help="Height-of-burst resolution [km]", default=1.0)
+@click.option("--channel-cnt", help="Number of channels in array", default=6)
+@click.option("--local-temp-dir", help="Local storage for individual infraGA results", default=None)
+def yld_hob(infraga_config, output_path, yld_lims, yld_cnt, hob_lims, hob_dz, channel_cnt, local_temp_dir):
+    '''
+    \b
+    stochprop prop yld-hob
+    ---------------------
+    \b
+    Example Usage:
+    \t stochprop prop yld-hob --infraga-config yld-hob_test.cnfg --output-path yld-hob1 --local-temp-dir yld-hob_temp
+
+    '''
+
+    click.echo("")
+    click.echo("#####################################")
+    click.echo("##                                 ##")
+    click.echo("##            stochprop            ##")
+    click.echo("##       Propagation Methods       ##")
+    click.echo("##      Yield vs. HOB Analysis     ##")
+    click.echo("##                                 ##")
+    click.echo("######################################")
+    click.echo("")  
+
+
+    click.echo('\n' + "Parameter summary:")
+    click.echo("  Output path: " + output_path)
+    click.echo("  Local temporary directory: " + str(local_temp_dir))
+
+    click.echo("\n  InfraGA config file: " + infraga_config)
+
+    infraga_cnfg = cnfg.ConfigParser()
+    infraga_cnfg.read(infraga_config)
+
+    click.echo("    Atmosphere file: " + infraga_cnfg['GENERAL']['atmo_file'])
+    click.echo("    Source lat/lon: " + infraga_cnfg['EIGENRAY']['src_lat'] + ", " + infraga_cnfg['EIGENRAY']['src_lon']) 
+    click.echo("    Receiver lat/lon: " + infraga_cnfg['EIGENRAY']['rcvr_lat'] + ", " + infraga_cnfg['EIGENRAY']['rcvr_lon']) 
+
+    click.echo("\n  Grid info:")
+    click.echo("    Yield lims [kg eq TNT]: " + yld_lims)
+    click.echo("    Yield count: " + str(yld_cnt))
+
+    click.echo("    HOB lims [km]: " + hob_lims)
+    click.echo("    HOB resolution [km]: " + str(hob_dz))
+
+    yld_lims = [float(val) for val in yld_lims.strip(' ()[]').split(',')]
+    hob_lims = [float(val) for val in hob_lims.strip(' ()[]').split(',')]
+
+    alt_vals = np.arange(hob_lims[0], hob_lims[1] + hob_dz / 2.0, hob_dz)
+    yld_vals = np.logspace(np.log10(yld_lims[0]), np.log10(yld_lims[1]), yld_cnt)
+
+    propagation.yield_hob_stats(yld_vals, alt_vals, infraga_config, output_path, channel_cnt, local_temp_dir=local_temp_dir)
+

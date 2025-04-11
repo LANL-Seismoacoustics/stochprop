@@ -1,0 +1,17 @@
+[GENERAL]
+atmo_file = profs/g2stxt_2011010118_39.1026_-84.5123.dat
+cpu_cnt = 8
+
+[EIGENRAY]
+src_lat = 35.0
+src_lon = -112.0
+
+rcvr_lat = 35.0
+rcvr_lon = -109.0
+
+incl_min = -80.0
+
+bnc_max = 6
+verbose = false
+
+

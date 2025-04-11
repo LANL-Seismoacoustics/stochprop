@@ -66,6 +66,7 @@ stats.add_command(stats_cli.perturb)
 prop.add_command(prop_cli.fit_celerity)
 prop.add_command(prop_cli.build_pgm)
 prop.add_command(prop_cli.build_tlm)
+prop.add_command(prop_cli.yld_hob)
 
 plot.add_command(plot_cli.ess_ratio)
 plot.add_command(plot_cli.eofs)

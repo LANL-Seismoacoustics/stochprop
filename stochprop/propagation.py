@@ -12,8 +12,10 @@ import pickle
 import itertools
 import subprocess
 import glob
+import pkg_resources
 import tempfile
 
+import configparser as cnfg
 import numpy as np
 
 from importlib.util import find_spec
@@ -138,33 +140,33 @@ def _plot_ess_ratio(A, z0, datetimes, grnd_index, results_path, include_ns, show
     for j in range(364):
         if (eff_sndspd_pk[0][j] - 1.0) * (eff_sndspd_pk[0][j + 1] - 1) <= 0.0:
             if eff_sndspd_pk[0][j] > eff_sndspd_pk[0][j + 1]:
-                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
             else:
-                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
 
     print('\n' + "Westward waveguide changes...")
     for j in range(364):
         if (eff_sndspd_pk[1][j] - 1.0) * (eff_sndspd_pk[1][j + 1] - 1) <= 0.0:
             if eff_sndspd_pk[1][j] > eff_sndspd_pk[1][j + 1]:
-                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
             else:
-                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
     if include_ns:
         print('\n' + "Northward waveguide changes...")
         for j in range(364):
             if (eff_sndspd_pk[2][j] - 1.0) * (eff_sndspd_pk[2][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[2][j] > eff_sndspd_pk[2][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
 
         print('\n' + "Southward waveguide changes...")
         for j in range(364):
             if (eff_sndspd_pk[3][j] - 1.0) * (eff_sndspd_pk[3][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[3][j] > eff_sndspd_pk[3][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")")
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")")
     print('')
 
     ax1[0].plot(np.arange(365.0) / 7.0, eff_sndspd_pk[0], '-b', linewidth=2.5)
@@ -184,33 +186,33 @@ def _plot_ess_ratio(A, z0, datetimes, grnd_index, results_path, include_ns, show
         for j in range(364):
             if (eff_sndspd_pk[0][j] - 1.0) * (eff_sndspd_pk[0][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[0][j] > eff_sndspd_pk[0][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
 
         print('\n' + "Westward waveguide changes...", file=output_file)
         for j in range(364):
             if (eff_sndspd_pk[1][j] - 1.0) * (eff_sndspd_pk[1][j + 1] - 1) <= 0.0:
                 if eff_sndspd_pk[1][j] > eff_sndspd_pk[1][j + 1]:
-                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                 else:
-                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                    print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
         if include_ns:
             print('\n' + "Northward waveguide changes...", file=output_file)
             for j in range(364):
                 if (eff_sndspd_pk[2][j] - 1.0) * (eff_sndspd_pk[2][j + 1] - 1) <= 0.0:
                     if eff_sndspd_pk[2][j] > eff_sndspd_pk[2][j + 1]:
-                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                     else:
-                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
 
             print('\n' + "Southward waveguide changes...", file=output_file)
             for j in range(364):
                 if (eff_sndspd_pk[3][j] - 1.0) * (eff_sndspd_pk[3][j + 1] - 1) <= 0.0:
                     if eff_sndspd_pk[3][j] > eff_sndspd_pk[3][j + 1]:
-                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide dissipates:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
                     else:
-                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j), '%y%j').date().strftime('%B %d'), " (yday: " + str(j) + ", week: " + str(int(np.round(j/7))) + ")", file=output_file)
+                        print('\t' + "Waveguide forms:", datetime.strptime('20' + "{:03d}".format(j + 1), '%y%j').date().strftime('%B %d'), " (yday: " + str(j + 1) + ", week: " + str(int(np.round((j + 1) / 7))) + ")", file=output_file)
 
         output_file.close()
 
@@ -366,7 +368,6 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 3.703703703703796	0.9092146274618726
                 5.555555555556105	0.9170049733706201
                 ...
-
 
         Parameters
         ----------
@@ -1853,3 +1854,84 @@ def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max,
     
     if show_fig:
         plt.show()
+
+
+def yield_hob_stats(yld_vals, hob_vals, infraga_config, output_path, channel_Cnt, local_temp_dir=None):
+
+    _, ims_ns_cdf = ims_noise_model()
+
+    freq_bands = [[0.02, 0.1],
+                [0.05, 0.3],
+                [0.2, 0.8],
+                [0.5, 2.0],
+                [1.0, 8.0]]
+
+    with tempfile.TemporaryDirectory(prefix='infraga_') as tmpdirname:
+        if local_temp_dir is not None:
+            print("\n  Writing individual infraGA results into local directory: " + local_temp_dir + '\n')
+            if not os.path.isdir(local_temp_dir):
+                os.mkdir(local_temp_dir)
+            tmpdirname = local_temp_dir
+        else:
+            print("\n  Created temp directory:", tmpdirname + '\n')
+        
+        for alt in hob_vals:
+            if os.path.isfile(tmpdirname + "/" + str(np.round(alt, 0)) + "km.arrivals.dat"):
+                print(tmpdirname + "/" + str(np.round(alt, 0)) + "km.arrivals.dat already exists.  Skipping infraGA run...")
+            else:
+                for yld in yld_vals:
+                    command = "infraga sph eig_wvfrm --config-file " + infraga_config + " --src-alt " + str(alt) + " --wvfrm-yield " + str(np.round(yld, 2))
+                    command = command + " --keep-eig-results true --output-id " + tmpdirname + "/" + str(np.round(alt, 0)) + "km"
+                    print('\n' + "-" * 40 + '\n' + command)
+                    subprocess.call(command, shell=True)
+
+                    command = "mv " + tmpdirname + "/" + str(np.round(alt, 0)) + "km.wvfrms.dat "
+                    command = command + tmpdirname + "/" + str(np.round(alt, 0)) + "km_" + str(np.round(yld / 1.0e3, 2)) + "t.wvfrms.dat"
+                    print(command)
+                    subprocess.call(command, shell=True)
+
+        print('\nBuilding statistics...')
+        file_out = open(output_path + ".det_stats.dat", 'w')
+
+        infraga_cnfg = cnfg.ConfigParser()
+        infraga_cnfg.read(infraga_config)
+
+        print("# stochprop prop yld-hob results (stochprop v" + pkg_resources.get_distribution("stochprop").version + ")", file=file_out)
+        print("#   infraga config: " + infraga_config, file=file_out)
+        print("#   atmo file: " + infraga_cnfg['GENERAL']['atmo_file'], file=file_out)
+        print("#   source lat/lon: " + infraga_cnfg['EIGENRAY']['src_lat'] + ", " + infraga_cnfg['EIGENRAY']['src_lon'], file=file_out) 
+        print("#   receiver lat/lon: " + infraga_cnfg['EIGENRAY']['rcvr_lat'] + ", " + infraga_cnfg['EIGENRAY']['rcvr_lon'], file=file_out) 
+        print('#\n# alt [km]\tyld [t eq. TNT]\tdet_prob\tdom_freq [Hz]\tpk_spec_amp [Pa/Hz]', file=file_out)
+
+        for alt in hob_vals:
+            print('\tAnalyzing waveforms for HOB: ' + str(alt) + " km...")
+            for yld in yld_vals:
+                wvfrm_file = tmpdirname + "/" + str(np.round(alt, 0)) + "km_" + str(np.round(yld / 1.0e3, 2)) + "t.wvfrms.dat"
+                if os.path.isfile(wvfrm_file):
+                    wvfrm_data = np.loadtxt(wvfrm_file)
+                    t_vals, p_vals = wvfrm_data[:, 0], np.sum(wvfrm_data[:, 1:], axis=1)            
+
+                    dt, N = abs(t_vals[1] - t_vals[0]), len(t_vals)
+                    N_f = int(N / 2 + 1)
+
+                    f = (1.0 / dt) * (np.arange(float(N_f)) / N)
+                    p_fft = abs(np.fft.rfft(p_vals)) * dt
+
+                    # extract dominant preiod and peak spectral amplitude
+                    f_dom = f[np.argmax(p_fft)]
+                    p_fft_pk = np.max(p_fft)
+
+                    # Compute detection probability
+                    duration = (t_vals[-1] - t_vals[0]) / 2.0
+                    det_prob = []
+                    for band in freq_bands:
+                        f_mask = np.logical_and(band[0] < f, f < band[1])
+                        det_prob = det_prob + [np.nanmean(ims_ns_cdf(f[f_mask], p_fft[f_mask], duration=duration, array_dim=channel_Cnt))]
+
+                    det_prob = np.array(det_prob)
+                    print(str(alt) + '\t' + str(np.round(yld / 1.0e3, 2)) + '\t' + str(np.nanmax(det_prob)) + '\t' + str(f_dom) + '\t' + str(p_fft_pk), file=file_out)
+                else:
+                    print('\t\tError loading waveform result: ' + wvfrm_file + ' (eigenrays may not exist or simulations might have failed).')
+
+
+
