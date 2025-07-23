@@ -28,12 +28,12 @@
 import os 
 import sys
 import time
-import pkg_resources
 import datetime
 
 import numpy as np
 
 from multiprocess import Pool
+from importlib.metadata import version
 
 import matplotlib.pyplot as plt 
 
@@ -506,7 +506,7 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
 
 
 def _perturb_header_txt(prof_path, t0, dx, Nk, N_om, random_phase, z_src, m_star, n, prof_cnt, indices):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Gravity Wave Perturbation"
     result = result + '\n' + "# Reference Specification = " + prof_path + " (cwd: " + os.getcwd() + ")"

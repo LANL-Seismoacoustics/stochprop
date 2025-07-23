@@ -14,12 +14,12 @@ import calendar
 import fnmatch
 import datetime
 import subprocess
-import pkg_resources
 import re 
 
 from netCDF4 import Dataset
 
 from importlib.util import find_spec
+from importlib.metadata import version
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -138,7 +138,7 @@ def profiles_qc(path, pattern="*.dat", skiprows=0):
 ###############################
 def _eof_mean_header_txt(build_info):
     result = "# Mean Atmosphere from EOF Constrution"
-    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
     if 'month_selection' in build_info.keys():
@@ -163,7 +163,7 @@ def _eof_mean_header_txt(build_info):
 
 def _eof_c_header_txt(build_info):
     result = "# Sound Speed EOFs"
-    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
     if 'month_selection' in build_info.keys():
@@ -181,7 +181,7 @@ def _eof_c_header_txt(build_info):
 
 def _eof_u_header_txt(build_info):
     result = "# Zonal Wind EOFs"
-    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
     if 'month_selection' in build_info.keys():
@@ -199,7 +199,7 @@ def _eof_u_header_txt(build_info):
 
 def _eof_v_header_txt(build_info):
     result = "# Meridional Wind EOFs"
-    result = result + '\n' + "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = result + '\n' + "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Specification directory: " + build_info['atmo_dir'] + " (cwd: " + os.getcwd() + ")"
     if 'month_selection' in build_info.keys():
@@ -217,7 +217,7 @@ def _eof_v_header_txt(build_info):
 
 
 def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Coefficient KDE Sampling"
     result = result + '\n' + "# Coeff Label = " + coeff_label
@@ -237,7 +237,7 @@ def _coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, n, prof_cnt):
     return result    
 
 def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Coefficient KDE Sampling"
     result = result + '\n' + "# Coeff Label = " + coeff_label
@@ -257,7 +257,7 @@ def _coeff_smpl_max_header_txt(coeff_label, eofs_path, eof_cnt):
     return result
 
 def _fit_header_txt(prof_path, eofs_path, eof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Fitting"
     result = result + '\n' + "# Reference Specification = " + prof_path
@@ -276,7 +276,7 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
     return result
 
 def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
-    result = "# Data Source: stochprop v" + pkg_resources.get_distribution("stochprop").version
+    result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: EOF Perturbation"
     result = result + '\n' + "# Reference Specification = " + prof_path
