@@ -11,14 +11,13 @@ import warnings
 import pickle
 import itertools
 import subprocess
-import glob
-import pkg_resources
 import tempfile
 
 import configparser as cnfg
 import numpy as np
 
 from importlib.util import find_spec
+from importlib.metadata import version
 
 from datetime import datetime
 from pyproj import Geod
@@ -1896,7 +1895,7 @@ def yield_hob_stats(yld_vals, hob_vals, infraga_config, output_path, channel_Cnt
         infraga_cnfg = cnfg.ConfigParser()
         infraga_cnfg.read(infraga_config)
 
-        print("# stochprop prop yld-hob results (stochprop v" + pkg_resources.get_distribution("stochprop").version + ")", file=file_out)
+        print("# stochprop prop yld-hob results (stochprop v" + version("stochprop") + ")", file=file_out)
         print("#   infraga config: " + infraga_config, file=file_out)
         print("#   atmo file: " + infraga_cnfg['GENERAL']['atmo_file'], file=file_out)
         print("#   source lat/lon: " + infraga_cnfg['EIGENRAY']['src_lat'] + ", " + infraga_cnfg['EIGENRAY']['src_lon'], file=file_out) 
