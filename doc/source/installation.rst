@@ -57,24 +57,61 @@ To deactivate an active environment, use
 
     conda deactivate
 
-**Installing via PyGS**
 
-A number of LANL infrasound software tools have been developed and made available to the community through the `LANL Seismoacoustics github page <https://github.com/LANL-Seismoacoustics/infrapy>`_.  Collectively, these tools are referred to as the Python Geophysics Suite (PyGS).  As noted above, the methods in *stochprop* function as a linkage between propagation modeling methods in *InfraGA/GeoAc* and *NCPAprop* to localization and yield estimation methods in *InfraPy*.  Because of this, it's useful to install these various packages into a single Anaconda environment; however, package conflicts exist that make a full installation of these tools difficult.  Resolving these conflicts is an ongoing effort.
+-------------------------------------------
+Python Geophysics Suite (PyGS) Installation
+-------------------------------------------
 
-For now, there are minimal conflicts between *stochprop* and the ray tracing methods in *infraGA/GeoAc*.  One can install *stochprop* directly using pip by navigating to the base directory of the package (there will be a file there named 'setup.py').  Assuming *infraga* has been installed within a conda environment called infraga_env, it is possible to install *stochprop* in the same environment buy first creating a clone of the *infraga* environment,
+Infrasound software tools developed by LANL SMEs have become increasing coupled in usage so that having them in a common Python environment is useful.  An in-development Python Geophysics Suite (PyGS) YML file is included in the InfraPy repository that will build an environment and install InfraPy, infraGA/GeoAc, and stochprop from GitHub.  It can be run using the same syntax as above,
 
-.. code-block:: none
+.. code-block:: bash
 
-    conda create --name pygs_env --clone infraga_env
+    >> conda env create -f pygs_env.yml
 
-then install the stochprop methods into the new Python Geophysics Suite environment (pygs_env),
+All dependencies will be installed and the LANL Python libraries pulled from GitHub to complete the environment.  To finish setting up, activate the environment and compile the infraGA/GeoAc software,
 
-.. code-block:: none
+.. code-block:: bash
 
-    conda activate pygs_env
-    pip install -e .
+    >> conda activate pygs
+    >> infraga compile 
 
-Once conflicts have been resolved, a single 'pygs.yml' file will be made available that installs the various LANL geophysics python tools into a single Anaconda environment.
+---------------------------------------------------------
+Python Geophysics Suite (PyGS) Installation - Dev Version
+---------------------------------------------------------
+
+Because the PyGS YML file installs via GitHub cloning, it doesn't copy the examples/ directories from the various libraries for demonstration and also doesn't leave the source code easily accessible for any de-bugging or customization.  A separate developer version is also included that requires a few more steps.  Build an instance of the environment with just stochprop included using the included YML file,
+
+.. code-block:: bash
+
+    >> conda env create -f pygs-dev_env.yml
+
+Next, clone the other repositories if you don't have them,
+
+.. code-block:: bash
+
+    >> git clone https://github.com/LANL-Seismoacoustics/infraga.git
+    >> git clone https://github.com/LANL-Seismoacoustics/infrapy.git
+
+If you have SSH keys set up for GitHub, you can alternately clone as,
+
+.. code-block:: bash
+	
+    >> git clone git@github.com:LANL-Seismoacoustics/infraga.git
+    >> git clone git@github.com:LANL-Seismoacoustics/infrapy.git
+
+Once the PyGS development environment is built, activate it using :code:`conda activate pygs_dev` and then use pip with the :code:`-e` flag to install infraGA/GeoAc and InfraPy and compile the infraGA/GeoAc ray tracing methods,
+
+.. code-block:: bash
+
+    >> cd /path/to/infraga
+    >> pip install -e .
+
+    >> infraga compile 
+
+    >> cd /path/to/infrapy
+    >> pip install -e .
+
+This installation will clone the example directories with all relevant data and also allow you to interact with other :code:`git` branches for customization.
 
 **Testing stochprop**
 
