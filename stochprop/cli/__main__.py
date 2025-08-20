@@ -5,8 +5,13 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
-
+import os 
 import click
+import webbrowser
+import subprocess
+import shlex
+
+from importlib.util import find_spec 
 
 from . import stats as stats_cli
 from . import prop as prop_cli
@@ -53,9 +58,26 @@ def plot():
     pass 
 
 
+#######################
+##    Open Manual    ##
+#######################
+@click.command('doc', short_help="Open stochprop manual")
+def open_doc():
+
+    pkg_loc = find_spec('stochprop').submodule_search_locations[0]
+    filename = pkg_loc + '/doc/build/html/index.html'
+
+    if not os.path.isfile(filename):      
+        print("Compiling manual...")
+        subprocess.run(shlex.split("make html -C " + pkg_loc + "/doc/"), shell=False)
+
+    webbrowser.open('file://' + os.path.realpath(filename), new=2)
+
+
 main.add_command(stats)
 main.add_command(prop)
 main.add_command(plot)
+main.add_command(open_doc)
 
 stats.add_command(stats_cli.eof_build)
 stats.add_command(stats_cli.eof_coeffs)

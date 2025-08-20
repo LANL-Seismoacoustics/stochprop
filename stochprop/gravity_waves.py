@@ -37,7 +37,11 @@ from importlib.metadata import version
 
 import matplotlib.pyplot as plt 
 
-from scipy.integrate import simps
+try:
+    from scipy.integrate import simpson
+except:
+    from scipy.integrate import simps as simpson
+
 from scipy.interpolate import interp1d
 from scipy.special import airy
 
@@ -245,9 +249,9 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
             jz = np.where(m_sqr_vals < 0.0)[0][0]
             if jz > src_index + 2:
                 turn_ht_index = jz - 1
-                refl_phase = simps(np.sqrt(m_sqr_vals[:turn_ht_index]), z_vals[:turn_ht_index])
-                refl_time = simps(1.0 / abs(cg(k, l, om_intr, H_vals[:turn_ht_index])), z_vals[:turn_ht_index])
-                refl_loss = simps(m_imag(k, l, om_intr, z_vals[:turn_ht_index], H_vals[:turn_ht_index], T0_vals[:turn_ht_index], d0_vals[:turn_ht_index]), z_vals[:turn_ht_index])
+                refl_phase = simpson(np.sqrt(m_sqr_vals[:turn_ht_index]), z_vals[:turn_ht_index])
+                refl_time = simpson(1.0 / abs(cg(k, l, om_intr, H_vals[:turn_ht_index])), z_vals[:turn_ht_index])
+                refl_loss = simpson(m_imag(k, l, om_intr, z_vals[:turn_ht_index], H_vals[:turn_ht_index], T0_vals[:turn_ht_index], d0_vals[:turn_ht_index]), z_vals[:turn_ht_index])
             else:
                 return [np.zeros_like(z_vals, dtype=complex)] * 4
         
@@ -277,20 +281,20 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
         w_sat_vals = np.sqrt(2.7e-2 * om_intr**(1.0 / 3.0) / (m_sqr_vals * kh**2))
         
         prop_times = np.zeros_like(z_vals)
-        prop_times[src_index + 1:] = np.array([simps(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zj])), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+        prop_times[src_index + 1:] = np.array([simpson(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zj])), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
         if np.all(prop_times < t0):
             prop_ht_index = len(z_vals) + 1
         else:
             prop_ht_index = np.where(prop_times > t0)[0][0]
 
         w_losses = np.zeros_like(z_vals)
-        w_losses[src_index + 1:] = np.array([simps(m_imag(k, l, om_intr, z_vals[src_index:zj], H_vals[src_index:zj], T0_vals[src_index:zj], d0_vals[src_index:zj]), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+        w_losses[src_index + 1:] = np.array([simpson(m_imag(k, l, om_intr, z_vals[src_index:zj], H_vals[src_index:zj], T0_vals[src_index:zj], d0_vals[src_index:zj]), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
 
         if prop_ht_index <= turn_ht_index:
             # free propagating solution
             w_phase_vals = np.zeros_like(z_vals)
             w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
-            w_phase_vals[src_index + 1: prop_ht_index] = np.array([simps(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, min(len(z_vals), prop_ht_index))])
+            w_phase_vals[src_index + 1: prop_ht_index] = np.array([simpson(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, min(len(z_vals), prop_ht_index))])
 
             w_spec[:prop_ht_index] = w0 * d0_m_ratios[:prop_ht_index] * (np.cos(ph0 + w_phase_vals[:prop_ht_index]) - 1.0j * np.sin(ph0 + w_phase_vals[:prop_ht_index]))
             w_spec[:prop_ht_index] = w_spec[:prop_ht_index] * np.exp(-w_losses[:prop_ht_index])
@@ -314,10 +318,10 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
             airy_scaling0 = np.zeros_like(z_vals)
             airy_scaling1 = np.zeros_like(z_vals)
 
-            m_integral_above = simps(m_vals[src_index:turn_ht_index], z_vals[src_index:turn_ht_index])
+            m_integral_above = simpson(m_vals[src_index:turn_ht_index], z_vals[src_index:turn_ht_index])
             airy_args[:src_index + 1] = np.array([-((3.0 / 2.0) * (m_integral_above + m_vals[src_index] * abs(z_vals[src_index] - z_vals[zj])))**(2.0 / 3.0) for zj in range(src_index + 1)])
-            airy_args[src_index + 1:turn_ht_index - 1] = np.array([-((3.0 / 2.0) * simps(m_vals[zj:turn_ht_index], z_vals[zj:turn_ht_index]))**(2.0 / 3.0) for zj in range(src_index, turn_ht_index - 1)])
-            airy_args[turn_ht_index + 1:airy_lim_index] = np.array([((3.0 / 2.0) * simps(m_vals[turn_ht_index:zj], z_vals[turn_ht_index:zj]))**(2.0 / 3.0) for zj in range(turn_ht_index + 1, airy_lim_index)])
+            airy_args[src_index + 1:turn_ht_index - 1] = np.array([-((3.0 / 2.0) * simpson(m_vals[zj:turn_ht_index], z_vals[zj:turn_ht_index]))**(2.0 / 3.0) for zj in range(src_index, turn_ht_index - 1)])
+            airy_args[turn_ht_index + 1:airy_lim_index] = np.array([((3.0 / 2.0) * simpson(m_vals[turn_ht_index:zj], z_vals[turn_ht_index:zj]))**(2.0 / 3.0) for zj in range(turn_ht_index + 1, airy_lim_index)])
 
             temp = (-airy_args[:airy_lim_index])**0.25 * np.exp(1.0j * np.pi / 4.0) * refl_ph_shift
             airy_scaling0[:airy_lim_index] = temp * airy(airy_args[:airy_lim_index])[0]
@@ -340,7 +344,7 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
         eta_spec = eta_spec * wind_phasor
         
         if figure_out:
-            prop_times = np.array([simps(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zk])), z_vals[src_index:zk]) for zk in range(src_index + 1, len(z_vals))])
+            prop_times = np.array([simpson(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zk])), z_vals[src_index:zk]) for zk in range(src_index + 1, len(z_vals))])
 
             f, a = plt.subplots(1, 3, sharey=True)
             a[0].set_ylabel("Altitue [km]")
@@ -488,19 +492,19 @@ def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N
 
     du_vals = np.fft.ifft(u_spec, axis=0) * dk 
     du_vals = np.fft.ifft(du_vals, axis=1) * dk
-    du_vals = simps(du_vals, intr_om_vals, axis=2)
+    du_vals = simpson(du_vals, intr_om_vals, axis=2)
 
     dv_vals = np.fft.ifft(v_spec, axis=0) * dk 
     dv_vals = np.fft.ifft(dv_vals, axis=1) * dk 
-    dv_vals = simps(dv_vals, intr_om_vals, axis=2)
+    dv_vals = simpson(dv_vals, intr_om_vals, axis=2)
 
     dw_vals = np.fft.ifft(w_spec, axis=0) * dk 
     dw_vals = np.fft.ifft(dw_vals, axis=1) * dk 
-    dw_vals = simps(dw_vals, intr_om_vals, axis=2)
+    dw_vals = simpson(dw_vals, intr_om_vals, axis=2)
 
     eta_vals = np.fft.ifft(eta_spec, axis=0) * dk 
     eta_vals = np.fft.ifft(eta_vals, axis=1) * dk 
-    eta_vals = simps(eta_vals, intr_om_vals, axis=2)
+    eta_vals = simpson(eta_vals, intr_om_vals, axis=2)
 
     return z_vals, np.real(du_vals), np.real(dv_vals), np.real(dw_vals), np.real(eta_vals)
 

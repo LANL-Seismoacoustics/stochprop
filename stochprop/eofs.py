@@ -25,7 +25,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from scipy.cluster import hierarchy
-from scipy.integrate import quad, simps
+
+try:
+    from scipy.integrate import simpson
+except:
+    from scipy.integrate import simps as simpson
+
 from scipy.interpolate import interp1d, interp2d
 from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
@@ -494,10 +499,10 @@ def build_atmo_matrix(path, pattern="*.dat", years=None, months=None, weeks=None
 
             # add parser to determine indices of fields of interest (T or p, u, v, d)
             atmo = np.loadtxt(path + file_list[0], skiprows=skiprows)
-            if np.any(ref_alts) is None:
-                z0 = atmo[:, 0]
-            else:
+            if ref_alts is not None:
                 z0 = ref_alts
+            else:
+                z0 = atmo[:, 0]
 
             if max_alt is not None:
                 alt_mask = tuple([z0 <= max_alt])
@@ -811,9 +816,9 @@ def compute_coeffs(A, alts, eofs_path, output_path, eof_cnt=100, pool=None):
 
         # define the integration to compute the EOF coefficients
         def calc_coeff(n):
-            result = simps(c_diff * c_eofs[:, n + 1][eofs_mask], eof_alts)
-            result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], eof_alts)
-            result += simps(v_diff * v_eofs[:, n + 1][eofs_mask], eof_alts)
+            result = simpson(c_diff * c_eofs[:, n + 1][eofs_mask], eof_alts)
+            result += simpson(u_diff * u_eofs[:, n + 1][eofs_mask], eof_alts)
+            result += simpson(v_diff * v_eofs[:, n + 1][eofs_mask], eof_alts)
             return result
 
         # run the integration to define coefficients
@@ -888,9 +893,9 @@ def compute_overlap(coeffs, eofs_path, eof_cnt=100, method="mean"):
                     c_vals = np.linspace(lims[0], lims[1], 1001)
 
                     # compute coefficient overlap via integration
-                    norm1 = simps(kernel1.pdf(c_vals)**2, c_vals)
-                    norm2 = simps(kernel2.pdf(c_vals)**2, c_vals)
-                    overlap_temp[eof_id][m1][m2] = simps(kernel1.pdf(c_vals) * kernel2.pdf(c_vals), c_vals) / np.sqrt(norm1 * norm2)
+                    norm1 = simpson(kernel1.pdf(c_vals)**2, c_vals)
+                    norm2 = simpson(kernel2.pdf(c_vals)**2, c_vals)
+                    overlap_temp[eof_id][m1][m2] = simpson(kernel1.pdf(c_vals) * kernel2.pdf(c_vals), c_vals) / np.sqrt(norm1 * norm2)
                     overlap_temp[eof_id][m2][m1] = overlap_temp[eof_id][m1][m2]
 
         overlap = np.average(overlap_temp, weights=eof_weights, axis=0)
@@ -976,8 +981,8 @@ def build_cdf(pdf, lims, pnts=250):
 
     x_vals = np.linspace(lims[0], lims[1], pnts)
 
-    norm = simps(pdf(x_vals), x_vals)
-    cdf_vals = [simps(pdf(x_vals[:j]), x_vals[:j]) / norm if j > 0 else 0.0 for j in range(len(x_vals))]
+    norm = simpson(pdf(x_vals), x_vals)
+    cdf_vals = [simpson(pdf(x_vals[:j]), x_vals[:j]) / norm if j > 0 else 0.0 for j in range(len(x_vals))]
 
     '''
     norm = quad(pdf, lims[0], lims[1])[0]
@@ -1078,7 +1083,7 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
         # T = C^2 / R \gamma
         temp = np.zeros_like(sampled_profs[pn][:, 0])
         for j in range(1, len(temp)):
-            temp[j] = simps(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0)
+            temp[j] = simpson(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0)
         press = (sampled_profs[pn][0][4] * sampled_profs[pn][0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
 
         sampled_profs[pn][:, 5] = press
@@ -1139,7 +1144,7 @@ def maximum_likelihood_profile(coeffs, eofs_path, output_path, eof_cnt=100, coef
     # T = C^2 / R \gamma
     temp = np.zeros_like(ml_prof[:, 0])
     for j in range(1, len(ml_prof)):
-        temp[j] = simps(1.0 / ml_prof[:j, 1]**2, ml_prof[:j, 0] * 1000.0)
+        temp[j] = simpson(1.0 / ml_prof[:j, 1]**2, ml_prof[:j, 0] * 1000.0)
 
     # append pressure and replace sound speed values with temperature
     press = (ml_prof[0][4] * ml_prof[0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
@@ -1204,9 +1209,9 @@ def fit_atmo(prof_path, eofs_path, output_path=None, eof_cnt=100, plot_result=Tr
     # define the integration to compute the EOF coefficients
     print('\t' + "Generating fit using " + str(eof_cnt) + " EOF terms...")
     def calc_coeff(n):
-        result = simps(c_diff * c_eofs[:, n + 1][eofs_mask], c_eofs[:, 0][eofs_mask])
-        result += simps(u_diff * u_eofs[:, n + 1][eofs_mask], u_eofs[:, 0][eofs_mask])
-        result += simps(v_diff * v_eofs[:, n + 1][eofs_mask], v_eofs[:, 0][eofs_mask])
+        result = simpson(c_diff * c_eofs[:, n + 1][eofs_mask], c_eofs[:, 0][eofs_mask])
+        result += simpson(u_diff * u_eofs[:, n + 1][eofs_mask], u_eofs[:, 0][eofs_mask])
+        result += simpson(v_diff * v_eofs[:, n + 1][eofs_mask], v_eofs[:, 0][eofs_mask])
 
         return result
 
@@ -1225,7 +1230,7 @@ def fit_atmo(prof_path, eofs_path, output_path=None, eof_cnt=100, plot_result=Tr
     # T = C^2 / R \gamma
     temp = np.zeros_like(fit[:, 0])
     for j in range(1, len(fit)):
-        temp[j] = simps(1.0 / fit[:j, 1]**2, fit[:j, 0] * 1000.0)
+        temp[j] = simpson(1.0 / fit[:j, 1]**2, fit[:j, 0] * 1000.0)
 
     # append pressure and replace sound speed values with temperature
     press = (fit[0][4] * fit[0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
@@ -1321,9 +1326,9 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
             u_perturb[j] = coeff_val * interp1d(u_eofs[:, 0][eof_mask], u_eofs[:, n + 1][eof_mask])(z_vals)
             v_perturb[j] = coeff_val * interp1d(v_eofs[:, 0][eof_mask], v_eofs[:, n + 1][eof_mask])(z_vals)
 
-            z_mean = simps(c_eofs[:, 0][eof_mask] * abs(c_eofs[:, n + 1][eof_mask]), c_eofs[:, 0][eof_mask]) / simps(abs(c_eofs[:, n + 1][eof_mask]), c_eofs[:, 0][eof_mask])
-            z_mean = z_mean + simps(u_eofs[:, 0][eof_mask] * abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask]) / simps(abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
-            z_mean = z_mean + simps(v_eofs[:, 0][eof_mask] * abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask]) / simps(abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask])
+            z_mean = simpson(c_eofs[:, 0][eof_mask] * abs(c_eofs[:, n + 1][eof_mask]), c_eofs[:, 0][eof_mask]) / simpson(abs(c_eofs[:, n + 1][eof_mask]), c_eofs[:, 0][eof_mask])
+            z_mean = z_mean + simpson(u_eofs[:, 0][eof_mask] * abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask]) / simpson(abs(u_eofs[:, n + 1][eof_mask]), u_eofs[:, 0][eof_mask])
+            z_mean = z_mean + simpson(v_eofs[:, 0][eof_mask] * abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask]) / simpson(abs(v_eofs[:, n + 1][eof_mask]), v_eofs[:, 0][eof_mask])
 
             wts[j] = (z_mean / max(u_eofs[:, 0][eof_mask]))**alt_wt_pow
             wts[j] *= (sing_vals[n, 1] / sing_vals[0, 1])**sing_val_wt_pow
@@ -1349,7 +1354,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
         # T = C^2 / R \gamma
         temp = np.zeros_like(c_vals)
         for j in range(1, len(c_vals)):
-            temp[j] = simps(1.0 / c_vals[:j]**2, ref_atmo[:, 0][ref_mask][:j] * 1000.0)
+            temp[j] = simpson(1.0 / c_vals[:j]**2, ref_atmo[:, 0][ref_mask][:j] * 1000.0)
 
         # append pressure and replace sound speed values with temperature
         p_vals = (ref_atmo[:, 5][ref_mask][0] * c_vals[0]**2 / gam) * np.exp(-grav * gam * temp) * 10.0

@@ -4,12 +4,16 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
+import os 
 import click
+import subprocess
 
 import numpy as np
 import configparser as cnfg
 
 import matplotlib.pyplot as plt 
+
+from importlib.util import find_spec 
 
 from scipy.stats import gaussian_kde, norm
 from scipy.optimize import curve_fit
@@ -124,7 +128,7 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     \b
     Example Usage:
     \t stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \\
-             --src-loc '[30.0, -120.0, 0.0]'  --cpu-cnt 8 --local-temp-dir samples/winter/arrivals
+             --src-loc '30.0, -120.0, 0.0'  --cpu-cnt 8 --local-temp-dir samples/winter/arrivals
 
     '''
 
@@ -172,12 +176,19 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     src_loc = [float(val) for val in src_loc.strip(' ()[]').split(',')]
     inclinations = [float(val) for val in inclinations.strip(' ()[]').split(',')]
     azimuths = [float(val) for val in azimuths.strip(' ()[]').split(',')]
-    
+
+    infraga_spec = find_spec('infraga')
+    if infraga_spec is not None:
+        infraga_path = infraga_spec.submodule_search_locations[0]
+    else:
+        if not os.path.isfile(infraga_path + "infraga-sph"):
+            click.echo('\n' + "InfraGA path invalid.  Can't run ray tracing.")
+            return 
+        
     propagation.run_infraga(atmo_dir, output_path + ".arrivals.dat", pattern=atmo_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
                     inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, infraga_path=infraga_path, 
                     local_temp_dir=local_temp_dir, prof_format=prof_format, reverse_winds=station_centered, topo_file=topo_file, verbose=verbose)
 
-    # update source altitude if below ground surface
     src_loc[2] = max(src_loc[2], z_grnd)
 
     pgm = propagation.PathGeometryModel()
@@ -190,7 +201,7 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 @click.option("--atmo-dir", help="Directory containing atmospheric specifications", prompt="Path to directory with atmospheric specifications")
 @click.option("--output-path", help="Path and prefix for TLM output", prompt="Path and prefix for TLM output")
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
-@click.option("--ncpaprop-method", help="NCPAprop method ('modess' or 'epape')", default='modess')
+@click.option("--ncpaprop-method", help="NCPAprop method ('ePape' or 'Modess')", default='ePape')
 @click.option("--ncpaprop-path", help="Path to NCPAprop binaries (if not on path)", default="")
 @click.option("--freq", help="Frequency for simulation (default: 0.5 Hz)", default=0.5)
 @click.option("--azimuths", help="Azimuth min, max, and step (default: [0, 360, 3]", default = "[0.0, 360.0, 3.0]")
@@ -218,7 +229,8 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
     ------------------------
     \b
     Example Usage:
-    \t stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8 --local-temp-dir samples/winter/tloss
+    \t stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter --freq 0.2 \\
+    \t \t --src-loc '30.0, -120.0, 0.0' --cpu-cnt 8 --local-temp-dir samples/winter/tloss
 
     '''
 
@@ -276,12 +288,21 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
     else:
         cpu_cnt = int(cpu_cnt)
 
+    try:
+        subprocess.check_output([ncpaprop_path + "ePape", " -h"], stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as e:
+        print(f"Command failed with return code {e.returncode}")
+        print(f"Error output: {e.stderr}") # If stderr was redirected to PIPE
+    except FileNotFoundError:
+        click.echo("NCPAprop path invalid.  Can't run propagation simulattions.")
+        return 
+    
     propagation.run_ncpaprop(ncpaprop_method, atmo_dir, output_path + "_%.3f" %freq + "Hz", pattern=atmo_pattern, 
                              azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, rng_resol=rng_resol, 
                              src_loc=src_loc, ncpaprop_path=ncpaprop_path, use_topo=use_topo, reverse_winds=station_centered,
                              local_temp_dir=local_temp_dir, cpu_cnt=cpu_cnt)
 
-    if ncpaprop_method == "modess":
+    if ncpaprop_method == "Modess":
         output_suffix = ".nm"
     else:
         output_suffix = ".pe"

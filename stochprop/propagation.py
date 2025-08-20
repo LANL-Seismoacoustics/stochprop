@@ -22,7 +22,12 @@ from importlib.metadata import version
 from datetime import datetime
 from pyproj import Geod
 
-from scipy.integrate import simps
+try:
+    from scipy.integrate import simpson
+except:
+    from scipy.integrate import simps as simpson
+
+
 from scipy.interpolate import interp1d, RectBivariateSpline
 from scipy.stats import norm, gaussian_kde
 from scipy.signal import savgol_filter
@@ -292,9 +297,9 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                         else:
                             print("Generating ray paths for " + file_name)
                             if cpu_cnt:
-                                command = "mpirun -np " + str(cpu_cnt) + " " + infraga_path + " infraga-accel-" + geom + " -prop "
+                                command = "mpirun -np " + str(cpu_cnt) + " " + infraga_path + "infraga-accel-" + geom + " -prop "
                             else:
-                                command = infraga_path + " infraga-" + geom + " -prop "
+                                command = infraga_path + "infraga-" + geom + " -prop "
 
                             command = command + profs_path + "/" + file_name
                             command = command + " incl_min=" + str(inclinations[0]) + " incl_max=" + str(inclinations[1]) + " incl_step=" + str(inclinations[2])
@@ -317,7 +322,6 @@ def run_infraga(profs_path, results_file, pattern="*.met", cpu_cnt=None, geom="3
                             if not verbose:
                                 command = command + " > /dev/null"
 
-                            print(command)
                             subprocess.call(command, shell=True)
 
                 command = "cat " + tmpdirname + "/*.arrivals.dat > " + results_file
@@ -497,10 +501,10 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 subprocess.call(command, shell=True)                        
 
             else:
-                if ncpaprop_method == "modess":
-                    command_prefix = ncpaprop_path + " modess --multiprop --zground_km " + str(z_grnd)
+                if ncpaprop_method == "modess" or ncpaprop_method == "Modess":
+                    command_prefix = ncpaprop_path + " Modess --multiprop --zground_km " + str(z_grnd)
                 else:
-                    command_prefix = ncpaprop_path + " epape --multiprop --starter self --groundheight_km " + str(z_grnd)
+                    command_prefix = ncpaprop_path + " ePape --multiprop --starter self --groundheight_km " + str(z_grnd)
 
                 dir_files = np.sort(os.listdir(profs_path))
                 print("Running NCPAprop " + ncpaprop_method + " for atmospheric specifications in " + profs_path)
@@ -537,8 +541,6 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                 command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
                 print('\t' + command)
                 subprocess.call(command, shell=True)
-
-
 
 
 # ############################ #
@@ -1699,7 +1701,7 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
             for az_index in range(tlm._az_bin_cnt):
                 center = -180 + 360.0 * (az_index / tlm._az_bin_cnt)
                 arrival = tlm.eval(rng_grid, P_grid - src0, np.ones_like(rng_grid) * center)
-                rng_prob = simps(arrival * ims_ns_cdf(P_grid, tlm_freq, duration=duration, array_dim=array_dim), P_vals)
+                rng_prob = simpson(arrival * ims_ns_cdf(P_grid, tlm_freq, duration=duration, array_dim=array_dim), P_vals)
 
                 im = ax_j.bar(np.radians(np.array([center] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
                         
@@ -1783,7 +1785,7 @@ def plot_network_performance(info_file, freq, W0, det_cnt_min, lat_min, lat_max,
         for az_index in range(tlm._az_bin_cnt):
             center = -180 + 360.0 * (az_index / tlm._az_bin_cnt)
             arrival = tlm.eval(rng_grid, P_grid - src0, np.ones_like(rng_grid) * center)
-            det_prob[:, az_index] = simps(arrival * ims_ns_cdf(P_grid, freq, duration=duration, array_dim=dims[j]), P_vals, axis=1)
+            det_prob[:, az_index] = simpson(arrival * ims_ns_cdf(P_grid, freq, duration=duration, array_dim=dims[j]), P_vals, axis=1)
 
         az_vals = np.array([-180 + 360.0 * (j / tlm._az_bin_cnt) for j in range(tlm._az_bin_cnt)])
         az_vals = np.append(az_vals, 180.0)

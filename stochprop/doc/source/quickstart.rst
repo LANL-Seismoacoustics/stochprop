@@ -458,7 +458,7 @@ Similar to the sampling analysis, it's useful to define subdirectories for indiv
         mkdir prop/winter 
 
         stochprop prop build-pgm --atmo-dir samples/winter/ --output-path prop/winter/winter \
-            --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --clean-up False
+            --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 14 --local-temp-dir samples/winter/arrivals
 
     .. code:: none
 
