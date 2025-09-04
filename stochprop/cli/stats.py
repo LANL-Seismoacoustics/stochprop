@@ -298,7 +298,7 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt, label):
     eofs.sample_atmo(coeff_vals, eofs_path, sample_path, eof_cnt=eof_cnt, prof_cnt=sample_cnt, coeff_label=label)
 
 
-@click.command('perturb', short_help="Construct perturbed atmospheric models", hidden=True)
+@click.command('perturb', short_help="Construct perturbed atmospheric models")
 @click.option("--atmo-file", help="Reference atmospheric specification (required)", prompt="Reference atmospheric specification: ")
 @click.option("--sample-path", help="Output prefix (required)", prompt="Sample (output) prefix: ")
 @click.option("--sample-cnt", help="Number of perturbed samples (default: 25)", default=25)
