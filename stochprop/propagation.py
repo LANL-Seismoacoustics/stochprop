@@ -1648,7 +1648,7 @@ def blastwave_spectrum(f, W, r, p_amb=101.325, T_amb=288.15, exp_type="chemical"
 #      Detection Capbility      #
 #     & Network Performance     #
 # ############################# #
-def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=True):
+def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=True, station_centered=False):
 
     plt.rcParams.update({'font.size': 14})
     _, ims_ns_cdf = ims_noise_model()
@@ -1703,21 +1703,23 @@ def plot_detection_stats(tlms, yld_vals, array_dim, output_path=None, show_fig=T
                 arrival = tlm.eval(rng_grid, P_grid - src0, np.ones_like(rng_grid) * center)
                 rng_prob = simpson(arrival * ims_ns_cdf(P_grid, tlm_freq, duration=duration, array_dim=array_dim), P_vals)
 
-                im = ax_j.bar(np.radians(np.array([center] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
+                if station_centered:
+                    im = ax_j.bar(np.radians(np.array([center + 180.0] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
+                    ax_j.plot([0.0], [0.0], '^g', markersize=10.0)
+                else:
+                    im = ax_j.bar(np.radians(np.array([center] * len(rng_vals))), width=np.radians(360.0 / tlm._az_bin_cnt), height=dr * 2.0, bottom=rng_vals, color=cm.hot_r(rng_prob), alpha=0.9)
+                    ax_j.plot([0.0], [0.0], '*m', markersize=12.0)
                         
     print('\n' + "Plotting detection statistics...", '\n')
-
     if len(yld_vals) > 1:
         for m in range(len(yld_vals)):
             axes[m][-1].axis('off')
     else:
             axes[-1].axis('off')
 
-
     cax = fig.add_axes([(len(tlms[0]) + 0.1) / (len(tlms[0]) + 1.0), 0.1, 0.02, 0.8])
     cbar = ColorbarBase(cax, cmap=cm.hot_r)
     cbar.set_label("Detection Probability")
-
 
     plt.tight_layout()
 

@@ -626,7 +626,16 @@ In this function call, the wildcard in the TLM files specification (note those q
         :align: center
         :figclass: align-center
 
-In the resulting visualization, each row corresponds to one of the explosive yield values and each column denotes results for a single transmission loss model.  *Note: this visualization method has some weird behavior when using a single TLM and/or a single yield value.  Work is ongoing to debug it.  Also, for other combinations of TLMs (e.g., summer vs. winter), the labelling needs to be corrected.*
+In the resulting visualization, each row corresponds to one of the explosive yield values and each column denotes results for a single transmission loss model.  The magenta star in the center of each panel denotes the source location in this visualization.  In the case that a station-centered detection statistic is desired, the :code:`--station-centered` flag can be used and the star is replaced by a green triangle to denote the station location.
+
+    .. code:: none
+
+        stochprop plot detection-stats --tlm-files 'prop/US_RM/US_RM-winter_*Hz.tlm' --yield-vals '1, 10, 100' --array-dim 5 --station-centered True
+
+    .. figure:: _static/_images/det-stats2.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
 
 In addition to computing detection statistics for a single station, a network of stations can be analyzed to quantify the probability that an explosive source of a given yield will be detected by some limiting number of stations in the network.  Because the information required in such an analysis is a bit more complex, a file containing network info is needed.  The expected format is a comma-separated-value (CSV) file containing the latitude and longitude of each station, the number of sensor elements (to account for signal gain from beamforming analysis), and a TLM.  An example network info file is summarized below for the University of Utah infrasound network.
 

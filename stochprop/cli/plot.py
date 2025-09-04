@@ -349,9 +349,10 @@ def prop_model(model_file, output_id, cmap_max, hide_cbar):
 @click.option("--tlm-files", help="Path and name(s) for TLM file(s)", prompt="Enter tlm file info: ")
 @click.option("--yield-vals", help="List of yield values (tons eq. TNT)", prompt="Enter yield value(s): ")
 @click.option("--array-dim", help="Array dimension (number of sensors)", default=1, type=int)
+@click.option("--station-centered", help="Station- or source-centered visualization", default=False)
 @click.option("--figure-out", help="Destination for figure", default=None)
 @click.option("--show-figure", help="Print figure to screen", default=True)
-def detection_stats(tlm_files, yield_vals, array_dim, figure_out, show_figure):
+def detection_stats(tlm_files, yield_vals, array_dim, station_centered, figure_out, show_figure):
     '''
     \b
     stochprop prop detection_stats 
@@ -390,7 +391,7 @@ def detection_stats(tlm_files, yield_vals, array_dim, figure_out, show_figure):
 
     # Generate plot
     yield_vals = [float(val)*1.0e3 for val in yield_vals.strip(' ()[]').split(',')]
-    sp_prop.plot_detection_stats(models, yield_vals, array_dim=array_dim, show_fig=show_figure, output_path=figure_out)
+    sp_prop.plot_detection_stats(models, yield_vals, array_dim=array_dim, show_fig=show_figure, output_path=figure_out, station_centered=station_centered)
 
 
 

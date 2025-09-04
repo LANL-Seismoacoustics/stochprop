@@ -58,9 +58,7 @@ To deactivate an active environment, use
     conda deactivate
 
 
--------------------------------------------
-Python Geophysics Suite (PyGS) Installation
--------------------------------------------
+**Python Geophysics Suite (PyGS) Installation**
 
 Infrasound software tools developed by LANL SMEs have become increasing coupled in usage so that having them in a common Python environment is useful.  An in-development Python Geophysics Suite (PyGS) YML file is included in the stochprop repository that will build an environment and install InfraPy, infraGA/GeoAc, and stochprop from GitHub.  It can be run using the same syntax as above,
 
@@ -75,9 +73,7 @@ All dependencies will be installed and the LANL Python libraries pulled from Git
     >> conda activate pygs
     >> infraga compile 
 
----------------------------------------------------------
-Python Geophysics Suite (PyGS) Installation - Dev Version
----------------------------------------------------------
+**Python Geophysics Suite (PyGS) Installation - Dev Version**
 
 Because the PyGS YML file installs via GitHub cloning, it doesn't copy the examples/ directories from the various libraries for demonstration and also doesn't leave the source code easily accessible for any de-bugging or customization.  A separate developer version is also included that requires a few more steps.  Build an instance of the environment with just stochprop included using the included YML file,
 
