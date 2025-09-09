@@ -68,116 +68,12 @@ def prog_set_step(n, N, bar_length):
     return int(np.floor((float(bar_length) * (n + 1)) / N) - np.floor((float(bar_length) * n) / N))
 
 
-# Gravity wave methods
-def BV_freq(H):
-    """
-        Compute the Brunt-Vaisala frequency defined as :math:`N = \sqrt{\frac{g}{H}}` where 
-        :math:`H = \frac{rho0}{\frac{\partial \rho_0}{\partial z}` is the density scale height
-    
-        Parameters
-        ----------
-        H: float
-            Scale height, :math:`H = \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`
 
-        Returns:
-        f_BV: float
-            Brunt-Vaisalla (bouyancy) frequency, :math:`f_BV = sqrt{\frac{g}{H}}`
-
-    """
-    return np.sqrt(9.8e-3 / H)
-
-
-def m_sqr(k, l, om_intr, H):
-    """
-        Compute the vertical wavenumber dispersion relation for gravity wave propagation
-        defined as :math:`m^2 = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4 H^2}`
-
-        Parameters
-        ----------
-        k: float
-            Zonal wave number [km^{-1}]
-        l: float
-            Meridional wave number [km^{-1}]
-        om_intr: float
-            Intrinsic frequency (relative to winds), defined as :math:`\hat{\omega} = \omega - k u_0 - l v_0`
-        H: float
-            Scale height, :math:`H = \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`
-
-        Returns:
-        m_sqr: float
-            Vertical wave number squared, :math:`m^2 = \frac{k_h^2}{\hat{\omega}^2 \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4 H^2}}`
-
-
-    """
-    return ((k**2 + l**2) / om_intr**2) * (BV_freq(H)**2 - om_intr**2) + 1.0 / (4.0 * H**2)
-
-
-def cg(k, l, om_intr, H):
-    """
-        Compute the vertical group velocity for gravity wave propagation 
-        as :math:`cg = \frac{\partial \hat{omega}}{\partial m} = \frac{m k_h N}{ \left(k_h^2 + m^2 + \frac{1}{4H^2 \right)^{\frac{3}{2}}}`
-
-        Parameters
-        ----------
-        k: float
-            Zonal wave number [km^{-1}]
-        l: float
-            Meridional wave number [km^{-1}]
-        om_intr: float
-            Intrinsic frequency (relative to winds), defined as :math:`\hat{\omega} = \omega - k u_0 - l v_0`
-        H: float
-            Scale height, :math:`H = \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`
-
-        Returns:
-        c_g: float
-            Vertical group velocity of gravity waves
-
-
-    """
-    m_sqr_val = abs(m_sqr(k, l, om_intr, H))
-    kh = np.sqrt(k**2 + l**2)
-
-    return (np.sqrt(m_sqr_val) * kh * BV_freq(H)) / (kh**2 + m_sqr_val + 1.0 / (4.0 * H**2))**(3.0 / 2.0)
-
-
-def m_imag(k, l, om_intr, z, H, T0, d0):
-    """
-        Compute the imaginary wave number component to add attenuation effects
-        The imaginary component is defined as :math:`m_\text{im} = -\nu \frac{m^3}{\hat{\omega}}`
-        where the viscosity is :math:`\nu = 3.563 \times 10^{-7} \frac{T_0 \left( z \right)}{\rho_0 \left( z \right)}`
-
-        Parameters
-        ----------
-        k: float
-            Zonal wave number [km^{-1}]
-        l: float
-            Meridional wave number [km^{-1}]
-        om_intr: float
-            Intrinsic frequency (relative to winds), defined as :math:`\hat{\omega} = \omega - k u_0 - l v_0`
-        z: float
-            Absolute height (used for turning attenuation "off" below 100 km)
-        H: float
-            Scale height, :math:`H = \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}`
-        T0: float
-            Ambient temperature in the atmosphere
-        d0: float
-            Ambient density in the atmosphere
-
-        Returns:
-        m_i: float
-            Imaginary component of the wavenumber used for damping above 100 km (note: 100 km limit is applied elsewhere)
-    """
-    env = 1.0 / (1.0 + np.exp(-(z - 100.0) / 2.5))
-    visc = 3.563e-7 * (T0**0.69 / d0)
-    return visc * (abs(m_sqr(k, l, om_intr, H))**(3.0 / 2.0) / om_intr) * env * 1.0e-10
-
-
-
-def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om_min, k_max, random_phase=False, figure_out=None, prog_step=0):
+def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure_out=None, prog_step=0):
     """
         Compute the vertical structure of a specific Fourier component, :math:`\hat{w} \left( k, l, \omega, z \right), 
         by first identifying critical layers and turning heights then using the appropriate solution form (free or 
-        trapped solution) to evalute the component.
+        trapped solution) to evaluate the component.
 
         Parameters
         ----------
@@ -220,309 +116,102 @@ def single_fourier_component(k, l, om_intr, atmo_info, t0, src_index, m_star, om
     """
     # extract atmospheric information
     z_vals = atmo_info[0]
-    H_vals = atmo_info[1]
-    u0_vals = atmo_info[2]
-    v0_vals = atmo_info[3]
-    T0_vals = atmo_info[4]
-    d0_vals = atmo_info[5]
+    u0_vals = atmo_info[1]
+    v0_vals = atmo_info[2]
+    T0_vals = atmo_info[3]
+    d0_vals = atmo_info[4]
 
-    dz = (z_vals[1] - z_vals[0])
-
-    # Define combined horizontal wavenumber, intrinsic frequency 
-    # values, and vertical wavenumber values (squared) 
+    # Compute the horizontal wavenumber, density scale hight, and BV frequency 
     kh = np.sqrt(k**2 + l**2)
-    m_sqr_vals = m_sqr(k, l, om_intr, H_vals)
+    H = - d0_vals / (np.gradient(d0_vals) / np.gradient(z_vals))
+    N = np.sqrt(9.8e-3 / H) # note: g in km/s^2
 
-    if random_phase:
-        ph0 = np.random.random(1)[0] * (2.0 * np.pi)
-    else:
-        ph0 = 0.0
+    m_sqr_vals = (kh / om_intr)**2 * (N**2 - om_intr**2) + 1.0 / (4.0 * H**2)
+    m_vals = np.sqrt(abs(m_sqr_vals))
 
-    prog_increment(prog_step)
-    if kh < 1.0e-6 or kh > k_max:
-        return [np.zeros_like(z_vals, dtype=complex)] * 4
-    else:
-        # check for turning height
-        if np.all(m_sqr_vals > 0.0):
-            turn_ht_index = len(z_vals) + 1
-        else:
-            jz = np.where(m_sqr_vals < 0.0)[0][0]
-            if jz > src_index + 2:
-                turn_ht_index = jz - 1
-                refl_phase = simpson(np.sqrt(m_sqr_vals[:turn_ht_index]), z_vals[:turn_ht_index])
-                refl_time = simpson(1.0 / abs(cg(k, l, om_intr, H_vals[:turn_ht_index])), z_vals[:turn_ht_index])
-                refl_loss = simpson(m_imag(k, l, om_intr, z_vals[:turn_ht_index], H_vals[:turn_ht_index], T0_vals[:turn_ht_index], d0_vals[:turn_ht_index]), z_vals[:turn_ht_index])
-            else:
-                return [np.zeros_like(z_vals, dtype=complex)] * 4
-        
-        # check velocity condition (N/m < 90 m/s)
-        if turn_ht_index > 0:
-            velocity_check = np.max(BV_freq(H_vals[:turn_ht_index]) / np.sqrt(m_sqr(k, l, om_intr, H_vals[:turn_ht_index])))
-            src_cg = cg(k, l, om_intr, H_vals[src_index])
+    src_cg = (m_vals[src_index] * kh * N[src_index]) / (kh**2 + m_sqr_vals[src_index] + 1.0 / (4.0 * H[src_index]**2))**(3.0 / 2.0)
+    cg_check = abs(src_cg) > 2.0e-4
+    Nm_check = abs(np.max(N / m_vals)) < 0.4
 
-            if abs(velocity_check) < 0.09 and src_cg > 5.0e-4:
-                m_sqr_src = m_sqr(k, l, om_intr, H_vals[src_index])
-                w0 = 2.7e-2 * (m_sqr_src / (m_star**4 + m_sqr_src**2)) * (om_intr**(1.0 / 3.0) / kh**2)
-                w0 = w0 * om_min**(2.0 / 3.0) / (1.0 - (om_min / BV_freq(H_vals[0]))**(2.0 / 3.0))
-                w0 = np.sqrt(abs(w0))        
-            else:
-                return [np.zeros_like(z_vals, dtype=complex)] * 4
+    if cg_check and Nm_check:
+        # set source strength
+        m_star = (2.0 * np.pi) / 2.5
+        src_Omega = om_min**(2.0 / 3.0) / (1.0 - (om_min / N[src_index])**(2.0 / 3.0))
+        w0 = np.sqrt(abs(2.7e-2 * (m_sqr_vals[src_index] / (m_star**4 + m_sqr_vals[src_index]**2)) * (om_intr**(1.0 / 3.0) / kh**2) * src_Omega))
 
-        # prep numpy arrays for spectral info
-        u_spec = np.zeros_like(z_vals, dtype=complex)
-        v_spec = np.zeros_like(z_vals, dtype=complex)
-        w_spec = np.zeros_like(z_vals, dtype=complex)
-        eta_spec = np.zeros_like(z_vals, dtype=complex)
+        # free propagating phase integration
+        w_phase_vals = np.zeros_like(z_vals)
+        w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
+        w_phase_vals[src_index + 1:] = np.array([simpson(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+        w_phase_vals = w_phase_vals + (k * u0_vals + l * v0_vals)       
 
-        # prep information for spectral calculation
-        m_vals = np.sqrt(abs(m_sqr_vals))
-        d0_m_ratios = np.array([np.sqrt((d0_vals[src_index] / d0_vals[zj]) * (m_vals[src_index] / m_vals[zj])) for zj in range(len(z_vals))])
-
-        w_sat_vals = np.sqrt(2.7e-2 * om_intr**(1.0 / 3.0) / (m_sqr_vals * kh**2))
-        
-        prop_times = np.zeros_like(z_vals)
-        prop_times[src_index + 1:] = np.array([simpson(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zj])), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
-        if np.all(prop_times < t0):
-            prop_ht_index = len(z_vals) + 1
-        else:
-            prop_ht_index = np.where(prop_times > t0)[0][0]
+        # losses above 100 km
+        env = 1.0 / (1.0 + np.exp(-(z_vals - 100.0) / 5.0))
+        visc = 3.58e-7 * (T0_vals**0.69 / d0_vals) * 1.0e-10
+        m_imag = (visc * abs(m_sqr_vals)**(3.0 / 2.0) / om_intr) * env
 
         w_losses = np.zeros_like(z_vals)
-        w_losses[src_index + 1:] = np.array([simpson(m_imag(k, l, om_intr, z_vals[src_index:zj], H_vals[src_index:zj], T0_vals[src_index:zj], d0_vals[src_index:zj]), z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+        w_losses[src_index + 1:] = np.array([simpson(m_imag[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
 
-        if prop_ht_index <= turn_ht_index:
-            # free propagating solution
-            w_phase_vals = np.zeros_like(z_vals)
-            w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
-            w_phase_vals[src_index + 1: prop_ht_index] = np.array([simpson(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, min(len(z_vals), prop_ht_index))])
+        # combine into the vertical spectra
+        w_spec = np.zeros_like(z_vals, dtype=complex)
+        d0_m_ratios = np.sqrt((d0_vals[src_index] / d0_vals) * (m_vals[src_index] / m_vals))
+        w_spec = w0 * d0_m_ratios * np.exp(-w_losses) * (np.cos(w_phase_vals) - 1.0j * np.sin(w_phase_vals))
 
-            w_spec[:prop_ht_index] = w0 * d0_m_ratios[:prop_ht_index] * (np.cos(ph0 + w_phase_vals[:prop_ht_index]) - 1.0j * np.sin(ph0 + w_phase_vals[:prop_ht_index]))
-            w_spec[:prop_ht_index] = w_spec[:prop_ht_index] * np.exp(-w_losses[:prop_ht_index])
+        # apply saturation threshold
+        w_sat = np.sqrt(2.7e-2 * om_intr**(1.0 / 3.0) / (m_sqr_vals * kh**2))
+        sat_mask = abs(w_spec) > w_sat 
+        w_spec[sat_mask] = w_spec[sat_mask] * (w_sat[sat_mask] / abs(w_spec[sat_mask]))
 
-            u_spec[:prop_ht_index] = - w_spec[:prop_ht_index] * (k / kh**2) * m_vals[:prop_ht_index]
-            v_spec[:prop_ht_index] = - w_spec[:prop_ht_index] * (l / kh**2) * m_vals[:prop_ht_index]
-            eta_spec[:prop_ht_index] = -1.0j * w_spec[:prop_ht_index] / om_intr
-        else:
-            # trapped (Airy function) solution 
-            # set source region below source altitude
-            refl_cnt = int(np.floor(t0 / (2.0 * refl_time)))
-            refl_ph_shift = np.exp(-refl_cnt * (2.0 * refl_loss))
-            refl_ph_shift = refl_ph_shift * (1.0 + np.sum(np.array([np.exp(-1.0j * (N - 1) * (2.0 * refl_phase - np.pi / 2.0)) for N in range(2, refl_cnt)])))
-            
-            if np.all(m_sqr_vals[turn_ht_index:turn_ht_index + int(5.0 / dz)] < 0.0):
-                airy_lim_index = turn_ht_index + int(5.0 / dz)
-            else:
-                airy_lim_index = turn_ht_index + (np.where(m_sqr_vals[turn_ht_index:turn_ht_index + int(5.0 / dz)] > 0.0)[0][0] - 1)
+        if max(abs(w_spec)) > 25.0:
+            w_spec = np.zeros_like(z_vals, dtype=complex)
 
-            airy_args = np.zeros_like(z_vals)
-            airy_scaling0 = np.zeros_like(z_vals)
-            airy_scaling1 = np.zeros_like(z_vals)
+    else:
+        w_spec = np.zeros_like(z_vals, dtype=complex)
 
-            m_integral_above = simpson(m_vals[src_index:turn_ht_index], z_vals[src_index:turn_ht_index])
-            airy_args[:src_index + 1] = np.array([-((3.0 / 2.0) * (m_integral_above + m_vals[src_index] * abs(z_vals[src_index] - z_vals[zj])))**(2.0 / 3.0) for zj in range(src_index + 1)])
-            airy_args[src_index + 1:turn_ht_index - 1] = np.array([-((3.0 / 2.0) * simpson(m_vals[zj:turn_ht_index], z_vals[zj:turn_ht_index]))**(2.0 / 3.0) for zj in range(src_index, turn_ht_index - 1)])
-            airy_args[turn_ht_index + 1:airy_lim_index] = np.array([((3.0 / 2.0) * simpson(m_vals[turn_ht_index:zj], z_vals[turn_ht_index:zj]))**(2.0 / 3.0) for zj in range(turn_ht_index + 1, airy_lim_index)])
+    # project onto zonal/meridional winds and temperature
+    u_spec = - w_spec * (k / kh**2) * m_vals
+    v_spec = - w_spec * (l / kh**2) * m_vals
+    eta_spec = (-1.0j / om_intr) * w_spec * (np.gradient(T0_vals) / np.gradient(z_vals))
 
-            temp = (-airy_args[:airy_lim_index])**0.25 * np.exp(1.0j * np.pi / 4.0) * refl_ph_shift
-            airy_scaling0[:airy_lim_index] = temp * airy(airy_args[:airy_lim_index])[0]
-            airy_scaling1[:airy_lim_index] = temp * airy(airy_args[:airy_lim_index])[1]
+    prog_increment(prog_step)
 
-            u_spec[:airy_lim_index] = -2.0j * np.sqrt(np.pi) * w0 * (k / kh**2) * d0_m_ratios[:airy_lim_index] * airy_scaling1[:airy_lim_index]
-            v_spec[:airy_lim_index] = -2.0j * np.sqrt(np.pi) * w0 * (l / kh**2) * d0_m_ratios[:airy_lim_index] * airy_scaling1[:airy_lim_index]
-            w_spec[:airy_lim_index] = -2.0j * np.sqrt(np.pi) * w0 * d0_m_ratios[:airy_lim_index] * airy_scaling0[:airy_lim_index]
-            eta_spec[:airy_lim_index] = -1.0j * w_spec[:airy_lim_index] / om_intr
+    if figure_out:
+        cg_check = abs(src_cg) > 1.0e-3
+        Nm_check = abs(np.max(N / m_vals)) < 0.4
 
-        sat_mask = abs(w_spec) > w_sat_vals
-        u_spec[sat_mask] = u_spec[sat_mask] * (w_sat_vals[sat_mask] / abs(w_spec[sat_mask]))
-        v_spec[sat_mask] = v_spec[sat_mask] * (w_sat_vals[sat_mask] / abs(w_spec[sat_mask]))
-        w_spec[sat_mask] = w_spec[sat_mask] * (w_sat_vals[sat_mask] / abs(w_spec[sat_mask]))
+        f, a = plt.subplots(1, 2, sharey=True)
+        a[0].set_ylabel("Altitue [km]")
+        a[0].set_xlabel("m^2")
+        a[1].set_xlabel("spectral component")
 
-        wind_phasor = np.cos(-(k * u0_vals + l * v0_vals)) - 1.0j * np.sin(-(k * u0_vals + l * v0_vals))
-        u_spec = u_spec * wind_phasor
-        v_spec = v_spec * wind_phasor
-        w_spec = w_spec * wind_phasor
-        eta_spec = eta_spec * wind_phasor
-        
-        if figure_out:
-            prop_times = np.array([simpson(1.0 / abs(cg(k, l, om_intr, H_vals[src_index:zk])), z_vals[src_index:zk]) for zk in range(src_index + 1, len(z_vals))])
+        a[0].plot(m_sqr_vals, z_vals, '-k')
+        a[1].plot(np.real(w_spec), z_vals, '-b')
+        a[1].plot(np.imag(w_spec), z_vals, '-r')
 
-            f, a = plt.subplots(1, 3, sharey=True)
-            a[0].set_ylabel("Altitue [km]")
-            a[0].set_xlabel("prop. time [hrs]")
-            a[1].set_xlabel("m^2")
-            a[2].set_xlabel("spectral component")
+        a[0].set_title("(k_perp, om_intr) = (" + str(np.round(kh ,4)) + ", " + str(np.round(om_intr, 4)) + '\n' + "N/m max:" + str(np.round(abs(np.max(N / m_vals)), 4)) + "(" + str(Nm_check) + ")" + "), src_cg: "+ str(np.round(src_cg, 4)) + "(" + str(cg_check) + ")")
+    
+        plt.show()
+        plt.savefig(figure_out + "-" + str(k) + "-" + str(l) + "-" + str(om_intr) + ".png", dpi=250)
+        plt.close()
+    
+    return [u_spec, v_spec, w_spec, eta_spec]
 
-            a[0].plot(prop_times / 3600.0, z_vals[src_index + 1:], '-k')
-            a[0].axvline(t0 / 3600.0, color="k")
-            a[1].semilogx(m_sqr_vals, z_vals, '-k')
-            a[2].plot(np.real(w_spec), z_vals, '-b')
-            a[2].plot(np.imag(w_spec), z_vals, '-r')
-            for n in range(3):
-                a[n].axhline(z_vals[min(turn_ht_index, len(z_vals) - 1)], color="g")
-            a[1].set_title("(k, l, om_intr) = (" + str(k) + ", " + str(l) + ", " + str(om_intr) + ")" + '\n' + "Source cg: " + str(cg(k, l, om_intr, H_vals[src_index])))
-        
-            plt.savefig(figure_out + "-" + str(k) + "-" + str(l) + "-" + str(om_intr) + ".png", dpi=250)
-            plt.close()
-        
-        return [u_spec, v_spec, w_spec, eta_spec]
 
 
 def single_fourier_component_wrapper(args):
     return single_fourier_component(*args)
 
 
-def perturbations(atmo_specification, t0=4.0 * 3600.0, dx=2.0, dz=0.2, Nk=128, N_om=5, ref_lat=40.0, random_phase=False, z_src=20.0, m_star=(2.0*np.pi)/2.5, figure_out=None, pool=None):
-    """
-        Loop over Fourier components :math:`\left(k, l, \omega \right)` and compute the spectral components for :math:`\hat{u} \left(k, l, \omega, z \right)`, 
-        :math:`\hat{v}\left(k, l, \omega, z \right)`, and :math:`\hat{w} \left(k, l, \omega, z \right)`.  Once computed, apply inverse Fourier transforms to 
-        obtain the space and time domain forms.
-
-        Parameters
-        ----------
-        atmo_specification: string
-            Atmospheric specification file path
-        t0: float
-            Reference time for gravity wave propagation (typically 4 - 6 hours)
-        dx: float
-            Horizontal wavenumber resolution [km]
-        dz: float
-            Vertical resolution for integration steps [km]
-        Nk: int
-            Horizontal wavenumber grid dimensions (Nk x Nk)
-        N_om: int
-            Frequency resolution (typically 5)
-        ref_lat: float
-            Reference latitude used to define the Coriolis frequency used as the minimum frequency
-        random_phase: boolean
-            Controls inclusion of random initial phase shifts
-        figure_out: string
-            Option to output a figure with each component's structure (slows down calculations notably, useful for debugging)
-        pool: multiprocessing.Pool
-            Multprocessing option for parallel computation of Fourier components
-                       
-        Returns
-        -------
-        z_vals: 1darray
-            Altitudes of output 
-        du_vals: 3darray
-            Zonal (E/W) wind perturbations, du(x, y, z, t0)
-        dv_vals: 3darray
-            Meridional (N/S) wind perturbations, dv(x, y, z, t0)
-        dw_vals: 3darray
-            Vertical wind perturbations, dw(x, y, z, t0)
-            
-    """
-
-    print("Computing gravity wave perturbations for " + atmo_specification)
-
-    # Set up atmosphere info
-    z, Temp0, u0, v0, d0, _ = np.loadtxt(atmo_specification, unpack=True)
-
-    T0_interp = interp1d(z, Temp0)
-    u0_interp = interp1d(z, u0 * 1.0e-3)
-    v0_interp = interp1d(z, v0 * 1.0e-3)
-    d0_interp = interp1d(z, d0)
-
-    d0_finite_diffs = np.array([(d0[min(n + 1, len(z) - 1)] - d0[max(n - 1, 0)]) / (z[min(n + 1, len(z) - 1)] - z[max(n - 1, 0)]) for n in range(len(z))])
-    sc_ht = interp1d(z, -d0 / d0_finite_diffs)
-
-    z_vals = np.arange(0.0, z[-1], dz)
-    atmo_info = [z_vals, sc_ht(z_vals), u0_interp(z_vals), v0_interp(z_vals), T0_interp(z_vals), d0_interp(z_vals)]
-    src_index = np.argmin(abs(z_vals - z_src))
-
-    # Define spectral component grid
-    om_min = 2.0 * 7.292e-5 * np.sin(np.radians(ref_lat))
-    om_max = np.max(BV_freq(sc_ht(z))) / np.sqrt(5)
-
-    k_vals = np.fft.fftfreq(Nk, d=1.0 / dx)
-    l_vals = np.fft.fftfreq(Nk, d=1.0 / dx)
-    intr_om_vals = np.linspace(om_min, om_max, N_om)
-
-    # Define spectral information for each Fourier component
-    u_spec = np.zeros((Nk, Nk, N_om, len(z_vals)), dtype=complex)
-    v_spec = np.zeros_like(u_spec, dtype=complex)
-    w_spec = np.zeros_like(u_spec, dtype=complex)
-    eta_spec = np.zeros_like(u_spec, dtype=complex)
-               
-    # Compute each Fourier component
-    print('\t' + "Integrating Fourier components to compute spectra...")
-    print('\t' + "Progress: ", end='')
-    prog_len = 50
-    prog_prep(prog_len)
-    if pool:
-        args = []
-        M = 0
-        for nk, k in enumerate(k_vals):
-            for nl, l in enumerate(l_vals):
-                for n_om, om in enumerate(intr_om_vals):
-                    step = prog_set_step(M, Nk * Nk * N_om, float(prog_len))
-                    args = args + [[k, l, om, atmo_info, t0, src_index, m_star, intr_om_vals[0], max(abs(k_vals)), random_phase, figure_out, step]]
-                    M = M + 1
-
-        results = pool.map(single_fourier_component_wrapper, args)
-
-        M = 0
-        for nk in range(Nk):
-            for nl in range(Nk):
-                for n_om  in range(N_om):
-                    u_spec[nk][nl][n_om] = results[M][0]
-                    v_spec[nk][nl][n_om] = results[M][1]
-                    w_spec[nk][nl][n_om] = results[M][2]
-                    eta_spec[nk][nl][n_om] = results[M][3]
-                    M = M + 1
-    else:
-        M = 0
-        for nk, k in enumerate(k_vals):
-            for nl, l in enumerate(l_vals):
-                for n_om, om in enumerate(intr_om_vals):
-                    step = prog_set_step(M, Nk* Nk * N_om, float(prog_len))
-                    results = single_fourier_component(k, l, om, atmo_info, t0, src_index, m_star, intr_om_vals[0], max(abs(k_vals)), random_phase, figure_out, step)
-
-                    u_spec[nk][nl][n_om] = results[0]
-                    v_spec[nk][nl][n_om] = results[1]
-                    w_spec[nk][nl][n_om] = results[2]
-                    eta_spec[nk][nl][n_om] = results[3]
-
-    prog_close()
-
-    print('\t' + "Running inverse Fourier transforms to obtain space and time domain solutions.")
-
-    dk = Nk / dx
-    # dk = 1.0 / dx 
-
-    du_vals = np.fft.ifft(u_spec, axis=0) * dk 
-    du_vals = np.fft.ifft(du_vals, axis=1) * dk
-    du_vals = simpson(du_vals, intr_om_vals, axis=2)
-
-    dv_vals = np.fft.ifft(v_spec, axis=0) * dk 
-    dv_vals = np.fft.ifft(dv_vals, axis=1) * dk 
-    dv_vals = simpson(dv_vals, intr_om_vals, axis=2)
-
-    dw_vals = np.fft.ifft(w_spec, axis=0) * dk 
-    dw_vals = np.fft.ifft(dw_vals, axis=1) * dk 
-    dw_vals = simpson(dw_vals, intr_om_vals, axis=2)
-
-    eta_vals = np.fft.ifft(eta_spec, axis=0) * dk 
-    eta_vals = np.fft.ifft(eta_vals, axis=1) * dk 
-    eta_vals = simpson(eta_vals, intr_om_vals, axis=2)
-
-    return z_vals, np.real(du_vals), np.real(dv_vals), np.real(dw_vals), np.real(eta_vals)
-
-
-def _perturb_header_txt(prof_path, t0, dx, Nk, N_om, random_phase, z_src, m_star, n, prof_cnt, indices):
+def _perturb_header_txt(prof_path, src_lat, k_max, fourier_cnt, n, smpl_cnt):
     result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Gravity Wave Perturbation"
     result = result + '\n' + "# Reference Specification = " + prof_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# Gravity Wave Propagation Time [hr] = " + str(t0 / 3600.0)
-    result = result + '\n' + "# Gravity Wave Spatial Scale Factor (dx) [km] = " + str(dx)
-    result = result + '\n' + "# Gravity Wave Spatial Resolution (N_k) = " + str(Nk)
-    result = result + '\n' + "# Gravity Wave Frequency Resolution (N_om) = " + str(N_om)
-    result = result + '\n' + "# Gravity Wave Phase Randomization = " + str(random_phase)
-    result = result + '\n' + "# Gravity Wave Source Elevation [km] = " + str(z_src)
-    result = result + '\n' + "# Gravity Wave Source Wave Number (m_star) [km^{-1}] = " + str(m_star)
-    result = result + '\n' + "# Gravity Wave Sample indices = [" + str(indices[0]) + ", " + str(indices[1]) + "]"
-    result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
+    result = result + '\n' + "# Source Latitude = " + str(src_lat)
+    result = result + '\n' + "# Maximum Wavenumber [km^{-1]}] = " + str(k_max)
+    result = result + '\n' + "# Fourier Component Count = " + str(fourier_cnt)
+    result = result + '\n' + "# Sample: " + str(n) + "/" + str(smpl_cnt)
     result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
@@ -535,9 +224,11 @@ def _perturb_header_txt(prof_path, t0, dx, Nk, N_om, random_phase, z_src, m_star
 
     return result
 
-def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0, dz=0.2, Nk=128, N_om=5, random_phase=False, z_src=20.0, m_star=(2.0*np.pi)/2.5, env_below=True, cpu_cnt=None, fig_out=None):
+
+def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=None, debug_fig_out=None, pool=None):
+
     """
-        Use gravity waves to perturb a specified profile using the methods in Drob et al. (2013)
+        Use gravity waves to perturb a specified profile using some of the methods in Drob et al. (2013)
 
         Parameters
         ----------
@@ -568,7 +259,7 @@ def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0,
 
     """
 
-    ref_atmo = np.loadtxt(atmo_spec)
+    ref_atmo = np.loadtxt(atmo_file)
     z0_vals = np.copy(ref_atmo[:, 0])
     T0_vals = np.copy(ref_atmo[:, 1])
     u0_vals = np.copy(ref_atmo[:, 2])
@@ -577,54 +268,71 @@ def perturb_atmo(atmo_spec, output_path, sample_cnt=50, t0=8.0 * 3600.0, dx=4.0,
     p0_vals = np.copy(ref_atmo[:, 5])
 
     ref_lat = 40.0
-    try:
-        temp = open(atmo_spec, 'r')
-        for line in temp:
-            if "Location" in line:
-                ref_lat = float(line.split(' ')[-4][:-1])
-    except:
-        ref_lat = 40.0
-
-    if cpu_cnt:
-        pl = Pool(cpu_cnt)
+    if src_lat is not None:
+        ref_lat = src_lat
     else:
-        pl = None
+        try:
+            temp = open(atmo_file, 'r')
+            for line in temp:
+                if "Location" in line:
+                    ref_lat = float(line.split(' ')[-4][:-1])
+        except:
+            ref_lat = 40.0
 
-    z, du, dv, _, eta = perturbations(atmo_spec, t0=t0, dx=dx, dz=dz, Nk=Nk, N_om=N_om, ref_lat=ref_lat, random_phase=random_phase, z_src=z_src, m_star=m_star, figure_out=fig_out, pool=pl)
+    z, Temp0, u0, v0, d0, _ = np.loadtxt(atmo_file, unpack=True)
+    atmo_info = [z, u0 * 1.0e-3, v0 * 1.0e-3, Temp0, d0]
 
-    np.save(output_path + ".z_vals", z)
-    np.save(output_path + ".du_vals", du)
-    np.save(output_path + ".dv_vals", dv)
-    np.save(output_path + ".eta_vals", eta)
+    z_src = 20.0
+    src_index = np.argmin(abs(z - z_src))
 
-    if cpu_cnt:
-        pl.terminate()
-        pl.close()
+    H = - d0 / (np.gradient(d0) / np.gradient(z))
+    N = np.sqrt(9.8e-3 / H)
 
-    # Envelope perturbations off below the source height
-    if env_below:
-        temp = (1.0 + np.exp(-(z - z_src) / 2.5))
-        du = du / temp
-        dv = dv / temp
-        eta = eta / temp
+    om_min = 2.0 * 7.29e-5 * np.sin(np.radians(ref_lat))
+    om_max = np.max(N) / np.sqrt(5)
 
-    # Sample atmosphere spatially
-    print("Generating perturbed atmospheric samples...")
-    n1_vals = np.random.default_rng().choice(Nk, size=sample_cnt, replace=False)
-    n2_vals = np.random.default_rng().choice(Nk, size=sample_cnt, replace=False)
-    for m in range(sample_cnt):
-        du_interp = interp1d(z, du[n1_vals[m]][n2_vals[m]], fill_value="extrapolate", bounds_error=False)
-        dv_interp = interp1d(z, dv[n1_vals[m]][n2_vals[m]], fill_value="extrapolate", bounds_error=False)
-        eta_interp = interp1d(z, eta[n1_vals[m]][n2_vals[m]], fill_value="extrapolate", bounds_error=False)
+    # randomize Fourier components
+    k_perp = k_max * np.random.random(fourier_cnt)
+    k_angle = (2.0 * np.pi) * np.random.random(fourier_cnt)
+    k, l = k_perp * np.cos(k_angle), k_perp * np.sin(k_angle)
 
-        dT_vals = np.array([(T0_vals[min(n + 1, len(z0_vals) - 1)] - T0_vals[max(n - 1, 0)]) / (z0_vals[min(n + 1, len(z0_vals) - 1)] - z0_vals[max(n - 1, 0)]) for n in range(len(z0_vals))])
-        dp_vals = np.array([(p0_vals[min(n + 1, len(z0_vals) - 1)] - p0_vals[max(n - 1, 0)]) / (z0_vals[min(n + 1, len(z0_vals) - 1)] - z0_vals[max(n - 1, 0)]) for n in range(len(z0_vals))])
+    om = om_min + (om_max - om_min) * np.random.random(fourier_cnt)
 
-        u_vals = u0_vals + du_interp(z0_vals) * 1000.0
-        v_vals = v0_vals + dv_interp(z0_vals) * 1000.0
-        T_vals = T0_vals # + dT_vals * eta_interp(z0_vals)
-        p_vals = p0_vals # + dp_vals * eta_interp(z0_vals)
+    print('Computing Fourier components...\n\t', end='')
+    prog_prep(50)
+    if pool is not None:
+        args = [[k[n], l[n], om[n], atmo_info, src_index, om_min, debug_fig_out, prog_set_step(n, fourier_cnt, 50)] for n in range(fourier_cnt)]
+        results = np.array(pool.map(single_fourier_component_wrapper, args))
+    else:
+        results = np.array([single_fourier_component(k[n], l[n], om[n], atmo_info, src_index, om_min, figure_out=debug_fig_out, prog_step=prog_set_step(n, fourier_cnt, 50)) for n in range(fourier_cnt)])
+    prog_close()
 
-        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z0_vals, T_vals, u_vals, v_vals, d0_vals, p_vals)).T, 
-            header=_perturb_header_txt(atmo_spec, t0, dx, Nk, N_om, random_phase, z_src, m_star, m, sample_cnt, [n1_vals[m], n2_vals[m]]), comments='')
+    print('\nApplying perturbations to reference atmosphere...\n\t', end='')
+    u_spec = results[:, 0, :]
+    v_spec = results[:, 1, :]
+
+    scaling = (2.0 * np.pi) * k_max**2 * (om_max - om_min)
+    scaling = scaling * (fourier_cnt / np.count_nonzero(np.count_nonzero(u_spec, axis=1)))
+
+    prog_prep(50)
+    for m in range(smpl_cnt):
+        rndm_phasing = (2.0 * np.pi) * np.outer(np.random.random(fourier_cnt), np.ones_like(z))
+
+        u_perturb = np.mean(u_spec * np.exp(-1.0j * rndm_phasing), axis=0) * scaling
+        v_perturb = np.mean(v_spec * np.exp(-1.0j * rndm_phasing), axis=0) * scaling
+
+        u_vals = u0_vals + 2.0 * np.real(u_perturb) * 1.0e3
+        v_vals = v0_vals + 2.0 * np.real(v_perturb) * 1.0e3
+
+        np.savetxt(sample_path + "-" + str(m) + ".met", np.vstack((z0_vals, T0_vals, u_vals, v_vals, d0_vals, p0_vals)).T, 
+            header=_perturb_header_txt(atmo_file, src_lat, k_max, fourier_cnt, m, smpl_cnt), comments='')
+        prog_increment(prog_set_step(m, smpl_cnt, 50))
+    prog_close()
+
+
+
+
+
+
+
 

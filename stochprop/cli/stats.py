@@ -15,6 +15,8 @@ import fnmatch
 
 import numpy as np
 
+from multiprocess import Pool
+
 from stochprop import eofs
 from stochprop import gravity_waves as grav
 
@@ -300,7 +302,7 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt, label):
 
 @click.command('perturb', short_help="Construct perturbed atmospheric models")
 @click.option("--atmo-file", help="Reference atmospheric specification (required)", prompt="Reference atmospheric specification: ")
-@click.option("--sample-path", help="Output prefix (required)", prompt="Sample (output) prefix: ")
+@click.option("--output-path", help="Output prefix (required)", prompt="Sample (output) prefix: ")
 @click.option("--sample-cnt", help="Number of perturbed samples (default: 25)", default=25)
 @click.option("--method", help="Perturbation method ('eof' or 'gw')", default='eof')
 
@@ -311,18 +313,13 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt, label):
 @click.option("--alt-weight", help="Altitude weighting power (default: 2.0)", default=2.0)
 @click.option("--sv-weight", help="Sing. value weighting power (default: 0.25)", default=0.25)
 
-@click.option("--t0", help="Propagation time from source [hr] (default: 8)", default=8.0)
-@click.option("--dx", help="Horizontal wavenumber scale [km] (default: 4.0)", default=4.0)
-@click.option("--dz", help="Altitude resolution [km] (default: 0.2)", default=0.2)
-@click.option("--nk", help="Horizontal wavenumber resolution (default: 128)", default=128)
-@click.option("--nom", help="Frequency resolution (default: 5)", default=5)
-@click.option("--random-phase", help="Randomize phase at source [bool] (default: False)", default=False)
-@click.option("--z-src", help="Source altitude [km] (default: 20.0)", default=20.0)
-@click.option("--m-star", help="Source spectrum peak [1/km] (default: (2 pi) / 2.5)", default=(2.0 * np.pi) / 2.5)
-@click.option("--cpu-cnt", help="Number of CPUs in parallel analysis (default: None)", default=None, type=int)
+@click.option("--k-max", help="Gravity wave max horizontal wavenumber (default: 0.4)", default=0.4)
+@click.option("--fourier-cnt", help="Gravity wave Fourier component count (default: 240)", default=240)
+@click.option("--src-lat", help="Overwrite atmo_file latitude (default: None)", default=None, type=float)
 @click.option("--debug-fig", help="Output for figures to aid in debugging (default: None)", default=None, type=str)
+@click.option("--cpu-cnt", help="Number of CPUs in parallel analysis (default: None)", default=None, type=int)
 
-def perturb(atmo_file, sample_path, method, eofs_path, std_dev, eof_max, eof_cnt, sample_cnt, alt_weight, sv_weight, t0, dx, dz, nk, nom, random_phase, z_src, m_star, cpu_cnt, debug_fig):
+def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt, sample_cnt, alt_weight, sv_weight, k_max, fourier_cnt, src_lat, debug_fig, cpu_cnt):
     '''
     \b
     Construct perturbed atmospheric samples using either EOF-based perturbations or gravity wave perturbation calculation based on Drob et al. (2013) method.
@@ -331,8 +328,8 @@ def perturb(atmo_file, sample_path, method, eofs_path, std_dev, eof_max, eof_cnt
     -----------------------
     \b
     Example Usage:
-    \t stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --sample-path test_eof --method eof --eofs-path eofs/example 
-    \t stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --sample-path test_gw --method gw
+    \t stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path test_eof --eofs-path eofs/example 
+    \t stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path test_gw
     '''
 
     click.echo("")
@@ -345,41 +342,46 @@ def perturb(atmo_file, sample_path, method, eofs_path, std_dev, eof_max, eof_cnt
     click.echo("###################################")
     click.echo("") 
 
-    click.echo("  Reference specification: " + str(atmo_file))
-    click.echo("  Sample output Path: " + sample_path)
-    click.echo("  Sample count: " + str(sample_cnt))
+    click.echo('\n' + "Reference atmosphere and sample info:")
+    click.echo("  atmo_file: " + str(atmo_file))
+    click.echo("  output_path: " + output_path)
+    click.echo("  sample_cnt: " + str(sample_cnt))
     click.echo("")
 
     if method == 'eof':
         if eofs_path is None:
-            print("Error: can't compute EOF-based perturbations with specifying EOF (--eofs-path)")
+            print("Error: can't compute EOF-based perturbations with EOFs (define --eofs-path)")
             return 0
         
         click.echo('\n' + "EOF-based perturbation parameters")
-        click.echo("  EOFs path: " + str(eofs_path))
-        click.echo("  EOF Max Index: " + str(eof_max))
-        click.echo("  EOF Count: " + str(eof_cnt))
-        click.echo("  Standard Deviation [m/s]: " + str(std_dev))
-        click.echo("  Altitude Weight Power: " + str(alt_weight))
-        click.echo("  Singular Value Weight Power: " + str(sv_weight))
+        click.echo("  eofs_path: " + str(eofs_path))
+        click.echo("  eof_max: " + str(eof_max))
+        click.echo("  eof_cnt: " + str(eof_cnt))
+        click.echo("  std_dev [m/s]: " + str(std_dev))
+        click.echo("  alt_weight: " + str(alt_weight))
+        click.echo("  sv_weight: " + str(sv_weight))
         click.echo("")
 
-        eofs.perturb_atmo(atmo_file, eofs_path, sample_path, stdev=std_dev, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=sample_cnt, alt_wt_pow=alt_weight, sing_val_wt_pow=sv_weight)
+        eofs.perturb_atmo(atmo_file, eofs_path, output_path, stdev=std_dev, eof_max=eof_max, eof_cnt=eof_cnt, sample_cnt=sample_cnt, alt_wt_pow=alt_weight, sing_val_wt_pow=sv_weight)
     else:
         click.echo('\n' + "Gravity wave perturbation parameters")
-        click.echo("  t0: " + str(t0))
-        click.echo("  dx: " + str(dx))
-        click.echo("  dz: " + str(dz))
-        click.echo("  Nk: " + str(nk))
-        click.echo("  Nom: " + str(nom))
-        click.echo("  random_phase: " + str(random_phase))
-        click.echo("  z_src: " + str(z_src))
-        click.echo("  m_star: " + str(m_star))
+        click.echo("  k_max [1/km]: " + str(k_max))
+        click.echo("  fourier_cnt: " + str(fourier_cnt))
+        if debug_fig is not None:
+            click.echo("  debug_fig: " + str(debug_fig))
+        if src_lat is not None:
+            click.echo("  src_lat: " + str(src_lat))
+
         if cpu_cnt is not None:
             click.echo("  cpu_cnt: " + str(cpu_cnt))
+            pl = Pool(cpu_cnt)
+        else:
+            pl = None
         click.echo("")
-        
-        grav.perturb_atmo(atmo_file, sample_path, sample_cnt=sample_cnt, t0=t0 * 3600.0, dx=dx, dz=dz, Nk=nk, N_om=nom, 
-                            random_phase=random_phase, z_src=z_src, m_star=m_star, env_below=False, cpu_cnt=cpu_cnt, fig_out=debug_fig)
 
+        grav.perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, sample_cnt, src_lat=src_lat, debug_fig_out=debug_fig, pool=pl)
+
+        if pl is not None:
+            pl.terminate()
+            pl.close()
 
