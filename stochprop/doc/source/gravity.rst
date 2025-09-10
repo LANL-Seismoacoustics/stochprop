@@ -3,23 +3,23 @@
 ==========================
 Gravity Wave Perturbations
 ==========================
-Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of buoyancy or gravity waves.  Stochastic gravity wave perturbation methods are included in *stochprop* using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.  These methods are in-development and are on the slow side due to the numerical limitations of Python (I might write them up in C/C++ at some point).
+Atmospheric specifications available for a given location and time (e.g., G2S) are averaged over some spatial and temporal scale so that sub-grid scale fluctuations must be estimated stochastically and applied in order to construct a suite of possible atmospheric states.  The dominant source of such sub-grid fluctuations in the atmosphere is that of buoyancy or gravity waves.  Stochastic gravity wave perturbation methods are included in *stochprop* using an approach based on the vertical ray tracing approach detailed in Drob et al. (2013) and are summarized below for reference.
 
-********************************************
-Freely Propagation and Trapped Gravity Waves
-********************************************
+********************************
+Freely Propagating Gravity Waves
+********************************
 
 Gravity wave dynamics are governed by a pair relations describing the dispersion and wave action conservation.  The dispersion relation describing the vertical wavenumber, :math:`m`, can be expressed as,
 
 	.. math::
 		m^2 \left( k, l, \omega, z \right) = \frac{k_h^2}{\hat{\omega}^2} \left( N^2 - \hat{\omega}^2 \right) + \frac{1}{4H^2}
  
-In this relation :math:`k` and :math:`l` are the zonal and meridional wave numbers, :math:`k_h^2 = \sqrt{k^2 + l^2}` is the combined horizontal wavenumber, :math:`H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}` is the density scale height, :math:`\rho_0 \left( z \right)` is the ambient atmospheric density, :math:`N = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}` is the atmospheric buoyancy frequency, and :math:`\hat{\omega}` is the intrinsic angular frequency (relative to the moving air) that is defined from to the absolute angular frequency (relative to the ground), :math:`\omega`, horizontal wavenumbers, and winds,
+In this relation :math:`k` and :math:`l` are the zonal and meridional wave numbers, respectively, :math:`k_h^2 = \sqrt{k^2 + l^2}` is the combined horizontal wavenumber.  The density scale height, :math:`H = - \rho_0 \times \left( \frac{\partial \rho_0}{\partial z} \right)^{-1}` is computed from the gradient of the ambient density, :math:`\rho_0 \left( z \right)`, and can be used to represent the atmospheric buoyancy (Brunt-Väisälä) frequency, :math:`N = \sqrt{-\frac{g}{\rho_0} \frac{\partial \rho_0}{\partial z}} = \sqrt{\frac{g}{H}}`.  The intrinsic angular frequency (relative to the moving air), :math:`\hat{\omega}`, is defined from to the absolute angular frequency (relative to the ground), :math:`\omega`, horizontal wavenumbers, and winds,
 
 	.. math::
 		\hat{\omega} \left( k, l, \omega, z \right) = \omega - k u_0 \left( z \right) - l v_0 \left( z \right)
 
-This dispersion relation can be solved for :math:`\hat{\omega}` and used to define the vertical group velocity,
+This dispersion relation can be solved for :math:`\hat{\omega}` and then differentiated to define the vertical group velocity,
 
 	.. math::
 		\hat{\omega} = \frac{k_h N \left( z \right)}{\sqrt{ k_h^2 + m^2 \left( z \right) + \frac{1}{4 H^2 \left( z \right)}}} \quad \rightarrow \quad 
@@ -31,56 +31,20 @@ The conservation of wave action leads to a condition on the vertical velocity pe
 		\rho_0 m \left| \hat{w} \right|^2 = \text{constant} \; \rightarrow \;
 		\hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}}
 
-The above relation is valid in the case that :math:`m \left( k, l, \omega, z \right)` remains real through the integration upward in the exponential.  In the case that an altitude exists for which the vertical wavenumber becomes imaginary, the gravity wave energy reflects from this turning height and the above relation is not valid.  Instead, the solution is expressed in the form,
+The vertical velocity spectra defined here can be related to the horizontal velocities, 
 
 	.. math::
- 		\hat{w} \left( k, l, \omega, z \right) = 2 i \sqrt{\pi} \hat{w}_0 \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai} \left( r \right) e^{-i \frac{\pi}{4}} S_n
-
-	* The Airy function argument in the above is defined uniquely above and below the turning height :math:`z_t`,
-
-	.. math::
-		r = \left\{ \begin{matrix} - \left( \frac{3}{2} \int_z^{z_t} \left| m \left( z^\prime \right) \right| dz^\prime \right)^\frac{2}{3} & z < z_t \\ \left( \frac{3}{2} \int_{z_t}^z \left| m \left( z^\prime \right) \right| dz^\prime \right)^\frac{2}{3} & z > z_t \end{matrix} \right.
-
-	* The reflection phase factor, :math:`S_n`, accounts for the caustic phase shifts from the :math:`n` reflections from the turning height,
-
-	.. math::
-   		S_n = \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime
-
-The vertical velocity spectra defined here can be related to the horizontal velocity for the freely propagating and trapped scenarios through derivatives of the vertical velocity spectrum,
-
-	.. math::
-		\hat{u}^\text{(free)} = - \frac{k m}{k_h^2} \hat{w}, \quad
-		\hat{u}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{k}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
-
-	.. math::
-		\hat{v}^\text{(free)} = - \frac{l m}{k_h^2} \hat{w}, \quad
-		\hat{v}^\text{(trapped)} = \frac{2 i \hat{w}_0 }{\sqrt{\pi}}\frac{l}{k_h^2} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} \times \left( - r \right)^\frac{1}{4} \text{Ai}^\prime \left( r \right) e^{-i \frac{\pi}{4}} S_n
+		\hat{u} = - \frac{k m}{k_h^2} \hat{w}, \quad
+		\hat{v} = - \frac{l m}{k_h^2} \hat{w}.
 
 Finally, once computed for the entire atmosphere, the spatial and temporal domain forms can be computed by an inverse Fourier transform,
 
 	.. math::
 		w \left( x, y, z, t \right) = \int{e^{-i \omega t} \left( \iint{ \hat{w} \left( k, l, \omega, z \right) e^{i \left( kx + ly \right)} dk \, dl} \right) d \omega}
 
-***********************************************************
-Damping, Source and Saturation Spectra, and Critical Layers
-***********************************************************
-
-At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, :math:`m \rightarrow m + m_i,` where,
-
-	.. math::
-		m_i \left(k, l, \omega, z \right) = -\nu \frac{m^3}{\hat{\omega}}, \quad \nu = 3.563 \times 10^{-7} \frac{T_0^{\, 0.69}}{\rho_0}
-
-	* This produces a damping factor for the freely propagating solution that is integrated upward along with the phase,
-
-	.. math::
-		\hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}} e^{-\int_{z_0}^{z}{m_i \left( z^\prime \right) dz^\prime}}
-
-	* In the trapped solution, the reflection phase shift includes losses for each pass up to the turning height and back,
-
-	.. math::
-   		S_n = e^{-2 n \Psi} \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime, \quad \Psi = \int_0^{z_t} m_i \left( z^\prime \right) d z^\prime,
-
-	* Note that if :math:`z_t` is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.
+***********************************************
+Source Spectra, Saturation Spectra, and Damping 
+***********************************************
 
 The source spectra defined by Warner & McIntyre (1996) specifies the wave energy density for a source at 20 km altitude (note: :math:`\hat{\omega}` exponential corrected in publication errata),
 
@@ -102,6 +66,25 @@ Gravity wave breaking in the atmosphere is included in analysis via a saturation
 	.. math::
 		\left| \hat{w}_\text{sat} \right|^2 = 2.7 \times 10^{-2} \frac{\hat{\omega}^\frac{1}{3}}{m^2 k_h^2}.
 		
+
+At altitudes above about 100 km, gravity wave damping by molecular viscosity and thermal diffusion becomes increasingly important.  Following the methods developed by Drob et al. (2013), for altitudes above 100 km, an imaginary vertical wave number term can be defined, :math:`m \rightarrow m + m_i,` where,
+
+	.. math::
+		m_i \left(k, l, \omega, z \right) = -\nu \frac{m^3}{\hat{\omega}}, \quad \nu = 3.563 \times 10^{-7} \frac{T_0^{\, 0.69}}{\rho_0}
+
+	* This produces a damping factor for the freely propagating solution that is integrated upward along with the phase,
+
+	.. math::
+		\hat{w} \left( k, l, \omega, z \right) = \hat{w}_0 e^{i \varphi_0} \sqrt{ \frac{\rho_0 \left( z_0 \right)}{\rho_0 \left( z \right)} \frac{m \left( z_0 \right)}{m \left( z \right)}} e^{i \int_{z_0}^z{m \left( z^\prime \right) dz^\prime}} e^{-\int_{z_0}^{z}{m_i \left( z^\prime \right) dz^\prime}}
+
+	* In the trapped solution, the reflection phase shift includes losses for each pass up to the turning height and back,
+
+	.. math::
+   		S_n = e^{-2 n \Psi} \sum_{j = 1}^n{e^{i \left( j -1 \right) \left(2 \Phi - \frac{\pi}{2} \right)}}, \quad \Phi = \int_0^{z_t} m \left( z^\prime \right) d z^\prime, \quad \Psi = \int_0^{z_t} m_i \left( z^\prime \right) d z^\prime,
+
+	* Note that if :math:`z_t` is below 100 km there is no loss calculated and when it is above this altitude the losses are only computed from 100 km up to the turning height.
+
+
 Lastly, from the above definition for the vertical group velocity, :math:`c_{g,z}`, it is possible to have altitudes for which :math:`\hat{\omega} \rightarrow 0` and :math:`c_{g,z}` similarly goes to zero.  In such a location the wave energy density becomes infinite; however, the propagation time to such an altitude is infinite and it is therefore considered a "critical layer" because the ray path will never reach the layer.  
 
 In computing gravity wave spectra using the methods here, a finite propagation time of several hours is defined and used to prevent inclusion of the critical layer effects and also quantify the number of reflections for trapped components.  Drob et al. included a damping factor for altitudes with propagation times more than 3 hours and that attenuation is included here as well.
@@ -129,7 +112,7 @@ The implementation of the gravity wave analysis partially follows that summarize
 	#. Because sampling is done over intrinsic frequency, a phase shift is introduced in the Fourier transform needed to invert the solution,
 
 		.. math::
-	 		w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{i \left( k u_0 + l v_0 \right)} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}
+	 		w \left( x, y, z, t \right) = \int{e^{i \hat{\omega} t} \left( \iint{ \hat{w} \left( k, l, \hat{\omega}, z \right) e^{i \left( k u_0 + l v_0 \right) t} e^{i \left( kx + ly \right)} dk \, dl} \right) d \hat{\omega}}
 
 
   * For each Fourier component combination, :math:`k, l, \omega`, several checks are made and pre-analysis completed:
