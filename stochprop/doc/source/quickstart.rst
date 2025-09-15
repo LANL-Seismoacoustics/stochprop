@@ -405,6 +405,7 @@ This identifies seasonal trends such that summer extends from week 20 to 33 and 
 
 
 
+
 ----------------------
 Propagation Statistics
 ----------------------
@@ -660,26 +661,86 @@ It should be noted that all transmission loss models should use the same frequen
         :align: center
         :figclass: align-center
 
-.. 
-    COMMENTED OUT SECTION
-    --------------------------------
-    Perturbing Atmospheric Structure
-    --------------------------------
+---------------------------------------
+Atmospheric Ensembles via Perturbations
+---------------------------------------
 
-    The current focus of ongoing *stochprop* development is investigation of the EOF methods for atmospheric perturbation studies to quantify propagation uncertainty.  In the prototype function below, a reference atmospheric specification is perturbed using a set of EOFs to produce a suite of samples characterized by a specified standard deviation (10 m/s in this case).
+In addiiton to analysis of atmospheric trends and construction of infrasonic propagation statistics, *stochprop* also includes in-development methods to construct ensembles of atmospheric specifications perturbed from some reference atmospheric state.  Such ensembles are useful when investigating propagation effects of a specific event when the atmospheric state is availalble but has some level uncertainty.  In such a case, construction of an ensemble and running analysis through each can be used to quantify uncertainty in analysis results as in Blom et al. (2025).  
 
-        .. code:: none
+Ensembles can be constructed using either EOF-based perturbations or a simplistic gravity (buoyancy) wave framework.  Both perturbation methods are accessed using :code:`stochprop stats perturb` which has usage summarized as:
 
-            stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/test --std-dev 10.0
+    .. code:: none
 
-    The :code:`atmo-ensemble` visualization method can be used to visualize the resulting atmospheric specification set.
+        Usage: stochprop stats perturb [OPTIONS]
 
-        .. code:: none
+        Construct perturbed atmospheric samples using either EOF-based perturbations or gravity wave perturbation calculation based on Drob et al. (2013) method.
+        
+        stochprop stats perturb
+        -----------------------
+        
+        Example Usage:
+            stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path test_eof --eofs-path eofs/example 
+            stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path test_gw
 
-            stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern '*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
+        Options:
+        --atmo-file TEXT       Reference atmospheric specification (required)
+        --output-path TEXT     Output prefix (required)
+        --sample-cnt INTEGER   Number of perturbed samples (default: 25)
+        --method TEXT          Perturbation method ('eof' or 'gw')
+        --eofs-path TEXT       Path to EOF info (required)
+        --eof-max INTEGER      Maximum EOF coefficient to use (default: 50)
+        --eof-cnt INTEGER      Number of EOFs to use (default: 50)
+        --std-dev FLOAT        Standard deviation (default: 10 m/s)
+        --alt-weight FLOAT     Altitude weighting power (default: 2.0)
+        --sv-weight FLOAT      Sing. value weighting power (default: 0.25)
+        --k-max FLOAT          Gravity wave max horizontal wavenumber (default: 0.4)
+        --fourier-cnt INTEGER  Gravity wave Fourier component count (default: 240)
+        --src-lat FLOAT        Overwrite atmo_file latitude (default: None)
+        --debug-fig TEXT       Output for figures to aid in debugging (default:
+                                None)
+        --cpu-cnt INTEGER      Number of CPUs in parallel analysis (default: None)
+        -h, --help             Show this message and exit.
 
-        .. figure:: _static/_images/perturb1.png
-            :width: 400px
-            :align: center
-            :figclass: align-center
+In both EOF-based an gravity wave perturbations, a reference atmosphere is needed, :code:`--atmo-file`, as well as an output path and number of atmospheres to construct for the ensemble, :code:`--output-path` and :code:`--sample-cnt`, respectively.
 
+**EOF-based Perturbations**
+
+EOF-based perturbations produce variations through the entire atmosphere are quantify general uncertainty in the atmosphere state.  The overall ensemble standard deiviation is defined by :code:`--std-dev`, which defines the combined standard deviation of the horizontal winds and sound speed.  In addition, the singular value and mean altitude of each EOF control an additional weighting that can be tuned through :code:`--sv-weight` and :code:`--alt-weight`, respectively.  From a reference EOF vector set, the ensemble can be tuned by using a maximum index EOF as well as a count.  This allows additional randomization in the ensemble construction (e.g., :code:`--eof-max 50` and :code:`--eof-cnt 40` will select a random 40 EOFs out of the first 50 computed in the set to perform the perturbations).  
+
+The EOF-based methods can be run using (the 'samples/perturb/' directory might need to be made to run this):
+
+    .. code:: none
+
+        stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/eof-test
+
+The :code:`atmo-ensemble` visualization method can be used to visualize the resulting atmospheric specification set.
+
+    .. code:: none
+
+        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern 'eof-test*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
+
+    .. figure:: _static/_images/perturb1.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
+
+**Gravity (Buoyancy) Wave Perturbations**
+
+In additional to general uncertainty in the atmosphere state, fine-scale variations in the atmosphere are common and dominantly due to gravity (buoyancy) dynamics of the atmosphere.  Such perturbations are generated by various mchanisms in the lower atmopshere, and increase in amplitude and wavelength as they propagate upward.  More robust, spatially and temporally varying gravity wave fields can be derived, but for applying physically realistic perturbations to atmospheric states in order to account for gravity wave impacts on infrasound, a relatively simple framework is used here to perturb individual, stratified atmospheric states.
+
+Gravity wave perturbations are controlled by a maximum horizontal wavenumber ,:code:`--k-max`, as well as as number of Fourier components, :code:`--fourier-cnt`, randomly generated to compute the gravity wave field.  The default :code:`--k-max` value is 0.4 :math:`\text{km}^{-1}`, but values between 0.25 and 0.5 can be used to adjust the spectral content of the gravity wave field.  The method defaults to 240 Fourier components for approximating the integration, and this number can be adjusted as well.  Larger number of Fourier components will more thoroughly sample possible waves structures, but take longer to compute.  The calculation of each Fourier component can be completed individually, so the analysis can be accelerated using multithreading and a :code:`--cpu-cnt` can be specified to do so.
+
+    .. code:: none
+
+        stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --sample-path samples/perturb/gw-test --cpu-cnt 8
+
+Again, the resulting ensemble can be visualized using the built-in functionality,
+
+    .. code:: none
+
+        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern 'gw-test*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
+
+    .. figure:: _static/_images/gw_perturbations.png
+        :width: 600px
+        :align: center
+        :figclass: align-center

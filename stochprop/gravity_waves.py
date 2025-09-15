@@ -115,16 +115,14 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure
 
     """
     # extract atmospheric information
-    z_vals = atmo_info[0]
-    u0_vals = atmo_info[1]
-    v0_vals = atmo_info[2]
-    T0_vals = atmo_info[3]
-    d0_vals = atmo_info[4]
+    z0 = atmo_info[0]
+    T0 = atmo_info[1]
+    d0 = atmo_info[2]
+    H = atmo_info[3]
+    N = atmo_info[4]
 
-    # Compute the horizontal wavenumber, density scale hight, and BV frequency 
+    # Compute the horizontal wavenumber 
     kh = np.sqrt(k**2 + l**2)
-    H = - d0_vals / (np.gradient(d0_vals) / np.gradient(z_vals))
-    N = np.sqrt(9.8e-3 / H) # note: g in km/s^2
 
     m_sqr_vals = (kh / om_intr)**2 * (N**2 - om_intr**2) + 1.0 / (4.0 * H**2)
     m_vals = np.sqrt(abs(m_sqr_vals))
@@ -140,22 +138,23 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure
         w0 = np.sqrt(abs(2.7e-2 * (m_sqr_vals[src_index] / (m_star**4 + m_sqr_vals[src_index]**2)) * (om_intr**(1.0 / 3.0) / kh**2) * src_Omega))
 
         # free propagating phase integration
-        w_phase_vals = np.zeros_like(z_vals)
-        w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z_vals[zj] - z_vals[src_index]) for zj in range(src_index + 1)])
-        w_phase_vals[src_index + 1:] = np.array([simpson(m_vals[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
-        w_phase_vals = w_phase_vals + (k * u0_vals + l * v0_vals)       
+        w_phase_vals = np.zeros_like(z0)
+        w_phase_vals[:src_index + 1] = np.array([m_vals[src_index] * (z0[zj] - z0[src_index]) for zj in range(src_index + 1)])
+        w_phase_vals[src_index + 1:] = np.array([simpson(m_vals[src_index:zj], z0[src_index:zj]) for zj in range(src_index + 1, len(z0))])
 
         # losses above 100 km
-        env = 1.0 / (1.0 + np.exp(-(z_vals - 100.0) / 5.0))
-        visc = 3.58e-7 * (T0_vals**0.69 / d0_vals) * 1.0e-10
+        w_losses = np.zeros_like(z0)
+
+        env = 1.0 / (1.0 + np.exp(-(z0 - 100.0) / 2.5))
+        visc = 3.58e-7 * (T0**0.69 / d0) * 1.0e-10
         m_imag = (visc * abs(m_sqr_vals)**(3.0 / 2.0) / om_intr) * env
 
-        w_losses = np.zeros_like(z_vals)
-        w_losses[src_index + 1:] = np.array([simpson(m_imag[src_index:zj], z_vals[src_index:zj]) for zj in range(src_index + 1, len(z_vals))])
+        damping_index = np.argmin(abs(z0 - 80.0))
+        w_losses[damping_index + 1:] = np.array([simpson(m_imag[damping_index:zj], z0[damping_index:zj]) for zj in range(damping_index + 1, len(z0))])
 
         # combine into the vertical spectra
-        w_spec = np.zeros_like(z_vals, dtype=complex)
-        d0_m_ratios = np.sqrt((d0_vals[src_index] / d0_vals) * (m_vals[src_index] / m_vals))
+        w_spec = np.zeros_like(z0, dtype=complex)
+        d0_m_ratios = np.sqrt((d0[src_index] / d0) * (m_vals[src_index] / m_vals))
         w_spec = w0 * d0_m_ratios * np.exp(-w_losses) * (np.cos(w_phase_vals) - 1.0j * np.sin(w_phase_vals))
 
         # apply saturation threshold
@@ -164,15 +163,15 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure
         w_spec[sat_mask] = w_spec[sat_mask] * (w_sat[sat_mask] / abs(w_spec[sat_mask]))
 
         if max(abs(w_spec)) > 25.0:
-            w_spec = np.zeros_like(z_vals, dtype=complex)
+            w_spec = np.zeros_like(z0, dtype=complex)
 
     else:
-        w_spec = np.zeros_like(z_vals, dtype=complex)
+        w_spec = np.zeros_like(z0, dtype=complex)
 
     # project onto zonal/meridional winds and temperature
     u_spec = - w_spec * (k / kh**2) * m_vals
     v_spec = - w_spec * (l / kh**2) * m_vals
-    eta_spec = (-1.0j / om_intr) * w_spec * (np.gradient(T0_vals) / np.gradient(z_vals))
+    eta_spec = (-1.0j / om_intr) * w_spec * (np.gradient(T0) / np.gradient(z0))
 
     prog_increment(prog_step)
 
@@ -185,9 +184,9 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure
         a[0].set_xlabel("m^2")
         a[1].set_xlabel("spectral component")
 
-        a[0].plot(m_sqr_vals, z_vals, '-k')
-        a[1].plot(np.real(w_spec), z_vals, '-b')
-        a[1].plot(np.imag(w_spec), z_vals, '-r')
+        a[0].plot(m_sqr_vals, z0, '-k')
+        a[1].plot(np.real(w_spec), z0, '-b')
+        a[1].plot(np.imag(w_spec), z0, '-r')
 
         a[0].set_title("(k_perp, om_intr) = (" + str(np.round(kh ,4)) + ", " + str(np.round(om_intr, 4)) + '\n' + "N/m max:" + str(np.round(abs(np.max(N / m_vals)), 4)) + "(" + str(Nm_check) + ")" + "), src_cg: "+ str(np.round(src_cg, 4)) + "(" + str(cg_check) + ")")
     
@@ -259,14 +258,6 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=N
 
     """
 
-    ref_atmo = np.loadtxt(atmo_file)
-    z0_vals = np.copy(ref_atmo[:, 0])
-    T0_vals = np.copy(ref_atmo[:, 1])
-    u0_vals = np.copy(ref_atmo[:, 2])
-    v0_vals = np.copy(ref_atmo[:, 3])
-    d0_vals = np.copy(ref_atmo[:, 4])
-    p0_vals = np.copy(ref_atmo[:, 5])
-
     ref_lat = 40.0
     if src_lat is not None:
         ref_lat = src_lat
@@ -279,13 +270,12 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=N
         except:
             ref_lat = 40.0
 
-    z, Temp0, u0, v0, d0, _ = np.loadtxt(atmo_file, unpack=True)
-    atmo_info = [z, u0 * 1.0e-3, v0 * 1.0e-3, Temp0, d0]
+    z0, T0, u0, v0, d0, p0 = np.loadtxt(atmo_file, unpack=True)
 
     z_src = 20.0
-    src_index = np.argmin(abs(z - z_src))
+    src_index = np.argmin(abs(z0 - z_src))
 
-    H = - d0 / (np.gradient(d0) / np.gradient(z))
+    H = - d0 / (np.gradient(d0) / np.gradient(z0))
     N = np.sqrt(9.8e-3 / H)
 
     om_min = 2.0 * 7.29e-5 * np.sin(np.radians(ref_lat))
@@ -301,10 +291,10 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=N
     print('Computing Fourier components...\n\t', end='')
     prog_prep(50)
     if pool is not None:
-        args = [[k[n], l[n], om[n], atmo_info, src_index, om_min, debug_fig_out, prog_set_step(n, fourier_cnt, 50)] for n in range(fourier_cnt)]
+        args = [[k[n], l[n], om[n], [z0, T0, d0, H, N], src_index, om_min, debug_fig_out, prog_set_step(n, fourier_cnt, 50)] for n in range(fourier_cnt)]
         results = np.array(pool.map(single_fourier_component_wrapper, args))
     else:
-        results = np.array([single_fourier_component(k[n], l[n], om[n], atmo_info, src_index, om_min, figure_out=debug_fig_out, prog_step=prog_set_step(n, fourier_cnt, 50)) for n in range(fourier_cnt)])
+        results = np.array([single_fourier_component(k[n], l[n], om[n], [z0, T0, d0, H, N], src_index, om_min, figure_out=debug_fig_out, prog_step=prog_set_step(n, fourier_cnt, 50)) for n in range(fourier_cnt)])
     prog_close()
 
     print('\nApplying perturbations to reference atmosphere...\n\t', end='')
@@ -316,15 +306,15 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=N
 
     prog_prep(50)
     for m in range(smpl_cnt):
-        rndm_phasing = (2.0 * np.pi) * np.outer(np.random.random(fourier_cnt), np.ones_like(z))
+        rndm_phasing = (2.0 * np.pi) * np.outer(np.random.random(fourier_cnt), np.ones_like(z0))
 
         u_perturb = np.mean(u_spec * np.exp(-1.0j * rndm_phasing), axis=0) * scaling
         v_perturb = np.mean(v_spec * np.exp(-1.0j * rndm_phasing), axis=0) * scaling
 
-        u_vals = u0_vals + 2.0 * np.real(u_perturb) * 1.0e3
-        v_vals = v0_vals + 2.0 * np.real(v_perturb) * 1.0e3
+        u_vals = u0 + 2.0 * np.real(u_perturb) * 1.0e3
+        v_vals = v0 + 2.0 * np.real(v_perturb) * 1.0e3
 
-        np.savetxt(sample_path + "-" + str(m) + ".met", np.vstack((z0_vals, T0_vals, u_vals, v_vals, d0_vals, p0_vals)).T, 
+        np.savetxt(sample_path + "-" + str(m) + ".met", np.vstack((z0, T0, u_vals, v_vals, d0, p0)).T, 
             header=_perturb_header_txt(atmo_file, src_lat, k_max, fourier_cnt, m, smpl_cnt), comments='')
         prog_increment(prog_set_step(m, smpl_cnt, 50))
     prog_close()

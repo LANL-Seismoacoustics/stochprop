@@ -83,6 +83,20 @@ Comparison of the distributions for various matrices, :math:`\mathbf{B}_1, \math
 
 In the case of EOF analysis for atmospheric seasonality and variability, the EOF basis is defined using atmospheric states for the entire year (and likely covering multiple years).  The sets of atmospheres in each :math:`\mathbf{B}_j`, is a subset of :math:`\mathbf{A}` corresponding to a specific month, week, or other interval.  The coefficient overlap can be computed for all combinations to identify seasonality and determine the grouping of intervals (months, weeks, etc.) for which atmospheric structure is similar.
 
+**EOF-based Perturbation for Ensemble Construction**
+
+The EOFs constructed from a given atmosphere ensemble define physically consistent variations across zonal and meridional winds as well as sound speed.  From a reference atmospheric state, perturbations can be defined by generating a set of random coefficients for a set of EOFs and applying them with some scaling to match a desired standard deviation.  For a reference atmosphere, :math:`\mathcal{A}_0`, perturbations can be constructed in *stochprop* using a specified ensemble standard deviation as well as weighting for the various EOFs.  This method was introduced in Blom et al. (2025) and is tunable through the overall ensemble standard deviation, :math:`\varsigma`, and weighting by the singular values for each EOF, :math:`\sigma_m`, and the mean altitude at which the EOF perturbs the atmosphere, :math:`\bar{z}`,
+
+.. math::
+	\vec{\mathcal{A}}_m = \vec{\mathcal{A}}_0 +  \mathcal{N} \left( \varsigma_\mathcal{A} \right) \sum_{l=1}^L{\mathcal{W} \left( \sigma_l, \bar{z}_l \right) \, \mathcal{C}_l^{(m)} \, \vec{\varepsilon}_l},
+
+.. math:: 
+	\mathcal{W} \left( \sigma_l, \bar{z}_l \right) = \frac{\bar{z}_l^{\xi_1}}{\sigma_l^{\xi_2} }, \quad
+ 	\bar{z}_l = \int{ z \, \varepsilon_l^2 \left( z \right) dz}.
+
+The coefficients, :math:`\mathcal{C}_l^{(m)}` are randomly generated from a unit-variance normal distribution.  The overall weighting factor, :math:`\mathcal{N} \left( \varsigma_\mathcal{A} \right)`, is computed so that the variance of combined winds and sound speed variations averaged through the atmosphere matches that specified by :math:`\varsigma_\mathcal{A}`.  Analysis by Le Pichon et al. (2015) comparing ground-based middle atmosphere measurements with prediction models found standard deviations of errors in the wind speeds on the order of 20 m/s.  Improvement in atmospheric sounding techniques have reduced this in the past decade, but :math:`\varsigma` values on the order of 10 - 20 m/s are reasonable for constructing ensembles and a default value of 10 m/s is used in *stochprop*.
+
+The exponential factors in the EOF weighting, :math:`\xi_1` and :math:`\xi_2` default to values of 4 and 0.1, respectively, but are tunable in the perturbation CLI.  Decreasing :math:`\xi_1` increases the contribution of EOFs with smaller singular values which typically and more fine-scale structure to the atmosphere.  Increasing :math:`\xi_2` increases the weighting of EOFs that perturb the middle and upper atmosphere and decrease the weights of those which impact the lower atmosphere.
 
 ************************
 EOF methods in stochprop
