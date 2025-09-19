@@ -16,6 +16,7 @@ from importlib.util import find_spec
 from . import stats as stats_cli
 from . import prop as prop_cli
 from . import plot as plot_cli
+from . import utils as utils_cli
 
 
 @click.group(context_settings={'help_option_names': ['-h', '--help']})
@@ -57,6 +58,14 @@ def plot():
     '''
     pass 
 
+@click.group('utils', short_help="Utility methods", context_settings={'help_option_names': ['-h', '--help']})
+def utils():
+    '''
+    stochprop utils - Utility and support functionality for stochprop
+    
+    '''
+    pass 
+
 
 #######################
 ##    Open Manual    ##
@@ -74,10 +83,11 @@ def open_doc():
     webbrowser.open('file://' + os.path.realpath(filename), new=2)
 
 
+main.add_command(open_doc)
 main.add_command(stats)
 main.add_command(prop)
 main.add_command(plot)
-main.add_command(open_doc)
+main.add_command(utils)
 
 stats.add_command(stats_cli.eof_build)
 stats.add_command(stats_cli.eof_coeffs)
@@ -98,6 +108,8 @@ plot.add_command(plot_cli.coeff_overlap)
 plot.add_command(plot_cli.prop_model)
 plot.add_command(plot_cli.detection_stats)
 plot.add_command(plot_cli.network_performance)
+
+utils.add_command(utils_cli.eig_wvfrm2json)
 
 
 if __name__ == '__main__':
