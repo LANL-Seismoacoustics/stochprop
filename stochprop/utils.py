@@ -150,10 +150,10 @@ def eig_wvfrm2json(wvfrm_file, origin_time, c0, ns_option, array_dim, sta, loc, 
             dets_out[-1]['tr vel'] = det_tr_vel
 
             dets_out[-1]['fk'] = [{}]
-            dets_out[-1]['fk'][0]['time'] = [0.0]
-            dets_out[-1]['fk'][0]['back az'] = [det_back_az]
-            dets_out[-1]['fk'][0]['tr vel'] = [det_tr_vel]
-            dets_out[-1]['fk'][0]['f-stat'] = [det_fstat]
+            dets_out[-1]['fk'][0]['time'] = [-30.0 + det_start, 0.0, 30.0 + det_end]
+            dets_out[-1]['fk'][0]['back az'] = [det_back_az, det_back_az, det_back_az]
+            dets_out[-1]['fk'][0]['tr vel'] = [det_tr_vel, det_tr_vel, det_tr_vel]
+            dets_out[-1]['fk'][0]['f-stat'] = [det_fstat, det_fstat, det_fstat]
 
             dets_out[-1]['beam'] = [{}]
             dets_out[-1]['beam'][0]['time'] = wvfrm_tm[tm_mask] - det_dt
