@@ -9,7 +9,9 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
+import sys
 import os
+import time 
 import calendar
 import fnmatch
 import datetime
@@ -35,6 +37,29 @@ from scipy.interpolate import interp1d, interp2d
 from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
+
+
+# Progress bar methods
+def prog_prep(bar_length):
+    sys.stdout.write("[%s]" % (" " * bar_length))
+    sys.stdout.flush()
+
+    sys.stdout.write("\b" * (bar_length + 1))
+    sys.stdout.flush()
+
+def prog_increment(n=1):
+    for j in range(n):
+        sys.stdout.write(">")
+        sys.stdout.flush()
+        time.sleep(0.01)
+
+def prog_close():
+    sys.stdout.write("\n")
+    sys.stdout.flush()
+
+def prog_set_step(n, N, bar_length):
+    return int(np.floor((float(bar_length) * (n + 1)) / N) - np.floor((float(bar_length) * n) / N))
+
 
 
 ################################
@@ -280,25 +305,30 @@ def _fit_header_txt(prof_path, eofs_path, eof_cnt):
 
     return result
 
-def _perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, n, prof_cnt):
+def _perturb_header_txt(eofs_path, eof_cnt, stdev, n, prof_cnt, ref_header):
     result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: EOF Perturbation"
-    result = result + '\n' + "# Reference Specification = " + prof_path
     result = result + '\n' + "# EOF Set = " + eofs_path + " (cwd: " + os.getcwd() + ")"
     result = result + '\n' + "# EOF Cnt = " + str(eof_cnt)
-    result = result + '\n' + "# Perturbation St Dev (winds) = " + str(stdev) + " m/s"
+    result = result + '\n' + "# Perturbation St Dev = " + str(stdev) + " m/s"
     result = result + '\n' + "# Sample: " + str(n) + "/" + str(prof_cnt)
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm^3), P(mbar)]"
+
+    for line in ref_header:
+        result = result + '\n' + line
+
+    '''
+    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
     result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, K"
+    result = result + '\n' + "#% 2, T, degK"
     result = result + '\n' + "#% 3, U, m/s"
     result = result + '\n' + "#% 4, V, m/s"
     result = result + '\n' + "#% 5, RHO, g/cm3"
     result = result + '\n' + "#% 6, P, mbar"
-
+    '''
+    
     return result
 
 
@@ -1294,9 +1324,20 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
     """
 
     print("Generating EOF perturbations to " + prof_path + "...")
+    ref_header = ["# Reference Specification = " + prof_path + " (cwd: " + os.getcwd() + ")"]
+    with open(prof_path, 'r') as file:
+        for line in file:
+            if "#" in line:
+                if any(s in line for s in ["Data Source", "Model Time", "Location"]):
+                    ref_header = ref_header + ["# Reference " + line[2:].replace('\n','')]
+                else:
+                    ref_header = ref_header + [line.replace('\n','')]
+            else:
+                break
+
+
     ref_atmo = np.loadtxt(prof_path)
     _, c_eofs, u_eofs, v_eofs, sing_vals = _load_eofs(eofs_path)
-    
 
     # Define altitude limits
     alt_min = max(u_eofs[0, 0], ref_atmo[0, 0])
@@ -1312,6 +1353,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
     u_perturb_all = np.empty((sample_cnt, len(z_vals)))
     v_perturb_all = np.empty((sample_cnt, len(z_vals)))
 
+    print("Computing perturbations...")
     for m in range(sample_cnt):
         wts = np.empty(eof_cnt)
 
@@ -1339,6 +1381,8 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
 
     scaling = stdev / (np.average(np.sqrt(c_perturb_all**2 + u_perturb_all**2 + v_perturb_all**2)))
 
+    print('Applying perturbations to reference atmosphere...\n\t', end='')
+    prog_prep(50)
     for m in range(sample_cnt):
         c_vals = np.sqrt((gam / 10.0) * (ref_atmo[:, 5][ref_mask] / ref_atmo[:, 4][ref_mask]))
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
@@ -1352,13 +1396,15 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
         # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}
         # d = \gamma p/c^2
         # T = C^2 / R \gamma
-        temp = np.zeros_like(c_vals)
-        for j in range(1, len(c_vals)):
-            temp[j] = simpson(1.0 / c_vals[:j]**2, ref_atmo[:, 0][ref_mask][:j] * 1000.0)
+        temp = np.array([simpson(1.0 / c_vals[:j]**2, ref_atmo[:, 0][ref_mask][:j] * 1000.0) for j in range(1, len(c_vals))])
+        temp = np.insert(temp, 0, 0.0)
 
         # append pressure and replace sound speed values with temperature
         p_vals = (ref_atmo[:, 5][ref_mask][0] * c_vals[0]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
         d_vals = gam * p_vals / c_vals**2 * 0.1      
         T_vals = c_vals**2 / gamR
         
-        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, header=_perturb_header_txt(prof_path, eofs_path, eof_cnt, stdev, m, sample_cnt), comments='')
+        prog_increment(prog_set_step(m, sample_cnt, 50))
+        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, 
+                   header=_perturb_header_txt(eofs_path, eof_cnt, stdev, m, sample_cnt, ref_header), comments='')
+    prog_close()

@@ -231,6 +231,7 @@ def atmo_ensemble(atmo_dir, atmo_pattern, atmo_format, month_selection, week_sel
     click.echo("")
     
     A, z0 = sp_eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, max_alt=max_alt)
+    plot_cnt = min(plot_cnt, A.shape[0])
 
     # compute the differences to fit with EOFs
     file_len = int(A.shape[1] / 5)

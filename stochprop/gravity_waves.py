@@ -180,7 +180,7 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure
         Nm_check = abs(np.max(N / m_vals)) < 0.4
 
         f, a = plt.subplots(1, 2, sharey=True)
-        a[0].set_ylabel("Altitue [km]")
+        a[0].set_ylabel("Altitude [km]")
         a[0].set_xlabel("m^2")
         a[1].set_xlabel("spectral component")
 
@@ -190,10 +190,22 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, figure
 
         a[0].set_title("(k_perp, om_intr) = (" + str(np.round(kh ,4)) + ", " + str(np.round(om_intr, 4)) + '\n' + "N/m max:" + str(np.round(abs(np.max(N / m_vals)), 4)) + "(" + str(Nm_check) + ")" + "), src_cg: "+ str(np.round(src_cg, 4)) + "(" + str(cg_check) + ")")
     
-        plt.show()
         plt.savefig(figure_out + "-" + str(k) + "-" + str(l) + "-" + str(om_intr) + ".png", dpi=250)
         plt.close()
-    
+
+        # Plot cleaner looking panel (for ASA meeting)
+        plt.figure(2, figsize=(5, 8))
+        plt.xlabel("spectral component")
+        plt.ylabel("Altitude [km]")
+
+        plt.plot(np.real(w_spec), z0, '-b')
+        plt.plot(np.imag(w_spec), z0, '-r')
+
+        plt.title("k_perp = " + str(np.round(kh, 3)) + " km^{-1}, om_intr = " + str(np.round(om_intr, 3)) + " Hz")
+
+        plt.savefig(figure_out + "_2-" + str(k) + "-" + str(l) + "-" + str(om_intr) + ".png", dpi=250)
+        plt.close()
+
     return [u_spec, v_spec, w_spec, eta_spec]
 
 
@@ -202,15 +214,21 @@ def single_fourier_component_wrapper(args):
     return single_fourier_component(*args)
 
 
-def _perturb_header_txt(prof_path, src_lat, k_max, fourier_cnt, n, smpl_cnt):
+def _perturb_header_txt(k_max, fourier_cnt, n, smpl_cnt, src_lat, ref_header):
     result = "# Data Source: stochprop v" + version("stochprop")
     result = result + '\n' + "# Calculated: " + str(datetime.datetime.now())
     result = result + '\n' + "# Method: Gravity Wave Perturbation"
-    result = result + '\n' + "# Reference Specification = " + prof_path + " (cwd: " + os.getcwd() + ")"
-    result = result + '\n' + "# Source Latitude = " + str(src_lat)
     result = result + '\n' + "# Maximum Wavenumber [km^{-1]}] = " + str(k_max)
     result = result + '\n' + "# Fourier Component Count = " + str(fourier_cnt)
     result = result + '\n' + "# Sample: " + str(n) + "/" + str(smpl_cnt)
+
+    if src_lat is not None:
+        result = result + '\n' + "# Overwritten Reference Latitude = " + str(src_lat)
+
+    for line in ref_header:
+        result = result + '\n' + line
+
+    '''
     result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
     result = result + '\n' + "# The following lines are formatted input for ncpaprop"
     result = result + '\n' + "#% 0, Z0, km, 0.0"
@@ -220,6 +238,7 @@ def _perturb_header_txt(prof_path, src_lat, k_max, fourier_cnt, n, smpl_cnt):
     result = result + '\n' + "#% 4, V, m/s"
     result = result + '\n' + "#% 5, RHO, g/cm3"
     result = result + '\n' + "#% 6, P, mbar"
+    '''
 
     return result
 
@@ -258,15 +277,24 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=N
 
     """
 
-    ref_lat = 40.0
+    ref_header = ["# Reference Specification = " + atmo_file + " (cwd: " + os.getcwd() + ")"]
+    with open(atmo_file, 'r') as file:
+        for line in file:
+            if "#" in line:
+                if any(s in line for s in ["Data Source", "Model Time", "Location"]):
+                    ref_header = ref_header + ["# Reference " + line[2:].replace('\n','')]
+                else:
+                    ref_header = ref_header + [line.replace('\n','')]
+            else:
+                break
+
     if src_lat is not None:
         ref_lat = src_lat
     else:
         try:
-            temp = open(atmo_file, 'r')
-            for line in temp:
+            for line in ref_header:
                 if "Location" in line:
-                    ref_lat = float(line.split(' ')[-4][:-1])
+                    ref_lat = float(line.split(' ')[-3][:-1])
         except:
             ref_lat = 40.0
 
@@ -315,7 +343,8 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, src_lat=N
         v_vals = v0 + 2.0 * np.real(v_perturb) * 1.0e3
 
         np.savetxt(sample_path + "-" + str(m) + ".met", np.vstack((z0, T0, u_vals, v_vals, d0, p0)).T, 
-            header=_perturb_header_txt(atmo_file, src_lat, k_max, fourier_cnt, m, smpl_cnt), comments='')
+            header=_perturb_header_txt(k_max, fourier_cnt, m, smpl_cnt, src_lat, ref_header), comments='')
+
         prog_increment(prog_set_step(m, smpl_cnt, 50))
     prog_close()
 
