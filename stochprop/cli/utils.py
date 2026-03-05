@@ -17,13 +17,16 @@ import json
 
 import numpy as np
 
+import matplotlib.pyplot as plt 
+
+from scipy.stats import gaussian_kde, norm
+from scipy.optimize import curve_fit
+
 from obspy import UTCDateTime
 
 from infrapy.utils import data_io
 
 from stochprop import utils as sp_utils
-
-
 
 
 @click.command('eig-wvfrm2json', short_help="Create JSON detections from infraGA results")
@@ -76,3 +79,109 @@ def eig_wvfrm2json(wvfrm_file, output_label, origin_time, sta, loc, cha, c0, ns_
         json.dump(det_output, zipfile, indent=4, cls=data_io.Infrapy_Encoder)
 
 
+
+@click.command('celerity_gmm', short_help="Generate a GMM celerity model")
+@click.option("--data-file", help="File containing celerity information", default=None)
+@click.option("--cel-index", help="Column index of celerity values", default=6)
+@click.option("--atten-index", help="Column index of attenuation values", default=11)
+@click.option("--atten-lim", help="Attenuation limit", default=None, type=float)
+@click.option("--broadening", help="Broadening factor", default=0.0, type=float)
+def celerity_gmm(data_file, cel_index, atten_index, atten_lim, broadening):
+    '''
+    Compute a KDE of celerity values and generate parameters for a reciprocal celerity model
+
+    \b
+    Example usage (requires a data file with celerities):
+    \tstochprop utils fit-celerity --data-file ToyAtmo.arrivals.dat
+
+    '''
+
+    click.echo("")
+    click.echo("#################################")
+    click.echo("##                             ##")
+    click.echo("##          stochprop          ##")
+    click.echo("##        Utility Tools        ##")
+    click.echo("##        celerity-gmm         ##")
+    click.echo("##                             ##")
+    click.echo("#################################")
+    click.echo("")   
+
+
+    click.echo("  Loading data from " + data_file)
+    data = np.loadtxt(data_file)
+    cel_data = data[:, cel_index]
+
+    if atten_lim is not None:
+        click.echo("  Building KDE with limited arrivals (" + str(atten_lim) + " dB Sutherland & Bass attenuation limit)")
+        atten_data = data[:, atten_index]
+        cel_kernel = gaussian_kde(1.0 / cel_data[atten_data > atten_lim])
+    else:
+        click.echo("  Building KDE for all arrival celerities")
+        cel_kernel = gaussian_kde(1.0 / cel_data)
+
+    celerity_gmm = {}
+    celerity_gmm['arrivals file'] = data_file
+    celerity_gmm['atten_lim'] = atten_lim
+    celerity_gmm['broadening'] = broadening
+
+    cel_vals = np.linspace(0.38, 0.18, 200)
+    rcel_pdf = cel_kernel(1.0 / cel_vals)
+
+    click.echo("  Generating fit to KDE...")
+    def rcel_func(rcel, wt1, wt2, wt3, mn1, mn2, mn3, std1, std2, std3):
+        result = (wt1 / std1) * norm.pdf((rcel - mn1) / std1)
+        result = result + (wt2 / std2) * norm.pdf((rcel - mn2) / std2)
+        result = result + (wt3 / std3) * norm.pdf((rcel - mn3) / std3)
+
+        return result
+    
+    gmm_p0 = [0.0539, 0.0899, 0.8562, 
+                1.0 / 0.327, 1.0 / 0.293, 1.0 / 0.26,
+                0.066, 0.08, 0.33]
+    
+    lower_bounds = [0.0, 0.0, 0.0,
+                    1.0 / 0.36, 1.0 / 0.31, 1.0 / 0.29,
+                    1.0e-5, 1.0e-5, 1.0e-5]
+    
+    upper_bounds = [1.0, 1.0, 1.0,
+                    1.0 / 0.29, 1.0 / 0.26, 1.0 / 0.20,
+                    1.0, 1.0, 1.0]
+
+    gmm_bnds = (lower_bounds, upper_bounds)
+
+    popt, _ = curve_fit(rcel_func, 1.0 / cel_vals, rcel_pdf,
+                         p0=gmm_p0, bounds=gmm_bnds)
+    
+    popt[6:] = popt[6:] * (1.0 + broadening)
+    popt = np.round(popt, 4)
+
+    celerity_gmm['weights'] = list(popt[:3])
+    celerity_gmm['means'] = list(popt[3:6])
+    celerity_gmm['stdevs'] = list(popt[6:])
+
+    with open("test.rcelgmmjson", 'w') as json_file:
+        json.dump(celerity_gmm, json_file, indent=4, cls=data_io.Infrapy_Encoder)
+
+    # print info to screen and plot...
+    click.echo('\n' + "celerity_gmm:")
+    for key in celerity_gmm.keys():
+        if celerity_gmm[key] is not None:
+            click.echo("  " + key + ": " + str(celerity_gmm[key]))
+
+    click.echo('\n' + "  Reciprocal celerity model parameters (CLI and config file formats):")
+    click.echo("    --rcel-wts '" + str(popt[0]) + ", " + str(popt[1]) + ", " + str(popt[2]) + "' --rcel-mns '" + str(popt[3]) + ", " + str(popt[4]) + ", " + str(popt[5]) + "' --rcel-sds '" + str(popt[6]) + ", " + str(popt[7]) + ", " + str(popt[8]) + "'" + '\n')
+
+    click.echo("    rcel_wts = '" + str(popt[0]) + ", " + str(popt[1]) + ", " + str(popt[2]) + "'")
+    click.echo("    rcel_mns = '" + str(popt[3]) + ", " + str(popt[4]) + ", " + str(popt[5]) + "'")
+    click.echo("    rcel_sds = '" + str(popt[6]) + ", " + str(popt[7]) + ", " + str(popt[8]) + "'" + '\n')
+
+    click.echo("    Note: mean reciprocal celerities: 1.0/" + str(np.round(1.0 / popt[3], 3)) + ", 1.0/" + str(np.round(1.0 / popt[4], 3)) + ", 1.0/" + str(np.round(1.0 / popt[5], 3)) + '\n')
+
+    plt.figure(figsize=(7, 4))
+    plt.plot(cel_vals, rcel_pdf, '-k', linewidth=4.0, label="Data KDE")
+    plt.plot(cel_vals, rcel_func(1.0 / cel_vals, popt[0], popt[1], popt[2],popt[3], popt[4], popt[5], 
+                                 popt[6], popt[7], popt[8]), '--r', linewidth=2.0, label="GMM Fit")
+    plt.xlabel("Celerity [km/s]")
+    plt.ylabel("Probability")
+    plt.legend()
+    plt.show()

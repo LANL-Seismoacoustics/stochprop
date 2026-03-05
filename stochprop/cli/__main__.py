@@ -67,6 +67,15 @@ def utils():
     pass 
 
 
+@click.group('utils', short_help="Utility functions", context_settings={'help_option_names': ['-h', '--help']})
+def utils():
+    '''
+    stochprop utils - Utility functions supplementing statistics and other methods
+    
+    '''
+    pass 
+
+
 #######################
 ##    Open Manual    ##
 #######################
@@ -110,6 +119,7 @@ plot.add_command(plot_cli.detection_stats)
 plot.add_command(plot_cli.network_performance)
 
 utils.add_command(utils_cli.eig_wvfrm2json)
+utils.add_command(utils_cli.celerity_gmm)
 
 
 if __name__ == '__main__':
