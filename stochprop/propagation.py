@@ -12,6 +12,8 @@ import pickle
 import itertools
 import subprocess
 import tempfile
+import json
+import gzip
 
 import configparser as cnfg
 import numpy as np
@@ -26,7 +28,6 @@ try:
     from scipy.integrate import simpson
 except:
     from scipy.integrate import simps as simpson
-
 
 from scipy.interpolate import interp1d, RectBivariateSpline
 from scipy.stats import norm, gaussian_kde
@@ -44,6 +45,11 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import cartopy.crs as crs
 import cartopy.feature as cfeature
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+
+from infrapy.utils import data_io
+
+from . import utils as stochprop_utils
+
 
 sph_proj = Geod(ellps='sphere')
 
@@ -720,7 +726,7 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, rng_max=1000.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, rng_max=1000.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False, infraga_params=None, pgm_params=None):
         """
             Construct propagation statistics from a ray tracing arrival file (concatenated from
             multiple runs most likely) and output a path geometry model
@@ -813,13 +819,14 @@ class PathGeometryModel(object):
                 az_dev[az_dev > 180.0] -= 360.0
                 az_dev[az_dev < -180.0] += 360.0
 
-                print("phi lims:", min(phi), max(phi))
-                print("az lims:", min(az), max(az))
-                print("az_dev lims:", min(az_dev), max(az_dev))
-
                 # Cycle through azimuth bins creating fit
+                print('\t', end='')
+                stochprop_utils.prog_prep(50)
+
                 az_wts = np.empty(self._az_bin_cnt)
                 for n_az in range(self._az_bin_cnt):
+
+
                     if n_az == 0:
                         center = -180.0
                         az_mask = np.logical_or(az > 180.0 - az_bin_wdth / 2.0, az < -180.0 + az_bin_wdth / 2.0)
@@ -966,20 +973,18 @@ class PathGeometryModel(object):
                             window2.remove()
 
                     rng_wts[rng_wts > 4.0 / len(rng_wts)] = 4.0 / len(rng_wts)
-                    print("rng_wts:", rng_wts)
-
                     for nr in range(rng_cnt):
                         rcel_wts[n_az][nr] *= rng_wts[nr] / np.sum(rng_wts)
-
                     plt.close('all')
-
-                
+                    stochprop_utils.prog_increment(stochprop_utils.prog_set_step(n_az, self._az_bin_cnt, 50))
+                stochprop_utils.prog_close()
+    
                 # Normalize weights by total arrivals at all azimuths
-                print("az_wts:", az_wts)
-
                 for n_az in range(self._az_bin_cnt):
                     rcel_wts[n_az] *= az_wts[n_az] / np.sum(az_wts)
 
+                '''
+                # legacy output...
                 priors = [0] * 6
                 priors[0] = rng_bins
                 priors[1] = az_dev_mns
@@ -988,7 +993,25 @@ class PathGeometryModel(object):
                 priors[4] = rcel_std
                 priors[5] = rcel_wts
 
-                pickle.dump(priors, open(output_file, "wb"))
+                pickle.dump(priors, open(output_file + ".pgm", "wb"))
+                '''
+                
+                # updated JSON output
+                print("Writing beamforming and detection results into " + output_file + ".pgm.json.gz" + '\n')
+                pgm_output = {'infraga_params' : infraga_params,
+                              'pgm_params' : pgm_params,
+                              'rng_bins' : rng_bins,
+                              'az_dev_mns' : az_dev_mns,
+                              'az_dev_std' : az_dev_std,
+                              'rcel_mns' : rcel_mns,
+                              'rcel_std' : rcel_std,
+                              'rcel_wts' : rcel_wts}
+                
+                with gzip.open(output_file + ".pgm.json.gz", 'wt', encoding='UTF-8') as zipfile:
+                    json.dump(pgm_output, zipfile, indent=4, cls=data_io.Infrapy_Encoder)
+
+
+
 
     def load(self, model_file, smooth=False):
         """
@@ -1004,9 +1027,31 @@ class PathGeometryModel(object):
 
         """
 
-        fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
-        self._az_bin_cnt = len(fit_params[1])
-        self._rng_max = max(fit_params[0])
+
+        if "json" in model_file:  
+            # Load new JSON format
+            fit_params = json.load(gzip.open(model_file, 'rt'))
+
+            rng_bins = np.array(fit_params['rng_bins'])
+            az_dev_mns = np.array(fit_params['az_dev_mns'])
+            az_dev_std = np.array(fit_params['az_dev_std'])
+            rcel_mns = np.array(fit_params['rcel_mns'])
+            rcel_std = np.array(fit_params['rcel_std'])
+            rcel_wts = np.array(fit_params['rcel_wts'])
+
+        else:
+            # Load older pickle format
+            fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+
+            rng_bins = np.array(fit_params[0])
+            az_dev_mns = np.array(fit_params[1])
+            az_dev_std = np.array(fit_params[2])
+            rcel_mns = np.array(fit_params[3])
+            rcel_std = np.array(fit_params[4])
+            rcel_wts = np.array(fit_params[5])
+  
+        self._az_bin_cnt = len(az_dev_mns)
+        self._rng_max = max(rng_bins)
 
         print("Loading path geometry model from " + model_file)
         print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
@@ -1026,30 +1071,31 @@ class PathGeometryModel(object):
 
         if smooth:
             for n_az in range(self._az_bin_cnt):
-                self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 5, 3), kind='cubic')
-                self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 5, 3), kind='cubic')
+                self.az_dev_mns[n_az] = interp1d(rng_bins, savgol_filter(az_dev_mns[n_az], 5, 3), kind='cubic')
+                self.az_dev_std[n_az] = interp1d(rng_bins, savgol_filter(az_dev_std[n_az], 5, 3), kind='cubic')
 
                 self._rcel_mns[n_az] = [0] * 3
                 self._rcel_std[n_az] = [0] * 3
                 self._rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self._rcel_mns[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[3][n_az][:, j], 5, 3), kind='cubic')
-                    self._rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
-                    self._rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_mns[n_az][j] = interp1d(rng_bins, savgol_filter(rcel_mns[n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_std[n_az][j] = interp1d(rng_bins, savgol_filter(rcel_std[n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_wts[n_az][j] = interp1d(rng_bins, savgol_filter(rcel_wts[n_az][:, j], 5, 3), kind='cubic')
         else:
             for n_az in range(self._az_bin_cnt):
-                self.az_dev_mns[n_az] = interp1d(fit_params[0], fit_params[1][n_az], kind='cubic')
-                self.az_dev_std[n_az] = interp1d(fit_params[0], fit_params[2][n_az], kind='cubic')
+                self.az_dev_mns[n_az] = interp1d(rng_bins, az_dev_mns[n_az], kind='cubic')
+                self.az_dev_std[n_az] = interp1d(rng_bins, az_dev_std[n_az], kind='cubic')
 
                 self._rcel_mns[n_az] = [0] * 3
                 self._rcel_std[n_az] = [0] * 3
                 self._rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self._rcel_mns[n_az][j] = interp1d(fit_params[0], fit_params[3][n_az][:, j], kind='cubic')
-                    self._rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
-                    self._rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
+                    self._rcel_mns[n_az][j] = interp1d(rng_bins, rcel_mns[n_az][:, j], kind='cubic')
+                    self._rcel_std[n_az][j] = interp1d(rng_bins, rcel_std[n_az][:, j], kind='cubic')
+                    self._rcel_wts[n_az][j] = interp1d(rng_bins, rcel_wts[n_az][:, j], kind='cubic')
+
 
     def display(self, file_id=None, subtitle=None, show_colorbar=True, hold_fig=False, cmap_max=None):
         """

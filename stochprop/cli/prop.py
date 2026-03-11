@@ -100,8 +100,8 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
 @click.option("--output-path", help="Path and prefix for PGM output", prompt="Path and prefix for PGM output")
 @click.option("--src-loc", help="Source location (lat, lon, alt)", prompt="Enter source location (lat, lon, alt)")
-@click.option("--inclinations", help="Inclination min, max, step (default: [2, 50, 2]", default = "[2.0, 50.0, 2.0]")
-@click.option("--azimuths", help="Azimuth min, max, and step (default: [0, 360, 6]", default = "[0.0, 360.0, 6.0]")
+@click.option("--inclinations", help="Inclination min, max, step (default: '2, 50, 2'", default = "2.0, 50.0, 2.0")
+@click.option("--azimuths", help="Azimuth min, max, and step (default: '0, 360, 6'", default = "0.0, 360.0, 6.0")
 @click.option("--bounces", help="Number of ground bounces for paths (default: 25)", default=25)
 @click.option("--z-grnd", help="Ground elevation (default: 0.0 km)", default=0.0)
 @click.option("--rng-max", help="Maximum range (default: 1000.0 km)", default=1000.0)
@@ -154,23 +154,35 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 
     click.echo("  Model output path: " + output_path)
 
-    click.echo('\n' + "infraGA/GeoAc parameters:")
-    click.echo("  Source location: " + src_loc)
-    click.echo("  Inclination angles (min, max, step): " + inclinations)
-    click.echo("  Azimuth angles (min, max, step): " + azimuths)
-    click.echo("  Bounces: " + str(bounces))
-    click.echo("  Ground elevation: " + str(z_grnd))
-    click.echo("  Range max: " + str(rng_max))
-    click.echo("  Frequency: " + str(freq))
-    click.echo("  Local temporary directory: " + str(local_temp_dir))
-    if cpu_cnt is not None:
-        click.echo("  CPU count: " + str(cpu_cnt))
+    infraga_params = {}
+    infraga_params['src_loc'] = src_loc
+    infraga_params['inclinations'] = inclinations
+    infraga_params['azimuths'] = azimuths
+    infraga_params['bounces'] = bounces
+    infraga_params['z_grnd'] = z_grnd
+    infraga_params['rng_max'] = rng_max
+    infraga_params['freq'] = freq
 
-    click.echo('\n' + "Path Geometry Model (PGM) parameters:")
-    click.echo("  Range window: " + str(rng_window))
-    click.echo("  Range step: " + str(rng_step))
-    click.echo("  Azimuth bin count: " + str(az_bin_cnt))
-    click.echo("  Azimuth bin width: " + str(az_bin_width))
+    pgm_params = {}
+    pgm_params['rng_window'] = rng_window
+    pgm_params['rng_step'] = rng_step
+    pgm_params['az_bin_cnt'] = az_bin_cnt
+    pgm_params['az_bin_width'] = az_bin_width
+
+    click.echo('\n' + "infraGA parameters:")
+    for key in infraga_params.keys():
+        if infraga_params[key] is not None:
+            click.echo("  " + key + ": " + str(infraga_params[key]))
+
+    if local_temp_dir is not None:
+        click.echo("  Local temporary directory: " + str(local_temp_dir))
+    if cpu_cnt is not None:
+        click.echo("  cpu_cnt: " + str(cpu_cnt))
+
+    click.echo('\n' + "PGM parameters:")
+    for key in pgm_params.keys():
+        if pgm_params[key] is not None:
+            click.echo("  " + key + ": " + str(pgm_params[key]))
     click.echo("")
 
     src_loc = [float(val) for val in src_loc.strip(' ()[]').split(',')]
@@ -192,8 +204,8 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     src_loc[2] = max(src_loc[2], z_grnd)
 
     pgm = propagation.PathGeometryModel()
-    pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step, rng_max=rng_max,
-                az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width, min_turning_ht=min_turning_ht, station_centered=station_centered)
+    pgm.build(output_path + ".arrivals.dat", output_path, geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step, rng_max=rng_max,
+                az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width, min_turning_ht=min_turning_ht, station_centered=station_centered, infraga_params=infraga_params, pgm_params=pgm_params)
 
 
 

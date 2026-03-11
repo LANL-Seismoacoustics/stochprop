@@ -81,12 +81,16 @@ def eig_wvfrm2json(wvfrm_file, output_label, origin_time, sta, loc, cha, c0, ns_
 
 
 @click.command('celerity_gmm', short_help="Generate a GMM celerity model")
-@click.option("--data-file", help="File containing celerity information", default=None)
+@click.option("--data-file", help="File containing celerity information", default=None, prompt="Arrivals data file: ")
+@click.option("--output-label", help="File label for output RCG file", default=None, prompt="Output file label: ")
 @click.option("--cel-index", help="Column index of celerity values", default=6)
 @click.option("--atten-index", help="Column index of attenuation values", default=11)
 @click.option("--atten-lim", help="Attenuation limit", default=None, type=float)
+@click.option("--turn-ht-index", help="Column index of turning height values", default=7)
+@click.option("--turn-ht-min", help="Turning height minimum", default=None, type=float)
 @click.option("--broadening", help="Broadening factor", default=0.0, type=float)
-def celerity_gmm(data_file, cel_index, atten_index, atten_lim, broadening):
+
+def celerity_gmm(data_file, output_label, cel_index, atten_index, atten_lim, turn_ht_index, turn_ht_min, broadening):
     '''
     Compute a KDE of celerity values and generate parameters for a reciprocal celerity model
 
@@ -106,28 +110,31 @@ def celerity_gmm(data_file, cel_index, atten_index, atten_lim, broadening):
     click.echo("#################################")
     click.echo("")   
 
+    celerity_gmm = {}
+    celerity_gmm['arrivals file'] = data_file
+    celerity_gmm['atten_lim'] = atten_lim
+    celerity_gmm['turn_ht_min'] = turn_ht_min
+    celerity_gmm['broadening'] = broadening
 
     click.echo("  Loading data from " + data_file)
     data = np.loadtxt(data_file)
     cel_data = data[:, cel_index]
 
+    select_mask = np.ones_like(data[:, 0], dtype=bool)
     if atten_lim is not None:
-        click.echo("  Building KDE with limited arrivals (" + str(atten_lim) + " dB Sutherland & Bass attenuation limit)")
-        atten_data = data[:, atten_index]
-        cel_kernel = gaussian_kde(1.0 / cel_data[atten_data > atten_lim])
-    else:
-        click.echo("  Building KDE for all arrival celerities")
-        cel_kernel = gaussian_kde(1.0 / cel_data)
+        click.echo("  Applying mask to remove arrivals with greater than " + str(atten_lim) + " dB Sutherland & Bass attenuation prediction.")
+        select_mask = np.logical_and(select_mask, data[:, atten_index] > atten_lim)
 
-    celerity_gmm = {}
-    celerity_gmm['arrivals file'] = data_file
-    celerity_gmm['atten_lim'] = atten_lim
-    celerity_gmm['broadening'] = broadening
+    if turn_ht_min is not None:
+        click.echo("  Applying mask to remove arrivals with turning heights below " + str(turn_ht_min) + " km. ")
+        select_mask = np.logical_and(select_mask, data[:, turn_ht_index] > turn_ht_min)
+
+    click.echo("  Computing KDE of arrival celerities and fitting...")
+    cel_kernel = gaussian_kde(1.0 / cel_data[select_mask])
 
     cel_vals = np.linspace(0.38, 0.18, 200)
     rcel_pdf = cel_kernel(1.0 / cel_vals)
 
-    click.echo("  Generating fit to KDE...")
     def rcel_func(rcel, wt1, wt2, wt3, mn1, mn2, mn3, std1, std2, std3):
         result = (wt1 / std1) * norm.pdf((rcel - mn1) / std1)
         result = result + (wt2 / std2) * norm.pdf((rcel - mn2) / std2)
@@ -159,7 +166,8 @@ def celerity_gmm(data_file, cel_index, atten_index, atten_lim, broadening):
     celerity_gmm['means'] = list(popt[3:6])
     celerity_gmm['stdevs'] = list(popt[6:])
 
-    with open("test.rcelgmmjson", 'w') as json_file:
+    print("  Writing Reciprocal Celerity GMM to " + output_label + ".rcg.json")
+    with open(output_label + ".rcg.json", 'w') as json_file:
         json.dump(celerity_gmm, json_file, indent=4, cls=data_io.Infrapy_Encoder)
 
     # print info to screen and plot...
@@ -167,13 +175,6 @@ def celerity_gmm(data_file, cel_index, atten_index, atten_lim, broadening):
     for key in celerity_gmm.keys():
         if celerity_gmm[key] is not None:
             click.echo("  " + key + ": " + str(celerity_gmm[key]))
-
-    click.echo('\n' + "  Reciprocal celerity model parameters (CLI and config file formats):")
-    click.echo("    --rcel-wts '" + str(popt[0]) + ", " + str(popt[1]) + ", " + str(popt[2]) + "' --rcel-mns '" + str(popt[3]) + ", " + str(popt[4]) + ", " + str(popt[5]) + "' --rcel-sds '" + str(popt[6]) + ", " + str(popt[7]) + ", " + str(popt[8]) + "'" + '\n')
-
-    click.echo("    rcel_wts = '" + str(popt[0]) + ", " + str(popt[1]) + ", " + str(popt[2]) + "'")
-    click.echo("    rcel_mns = '" + str(popt[3]) + ", " + str(popt[4]) + ", " + str(popt[5]) + "'")
-    click.echo("    rcel_sds = '" + str(popt[6]) + ", " + str(popt[7]) + ", " + str(popt[8]) + "'" + '\n')
 
     click.echo("    Note: mean reciprocal celerities: 1.0/" + str(np.round(1.0 / popt[3], 3)) + ", 1.0/" + str(np.round(1.0 / popt[4], 3)) + ", 1.0/" + str(np.round(1.0 / popt[5], 3)) + '\n')
 

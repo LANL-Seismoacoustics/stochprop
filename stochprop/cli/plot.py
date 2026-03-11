@@ -334,11 +334,11 @@ def prop_model(model_file, output_id, cmap_max, hide_cbar):
     click.echo("#######################################")
     click.echo("")  
 
-    if model_file[-3:] == 'pgm':
+    if 'pgm' in model_file:
         model = sp_prop.PathGeometryModel()
         model.load(model_file)
         model.display(file_id=output_id, hold_fig=True, cmap_max=cmap_max)
-    elif model_file[-3:] == 'tlm':
+    elif 'tlm' in model_file:
         model = sp_prop.TLossModel()
         model.load(model_file)
         model.display(file_id=output_id, hold_fig=True, cmap_max=cmap_max, show_colorbar=(not hide_cbar))

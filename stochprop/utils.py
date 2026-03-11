@@ -4,12 +4,38 @@
 #
 # Philip Blom (pblom@lanl.gov)
 
+
+import sys
+import time
+
 import configparser as cnfg
 import numpy as np
 
 from importlib.util import find_spec
 
 from scipy.interpolate import interp1d
+
+
+# Progress bar methods
+def prog_prep(bar_length):
+    sys.stdout.write("[%s]" % (" " * bar_length))
+    sys.stdout.flush()
+
+    sys.stdout.write("\b" * (bar_length + 1))
+    sys.stdout.flush()
+
+def prog_increment(n=1):
+    for j in range(n):
+        sys.stdout.write(">")
+        sys.stdout.flush()
+        time.sleep(0.01)
+
+def prog_close():
+    sys.stdout.write("\n")
+    sys.stdout.flush()
+
+def prog_set_step(n, N, bar_length):
+    return int(np.floor((float(bar_length) * (n + 1)) / N) - np.floor((float(bar_length) * n) / N))
 
 
 def eig_wvfrm2json(wvfrm_file, origin_time, c0, ns_option, array_dim, sta, loc, cha):

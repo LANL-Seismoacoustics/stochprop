@@ -38,28 +38,7 @@ from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
 
-
-# Progress bar methods
-def prog_prep(bar_length):
-    sys.stdout.write("[%s]" % (" " * bar_length))
-    sys.stdout.flush()
-
-    sys.stdout.write("\b" * (bar_length + 1))
-    sys.stdout.flush()
-
-def prog_increment(n=1):
-    for j in range(n):
-        sys.stdout.write(">")
-        sys.stdout.flush()
-        time.sleep(0.01)
-
-def prog_close():
-    sys.stdout.write("\n")
-    sys.stdout.flush()
-
-def prog_set_step(n, N, bar_length):
-    return int(np.floor((float(bar_length) * (n + 1)) / N) - np.floor((float(bar_length) * n) / N))
-
+from . import utils as stochprop_utils
 
 
 ################################
@@ -1382,7 +1361,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
     scaling = stdev / (np.average(np.sqrt(c_perturb_all**2 + u_perturb_all**2 + v_perturb_all**2)))
 
     print('Applying perturbations to reference atmosphere...\n\t', end='')
-    prog_prep(50)
+    stochprop_utils.prog_prep(50)
     for m in range(sample_cnt):
         c_vals = np.sqrt((gam / 10.0) * (ref_atmo[:, 5][ref_mask] / ref_atmo[:, 4][ref_mask]))
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
@@ -1404,7 +1383,8 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
         d_vals = gam * p_vals / c_vals**2 * 0.1      
         T_vals = c_vals**2 / gamR
         
-        prog_increment(prog_set_step(m, sample_cnt, 50))
+        stochprop_utils.prog_increment(stochprop_utils.prog_set_step(m, sample_cnt, 50))
         np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, 
                    header=_perturb_header_txt(eofs_path, eof_cnt, stdev, m, sample_cnt, ref_header), comments='')
-    prog_close()
+    stochprop_utils.prog_close()
+    
