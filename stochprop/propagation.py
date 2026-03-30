@@ -1011,8 +1011,6 @@ class PathGeometryModel(object):
                     json.dump(pgm_output, zipfile, indent=4, cls=data_io.Infrapy_Encoder)
 
 
-
-
     def load(self, model_file, smooth=False):
         """
         Load a path geometry model file for use
