@@ -136,7 +136,7 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, t0_evo
     # Nm_check = abs(np.max(N / m_vals)) < 0.4
 
     cg_lim = 1.0e-4
-    Nm_lim = 0.5
+    Nm_lim = 0.6
 
     cg_check = abs(src_cg) > cg_lim
     Nm_check = abs(np.max(N / m_vals)) < Nm_lim
@@ -153,14 +153,14 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, t0_evo
         w_phase_vals[src_index + 1:] = np.array([simpson(m_vals[src_index:zj], z0[src_index:zj]) for zj in range(src_index + 1, len(z0))])
 
         # losses above 100 km
-        # original viscosity scaling is 10e-10
+        # original viscosity scaling is 1.0e-10
         w_losses = np.zeros_like(z0)
 
         env = 1.0 / (1.0 + np.exp(-(z0 - 100.0) / 7.5))
-        visc = 3.58e-7 * (T0**0.69 / d0) * 0.5e-10
+        visc = 3.58e-7 * (T0**0.69 / d0) * 1.0e-10
         m_imag = (visc * abs(m_sqr_vals)**(3.0 / 2.0) / om_intr) * env
 
-        damping_index = np.argmin(abs(z0 - 60.0))
+        damping_index = np.argmin(abs(z0 - 75.0))
         w_losses[damping_index + 1:] = np.array([simpson(m_imag[damping_index:zj], z0[damping_index:zj]) for zj in range(damping_index + 1, len(z0))])
 
         # combine into the vertical spectra
@@ -248,37 +248,33 @@ def _perturb_header_txt(k_max, fourier_cnt, n, smpl_cnt, src_lat, t0_evol, ref_h
     return result
 
 
-def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, t0_evol, src_lat=None, debug_fig_out=None, pool=None):
+def perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, smpl_cnt, t0_evol, gw_scaling=1.0, src_lat=None, debug_fig_out=None, pool=None):
 
     """
         Use gravity waves to perturb a specified profile using some of the methods in Drob et al. (2013)
 
         Parameters
         ----------
-        atmo_spec: string
-            Path and name of the specification to be used as the reference
+        atmo_file: string
+            Path and name of the atmosphere file to be used as the reference
         output_path: string
             Path where output will be stored
-        sample_cnt: int
+        k_max: float 
+            Maximum horizontal wavenumber for the gravity wave spectrum (0.25 - 0.5 km^{-1})
+        fourier_cnt: int
+            Number of Fourier coefficient sets to consider in approximating the integral            
+        smpl_cnt: int
             Number of perturbed atmospheric samples to generate
-        t0: float
-            Reference time for gravity wave propagation (typically 4 - 6 hours)
-        dx: float
-            Horizontal wavenumber resolution [km]
-        dz: float
-            Vertical resolution for integration steps [km]
-        Nk: int
-            Horizontal wavenumber grid dimensions (Nk x Nk)
-        N_om: int
-            Frequency resolution (typically 5)
-        ref_lat: float
-            Reference latitude used to define the Coriolis frequency used as the minimum frequency
-        random_phase: boolean
-            Controls inclusion of random initial phase shifts
-        env_below: boolean
-            Controls whether perturbations below the source height are included
-        cpu_cnt: int
-            Number of CPUs to use for parallel computation of Fourier components (defaults to None)
+        t0_evol: float
+            Reference time for wind-gravity wave interaction (0 - 1200 seconds)
+        gw_scaling: float
+            Scaling factor to increase or decrease perturbations
+        src_lat: float
+            Custom source latitude for Coriolis force calculation
+        debug_fig_out: string
+            Path for debugging figures to be written
+        pool: multiprocessing Pool
+            Pool for multi-threading calculation
 
     """
 
@@ -311,7 +307,6 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
     dudz = np.gradient(u0) / np.gradient(z0)
     dvdz = np.gradient(v0) / np.gradient(z0)
     dPhi_dz = (k_max * t0_evol) * np.max(np.sqrt(dudz**2 + dvdz**2)) * 1.0e-3
-
     dz = min(abs(z0[1] - z0[0]) / 2.0, (np.pi / 4.0) / dPhi_dz)
 
     z = np.arange(z0[0], z0[-1], dz)
@@ -337,7 +332,7 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
     k_angle = rn_gen.uniform(low=0.0, high=2.0 * np.pi, size=fourier_cnt)   
     k, l = k_perp * np.cos(k_angle), k_perp * np.sin(k_angle)
 
-    om = rn_gen.uniform(low=om_min, high=om_max, size=fourier_cnt)   
+    om = rn_gen.uniform(low=om_min, high=om_max, size=fourier_cnt)
 
     print('Computing Fourier components...\n\t', end='')
     prog_prep(50)
@@ -352,21 +347,11 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
     u_spec = results[:, 0, :]
     v_spec = results[:, 1, :]
     
-    plt.figure(1)
-    for n in range(8):
-        plt.plot(np.real(u_spec[n]), z)
-        # plt.plot(np.imag(u_spec[n]), z, '--b')
-
     # scale for cylindrical volume, convert km to meters, account for nulled components
     scaling = ((2.0 * np.pi) * k_max * (om_max - om_min)) * 1.0e3 * (fourier_cnt / np.count_nonzero(np.count_nonzero(u_spec, axis=1)))
     u_spec = u_spec * np.outer(k_perp, np.ones_like(z)) * scaling
     v_spec = v_spec * np.outer(k_perp, np.ones_like(z)) * scaling
-
-    zj_100km = np.argmin(abs(z - 100.0))
-    u_100km = np.absolute(u_spec[:, zj_100km])
     
-    du_100km = []
-    plt.figure(2)
     prog_prep(50)
     for m in range(smpl_cnt):
         # randomly phase and sum together
@@ -374,26 +359,13 @@ def perturb_atmo(atmo_file, sample_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
         u_perturb = u_spec * (np.cos(rndm_phasing) - 1.0j * np.sin(rndm_phasing))
         v_perturb = v_spec * (np.cos(rndm_phasing) - 1.0j * np.sin(rndm_phasing))
 
-        if m < 3:
-            plt.plot(np.real(np.mean(u_perturb, axis=0)), z, '-')
+        u_out = u + gw_scaling * np.sqrt(fourier_cnt) * np.real(np.mean(u_perturb, axis=0))
+        v_out = v + gw_scaling * np.sqrt(fourier_cnt) * np.real(np.mean(v_perturb, axis=0))
 
-        u_out = u + np.real(np.mean(u_perturb, axis=0))
-        v_out = v + np.real(np.mean(v_perturb, axis=0))
-
-        du_100km = du_100km + [np.real(np.mean(u_perturb, axis=0))[zj_100km]]
-
-        np.savetxt(sample_path + "-" + str(m) + ".met", np.vstack((z, T, u_out, v_out, d, p)).T, 
+        np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z, T, u_out, v_out, d, p)).T, 
             header=_perturb_header_txt(k_max, fourier_cnt, m, smpl_cnt, src_lat, t0_evol, ref_header), comments='')
-
         prog_increment(prog_set_step(m, smpl_cnt, 50))
-
-    # plt.show()
-
     prog_close()
-
-    print("du_spec mean at 100 km:", u_100km[u_100km != 0.0].mean())
-    print("du_perturb stdev at 100 km:", np.std(np.array(du_100km)))
-    print("du spec mean vs. du perturb stdev:", u_100km[u_100km != 0.0].mean() / np.std(np.array(du_100km)))
 
 
 

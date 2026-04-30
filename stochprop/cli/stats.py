@@ -316,11 +316,12 @@ def sample_eofs(coeff_path, eofs_path, sample_path, sample_cnt, eof_cnt, label):
 @click.option("--k-max", help="Gravity wave max horizontal wavenumber (default: 0.4)", default=0.4)
 @click.option("--fourier-cnt", help="Gravity wave Fourier component count (default: 240)", default=240)
 @click.option("--t0-evol", help="GW-wind evolution time (default: 300 sec)", default=300.0)
+@click.option("--gw-scaling", help="Scaling of gw amplitudes (default: 1.0)", default=1.0)
 @click.option("--src-lat", help="Overwrite atmo_file latitude (default: None)", default=None, type=float)
 @click.option("--debug-fig", help="Output for figures to aid in debugging (default: None)", default=None, type=str)
 @click.option("--cpu-cnt", help="Number of CPUs in parallel analysis (default: None)", default=None, type=int)
 
-def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt, sample_cnt, alt_weight, sv_weight, k_max, fourier_cnt, t0_evol, src_lat, debug_fig, cpu_cnt):
+def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt, sample_cnt, alt_weight, sv_weight, k_max, fourier_cnt, t0_evol, gw_scaling, src_lat, debug_fig, cpu_cnt):
     '''
     \b
     Construct perturbed atmospheric samples using either EOF-based perturbations or gravity wave perturbation calculation based on Drob et al. (2013) method.
@@ -369,11 +370,11 @@ def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt
         click.echo("  k_max [1/km]: " + str(k_max))
         click.echo("  fourier_cnt: " + str(fourier_cnt))
         click.echo("  t0_evol: " + str(t0_evol))
+        click.echo("  gw_scaling: " + str(gw_scaling))
         if debug_fig is not None:
             click.echo("  debug_fig: " + str(debug_fig))
         if src_lat is not None:
             click.echo("  src_lat: " + str(src_lat))
-
         if cpu_cnt is not None:
             click.echo("  cpu_cnt: " + str(cpu_cnt))
             pl = Pool(cpu_cnt)
@@ -381,7 +382,7 @@ def perturb(atmo_file, output_path, method, eofs_path, std_dev, eof_max, eof_cnt
             pl = None
         click.echo("")
 
-        grav.perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, sample_cnt, t0_evol, src_lat=src_lat, debug_fig_out=debug_fig, pool=pl)
+        grav.perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, sample_cnt, t0_evol, gw_scaling=gw_scaling, src_lat=src_lat, debug_fig_out=debug_fig, pool=pl)
 
         if pl is not None:
             pl.terminate()
