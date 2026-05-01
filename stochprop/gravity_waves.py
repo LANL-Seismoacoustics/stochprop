@@ -45,6 +45,7 @@ except:
 from scipy.interpolate import interp1d
 from scipy.special import airy
 
+from . import utils as sp_utils
 
 # Progress bar methods
 def prog_prep(bar_length):
@@ -185,7 +186,7 @@ def single_fourier_component(k, l, om_intr, atmo_info, src_index, om_min, t0_evo
     u_spec = - w_spec * (k / kh**2) * m_vals
     v_spec = - w_spec * (l / kh**2) * m_vals
     eta_spec = (-1.0j / om_intr) * w_spec * (np.gradient(T0) / np.gradient(z0))
-    prog_increment(prog_step)
+    sp_utils.prog_increment(prog_step)
 
     if figure_out:
         cg_check = abs(src_cg) > cg_lim
@@ -335,13 +336,13 @@ def perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
     om = rn_gen.uniform(low=om_min, high=om_max, size=fourier_cnt)
 
     print('Computing Fourier components...\n\t', end='')
-    prog_prep(50)
+    sp_utils.prog_prep(50)
     if pool is not None:
-        args = [[k[n], l[n], om[n], [z, T, d, H, N, u, v], src_index, om_min, t0_evol, debug_fig_out, prog_set_step(n, fourier_cnt, 50)] for n in range(fourier_cnt)]
+        args = [[k[n], l[n], om[n], [z, T, d, H, N, u, v], src_index, om_min, t0_evol, debug_fig_out, sp_utils.prog_set_step(n, fourier_cnt, 50)] for n in range(fourier_cnt)]
         results = np.array(pool.map(single_fourier_component_wrapper, args))
     else:
-        results = np.array([single_fourier_component(k[n], l[n], om[n], [z, T, d, H, N, u, v], src_index, om_min, t0_evol, figure_out=debug_fig_out, prog_step=prog_set_step(n, fourier_cnt, 50)) for n in range(fourier_cnt)])
-    prog_close()
+        results = np.array([single_fourier_component(k[n], l[n], om[n], [z, T, d, H, N, u, v], src_index, om_min, t0_evol, figure_out=debug_fig_out, prog_step=sp_utils.prog_set_step(n, fourier_cnt, 50)) for n in range(fourier_cnt)])
+    sp_utils.prog_close()
 
     print('\nApplying perturbations to reference atmosphere...\n\t', end='')
     u_spec = results[:, 0, :]
@@ -352,7 +353,7 @@ def perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
     u_spec = u_spec * np.outer(k_perp, np.ones_like(z)) * scaling
     v_spec = v_spec * np.outer(k_perp, np.ones_like(z)) * scaling
     
-    prog_prep(50)
+    sp_utils.prog_prep(50)
     for m in range(smpl_cnt):
         # randomly phase and sum together
         rndm_phasing = np.outer(rn_gen.uniform(low=0.0, high=2.0 * np.pi, size=fourier_cnt), np.ones_like(z))
@@ -364,8 +365,8 @@ def perturb_atmo(atmo_file, output_path, k_max, fourier_cnt, smpl_cnt, t0_evol, 
 
         np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z, T, u_out, v_out, d, p)).T, 
             header=_perturb_header_txt(k_max, fourier_cnt, m, smpl_cnt, src_lat, t0_evol, ref_header), comments='')
-        prog_increment(prog_set_step(m, smpl_cnt, 50))
-    prog_close()
+        sp_utils.prog_increment(sp_utils.prog_set_step(m, smpl_cnt, 50))
+    sp_utils.prog_close()
 
 
 

@@ -1025,7 +1025,6 @@ class PathGeometryModel(object):
 
         """
 
-
         if "json" in model_file:  
             # Load new JSON format
             fit_params = json.load(gzip.open(model_file, 'rt'))

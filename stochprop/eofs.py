@@ -38,7 +38,7 @@ from scipy.optimize import bisect
 from scipy.stats import gaussian_kde
 from scipy.spatial.distance import squareform
 
-from . import utils as stochprop_utils
+from . import utils as sp_utils
 
 
 ################################
@@ -1059,48 +1059,56 @@ def sample_atmo(coeffs, eofs_path, output_path, eof_cnt=100, prof_cnt=250, coeff
     """
 
     print("-" * 50 + '\n' + "Generating atmosphere state samples from coefficient PDFs...")
-    print('\t' + "Loading mean profile info and eofs...")
+    print("  Loading mean profile info and eofs...")
     mean_atmo, c_eofs, u_eofs, v_eofs, _ = _load_eofs(eofs_path)
 
     # use kernel density estimates to define coefficient pdf's
     # and use the mean and span to define the limits for sampling
-    print('\t' + "Mapping coefficients onto PDF's using KDE...")
+    print("  Mapping coefficients onto PDF's using KDE...")
     kernels, lims = [0] * eof_cnt, np.empty((eof_cnt, 2))
     for eof_id in range(eof_cnt):
         kernels[eof_id] = gaussian_kde(coeffs[:, eof_id])
         lims[eof_id] = define_coeff_limits(coeffs[:, eof_id])
 
     # Generate prof_cnt random atmosphere samples
-    print('\t' + "Generating sample atmosphere profiles...")
+    print("  Generating sample atmosphere profiles...")
+    print(" " * 4, end='')
+    sp_utils.prog_prep(50)
+
     sampled_profs = np.empty((prof_cnt, mean_atmo.shape[0], mean_atmo.shape[1] + 1))
     sampled_profs[:, :, :5] = np.array([np.copy(mean_atmo)] * prof_cnt)
-
     for eof_id in range(eof_cnt):
-        print('\t\t' + "Sampling EOF coefficient for eof_id = " + str(eof_id) + "...")
         sampled_coeffs = draw_from_pdf(kernels[eof_id].pdf, lims[eof_id], size=prof_cnt)
-
         for pn in range(prof_cnt):
             sampled_profs[pn][:, 1] = sampled_profs[pn][:, 1] + sampled_coeffs[pn] * c_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 2] = sampled_profs[pn][:, 2] + sampled_coeffs[pn] * u_eofs[:, eof_id + 1]
             sampled_profs[pn][:, 3] = sampled_profs[pn][:, 3] + sampled_coeffs[pn] * v_eofs[:, eof_id + 1]
+        sp_utils.prog_increment(sp_utils.prog_set_step(eof_id, eof_cnt, 50))
+    sp_utils.prog_close()
 
-    print('\t' + "Converting sound speed profiles to temperature, density, and pressure...")
+    print("  Converting sound speed to temperature, density, and pressure...")
+    print(" " * 4, end='')
+    sp_utils.prog_prep(50)
+
     for pn in range(prof_cnt):
         # Define perturbed density (note units: c [m/s], dz [km], g [m/s^2], scale dz to [m])
         # p = \bar{p}(0) \exp{-g \gamma \int{1/c^2}
         # d = \gamma p/c^2
         # T = C^2 / R \gamma
-        temp = np.zeros_like(sampled_profs[pn][:, 0])
-        for j in range(1, len(temp)):
-            temp[j] = simpson(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0)
+        
+        temp = np.array([simpson(1.0 / sampled_profs[pn][:j, 1]**2, sampled_profs[pn][:j, 0] * 1000.0) for j in range(1, mean_atmo.shape[0])])
+        temp = np.insert(temp, 0, 0.0) 
+
         press = (sampled_profs[pn][0][4] * sampled_profs[pn][0][1]**2 / gam) * np.exp(-grav * gam * temp) * 10.0
 
         sampled_profs[pn][:, 5] = press
         sampled_profs[pn][:, 4] = gam * press / sampled_profs[pn][:, 1]**2 * 0.1
         sampled_profs[pn][:, 1] = sampled_profs[pn][:, 1]**2 / (gamR)
+        sp_utils.prog_increment(sp_utils.prog_set_step(pn, prof_cnt, 50))
+    sp_utils.prog_close()
 
     # save the individual profiles and the mean profile
-    print('\t' + "Writing sampled atmospheres to file...", '\n')
+    print("  Writing sampled atmospheres to file...", '\n')
     for pn in range(prof_cnt):
         np.savetxt(output_path + "-" + "%02d" % pn + ".met", sampled_profs[pn], header=_coeff_smpl_header_txt(coeff_label, eofs_path, eof_cnt, pn, prof_cnt), comments='')
 
@@ -1361,7 +1369,7 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
     scaling = stdev / (np.average(np.sqrt(c_perturb_all**2 + u_perturb_all**2 + v_perturb_all**2)))
 
     print('Applying perturbations to reference atmosphere...\n\t', end='')
-    stochprop_utils.prog_prep(50)
+    sp_utils.prog_prep(50)
     for m in range(sample_cnt):
         c_vals = np.sqrt((gam / 10.0) * (ref_atmo[:, 5][ref_mask] / ref_atmo[:, 4][ref_mask]))
         u_vals = np.copy(ref_atmo[:, 2][ref_mask])
@@ -1383,8 +1391,8 @@ def perturb_atmo(prof_path, eofs_path, output_path, stdev=10.0, eof_max=100, eof
         d_vals = gam * p_vals / c_vals**2 * 0.1      
         T_vals = c_vals**2 / gamR
         
-        stochprop_utils.prog_increment(stochprop_utils.prog_set_step(m, sample_cnt, 50))
+        sp_utils.prog_increment(sp_utils.prog_set_step(m, sample_cnt, 50))
         np.savetxt(output_path + "-" + str(m) + ".met", np.vstack((z_vals, T_vals, u_vals, v_vals, d_vals, p_vals)).T, 
                    header=_perturb_header_txt(eofs_path, eof_cnt, stdev, m, sample_cnt, ref_header), comments='')
-    stochprop_utils.prog_close()
+    sp_utils.prog_close()
     

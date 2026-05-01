@@ -191,11 +191,11 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 
     infraga_spec = find_spec('infraga')
     if infraga_spec is not None:
-        infraga_path = infraga_spec.submodule_search_locations[0]
-    else:
-        if not os.path.isfile(infraga_path + "infraga-sph"):
-            click.echo('\n' + "InfraGA path invalid.  Can't run ray tracing.")
-            return 
+        infraga_path = infraga_spec.submodule_search_locations[0] + "/bin/"
+
+    if not os.path.isfile(infraga_path + "infraga-sph"):
+        click.echo('\n' + "InfraGA path invalid.  Can't run ray tracing.")
+        return 
         
     propagation.run_infraga(atmo_dir, output_path + ".arrivals.dat", pattern=atmo_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
                     inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, infraga_path=infraga_path, 
