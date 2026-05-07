@@ -159,7 +159,11 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     infraga_params['inclinations'] = inclinations
     infraga_params['azimuths'] = azimuths
     infraga_params['bounces'] = bounces
-    infraga_params['z_grnd'] = z_grnd
+    if topo_file is not None:
+        infraga_params['topo_file'] = topo_file
+    else:
+        infraga_params['z_grnd'] = z_grnd
+
     infraga_params['rng_max'] = rng_max
     infraga_params['freq'] = freq
 
@@ -168,6 +172,8 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     pgm_params['rng_step'] = rng_step
     pgm_params['az_bin_cnt'] = az_bin_cnt
     pgm_params['az_bin_width'] = az_bin_width
+    pgm_params['min_turning_ht'] = min_turning_ht
+    pgm_params['station_centered'] = station_centered
 
     click.echo('\n' + "infraGA parameters:")
     for key in infraga_params.keys():
@@ -268,6 +274,38 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         ncpaprop_method = "epape"
         station_centered = True
 
+    ncpaprop_params = {}
+    ncpaprop_params['method'] = ncpaprop_method
+    ncpaprop_params['freq'] = freq
+    ncpaprop_params['azimuths'] = azimuths
+    ncpaprop_params['z_grnd'] = z_grnd
+    ncpaprop_params['rng_max'] = rng_max
+
+    click.echo('\n' + "NCPAprop parameters:")
+    for key in ncpaprop_params.keys():
+        if ncpaprop_params[key] is not None:
+            click.echo("  " + key + ": " + str(ncpaprop_params[key]))
+
+    if local_temp_dir is not None:
+        click.echo("  Local temporary directory: " + str(local_temp_dir))
+    if cpu_cnt is not None:
+        click.echo("  cpu_cnt: " + str(cpu_cnt))
+
+    tlm_params = {}
+    tlm_params['rng_lims'] = rng_lims
+    tlm_params['rng_cnt'] = rng_cnt
+    tlm_params['az_bin_cnt'] = az_bin_cnt
+    tlm_params['az_bin_width'] = az_bin_width
+    tlm_params['station_centered'] = station_centered
+    tlm_params['use_topo'] = use_topo
+    tlm_params['use_coherent_tl'] = use_coherent_tl
+
+    click.echo('\n' + "TLM parameters:")
+    for key in tlm_params.keys():
+        if tlm_params[key] is not None:
+            click.echo("  " + key + ": " + str(tlm_params[key]))
+    click.echo("")
+
     click.echo('\n' + "NCPAprop parameters:")
     if len(ncpaprop_path) > 0:
         click.echo("  NCPAprop path:", ncpaprop_path)
@@ -320,8 +358,8 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         output_suffix = ".pe"
         
     tlm = propagation.TLossModel()
-    tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz.tlm", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
-                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing)
+    tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
+                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing, ncpaprop_params=ncpaprop_params, tlm_params=tlm_params)
 
 
 @click.command('yld-hob', short_help="Compute statistics for atmospheric explosions")

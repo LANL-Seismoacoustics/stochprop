@@ -543,9 +543,8 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                         proc.communicate()
                         proc.wait()
 
-                print('\t' + "Combining transmission loss predictions...")
+                print('\t' + "Combining transmission loss predictions..." + '\n')
                 command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
-                print('\t' + command)
                 subprocess.call(command, shell=True)
 
 
@@ -1239,7 +1238,7 @@ class TLossModel(object):
         self.rng_vals = [0]
         self.tloss_vals = [0]
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear", station_centered=False):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear", station_centered=False, ncpaprop_params=None, tlm_params=None):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
@@ -1359,6 +1358,8 @@ class TLossModel(object):
                 if show_fits:
                     plt.close()
 
+            '''
+            # legacy output
             priors = [0] * 3
             priors[0] = output_rngs
             priors[1] = tloss_vals
@@ -1366,6 +1367,21 @@ class TLossModel(object):
 
             pickle.dump(priors, open(output_file, "wb"))
             print(' ')
+            '''
+
+            # updated JSON output
+            print("Writing transmission loss results into " + output_file + '\n')
+            tlm_output = {'ncpaprop_params' : ncpaprop_params,
+                          'tlm_params' : tlm_params,
+                          'rng_vals' : output_rngs,
+                          'tloss_vals' : tloss_vals,
+                          'pdf_vals' : pdf_vals}
+            
+            with gzip.open(output_file + ".tlm.json.gz", 'wt', encoding='UTF-8') as zipfile:
+                json.dump(tlm_output, zipfile, indent=4, cls=data_io.Infrapy_Encoder)
+                
+
+
 
     def load(self, model_file, verbose=True):
         """
@@ -1379,21 +1395,34 @@ class TLossModel(object):
 
         """
         
-        fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
-        self.rng_vals = fit_params[0]
-        self.tloss_vals = fit_params[1]
-        self._az_bin_cnt = len(fit_params[2])
+        if "json" in model_file:  
+            # Load new JSON format
+            fit_params = json.load(gzip.open(model_file, 'rt'))
+
+            self.rng_vals = np.array(fit_params['rng_vals'])
+            self.tloss_vals = np.array(fit_params['tloss_vals'])
+            self._az_bin_cnt = len(fit_params['pdf_vals'])
+        else:
+            fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+            self.rng_vals = fit_params[0]
+            self.tloss_vals = fit_params[1]
+
+            self._az_bin_cnt = len(fit_params[2])
 
         if verbose:
             print("Loading transmission loss model from " + model_file)
-            print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+            print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
             print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
 
         self.pdf_vals = [0] * self._az_bin_cnt
         self.pdf_fits = [0] * self._az_bin_cnt
 
         for az_index in range(self._az_bin_cnt):
-            self.pdf_vals[az_index] = fit_params[2][az_index]
+            if "json" in model_file:  
+                self.pdf_vals[az_index] = fit_params['pdf_vals'][az_index]
+            else:
+                self.pdf_vals[az_index] = fit_params[2][az_index]
+
             self.pdf_fits[az_index] = RectBivariateSpline(self.rng_vals, self.tloss_vals, self.pdf_vals[az_index])
 
     def eval(self, rng, tloss, az):
