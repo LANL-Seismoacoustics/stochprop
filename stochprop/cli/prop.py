@@ -100,8 +100,8 @@ def fit_celerity(data_file, cel_index, atten_index, atten_lim):
 @click.option("--atmo-pattern", help="Atmosphere file pattern (default: '*.met')", default="*.met")
 @click.option("--output-path", help="Path and prefix for PGM output", prompt="Path and prefix for PGM output")
 @click.option("--src-loc", help="Source location (lat, lon, alt)", prompt="Enter source location (lat, lon, alt)")
-@click.option("--inclinations", help="Inclination min, max, step (default: [2, 50, 2]", default = "[2.0, 50.0, 2.0]")
-@click.option("--azimuths", help="Azimuth min, max, and step (default: [0, 360, 6]", default = "[0.0, 360.0, 6.0]")
+@click.option("--inclinations", help="Inclination min, max, step (default: '2, 50, 2'", default = "2.0, 50.0, 2.0")
+@click.option("--azimuths", help="Azimuth min, max, and step (default: '0, 360, 6'", default = "0.0, 360.0, 6.0")
 @click.option("--bounces", help="Number of ground bounces for paths (default: 25)", default=25)
 @click.option("--z-grnd", help="Ground elevation (default: 0.0 km)", default=0.0)
 @click.option("--rng-max", help="Maximum range (default: 1000.0 km)", default=1000.0)
@@ -154,23 +154,41 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 
     click.echo("  Model output path: " + output_path)
 
-    click.echo('\n' + "infraGA/GeoAc parameters:")
-    click.echo("  Source location: " + src_loc)
-    click.echo("  Inclination angles (min, max, step): " + inclinations)
-    click.echo("  Azimuth angles (min, max, step): " + azimuths)
-    click.echo("  Bounces: " + str(bounces))
-    click.echo("  Ground elevation: " + str(z_grnd))
-    click.echo("  Range max: " + str(rng_max))
-    click.echo("  Frequency: " + str(freq))
-    click.echo("  Local temporary directory: " + str(local_temp_dir))
-    if cpu_cnt is not None:
-        click.echo("  CPU count: " + str(cpu_cnt))
+    infraga_params = {}
+    infraga_params['src_loc'] = src_loc
+    infraga_params['inclinations'] = inclinations
+    infraga_params['azimuths'] = azimuths
+    infraga_params['bounces'] = bounces
+    if topo_file is not None:
+        infraga_params['topo_file'] = topo_file
+    else:
+        infraga_params['z_grnd'] = z_grnd
 
-    click.echo('\n' + "Path Geometry Model (PGM) parameters:")
-    click.echo("  Range window: " + str(rng_window))
-    click.echo("  Range step: " + str(rng_step))
-    click.echo("  Azimuth bin count: " + str(az_bin_cnt))
-    click.echo("  Azimuth bin width: " + str(az_bin_width))
+    infraga_params['rng_max'] = rng_max
+    infraga_params['freq'] = freq
+
+    pgm_params = {}
+    pgm_params['rng_window'] = rng_window
+    pgm_params['rng_step'] = rng_step
+    pgm_params['az_bin_cnt'] = az_bin_cnt
+    pgm_params['az_bin_width'] = az_bin_width
+    pgm_params['min_turning_ht'] = min_turning_ht
+    pgm_params['station_centered'] = station_centered
+
+    click.echo('\n' + "infraGA parameters:")
+    for key in infraga_params.keys():
+        if infraga_params[key] is not None:
+            click.echo("  " + key + ": " + str(infraga_params[key]))
+
+    if local_temp_dir is not None:
+        click.echo("  Local temporary directory: " + str(local_temp_dir))
+    if cpu_cnt is not None:
+        click.echo("  cpu_cnt: " + str(cpu_cnt))
+
+    click.echo('\n' + "PGM parameters:")
+    for key in pgm_params.keys():
+        if pgm_params[key] is not None:
+            click.echo("  " + key + ": " + str(pgm_params[key]))
     click.echo("")
 
     src_loc = [float(val) for val in src_loc.strip(' ()[]').split(',')]
@@ -179,11 +197,11 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
 
     infraga_spec = find_spec('infraga')
     if infraga_spec is not None:
-        infraga_path = infraga_spec.submodule_search_locations[0]
-    else:
-        if not os.path.isfile(infraga_path + "infraga-sph"):
-            click.echo('\n' + "InfraGA path invalid.  Can't run ray tracing.")
-            return 
+        infraga_path = infraga_spec.submodule_search_locations[0] + "/bin/"
+
+    if not os.path.isfile(infraga_path + "infraga-sph"):
+        click.echo('\n' + "InfraGA path invalid.  Can't run ray tracing.")
+        return 
         
     propagation.run_infraga(atmo_dir, output_path + ".arrivals.dat", pattern=atmo_pattern, cpu_cnt=cpu_cnt, geom="sph", bounces=bounces, 
                     inclinations=inclinations, azimuths=azimuths, freq=freq, z_grnd=z_grnd, rng_max=rng_max, src_loc=src_loc, infraga_path=infraga_path, 
@@ -192,8 +210,8 @@ def build_pgm(atmo_dir, atmo_pattern, output_path, src_loc, inclinations, azimut
     src_loc[2] = max(src_loc[2], z_grnd)
 
     pgm = propagation.PathGeometryModel()
-    pgm.build(output_path + ".arrivals.dat", output_path + ".pgm", geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step, rng_max=rng_max,
-                az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width, min_turning_ht=min_turning_ht, station_centered=station_centered)
+    pgm.build(output_path + ".arrivals.dat", output_path, geom="sph", src_loc=src_loc, rng_width=rng_window, rng_spacing=rng_step, rng_max=rng_max,
+                az_bin_cnt=az_bin_cnt, az_bin_wdth=az_bin_width, min_turning_ht=min_turning_ht, station_centered=station_centered, infraga_params=infraga_params, pgm_params=pgm_params)
 
 
 
@@ -256,10 +274,43 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         ncpaprop_method = "epape"
         station_centered = True
 
+    ncpaprop_params = {}
+    ncpaprop_params['method'] = ncpaprop_method
+    ncpaprop_params['freq'] = freq
+    ncpaprop_params['azimuths'] = azimuths
+    ncpaprop_params['z_grnd'] = z_grnd
+    ncpaprop_params['rng_max'] = rng_max
+
+    click.echo('\n' + "NCPAprop parameters:")
+    for key in ncpaprop_params.keys():
+        if ncpaprop_params[key] is not None:
+            click.echo("  " + key + ": " + str(ncpaprop_params[key]))
+
+    if local_temp_dir is not None:
+        click.echo("  Local temporary directory: " + str(local_temp_dir))
+    if cpu_cnt is not None:
+        click.echo("  cpu_cnt: " + str(cpu_cnt))
+
+    tlm_params = {}
+    tlm_params['rng_lims'] = rng_lims
+    tlm_params['rng_cnt'] = rng_cnt
+    tlm_params['rng_spacing'] = rng_spacing
+    tlm_params['az_bin_cnt'] = az_bin_cnt
+    tlm_params['az_bin_width'] = az_bin_width
+    tlm_params['use_coherent_tl'] = use_coherent_tl
+    tlm_params['use_topo'] = use_topo
+    tlm_params['station_centered'] = station_centered
+
+    click.echo('\n' + "TLM parameters:")
+    for key in tlm_params.keys():
+        if tlm_params[key] is not None:
+            click.echo("  " + key + ": " + str(tlm_params[key]))
+    click.echo("")
+
     click.echo('\n' + "NCPAprop parameters:")
     if len(ncpaprop_path) > 0:
         click.echo("  NCPAprop path:", ncpaprop_path)
-    click.echo("NCPAprop method: " + ncpaprop_method)
+    click.echo("  NCPAprop method: " + ncpaprop_method)
     click.echo("  Frequency: " + str(freq))
     click.echo("  Azimuth angles (min, max, step): " + azimuths)
     click.echo("  Ground elevation: " + str(z_grnd))
@@ -308,8 +359,8 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
         output_suffix = ".pe"
         
     tlm = propagation.TLossModel()
-    tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz.tlm", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
-                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing)
+    tlm.build(output_path + "_%.3f" %freq + "Hz" + output_suffix, output_path + "_%.3f" %freq + "Hz", use_coh=use_coherent_tl, az_bin_cnt=az_bin_cnt,
+                az_bin_wdth=az_bin_width, rng_lims=rng_lims, rng_cnt=rng_cnt, rng_smpls=rng_spacing, ncpaprop_params=ncpaprop_params, tlm_params=tlm_params)
 
 
 @click.command('yld-hob', short_help="Compute statistics for atmospheric explosions")

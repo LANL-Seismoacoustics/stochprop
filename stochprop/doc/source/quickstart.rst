@@ -88,16 +88,16 @@ The information output to screen when running :code:`ess-ratio` methods summariz
         Computing effective sound speed ratio for each day-of-year...
 
         Eastward waveguide changes...
-            Waveguide dissipates: April 10  (yday: 101, week: 14)
-            Waveguide forms: April 11  (yday: 102, week: 15)
-            Waveguide dissipates: April 12  (yday: 103, week: 15)
-            Waveguide forms: September 23  (yday: 267, week: 38)
+            Waveguide dissipates: April 11  (yday: 101, week: 15)
+            Waveguide forms: April 12  (yday: 102, week: 15)
+            Waveguide dissipates: April 13  (yday: 103, week: 15)
+            Waveguide forms: September 24  (yday: 267, week: 38)
 
         Westward waveguide changes...
-            Waveguide forms: May 02  (yday: 123, week: 18)
-            Waveguide dissipates: May 04  (yday: 125, week: 18)
-            Waveguide forms: May 11  (yday: 132, week: 19)
-            Waveguide dissipates: August 29  (yday: 242, week: 35)
+            Waveguide forms: May 03  (yday: 123, week: 18)
+            Waveguide dissipates: May 05  (yday: 125, week: 18)
+            Waveguide forms: May 12  (yday: 132, week: 19)
+            Waveguide dissipates: August 30  (yday: 242, week: 35)
 
 There is some excess variability for this data set that causes multiple instances of the middle atmosphere waveguide forming and dissipating, but the general result from this analysis is that the eastward waveguide forms in late September and lasts until early April (weeks 38 -- 15) and the westward waveguide forms in early May and lasts until the end of August (weeks 19 - 35).  These seasonal trends will be utilized in constructing atmospheric statistics.
 
@@ -397,11 +397,12 @@ The resulting overlap can be analyzed using hierarchical clustering to identify 
 
 
     .. figure:: _static/_images/example_all-seasonality.png
-        :width: 300px
+        :width: 450px
         :align: center
         :figclass: align-center
 
-This identifies seasonal trends such that summer extends from week 20 to 33 and winter covers weeks 38 -- 52 and 1 -- 14.  For comparison, the :code:`stochprop plot ess-ratio` analysis above identified similar seasonal trends though with a slightly longer summer (weeks 19 - 35).  While this additional analysis isn't overtly needed for this mid-latitude location, analysis of seasonal trends near the equatorial and polar regions is often elucidated by this EOF coefficient overlap analysis.
+This identifies seasonal trends such that summer extends from week 20 to 33 and winter covers weeks 38 -- 52 and 1 -- 14.  For comparison, the :code:`stochprop plot ess-ratio` analysis above identified similar seasonal trends though with a slightly longer summer (weeks 20 - 35).  While this additional analysis isn't overtly needed for this mid-latitude location, analysis of seasonal trends near the equatorial and polar regions is often elucidated by this EOF coefficient overlap analysis.
+
 
 
 
@@ -539,7 +540,7 @@ Once constructed, the method can be visualized using the :code:`prop-model` meth
 
     .. code:: none
 
-        stochprop plot prop-model --model-file prop/winter/winter.pgm
+        stochprop plot prop-model --model-file prop/winter/winter.pgm.json.gz
 
     .. figure:: _static/_images/US_RM-az_dev.png
         :width: 500px
@@ -593,8 +594,8 @@ As with the PGM construction, a suite of atmospheric specifications is needed as
 
     .. code:: none
 
-        stochprop prop build-tlm --atmo-dir samples/winter/  \
-            --output-path prop/winter/winter --freq 0.2  --cpu-cnt 8
+        stochprop prop build-tlm --atmo-dir samples/winter/ --output-path prop/winter/winter \
+            --src-loc '39.1026, -84.5123, 0.0' --freq 0.2  --cpu-cnt 8
 
 A note about multi-threading: unlike the multi-threading in infraGA/GeoAc that's built into the software, multi-threading the NCPAprop methods is done via Python's *subprocess* library to simultaneously compute propagation effects for multiple atmospheric specifications at the same time.  Because of this, the maximum number of CPUs useful in such analysis is limited by the number of atmospheric specifications in the suite (for ray tracing, acceleration is limited by the number of unique inclination angles at each azimuth since that's how infraGA/GeoAc is parallelized).  
 
@@ -602,10 +603,10 @@ Once computed, the model is saved into a file named using the specified output p
 
     .. code:: none
 
-        stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm
+        stochprop plot prop-model --model-file prop/winter/winter_0.200Hz.tlm.json.gz
 
-    .. figure:: _static/_images/winter_0.359_tloss.png
-        :width: 400px
+    .. figure:: _static/_images/winter_0.200Hz_tloss.png
+        :width: 500px
         :align: center
         :figclass: align-center
 
@@ -660,26 +661,128 @@ It should be noted that all transmission loss models should use the same frequen
         :align: center
         :figclass: align-center
 
-.. 
-    COMMENTED OUT SECTION
-    --------------------------------
-    Perturbing Atmospheric Structure
-    --------------------------------
+---------------------------------------
+Atmospheric Ensembles via Perturbations
+---------------------------------------
 
-    The current focus of ongoing *stochprop* development is investigation of the EOF methods for atmospheric perturbation studies to quantify propagation uncertainty.  In the prototype function below, a reference atmospheric specification is perturbed using a set of EOFs to produce a suite of samples characterized by a specified standard deviation (10 m/s in this case).
+In addiiton to analysis of atmospheric trends and construction of infrasonic propagation statistics, *stochprop* also includes in-development methods to construct ensembles of atmospheric specifications perturbed from some reference atmospheric state.  Such ensembles are useful when investigating propagation effects of a specific event when the atmospheric state is availalble but has some level uncertainty.  In such a case, construction of an ensemble and running analysis through each can be used to quantify uncertainty in analysis results as in Blom et al. (2025).  
 
-        .. code:: none
+Ensembles can be constructed using either EOF-based perturbations or a simplistic gravity (buoyancy) wave framework.  Both perturbation methods are accessed using :code:`stochprop stats perturb` which has usage summarized as:
 
-            stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --sample-path samples/perturb/test --std-dev 10.0
+    .. code:: none
 
-    The :code:`atmo-ensemble` visualization method can be used to visualize the resulting atmospheric specification set.
+        Usage: stochprop stats perturb [OPTIONS]
 
-        .. code:: none
+        Construct perturbed atmospheric samples using either EOF-based perturbations or gravity wave perturbation calculation based on Drob et al. (2013) method.
+        
+        stochprop stats perturb
+        -----------------------
+        
+        Example Usage:
+            stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path test_eof --eofs-path eofs/example_winter 
+            stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path test_gw
 
-            stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern '*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
+        Options:
+        --atmo-file TEXT       Reference atmospheric specification (required)
+        --output-path TEXT     Output prefix (required)
+        --sample-cnt INTEGER   Number of perturbed samples (default: 25)
+        --method TEXT          Perturbation method ('eof' or 'gw')
+        --eofs-path TEXT       Path to EOF info (required)
+        --eof-max INTEGER      Maximum EOF coefficient to use (default: 50)
+        --eof-cnt INTEGER      Number of EOFs to use (default: 50)
+        --std-dev FLOAT        Standard deviation (default: 10 m/s)
+        --alt-weight FLOAT     Altitude weighting power (default: 2.0)
+        --sv-weight FLOAT      Sing. value weighting power (default: 0.25)
+        --k-max FLOAT          Gravity wave max horizontal wavenumber (default: 0.4)
+        --fourier-cnt INTEGER  Gravity wave Fourier component count (default: 240)
+        --src-lat FLOAT        Overwrite atmo_file latitude (default: None)
+        --debug-fig TEXT       Output for figures to aid in debugging (default:
+                                None)
+        --cpu-cnt INTEGER      Number of CPUs in parallel analysis (default: None)
+        -h, --help             Show this message and exit.
 
-        .. figure:: _static/_images/perturb1.png
-            :width: 400px
-            :align: center
-            :figclass: align-center
+In both EOF-based an gravity wave perturbations, a reference atmosphere is needed, :code:`--atmo-file`, as well as an output path and number of atmospheres to construct for the ensemble, :code:`--output-path` and :code:`--sample-cnt`, respectively.
 
+**EOF-based Perturbations**
+
+EOF-based perturbations produce variations through the entire atmosphere are quantify general uncertainty in the atmosphere state.  The overall ensemble standard deiviation is defined by :code:`--std-dev`, which defines the combined standard deviation of the horizontal winds and sound speed.  In addition, the singular value and mean altitude of each EOF control an additional weighting that can be tuned through :code:`--sv-weight` and :code:`--alt-weight`, respectively.  From a reference EOF vector set, the ensemble can be tuned by using a maximum index EOF as well as a count.  This allows additional randomization in the ensemble construction (e.g., :code:`--eof-max 50` and :code:`--eof-cnt 40` will select a random 40 EOFs out of the first 50 computed in the set to perform the perturbations).  
+
+The EOF-based methods can be run using (the 'samples/perturb/' directory might need to be made to run this):
+
+    .. code:: none
+
+        mkdir samples/perturb 
+
+        stochprop stats perturb --method eof --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --eofs-path eofs/example_winter --output-path samples/perturb/eof-test
+
+The :code:`atmo-ensemble` visualization method can be used to visualize the resulting atmospheric specification set.
+
+    .. code:: none
+
+        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern 'eof-test*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
+
+    .. figure:: _static/_images/perturb1.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
+
+**Gravity (Buoyancy) Wave Perturbations**
+
+In additional to general uncertainty in the atmosphere state, fine-scale variations in the atmosphere are common and dominantly due to gravity (buoyancy) dynamics of the atmosphere.  Such perturbations are generated by various mchanisms in the lower atmopshere, and increase in amplitude and wavelength as they propagate upward.  More robust, spatially and temporally varying gravity wave fields can be derived, but for applying physically realistic perturbations to atmospheric states in order to account for gravity wave impacts on infrasound, a relatively simple framework is used here to perturb individual, stratified atmospheric states.
+
+Gravity wave perturbations are controlled by a maximum horizontal wavenumber ,:code:`--k-max`, as well as as number of Fourier components, :code:`--fourier-cnt`, randomly generated to compute the gravity wave field.  The default :code:`--k-max` value is 0.4 :math:`\text{km}^{-1}`, but values between 0.25 and 0.5 can be used to adjust the spectral content of the gravity wave field.  The method defaults to 240 Fourier components for approximating the integration, and this number can be adjusted as well.  Larger number of Fourier components will more thoroughly sample possible waves structures, but take longer to compute.  The calculation of each Fourier component can be completed individually, so the analysis can be accelerated using multithreading and a :code:`--cpu-cnt` can be specified to do so.
+
+    .. code:: none
+
+        stochprop stats perturb --method gw --atmo-file profs/g2stxt_2011010118_39.1026_-84.5123.dat --output-path samples/perturb/gw-test --cpu-cnt 8
+
+Again, the resulting ensemble can be visualized using the built-in functionality,
+
+    .. code:: none
+
+        stochprop plot atmo-ensemble --atmo-dir samples/perturb/ --atmo-pattern 'gw-test*.met' --ref-atmo profs/g2stxt_2011010118_39.1026_-84.5123.dat
+
+    .. figure:: _static/_images/gw_perturbations.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
+
+**Building Propagation Statistics from Perturbation Ensembles**
+
+The ensemble creation methods here are useful in analysis of specific events when a G2S atmospheric specification is available, but uncertainty must be considered in propagation of infrasonic signals.  A ray-based back-projection methods (TRIBL) was developed by Blom et al. (2025) and uses such ensembles; however, a fully developed method isn't available for characterization and yield estimation, so TLMs must be computed using the method here for now.  Also, while pre-computed seasonal propagation statistics are useful to have for rapid analysis, propagation statistics using event-specific, perturbation-based ensembles will have lower variability and uncertainty.
+
+From the above EOF-based ensemble, a PGM can be constructed using,
+
+    .. code:: none
+
+        mkdir prop/perturb 
+
+        stochprop prop build-pgm --atmo-dir samples/perturb/ --atmo-pattern 'eof-test*.met' --output-path prop/perturb/eof-test \
+            --src-loc '39.1026, -84.5123, 0.0' --verbose True --cpu-cnt 8 --local-temp-dir samples/perturb/arrivals
+
+Plotting the predicted azimuth deviation and celerity-range statistics, it's evident that uncertainty is reduced compared with the re-sampled seasonal model above for winter.
+
+    .. figure:: _static/_images/eof-perturb_az-dev.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
+
+    .. figure:: _static/_images/eof-perturb_cel-rng.png
+        :width: 600px
+        :align: center
+        :figclass: align-center
+
+
+Transmission loss statistics can be computed similarly,
+
+    .. code:: none
+
+        stochprop prop build-tlm --atmo-dir samples/perturb/ --atmo-pattern 'eof-test*.met' --output-path prop/perturb/eof-test \
+            --src-loc '39.1026, -84.5123, 0.0' --freq 0.2  --cpu-cnt 8
+
+And uncertainty is reduced compared with the above seaonal model resul.
+
+    .. figure:: _static/_images/eof-perturb_0.200Hz_tloss.png
+        :width: 600px
+        :align: center
+        :figclass: align-center

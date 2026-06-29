@@ -12,6 +12,8 @@ import pickle
 import itertools
 import subprocess
 import tempfile
+import json
+import gzip
 
 import configparser as cnfg
 import numpy as np
@@ -26,7 +28,6 @@ try:
     from scipy.integrate import simpson
 except:
     from scipy.integrate import simps as simpson
-
 
 from scipy.interpolate import interp1d, RectBivariateSpline
 from scipy.stats import norm, gaussian_kde
@@ -44,6 +45,11 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import cartopy.crs as crs
 import cartopy.feature as cfeature
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+
+from infrapy.utils import data_io
+
+from . import utils as stochprop_utils
+
 
 sph_proj = Geod(ellps='sphere')
 
@@ -537,9 +543,8 @@ def run_ncpaprop(ncpaprop_method, profs_path, results_path, pattern="*.met", azi
                         proc.communicate()
                         proc.wait()
 
-                print('\t' + "Combining transmission loss predictions...")
+                print('\t' + "Combining transmission loss predictions..." + '\n')
                 command = "cat " + tmpdirname + "/*_%.3f" % freq + "Hz*" + output_suffix + " > " + results_path + output_suffix
-                print('\t' + command)
                 subprocess.call(command, shell=True)
 
 
@@ -720,7 +725,7 @@ class PathGeometryModel(object):
                     vr[mask] = self.az_dev_std[n_az](rng_eval[mask])
             return vr
 
-    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, rng_max=1000.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False):
+    def build(self, arrivals_file, output_file, show_fits=False, rng_width=50.0, rng_spacing=10.0, rng_max=1000.0, geom="3d", src_loc=[0.0, 0.0, 0.0], min_turning_ht=0.0, az_bin_cnt=16, az_bin_wdth=30.0, station_centered=False, infraga_params=None, pgm_params=None):
         """
             Construct propagation statistics from a ray tracing arrival file (concatenated from
             multiple runs most likely) and output a path geometry model
@@ -754,8 +759,8 @@ class PathGeometryModel(object):
                 Flag to build station-centered model via back projection ray tracing (needed for inclusion of terrain)
                 
         """
-        if os.path.isfile(output_file):
-            print(output_file + " already exists  --->  Skipping path geometry model construction...")
+        if os.path.isfile(output_file + ".pgm.json.gz"):
+            print(output_file + ".pgm.json.gz already exists  --->  Skipping path geometry model construction...")
         else:
             if not ((geom == "3d") or (geom == "sph")):
                 msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
@@ -813,11 +818,10 @@ class PathGeometryModel(object):
                 az_dev[az_dev > 180.0] -= 360.0
                 az_dev[az_dev < -180.0] += 360.0
 
-                print("phi lims:", min(phi), max(phi))
-                print("az lims:", min(az), max(az))
-                print("az_dev lims:", min(az_dev), max(az_dev))
-
                 # Cycle through azimuth bins creating fit
+                print('\t', end='')
+                stochprop_utils.prog_prep(50)
+
                 az_wts = np.empty(self._az_bin_cnt)
                 for n_az in range(self._az_bin_cnt):
                     if n_az == 0:
@@ -965,21 +969,21 @@ class PathGeometryModel(object):
                             window1.remove()
                             window2.remove()
 
-                    rng_wts[rng_wts > 4.0 / len(rng_wts)] = 4.0 / len(rng_wts)
-                    print("rng_wts:", rng_wts)
+                    # rng_wts[rng_wts > 4.0 / len(rng_wts)] = 4.0 / len(rng_wts)
 
                     for nr in range(rng_cnt):
                         rcel_wts[n_az][nr] *= rng_wts[nr] / np.sum(rng_wts)
 
                     plt.close('all')
-
-                
+                    stochprop_utils.prog_increment(stochprop_utils.prog_set_step(n_az, self._az_bin_cnt, 50))
+                stochprop_utils.prog_close()
+    
                 # Normalize weights by total arrivals at all azimuths
-                print("az_wts:", az_wts)
-
                 for n_az in range(self._az_bin_cnt):
                     rcel_wts[n_az] *= az_wts[n_az] / np.sum(az_wts)
 
+                '''
+                # legacy output...
                 priors = [0] * 6
                 priors[0] = rng_bins
                 priors[1] = az_dev_mns
@@ -988,7 +992,23 @@ class PathGeometryModel(object):
                 priors[4] = rcel_std
                 priors[5] = rcel_wts
 
-                pickle.dump(priors, open(output_file, "wb"))
+                pickle.dump(priors, open(output_file + ".pgm", "wb"))
+                '''
+                
+                # updated JSON output
+                print("Writing beamforming and detection results into " + output_file + ".pgm.json.gz" + '\n')
+                pgm_output = {'infraga_params' : infraga_params,
+                              'pgm_params' : pgm_params,
+                              'rng_bins' : rng_bins,
+                              'az_dev_mns' : az_dev_mns,
+                              'az_dev_std' : az_dev_std,
+                              'rcel_mns' : rcel_mns,
+                              'rcel_std' : rcel_std,
+                              'rcel_wts' : rcel_wts}
+                
+                with gzip.open(output_file + ".pgm.json.gz", 'wt', encoding='UTF-8') as zipfile:
+                    json.dump(pgm_output, zipfile, indent=4, cls=data_io.Infrapy_Encoder)
+
 
     def load(self, model_file, smooth=False):
         """
@@ -1004,9 +1024,30 @@ class PathGeometryModel(object):
 
         """
 
-        fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
-        self._az_bin_cnt = len(fit_params[1])
-        self._rng_max = max(fit_params[0])
+        if "json" in model_file:  
+            # Load new JSON format
+            fit_params = json.load(gzip.open(model_file, 'rt'))
+
+            rng_bins = np.array(fit_params['rng_bins'])
+            az_dev_mns = np.array(fit_params['az_dev_mns'])
+            az_dev_std = np.array(fit_params['az_dev_std'])
+            rcel_mns = np.array(fit_params['rcel_mns'])
+            rcel_std = np.array(fit_params['rcel_std'])
+            rcel_wts = np.array(fit_params['rcel_wts'])
+
+        else:
+            # Load older pickle format
+            fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+
+            rng_bins = np.array(fit_params[0])
+            az_dev_mns = np.array(fit_params[1])
+            az_dev_std = np.array(fit_params[2])
+            rcel_mns = np.array(fit_params[3])
+            rcel_std = np.array(fit_params[4])
+            rcel_wts = np.array(fit_params[5])
+  
+        self._az_bin_cnt = len(az_dev_mns)
+        self._rng_max = max(rng_bins)
 
         print("Loading path geometry model from " + model_file)
         print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
@@ -1026,30 +1067,31 @@ class PathGeometryModel(object):
 
         if smooth:
             for n_az in range(self._az_bin_cnt):
-                self.az_dev_mns[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[1][n_az], 5, 3), kind='cubic')
-                self.az_dev_std[n_az] = interp1d(fit_params[0], savgol_filter(fit_params[2][n_az], 5, 3), kind='cubic')
+                self.az_dev_mns[n_az] = interp1d(rng_bins, savgol_filter(az_dev_mns[n_az], 5, 3), kind='cubic')
+                self.az_dev_std[n_az] = interp1d(rng_bins, savgol_filter(az_dev_std[n_az], 5, 3), kind='cubic')
 
                 self._rcel_mns[n_az] = [0] * 3
                 self._rcel_std[n_az] = [0] * 3
                 self._rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self._rcel_mns[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[3][n_az][:, j], 5, 3), kind='cubic')
-                    self._rcel_std[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[4][n_az][:, j], 5, 3), kind='cubic')
-                    self._rcel_wts[n_az][j] = interp1d(fit_params[0], savgol_filter(fit_params[5][n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_mns[n_az][j] = interp1d(rng_bins, savgol_filter(rcel_mns[n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_std[n_az][j] = interp1d(rng_bins, savgol_filter(rcel_std[n_az][:, j], 5, 3), kind='cubic')
+                    self._rcel_wts[n_az][j] = interp1d(rng_bins, savgol_filter(rcel_wts[n_az][:, j], 5, 3), kind='cubic')
         else:
             for n_az in range(self._az_bin_cnt):
-                self.az_dev_mns[n_az] = interp1d(fit_params[0], fit_params[1][n_az], kind='cubic')
-                self.az_dev_std[n_az] = interp1d(fit_params[0], fit_params[2][n_az], kind='cubic')
+                self.az_dev_mns[n_az] = interp1d(rng_bins, az_dev_mns[n_az], kind='cubic')
+                self.az_dev_std[n_az] = interp1d(rng_bins, az_dev_std[n_az], kind='cubic')
 
                 self._rcel_mns[n_az] = [0] * 3
                 self._rcel_std[n_az] = [0] * 3
                 self._rcel_wts[n_az] = [0] * 3
 
                 for j in range(3):
-                    self._rcel_mns[n_az][j] = interp1d(fit_params[0], fit_params[3][n_az][:, j], kind='cubic')
-                    self._rcel_std[n_az][j] = interp1d(fit_params[0], fit_params[4][n_az][:, j], kind='cubic')
-                    self._rcel_wts[n_az][j] = interp1d(fit_params[0], fit_params[5][n_az][:, j], kind='cubic')
+                    self._rcel_mns[n_az][j] = interp1d(rng_bins, rcel_mns[n_az][:, j], kind='cubic')
+                    self._rcel_std[n_az][j] = interp1d(rng_bins, rcel_std[n_az][:, j], kind='cubic')
+                    self._rcel_wts[n_az][j] = interp1d(rng_bins, rcel_wts[n_az][:, j], kind='cubic')
+
 
     def display(self, file_id=None, subtitle=None, show_colorbar=True, hold_fig=False, cmap_max=None):
         """
@@ -1196,7 +1238,7 @@ class TLossModel(object):
         self.rng_vals = [0]
         self.tloss_vals = [0]
 
-    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear", station_centered=False):
+    def build(self, tloss_file, output_file, show_fits=False, use_coh=False, az_bin_cnt=16, az_bin_wdth=30.0, rng_lims=[1.0, 1000.0], rng_cnt=100, rng_smpls="linear", station_centered=False, ncpaprop_params=None, tlm_params=None):
         """
             Construct propagation statistics from a NCPAprop modess or pape file (concatenated from
             multiple runs most likely) and output a transmission loss model
@@ -1217,8 +1259,8 @@ class TLossModel(object):
                 Azimuth bin width in degrees for analysis
         """
 
-        if os.path.isfile(output_file):
-            print(output_file + " already exists  --->  Skipping transmission loss model construction...")
+        if os.path.isfile(output_file + ".tlm.json.gz"):
+            print(output_file + ".tlm.json.gz already exists  --->  Skipping transmission loss model construction...")
         else:
             print('Builing transmission loss models from file:', tloss_file)
 
@@ -1316,6 +1358,8 @@ class TLossModel(object):
                 if show_fits:
                     plt.close()
 
+            '''
+            # legacy output
             priors = [0] * 3
             priors[0] = output_rngs
             priors[1] = tloss_vals
@@ -1323,6 +1367,21 @@ class TLossModel(object):
 
             pickle.dump(priors, open(output_file, "wb"))
             print(' ')
+            '''
+
+            # updated JSON output
+            print("Writing transmission loss results into " + output_file + '\n')
+            tlm_output = {'ncpaprop_params' : ncpaprop_params,
+                          'tlm_params' : tlm_params,
+                          'rng_vals' : output_rngs,
+                          'tloss_vals' : tloss_vals,
+                          'pdf_vals' : pdf_vals}
+            
+            with gzip.open(output_file + ".tlm.json.gz", 'wt', encoding='UTF-8') as zipfile:
+                json.dump(tlm_output, zipfile, indent=4, cls=data_io.Infrapy_Encoder)
+                
+
+
 
     def load(self, model_file, verbose=True):
         """
@@ -1336,21 +1395,34 @@ class TLossModel(object):
 
         """
         
-        fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
-        self.rng_vals = fit_params[0]
-        self.tloss_vals = fit_params[1]
-        self._az_bin_cnt = len(fit_params[2])
+        if "json" in model_file:  
+            # Load new JSON format
+            fit_params = json.load(gzip.open(model_file, 'rt'))
+
+            self.rng_vals = np.array(fit_params['rng_vals'])
+            self.tloss_vals = np.array(fit_params['tloss_vals'])
+            self._az_bin_cnt = len(fit_params['pdf_vals'])
+        else:
+            fit_params = pickle.load(open(model_file, "rb"), encoding='latin1')
+            self.rng_vals = fit_params[0]
+            self.tloss_vals = fit_params[1]
+
+            self._az_bin_cnt = len(fit_params[2])
 
         if verbose:
             print("Loading transmission loss model from " + model_file)
-            print('\t' + "Azimuth bin cound: " + str(self._az_bin_cnt))
+            print('\t' + "Azimuth bin count: " + str(self._az_bin_cnt))
             print('\t' + "Maximum range: " + str(max(self.rng_vals)) + '\n')
 
         self.pdf_vals = [0] * self._az_bin_cnt
         self.pdf_fits = [0] * self._az_bin_cnt
 
         for az_index in range(self._az_bin_cnt):
-            self.pdf_vals[az_index] = fit_params[2][az_index]
+            if "json" in model_file:  
+                self.pdf_vals[az_index] = fit_params['pdf_vals'][az_index]
+            else:
+                self.pdf_vals[az_index] = fit_params[2][az_index]
+
             self.pdf_fits[az_index] = RectBivariateSpline(self.rng_vals, self.tloss_vals, self.pdf_vals[az_index])
 
     def eval(self, rng, tloss, az):

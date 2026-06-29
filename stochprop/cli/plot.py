@@ -231,6 +231,7 @@ def atmo_ensemble(atmo_dir, atmo_pattern, atmo_format, month_selection, week_sel
     click.echo("")
     
     A, z0 = sp_eofs.build_atmo_matrix(atmo_dir, atmo_pattern, prof_format=atmo_format, months=months_list, weeks=weeks_list, years=years_list, max_alt=max_alt)
+    plot_cnt = min(plot_cnt, A.shape[0])
 
     # compute the differences to fit with EOFs
     file_len = int(A.shape[1] / 5)
@@ -333,11 +334,11 @@ def prop_model(model_file, output_id, cmap_max, hide_cbar):
     click.echo("#######################################")
     click.echo("")  
 
-    if model_file[-3:] == 'pgm':
+    if 'pgm' in model_file:
         model = sp_prop.PathGeometryModel()
         model.load(model_file)
         model.display(file_id=output_id, hold_fig=True, cmap_max=cmap_max)
-    elif model_file[-3:] == 'tlm':
+    elif 'tlm' in model_file:
         model = sp_prop.TLossModel()
         model.load(model_file)
         model.display(file_id=output_id, hold_fig=True, cmap_max=cmap_max, show_colorbar=(not hide_cbar))

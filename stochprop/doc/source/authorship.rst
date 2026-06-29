@@ -12,11 +12,13 @@ Author: Philip Blom (pblom@lanl.gov)
 Citing Usage
 ------------
 
-The Empirical Orthogonal Function (EOF) analyses available in *stochprop* are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi's National Center for Physical Acoustics (NCPA).  The methods are summarized in the below manuscript:
+The Empirical Orthogonal Function (EOF) analyses available in *stochprop* are part of ongoing joint research between infrasound scientists at Los Alamos National Laboratory (LANL) and the University of Mississippi's National Center for Physical Acoustics (NCPA).  Analysis of atmospheric trends in order to construct seasonal propagation statistics as well as EOF-based perturbation methods to construct ensembles for event-specific analysis are summarized in the below manuscripts:
 
     * Blom, P., Waxler, R., & Frazier, G. (2023). Quantification of spatial and seasonal trends in the atmosphere and construction of statistical models for infrasonic propagation. *Geophysical Journal International*, 235(2), 1007-1020.
 
-Stochastic, propagation-based models for infrasonic signal analysis were initially introduced in analysis of the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE) framworks so that usage of path geometry and transmission loss models should be cited using:
+    * Blom, P. S., Frazier, W. G., & Bishop, J. W. (2025). Localization of infrasonic sources via Bayesian back projection. *Geophysical Journal International*, 240(2), 1135-1146.
+  
+Stochastic, propagation-based models for infrasonic signal analysis were initially introduced in analysis of the Bayesian Infrasonic Source Localization (BISL) and Spectral Yield Estimation (SpYE) frameworks so that usage of path geometry and transmission loss models should be cited using:
 
     * Blom, P. S., Marcillo, O., & Arrowsmith, S. J. (2015). Improved Bayesian infrasonic source localization for regional infrasound. *Geophysical Journal International*, 203(3), 1682-1693.
 
