@@ -294,11 +294,12 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
     tlm_params = {}
     tlm_params['rng_lims'] = rng_lims
     tlm_params['rng_cnt'] = rng_cnt
+    tlm_params['rng_spacing'] = rng_spacing
     tlm_params['az_bin_cnt'] = az_bin_cnt
     tlm_params['az_bin_width'] = az_bin_width
-    tlm_params['station_centered'] = station_centered
-    tlm_params['use_topo'] = use_topo
     tlm_params['use_coherent_tl'] = use_coherent_tl
+    tlm_params['use_topo'] = use_topo
+    tlm_params['station_centered'] = station_centered
 
     click.echo('\n' + "TLM parameters:")
     for key in tlm_params.keys():
@@ -309,7 +310,7 @@ def build_tlm(atmo_dir, output_path, atmo_pattern, ncpaprop_method, ncpaprop_pat
     click.echo('\n' + "NCPAprop parameters:")
     if len(ncpaprop_path) > 0:
         click.echo("  NCPAprop path:", ncpaprop_path)
-    click.echo("NCPAprop method: " + ncpaprop_method)
+    click.echo("  NCPAprop method: " + ncpaprop_method)
     click.echo("  Frequency: " + str(freq))
     click.echo("  Azimuth angles (min, max, step): " + azimuths)
     click.echo("  Ground elevation: " + str(z_grnd))

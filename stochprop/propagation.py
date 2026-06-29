@@ -759,8 +759,8 @@ class PathGeometryModel(object):
                 Flag to build station-centered model via back projection ray tracing (needed for inclusion of terrain)
                 
         """
-        if os.path.isfile(output_file):
-            print(output_file + " already exists  --->  Skipping path geometry model construction...")
+        if os.path.isfile(output_file + ".pgm.json.gz"):
+            print(output_file + ".pgm.json.gz already exists  --->  Skipping path geometry model construction...")
         else:
             if not ((geom == "3d") or (geom == "sph")):
                 msg = "Incompatible geometry option for infraga: {}.  Options are 3d' and 'sph'".format(geom)
@@ -824,8 +824,6 @@ class PathGeometryModel(object):
 
                 az_wts = np.empty(self._az_bin_cnt)
                 for n_az in range(self._az_bin_cnt):
-
-
                     if n_az == 0:
                         center = -180.0
                         az_mask = np.logical_or(az > 180.0 - az_bin_wdth / 2.0, az < -180.0 + az_bin_wdth / 2.0)
@@ -971,9 +969,11 @@ class PathGeometryModel(object):
                             window1.remove()
                             window2.remove()
 
-                    rng_wts[rng_wts > 4.0 / len(rng_wts)] = 4.0 / len(rng_wts)
+                    # rng_wts[rng_wts > 4.0 / len(rng_wts)] = 4.0 / len(rng_wts)
+
                     for nr in range(rng_cnt):
                         rcel_wts[n_az][nr] *= rng_wts[nr] / np.sum(rng_wts)
+
                     plt.close('all')
                     stochprop_utils.prog_increment(stochprop_utils.prog_set_step(n_az, self._az_bin_cnt, 50))
                 stochprop_utils.prog_close()
@@ -1259,8 +1259,8 @@ class TLossModel(object):
                 Azimuth bin width in degrees for analysis
         """
 
-        if os.path.isfile(output_file):
-            print(output_file + " already exists  --->  Skipping transmission loss model construction...")
+        if os.path.isfile(output_file + ".tlm.json.gz"):
+            print(output_file + ".tlm.json.gz already exists  --->  Skipping transmission loss model construction...")
         else:
             print('Builing transmission loss models from file:', tloss_file)
 

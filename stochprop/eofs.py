@@ -296,17 +296,15 @@ def _perturb_header_txt(eofs_path, eof_cnt, stdev, n, prof_cnt, ref_header):
     for line in ref_header:
         result = result + '\n' + line
 
-    '''
-    result = result + '\n' + "# Fields = [ Z(km), T(K), U(m/s), V(m/s), R(g/cm3), P(mbar) ]"
-    result = result + '\n' + "# The following lines are formatted input for ncpaprop"
-    result = result + '\n' + "#% 0, Z0, km, 0.0"
-    result = result + '\n' + "#% 1, Z, km"
-    result = result + '\n' + "#% 2, T, degK"
-    result = result + '\n' + "#% 3, U, m/s"
-    result = result + '\n' + "#% 4, V, m/s"
-    result = result + '\n' + "#% 5, RHO, g/cm3"
-    result = result + '\n' + "#% 6, P, mbar"
-    '''
+    if "#%" not in result:
+        result = result + '\n' + "# The following lines are formatted input for ncpaprop"
+        result = result + '\n' + "#% 0, Z0, km, 0.0"
+        result = result + '\n' + "#% 1, Z, km"
+        result = result + '\n' + "#% 2, T, degK"
+        result = result + '\n' + "#% 3, U, m/s"
+        result = result + '\n' + "#% 4, V, m/s"
+        result = result + '\n' + "#% 5, RHO, g/cm3"
+        result = result + '\n' + "#% 6, P, mbar"
     
     return result
 
